@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vaccine Added</title>
+</head>
+<body>
+<h2>New Vaccine Added</h2>
+<p>Dear <span th:text="${name}"></span>,</p>
+<p>We have added a new vaccine to one of our animals.</p>
+<p>Details:</p>
+<ul>
+    <li><strong>Animal Name:</strong> <span th:text="${animalName}"></span></li>
+    <li><strong>Vaccine Name:</strong> <span th:text="${vaccineName}"></span></li>
+    <li><strong>Date Administered:</strong> <span th:text="${vaccineDate}"></span></li>
+</ul>
+<p>This vaccine will help ensure the health and safety of our animals.</p>
+<p>If you wish to unsubscribe from these notifications, please click the link below:</p>
+<p><a th:href="${unsubscribeLink}">Unsubscribe</a></p>
+<p>Best regards,</p>
+<p>Animal Shelter Team</p>
+</body>
+</html>

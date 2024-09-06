@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>New Animal Added</title>
+</head>
+<body>
+<h2>New Animal Added</h2>
+<p>Dear <span th:text="${name}"></span>,</p>
+<p>We are excited to inform you that a new animal has been added to our shelter.</p>
+<p>Details:</p>
+<ul>
+    <li><strong>Name:</strong> <span th:text="${animalName}"></span></li>
+    <li><strong>Species:</strong> <span th:text="${animalSpecies}"></span></li>
+    <li><strong>Implant chip id:</strong> <span th:text="${animalImplantChip}"></span></li>
+    <li><strong>Gender:</strong> <span th:text="${animalGender}"></span></li>
+    <li><strong>Date Added:</strong> <span th:text="${dateAdded}"></span></li>
+</ul>
+<p>We hope you can visit us and meet our new friend soon.</p>
+<p>If you wish to unsubscribe from these notifications, please click the link below:</p>
+<p><a th:href="${unsubscribeLink}">Unsubscribe</a></p>
+<p>Best regards,</p>
+<p>Animal Shelter Team</p>
+</body>
+</html>

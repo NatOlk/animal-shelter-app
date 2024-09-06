@@ -1,0 +1,41 @@
+
+type Query {
+    allAnimals : [Animal]
+    animalByNameAndSpecies(name: String!, species: String!): Animal
+    allVaccinations : [Vaccination]
+    vaccinationByNameAndSpecies(name: String!, species: String!): [Vaccination]
+    vaccinationCountByNameAndSpecies(name: String!, species: String!): Int!
+}
+
+type Animal {
+    name: String!
+    species: String!
+    primary_color: String
+    implant_chip_id: String
+    breed: String
+    gender: String
+    admission_date: String!
+    birth_date: String!
+    pattern: String
+    vaccinations: [Vaccination]
+}
+
+type Vaccination {
+    name: String!
+    species: String!
+    vaccine: String!
+    batch: String!
+    vaccination_time: String!
+    comments: String
+    email: String!
+
+}
+
+type Mutation {
+    addAnimal(name: String!, species: String!, primary_color: String!, breed: String, implant_chip_id: String, gender: String!, birth_date: String, pattern: String) : Animal
+    deleteAnimal(name: String!, species: String!) : Animal
+    updateAnimal(name: String!, species: String!, primary_color: String, breed: String, gender: String, birth_date: String, pattern: String) : Animal
+    addVaccination(name: String!, species: String!, vaccine: String!, batch: String!, vaccination_time: String!, comments: String, email: String!) : Vaccination
+    deleteVaccination(name: String!, species: String!, vaccine: String!, batch: String!) : Vaccination
+    updateVaccination(name: String!, species: String!, vaccine: String!, batch: String!, vaccination_time: String, comments: String, email: String) : Vaccination
+}

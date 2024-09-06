@@ -1,0 +1,68 @@
+body {
+    background-color: lightblue;
+    font-family: 'Tahoma', sans-serif;
+    font-size: 8px;
+}
+
+table {
+    background: lightskyblue;
+    border: 1px solid blue;
+    width: 100%;
+}
+
+table tr td {
+    background: papayawhip;
+    border: 1px solid dodgerblue;
+}
+
+.long {
+    width: 100%;
+}
+
+.button {
+    display: block;
+    background: papayawhip;
+    text-align: center;
+    width: 100%;
+}
+
+.button image {
+    display: block;
+    background: papayawhip;
+    text-align: center;
+    width: 100%;
+    box-sizing: content-box;
+}
+
+.errorAlarm {
+    color: red;
+    font-family: "Baskerville Old Face";
+    font-size: large;
+}
+
+.round-button-with-border {
+    border-radius: 2px;
+    border: 1px solid dodgerblue;
+    padding: 2px 2px 2px 2px;
+    background-color: papayawhip;
+    text-decoration: none;
+    cursor: default;
+    font: inherit;
+    font-size: 12px;
+}
+
+.container {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.container th, .container td {
+    border: none;
+    padding: 12px;
+    text-align: left;
+}
+
+.left {
+    width: 150px;
+    background-color: lightskyblue;
+}
