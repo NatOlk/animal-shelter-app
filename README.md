@@ -2,14 +2,23 @@ Animal Shelter
 
 ## Description
 
-Brief description of the project.
+## Description
+
+Animal Shelter App is a comprehensive solution for managing animals in a shelter. With this application, users can:
+
+- **Add New Animals:** Easily register new animals with details such as name, species, color, breed, and more.
+- **Manage Vaccinations:** Track and manage vaccinations for each animal, including vaccine details, batch numbers, and vaccination dates.
+- **Update Animal Information:** Edit and update the information of existing animals, such as their primary color, breed, and other relevant details.
+- **View and Organize Data:** Access a user-friendly interface to view and organize information about animals and their vaccinations.
+
+The application is designed to streamline the management of shelter animals and ensure their health records are kept up-to-date.
 
 ## Installation
 
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-repo.git
+   git clone https://github.com/NatOlk/animal-shelter-app.git
 
     Navigate to the project directory:
 
