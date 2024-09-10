@@ -23,6 +23,7 @@ const ADD_ANIMAL = gql`
             birth_date:  $birth_date,
             pattern: $pattern)
         {
+            id
             name
             species
             primary_color
@@ -50,9 +51,20 @@ function AddAnimal() {
 
     const [animal, setAnimal] = useState(initialValues);
     const [validationError, setError] = useState(null);
-    const [addAnimal, {error , loading, data}] = useMutation(ADD_ANIMAL, {
-        refetchQueries: [ANIMALS_QUERY]
-    });
+    const [addAnimal] = useMutation(ADD_ANIMAL, {
+       update(cache, { data: { addAnimal } }) {
+         try {
+           const { allAnimals } = cache.readQuery({ query: ANIMALS_QUERY });
+           cache.writeQuery({
+             query: ANIMALS_QUERY,
+             data: { allAnimals: [...allAnimals, addAnimal] },
+           });
+         } catch (error) {
+           console.error("Error updating cache:", error);
+         }
+       }
+     });
+
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -68,6 +80,7 @@ function AddAnimal() {
 
     return (
        <tr>
+            <td></td>
             <td><input name="name" value={animal.name}
                    onChange={handleInputChange}
                    placeholder={validationError === 'name' ? 'Name is mandatory' : ''} />

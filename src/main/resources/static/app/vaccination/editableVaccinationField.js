@@ -5,22 +5,19 @@ import DeleteVaccination from './deleteVaccination';
 import { VACCINATIONS_QUERY } from '../graphqlQueries.js';
 
 const UPDATE_VACCINATION = gql`
-    mutation UpdateVaccination($name: String!,
-                          $species: String!,
+    mutation UpdateVaccination($id: ID!,
                           $vaccine: String!,
                           $batch: String!,
                           $vaccination_time: String,
                           $comments: String,
                           $email: String) {
-        updateVaccination(name: $name,
-                    species: $species,
+        updateVaccination(id: $id,
                      vaccine: $vaccine,
                      batch: $batch,
                      vaccination_time: $vaccination_time,
                      comments: $comments,
                      email: $email) {
-                          name
-                          species
+                          id
                           vaccine
                           batch
                           vaccination_time
@@ -43,8 +40,7 @@ const EditableVaccineField = ({ vaccination, value, name }) => {
   const handleSave = () => {
     const variables = {
       [name]: fieldValue,
-      name: vaccination.name,
-      species: vaccination.species,
+      id: vaccination.id,
       vaccine: vaccination.vaccine,
       batch: vaccination.batch,
       vaccination_time: vaccination.vaccination_time,

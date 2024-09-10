@@ -4,19 +4,18 @@ import {useMutation} from "@apollo/client";
 import { VACCINATIONS_QUERY } from '../graphqlQueries.js';
 
 const DELETE_VACCINATION = gql`
-    mutation ($name: String!, $species: String!, $vaccine: String!, $batch: String!)
+    mutation ($id: ID!)
     {
-        deleteVaccination(name: $name, species: $species, vaccine: $vaccine, batch: $batch)
+        deleteVaccination(id: $id)
         {
-            name
-            species
+            id
             vaccine
             batch
         }
     }
 `;
 
-function DeleteVaccination ({vaccination})
+function DeleteVaccination ({id})
 {
     const [deleteVaccination, { data2 }] = useMutation(DELETE_VACCINATION, {
         refetchQueries: [VACCINATIONS_QUERY]
@@ -24,8 +23,7 @@ function DeleteVaccination ({vaccination})
 
    return (
        <button onClick={() =>
-           deleteVaccination({variables: {name: vaccination.name, species: vaccination.species,
-           vaccine: vaccination.vaccine, batch: vaccination.batch}})} className="round-button-with-border">
+           deleteVaccination({variables: {id: id}})} className="round-button-with-border">
                  Delete
        </button>
    )

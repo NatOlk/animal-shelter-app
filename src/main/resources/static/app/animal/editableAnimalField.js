@@ -5,19 +5,19 @@ import DeleteAnimal from './deleteAnimal';
 import { ANIMALS_QUERY } from '../graphqlQueries.js';
 
 const UPDATE_ANIMAL = gql`
-    mutation UpdateAnimal($name: String!,
-                          $species: String!,
+    mutation UpdateAnimal($id: ID!,
                           $primary_color: String,
                           $breed: String,
                           $gender: String,
                           $birth_date: String,
                           $pattern: String) {
-        updateAnimal(name: $name, species: $species,
+        updateAnimal(id: $id,
                      primary_color: $primary_color,
                      breed: $breed,
                      gender: $gender,
                      birth_date: $birth_date,
                      pattern: $pattern) {
+                          id
                           name
                           species
                           primary_color
@@ -40,14 +40,14 @@ const EditableAnimalField = ({ animal, value, name, values }) => {
     onCompleted: () => setIsEditing(false),
   });
 
-  const handleSave = () => {
-    const variables = {
-      [name]: fieldValue,
-      name: animal.name,
-      species: animal.species
-    }
-    updateField({ variables });
-  };
+   const handleSave = () => {
+      const variables = {
+        id: animal.id,
+        [name]: fieldValue,
+      };
+
+      updateField({ variables }).catch(err => console.error(err));
+    };
 
  const inputStyle = isEditing ? { backgroundColor: '#FFC0CB' } : {};
 

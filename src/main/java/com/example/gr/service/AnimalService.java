@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.gr.jpa.AnimalRepository;
 import com.example.gr.jpa.data.Animal;
-import com.example.gr.jpa.data.AnimalKey;
 
 
 @Service
@@ -34,19 +33,21 @@ public class AnimalService
 		return animalRepository.findAll();
 	}
 
-	public Animal findByNameAndSpecies(String name, String species) throws AnimalNotFoundException {
-		return animalRepository.findById(new AnimalKey(name, species))
-				.orElseThrow(() -> new AnimalNotFoundException("Animal not found " + name));
+	public Animal findById(Long id) throws AnimalNotFoundException {
+		return animalRepository.findById(id)
+				.orElseThrow(() -> new AnimalNotFoundException("Animal not found " + id));
 	}
 
-	public Animal addAnimal(@NonNull String name, @NonNull String  species, @NonNull String primary_color,
-							String breed, String implant_chip_id, @NonNull String gender, String birth_date,
-							String pattern) throws AnimalCreationException
+	public Animal addAnimal(@NonNull String name, @NonNull String  species,
+							@NonNull String primary_color, String breed,
+							String implant_chip_id, @NonNull String gender,
+							String birth_date, String pattern) throws AnimalCreationException
 	{
 		try
 		{
 			Animal animal = new Animal();
-			animal.setAnimalKey(new AnimalKey(name, species));
+			animal.setName(name);
+			animal.setSpecies(species);
 			animal.setBreed(breed);
 			animal.setGender(gender.charAt(0));
 			animal.setPattern(pattern);
@@ -64,13 +65,13 @@ public class AnimalService
 		}
 	}
 
-	public Animal updateAnimal(@NonNull String name, @NonNull String species,
-							   String primary_color, String breed, String gender,
+	public Animal updateAnimal(@NonNull Long id, String primary_color,
+							   String breed, String gender,
 							   String birth_date, String pattern)
 			throws AnimalNotFoundException, AnimalUpdateException
 	{
-		Animal animal = animalRepository.findById(new AnimalKey(name, species))
-				.orElseThrow(() -> new AnimalNotFoundException("Animal not found " + name));
+		Animal animal = animalRepository.findById(id)
+				.orElseThrow(() -> new AnimalNotFoundException("Animal not found " + id));
 
         try
 		{
@@ -103,8 +104,8 @@ public class AnimalService
 		return animal;
 	}
 
-	public void removeAnimal(@NonNull String name, @NonNull String species)
+	public void removeAnimal(@NonNull Long id)
 	{
-		animalRepository.deleteById(new AnimalKey(name, species));
+		animalRepository.deleteById(id);
 	}
 }

@@ -3,6 +3,7 @@ import { gql } from '@apollo/client';
 export const ANIMALS_QUERY = gql`
     {
         allAnimals {
+            id
             name
             species
             primary_color
@@ -16,10 +17,9 @@ export const ANIMALS_QUERY = gql`
 
 
 export const VACCINATIONS_QUERY = gql`
-    query vaccinationByNameAndSpecies($name: String!, $species: String!) {
-        vaccinationByNameAndSpecies(name: $name, species: $species) {
-            name
-            species
+    query vaccinationByAnimalId($animalId: ID!) {
+        vaccinationByAnimalId(animalId: $animalId) {
+            id
             vaccine
             batch
             vaccination_time
@@ -27,10 +27,4 @@ export const VACCINATIONS_QUERY = gql`
             email
         }
     }
-`;
-
-export const GET_VACCINATION_COUNT = gql`
-  query vaccinationCountByNameAndSpecies($name: String!, $species: String!) {
-    vaccinationCountByNameAndSpecies(name: $name, species: $species)
-  }
 `;

@@ -42,13 +42,13 @@ public class NotificationService {
     public void sendAddVaccinationMessage(Vaccination vaccination) throws JsonProcessingException {
 
         Map<String, Object> params = new HashMap<>(2);
-        params.put("animalName", vaccination.getName());
+        params.put("animalName", vaccination.getAnimal().getName());
         params.put("vaccineName", vaccination.getVaccine());
         params.put("vaccineDate", vaccination.getVaccination_time());
 
         animalInfoProducer.sendMessage(
-                String.format(ADD_VACCINE_MSG, vaccination.getName(),
-                vaccination.getSpecies(), vaccination.getVaccine(),
+                String.format(ADD_VACCINE_MSG, vaccination.getAnimal().getName(),
+                vaccination.getAnimal().getSpecies(), vaccination.getVaccine(),
                         vaccination.getBatch(), vaccination.getVaccination_time()),
                 ADD_VACCINE_TEMPLATE, params);
     }

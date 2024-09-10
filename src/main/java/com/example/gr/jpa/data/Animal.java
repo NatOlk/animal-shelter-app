@@ -1,6 +1,7 @@
 package com.example.gr.jpa.data;
 
 import java.util.Date;
+import java.util.List;
 
 
 import jakarta.persistence.*;
@@ -11,8 +12,13 @@ import lombok.Data;
 @Data
 public class Animal
 {
-	@EmbeddedId
-	private AnimalKey animalKey;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	@Column
+	private String name;
+	@Column
+	private String species;
 	@Column
 	private String primary_color;
 	@Column
@@ -27,13 +33,6 @@ public class Animal
 	private String pattern;
 	@Column
 	private Date admission_date;
-
-	public String getName()
-	{
-		return animalKey.getName();
-	}
-	public String getSpecies()
-	{
-		return animalKey.getSpecies();
-	}
+	@OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Vaccination> vaccinations;
 }

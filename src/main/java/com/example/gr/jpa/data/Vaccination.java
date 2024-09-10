@@ -10,8 +10,13 @@ import lombok.Data;
 @Data
 public class Vaccination
 {
-	@EmbeddedId
-	private VaccinationKey vaccinationKey;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	@Column
+	private String vaccine;
+	@Column(unique = true)
+	private String batch;
 	@Column
 	private String email;
 	@Column
@@ -19,38 +24,8 @@ public class Vaccination
 	@Column
 	private String comments;
 
-
-	public String getVaccine() {
-		return vaccinationKey.getVaccine();
-	}
-
-	public void setVaccine(String vaccine) {
-		vaccinationKey.setVaccine(vaccine);
-	}
-
-	public String getBatch() {
-		return vaccinationKey.getBatch();
-	}
-
-	public void setBatch(String batch) {
-		vaccinationKey.setBatch(batch);
-	}
-
-	public String getName()
-	{
-		return vaccinationKey.getName();
-	}
-	public String getSpecies()
-	{
-		return vaccinationKey.getSpecies();
-	}
-
-	public void setName(String name)
-	{
-		vaccinationKey.setName(name);
-	}
-	public void setSpecies(String species)
-	{ vaccinationKey.setSpecies(species);
-	}
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "animal_id")
+	private Animal animal;
 
 }

@@ -5,24 +5,23 @@ import showError from "./showError";
 import { VACCINATIONS_QUERY } from '../graphqlQueries.js';
 
 const ADD_VACCINATION = gql`
-    mutation ($name: String!,
-        $species: String!,
+    mutation (
+        $animalId: ID!,
         $vaccine: String!,
         $batch: String!,
         $vaccination_time: String!,
         $comments: String,
         $email: String!)
     {
-        addVaccination(name: $name,
-            species: $species,
+        addVaccination(
+            animalId: $animalId,
             vaccine:  $vaccine,
             batch: $batch,
             vaccination_time: $vaccination_time,
             comments: $comments,
             email:  $email)
         {
-            name
-            species
+            id
             vaccine
             batch
             vaccination_time
@@ -32,11 +31,9 @@ const ADD_VACCINATION = gql`
     }
 `;
 
-function AddVaccination({name, species}) {
+function AddVaccination({animalId}) {
 
     const [vaccination, setVaccination] = useState({
-        name: name,
-        species: species,
         vaccine: 'Rabies',
         batch: 'RTL-0001',
         vaccination_time: new Date().toISOString().split('.')[0],
@@ -58,8 +55,6 @@ function AddVaccination({name, species}) {
 
     const clearFields = () => {
           setVaccination({
-                name: name,
-                species: species,
                 vaccine: 'Rabies',
                 batch: 'RTL-0001',
                 vaccination_time: new Date().toISOString().split('.')[0],
@@ -70,9 +65,7 @@ function AddVaccination({name, species}) {
 
     return (
        <tr>
-            <td><input name="name" value={name} readOnly/>
-            </td>
-            <td><input name="species" value={species} readOnly/></td>
+            <td></td>
             <td><input name="vaccine" value={vaccination.vaccine}
                    onChange={handleInputChange}
                    placeholder={validationError === 'vaccine' ? 'Vaccine is mandatory' : ''}/></td>
@@ -106,8 +99,7 @@ function AddVaccination({name, species}) {
                         addVaccination(
                             {
                                 variables: {
-                                    name: vaccination.name,
-                                    species: vaccination.species,
+                                    animalId: animalId,
                                     vaccine: vaccination.vaccine,
                                     batch: vaccination.batch,
                                     vaccination_time: vaccination.vaccination_time,

@@ -30,21 +30,20 @@ public class GrVaccineController
 	private VaccinationService vaccinationService;
 
 	@MutationMapping
-	public Vaccination updateVaccination(@Argument String name, @Argument String species,
+	public Vaccination updateVaccination(@Argument Long id,
 									@Argument String vaccine, @Argument String batch,
 									@Argument String vaccination_time, @Argument String comments,
 							        @Argument String email) throws VaccinationNotFoundException, VaccinationUpdateException {
-		return vaccinationService.updateVaccination(name, species, vaccine, batch, vaccination_time,
+		return vaccinationService.updateVaccination(id, vaccine, batch, vaccination_time,
 				comments, email);
 	}
 
 	@MutationMapping
-	public Vaccination deleteVaccination(@Argument String name, @Argument String species,
-									@Argument String vaccine, @Argument String batch) throws VaccinationNotFoundException {
+	public Vaccination deleteVaccination(@Argument Long id) throws VaccinationNotFoundException {
 		//TODO fix it
-		Vaccination vaccination = vaccinationService.findByKey(name, species, vaccine, batch)
-				.orElseThrow(() -> new VaccinationNotFoundException("Vaccination not found for: " + name + ", " + species));
-		vaccinationService.deleteVaccination(name, species, vaccine, batch);
+		Vaccination vaccination = vaccinationService.findByKey(id)
+				.orElseThrow(() -> new VaccinationNotFoundException("Vaccination not found for: " + id));
+		vaccinationService.deleteVaccination(id);
 		return vaccination;
 	}
 
@@ -55,30 +54,34 @@ public class GrVaccineController
 	}
 
 	@QueryMapping
-	public List<Vaccination> vaccinationByNameAndSpecies(@Argument String name, @Argument String species)
+	public List<Vaccination> vaccinationByAnimalId(@Argument Long animalId)
 	{
-		return vaccinationService.findByNameAndSpecies(name, species);
+		return vaccinationService.findByAnimalId(animalId);
 	}
 
 
 	@QueryMapping
-	public int vaccinationCountByNameAndSpecies(@Argument String name, @Argument String species)
+	public int vaccinationCountById(@Argument Long id)
 	{
-		return vaccinationService.vaccinationCountByNameAndSpecies(name, species);
+		return vaccinationService.vaccinationCountById(id);
 	}
 
 	@MutationMapping
-	public Vaccination addVaccination(@Argument String name, @Argument String species,
-									  @Argument String vaccine, @Argument String batch,
-									  @Argument String vaccination_time, @Argument String comments,
-									  @Argument String email) throws VaccinationCreationException {
-		return vaccinationService.addVaccination(name, species, vaccine, batch, vaccination_time, comments, email);
+	public Vaccination addVaccination(@Argument Long animalId, @Argument String vaccine,
+									  @Argument String batch, @Argument String vaccination_time,
+									  @Argument String comments, @Argument String email) throws VaccinationCreationException {
+		return vaccinationService.addVaccination(animalId, vaccine, batch, vaccination_time, comments, email);
 	}
 
 
 	@SchemaMapping(typeName="Animal", field="vaccinations")
 	public List<Vaccination> getVaccinations(Animal animal) {
-		return vaccinationService.findByNameAndSpecies(animal.getName(), animal.getSpecies());
+		return vaccinationService.findByAnimalId(animal.getId());
+	}
+
+	@SchemaMapping
+	public int vaccinationCount(Animal animal) {
+		return vaccinationService.vaccinationCountById(animal.getId());
 	}
 
 	@GraphQlExceptionHandler

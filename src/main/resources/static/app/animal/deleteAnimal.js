@@ -4,25 +4,34 @@ import {useMutation} from "@apollo/client";
 import { ANIMALS_QUERY } from '../graphqlQueries.js';
 
 const DELETE_ANIMAL = gql`
-    mutation ($name: String!, $species: String!)
+    mutation ($id: ID!)
     {
-        deleteAnimal(name: $name, species: $species)
+        deleteAnimal(id: $id)
         {
-            name
-            species
+            id
         }
     }
 `;
 
-function DeleteAnimal ({name, species})
+function DeleteAnimal ({id})
 {
-    const [deleteAnimal, { data2 }] = useMutation(DELETE_ANIMAL, {
-        refetchQueries: [ANIMALS_QUERY]
-    });
+   const [deleteAnimal, { loading, error }] = useMutation(DELETE_ANIMAL, {
+       update(cache, { data: { deleteAnimal } }) {
+           const existingAnimals = cache.readQuery({ query: ANIMALS_QUERY });
+           const newAnimals = existingAnimals.allAnimals.filter(animal => animal.id !== deleteAnimal.id);
+           cache.writeQuery({
+               query: ANIMALS_QUERY,
+               data: { allAnimals: newAnimals },
+           });
+       }
+   });
+
+    if (loading) return <p>Deleting...</p>;
+    if (error) return <p>Error: {error.message}</p>;
 
    return (
        <button onClick={() =>
-           deleteAnimal({variables: {name: name, species: species}})} className="round-button-with-border">
+           deleteAnimal({variables: {id: id}})} className="round-button-with-border">
                  Delete
        </button>
    )

@@ -10,10 +10,7 @@ import com.example.gr.service.exception.AnimalUpdateException;
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.GraphQlExceptionHandler;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
@@ -33,14 +30,14 @@ public class GrAnimalController
 	{
 		List<Animal> animals = animalsService.getAllAnimals();
 
-		Collections.sort(animals, Comparator.comparing(animal -> animal.getAnimalKey().getName()));
+		Collections.sort(animals, Comparator.comparing(animal -> animal.getId()));
 
 		return animals;
 	}
 
 	@QueryMapping
-	public Animal animalByNameAndSpecies(@Argument String name, @Argument String species) throws AnimalNotFoundException {
-		return animalsService.findByNameAndSpecies(name, species);
+	public Animal animalById(@Argument Long id) throws AnimalNotFoundException {
+		return animalsService.findById(id);
 	}
 
 	@MutationMapping
@@ -51,16 +48,16 @@ public class GrAnimalController
     }
 
 	@MutationMapping
-	public Animal updateAnimal(@Argument String name, @Argument String species, @Argument String primary_color,
-							@Argument String breed, @Argument String gender, @Argument String birth_date,
-							@Argument String pattern) throws AnimalNotFoundException, AnimalUpdateException {
-		return animalsService.updateAnimal(name, species, primary_color, breed,  gender, birth_date, pattern);
+	public Animal updateAnimal(@Argument Long id, @Argument String primary_color,
+							   @Argument String breed, @Argument String gender,
+							   @Argument String birth_date, @Argument String pattern) throws AnimalNotFoundException, AnimalUpdateException {
+		return animalsService.updateAnimal(id, primary_color, breed,  gender, birth_date, pattern);
 	}
 
 	@MutationMapping
-	public Animal deleteAnimal(@Argument String name, @Argument String species) throws AnimalNotFoundException {
-		Animal animal = animalsService.findByNameAndSpecies(name, species);
-		animalsService.removeAnimal(name, species);
+	public Animal deleteAnimal(@Argument Long id) throws AnimalNotFoundException {
+		Animal animal = animalsService.findById(id);
+		animalsService.removeAnimal(id);
 		return animal;
 	}
 

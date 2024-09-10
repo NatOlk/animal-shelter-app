@@ -7,10 +7,8 @@ import EditableVaccinationField from './editableVaccinationField';
 const UpdateVaccination = ({ vaccination }) => {
 
   return (
-    <tr key={vaccination.name + vaccination.species + vaccination.vaccine + vaccination.batch}>
-      <td style={{whiteSpace: 'nowrap'}}>{vaccination.name}</td>
-      <td>{vaccination.species}</td>
-      <td>{vaccination.vaccine}</td>
+    <tr key={vaccination.id}>
+      <td style={{whiteSpace: 'nowrap'}}>{vaccination.id}</td>
       <td>{vaccination.batch}</td>
       <EditableVaccinationField
               vaccination={vaccination}
@@ -25,7 +23,7 @@ const UpdateVaccination = ({ vaccination }) => {
                   value={vaccination.email}
                   name="email"/>
       <td>
-        <DeleteVaccination vaccination={vaccination}/>
+        <DeleteVaccination id={vaccination.id}/>
       </td>
     </tr>
   )

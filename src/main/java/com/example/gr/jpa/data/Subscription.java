@@ -10,12 +10,10 @@ import lombok.Data;
 public class Subscription {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     @Column
     private String email;
-
     @Column
     private String topic;
 

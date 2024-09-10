@@ -11,10 +11,9 @@ import { Link } from 'react-router-dom';
 
 
 const VACCINATIONS_QUERY = gql`
-    query vaccinationByNameAndSpecies($name: String!, $species: String!) {
-        vaccinationByNameAndSpecies(name: $name, species: $species) {
-            name
-            species
+    query vaccinationByAnimalId($animalId: ID!) {
+        vaccinationByAnimalId(animalId: $animalId) {
+            id
             vaccine
             batch
             vaccination_time
@@ -29,28 +28,28 @@ function VaccinationsList() {
     const [currentPage, setCurrentPage] = useState(0);
 
     const location = useLocation();
-    const { name, species } = location.state;
+    const { animalId, name, species } = location.state;
 
 
-    if (!name || !species) {
+    if (!animalId) {
         return (<div>
             <Link to="/">Back to Animals</Link>
-            <p>Error: No name or species provided!</p>;
+            <p>Error: No animalId provided!</p>;
             </div>);
     }
 
     const {loading, error, data} = useQuery(VACCINATIONS_QUERY, {
-                                       variables: { name: name, species:species },
+                                       variables: { animalId: animalId},
                                    });
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error :(</p>;
 
-    const pageCount = Math.ceil(data.vaccinationByNameAndSpecies.length / perPage);
+    const pageCount = Math.ceil(data.vaccinationByAnimalId.length / perPage);
 
-    const vaccinationsList = data.vaccinationByNameAndSpecies
+    const vaccinationsList = data.vaccinationByAnimalId
         .slice(currentPage * perPage, (currentPage + 1) * perPage)
-        .map(vaccination => <UpdateVaccination key={vaccination.name + vaccination.species + vaccination.vaccine + vaccination.batch} vaccination={vaccination} />);
+        .map(vaccination => <UpdateVaccination key={vaccination.id} vaccination={vaccination} />);
 
     return (
         <div>
@@ -58,12 +57,11 @@ function VaccinationsList() {
             <Link to="/">Back to Animals</Link>
             <Container fluid>
                 <h3>Vaccinations</h3>
-
+                <p>For animal: {name} ({species})</p>
                 <Table>
                     <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Species</th>
+                        <th>Id</th>
                         <th>Vaccine</th>
                         <th>Batch</th>
                         <th>Vaccination time</th>
@@ -73,7 +71,7 @@ function VaccinationsList() {
                     </tr>
                     </thead>
                     <tbody>
-                      <AddVaccination name={name} species={species}/>
+                      <AddVaccination animalId={animalId}/>
                       {vaccinationsList}
                      </tbody>
                      </Table>

@@ -7,15 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 
 import com.example.gr.jpa.data.Vaccination;
-import com.example.gr.jpa.data.VaccinationKey;
 
 
-public interface VaccinationRepository extends JpaRepository<Vaccination, VaccinationKey>
+public interface VaccinationRepository extends JpaRepository<Vaccination, Long>
 {
-	@Query(name = "select * from Vaccination v where v.vaccinationKey.name=:name and v.vaccinationKey.species=:species")
-	List<Vaccination> findByVaccinationKeyNameAndVaccinationKeySpecies(@NonNull String name, @NonNull String species);
+	@Query(name = "select * from Vaccination v where v.animal.id = :animalId")
+	List<Vaccination> findByAnimalId(@NonNull Long animalId);
 
-	@Query("select count(v) from Vaccination v where v.animal.name = :name and v.animal.species = :species")
-	int findVaccinationCountByNameAndSpecies(@NonNull String name, @NonNull String species);
+	@Query("select count(v) from Vaccination v where v.animal.id = :animalId")
+	int findVaccinationCountByAnimalId(@NonNull Long animalId);
 
 }
