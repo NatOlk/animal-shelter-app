@@ -107,7 +107,7 @@ const EditableAnimalField = ({ animal, value, name, values }) => {
              className="round-button-with-border"
              onClick={handleSave}
            >
-             +
+              +
            </button>
            <button
              className="round-button-with-border"
@@ -116,7 +116,7 @@ const EditableAnimalField = ({ animal, value, name, values }) => {
                setIsEditing(false);
              }}
            >
-             -
+              -
            </button>
          </>
        )}

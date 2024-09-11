@@ -77,8 +77,8 @@ public class VaccinationService
 		}
 	}
 
-	public Vaccination updateVaccination(@NonNull Long id, @NonNull String vaccine,
-										 @NonNull String batch, String vaccination_time,
+	public Vaccination updateVaccination(@NonNull Long id, String vaccine,
+										 String batch, String vaccination_time,
 										 String comments, String email)
 			throws VaccinationNotFoundException, VaccinationUpdateException
 	{
@@ -88,8 +88,14 @@ public class VaccinationService
 
 		try
 		{
-			vaccination.setVaccine(vaccine);
-			vaccination.setBatch(batch);
+			if(vaccine != null)
+			{
+				vaccination.setVaccine(vaccine);
+			}
+			if (batch != null)
+			{
+				vaccination.setBatch(batch);
+			}
 
 			if (vaccination_time != null)
 			{

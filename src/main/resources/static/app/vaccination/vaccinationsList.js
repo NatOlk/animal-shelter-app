@@ -56,8 +56,7 @@ function VaccinationsList() {
             <div id="error" className="errorAlarm"></div>
             <Link to="/">Back to Animals</Link>
             <Container fluid>
-                <h3>Vaccinations</h3>
-                <p>For animal: {name} ({species})</p>
+                <h3>Vaccinations for animal: {name} ({species})</h3>
                 <Table>
                     <thead>
                     <tr>

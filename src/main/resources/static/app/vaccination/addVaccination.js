@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
-import {gql} from "graphql-tag";
-import {useMutation} from "@apollo/client";
+import React, { useState, useEffect } from 'react';
+import { gql } from "graphql-tag";
+import { useMutation } from "@apollo/client";
+import axios from 'axios';
 import showError from "./showError";
+import useConfig from '../useConfig';
 import { VACCINATIONS_QUERY } from '../graphqlQueries.js';
 
 const ADD_VACCINATION = gql`
@@ -31,22 +33,30 @@ const ADD_VACCINATION = gql`
     }
 `;
 
-function AddVaccination({animalId}) {
-
+function AddVaccination({ animalId }) {
+    const [vaccines, setVaccines] = useState([]);
     const [vaccination, setVaccination] = useState({
         vaccine: 'Rabies',
         batch: 'RTL-0001',
         vaccination_time: new Date().toISOString().split('.')[0],
         comments: 'Add new vaccine',
         email: 'nolkoeva@gmail.com'
-      });
+    });
     const [validationError, setError] = useState(null);
-    const [addVaccination, {error , loading, data}] = useMutation(ADD_VACCINATION, {
+    const [addVaccination] = useMutation(ADD_VACCINATION, {
         refetchQueries: [VACCINATIONS_QUERY]
     });
 
+    const config = useConfig();
+    if (!config) {
+      return (
+        <tr>
+          <td colSpan="5">Loading animals configs...</td>
+        </tr>
+      );
+
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setVaccination({
             ...vaccination,
             [name]: value,
@@ -54,63 +64,65 @@ function AddVaccination({animalId}) {
     };
 
     const clearFields = () => {
-          setVaccination({
-                vaccine: 'Rabies',
-                batch: 'RTL-0001',
-                vaccination_time: new Date().toISOString().split('.')[0],
-                comments: 'Add new vaccine',
-                email: 'nolkoeva@gmail.com'
-            });
+        setVaccination({
+            vaccine: 'Rabies',
+            batch: 'RTL-0001',
+            vaccination_time: new Date().toISOString().split('.')[0],
+            comments: 'Add new vaccine',
+            email: 'nolkoeva@gmail.com'
+        });
     }
 
     return (
-       <tr>
+        <tr>
             <td></td>
-            <td><input name="vaccine" value={vaccination.vaccine}
-                   onChange={handleInputChange}
-                   placeholder={validationError === 'vaccine' ? 'Vaccine is mandatory' : ''}/></td>
+            <td>
+                <select name="vaccine" value={vaccination.vaccine} onChange={handleInputChange}>
+                    {config.vaccines.map(vaccine => (
+                        <option key={vaccine} value={vaccine}>{vaccine}</option>
+                    ))}
+                </select>
+                {validationError === 'vaccine' && <span>Vaccine is mandatory</span>}
+            </td>
             <td><input name="batch" value={vaccination.batch}
-                   onChange={handleInputChange}
-                   placeholder={validationError === 'batch' ? 'batch is mandatory' : ''}/></td>
+                onChange={handleInputChange}
+                placeholder={validationError === 'batch' ? 'batch is mandatory' : ''} /></td>
             <td><input className="long" name="vaccination_time" value={vaccination.vaccination_time}
-                   onChange={handleInputChange}
-                   placeholder={validationError === 'vaccination_time' ? 'vaccination_time is mandatory' : ''}/>
+                onChange={handleInputChange}
+                placeholder={validationError === 'vaccination_time' ? 'vaccination_time is mandatory' : ''} />
             </td>
             <td><input name="comments" value={vaccination.comments}
-                   onChange={handleInputChange} /></td>
-            <td><input name="email" value={vaccination.email} onChange={handleInputChange}/></td>
+                onChange={handleInputChange} /></td>
+            <td><input name="email" value={vaccination.email} onChange={handleInputChange} /></td>
             <td>
-                <button className="button" onClick={
-                    function () {
+                <button className="button" onClick={() => {
+                    if (!vaccination.vaccine) {
+                        setError('vaccine');
+                        return;
+                    }
+                    if (!vaccination.batch) {
+                        setError('batch');
+                        return;
+                    }
+                    if (!vaccination.vaccination_time) {
+                        setError('vaccination_time');
+                        return;
+                    }
 
-                         if (!vaccination.vaccine) {
-                               setError('vaccine');
-                               return;
-                         }
-                         if (!vaccination.batch) {
-                               setError('batch');
-                               return;
-                         }
-                         if (!vaccination.vaccination_time) {
-                               setError('vaccination_time');
-                               return;
-                         }
+                    addVaccination({
+                        variables: {
+                            animalId: animalId,
+                            vaccine: vaccination.vaccine,
+                            batch: vaccination.batch,
+                            vaccination_time: vaccination.vaccination_time,
+                            comments: vaccination.comments,
+                            email: vaccination.email
+                        }
+                    }).catch(error => { showError({ error: error }) });
 
-                        addVaccination(
-                            {
-                                variables: {
-                                    animalId: animalId,
-                                    vaccine: vaccination.vaccine,
-                                    batch: vaccination.batch,
-                                    vaccination_time: vaccination.vaccination_time,
-                                    comments: vaccination.comments,
-                                    email: vaccination.email
-                                }
-                            }).catch( (error1) => { showError( {error: error1})});
-
-                        clearFields();
-                    }} className="round-button-with-border">
-                      Add
+                    clearFields();
+                }} className="round-button-with-border">
+                    Add
                 </button>
             </td>
         </tr>

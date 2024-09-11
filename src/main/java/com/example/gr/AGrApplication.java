@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AGrApplication
 {
-
 	public static void main(String[] args)
 	{
 		SpringApplication.run(AGrApplication.class, args);

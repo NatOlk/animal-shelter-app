@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
-import {gql} from "graphql-tag";
-import {useMutation} from "@apollo/client";
-import showError from "./showError";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { gql } from 'graphql-tag';
+import { useMutation } from '@apollo/client';
+import showError from './showError';
+import useConfig from '../useConfig';
+
 import { ANIMALS_QUERY } from '../graphqlQueries.js';
 
 const ADD_ANIMAL = gql`
@@ -37,7 +40,6 @@ const ADD_ANIMAL = gql`
 `;
 
 function AddAnimal() {
-
     const initialValues = {
         name: "",
         species: "Dog",
@@ -52,22 +54,29 @@ function AddAnimal() {
     const [animal, setAnimal] = useState(initialValues);
     const [validationError, setError] = useState(null);
     const [addAnimal] = useMutation(ADD_ANIMAL, {
-       update(cache, { data: { addAnimal } }) {
-         try {
-           const { allAnimals } = cache.readQuery({ query: ANIMALS_QUERY });
-           cache.writeQuery({
-             query: ANIMALS_QUERY,
-             data: { allAnimals: [...allAnimals, addAnimal] },
-           });
-         } catch (error) {
-           console.error("Error updating cache:", error);
-         }
-       }
-     });
+        update(cache, { data: { addAnimal } }) {
+            try {
+                const { allAnimals } = cache.readQuery({ query: ANIMALS_QUERY });
+                cache.writeQuery({
+                    query: ANIMALS_QUERY,
+                    data: { allAnimals: [...allAnimals, addAnimal] },
+                });
+            } catch (error) {
+                console.error("Error updating cache:", error);
+            }
+        }
+    });
 
+   const config = useConfig();
+   if (!config) {
+    return (
+      <tr>
+        <td colSpan="5">Loading animals configs...</td>
+      </tr>
+    );
 
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setAnimal({
             ...animal,
             [name]: value,
@@ -75,71 +84,79 @@ function AddAnimal() {
     };
 
     const clearFields = () => {
-         setAnimal(initialValues);
-    }
+        setAnimal(initialValues);
+    };
 
     return (
-       <tr>
+        <tr>
             <td></td>
             <td><input name="name" value={animal.name}
-                   onChange={handleInputChange}
-                   placeholder={validationError === 'name' ? 'Name is mandatory' : ''} />
+                onChange={handleInputChange}
+                placeholder={validationError === 'name' ? 'Name is mandatory' : ''} />
             </td>
-            <td><input name="species" value={animal.species}
-                   onChange={handleInputChange}
-                   placeholder={validationError === 'species' ? 'Species is mandatory' : ''} /></td>
             <td>
-             <select
-                   name="primary_color"
-                   value={animal.primary_color}
-                   onChange={handleInputChange}
-                   placeholder={validationError === 'primary_color' ? 'Primary color is mandatory' : ''} >
-                       <option value="White">White</option>
-                       <option value="Black">Black</option>
-                       <option value="Red">Red</option>
-                       <option value="Multi">Multi</option>
-             </select>
+                <select
+                    name="species"
+                    value={animal.species}
+                    onChange={handleInputChange}
+                    placeholder={validationError === 'species' ? 'Species is mandatory' : ''}>
+                    {config.animals.map(animal => (
+                        <option key={animal} value={animal}>{animal}</option>
+                    ))}
+                </select>
             </td>
-            <td><input name="breed" value={animal.breed} onChange={handleInputChange}/></td>
+            <td>
+                <select
+                    name="primary_color"
+                    value={animal.primary_color}
+                    onChange={handleInputChange}
+                    placeholder={validationError === 'primary_color' ? 'Primary color is mandatory' : ''}>
+                    {config.colors.map(color => (
+                        <option key={color} value={color}>{color}</option>
+                    ))}
+                </select>
+            </td>
+            <td><input name="breed" value={animal.breed} onChange={handleInputChange} /></td>
             <td><input className="long" name="implant_chip_id" value={animal.implant_chip_id}
-                   onChange={handleInputChange}
-                   placeholder={validationError === 'implant_chip_id' ? 'implant_chip_id is mandatory' : ''}/>
+                onChange={handleInputChange}
+                placeholder={validationError === 'implant_chip_id' ? 'implant_chip_id is mandatory' : ''} />
             </td>
             <td>
-             <select
-                   name="gender"
-                   value={animal.gender}
-                   onChange={handleInputChange}
-                   placeholder={validationError === 'gender' ? 'Gender is mandatory' : ''} >
-                      <option value="F">F</option>
-                      <option value="M">M</option>
-             </select>
+                <select
+                    name="gender"
+                    value={animal.gender}
+                    onChange={handleInputChange}
+                    placeholder={validationError === 'gender' ? 'Gender is mandatory' : ''}>
+                    {config.genders.map(gender => (
+                        <option key={gender} value={gender}>{gender}</option>
+                    ))}
+                </select>
             </td>
-            <td><input name="birth_date" value={animal.birth_date} onChange={handleInputChange}/></td>
-            <td><input name="pattern" value={animal.pattern} onChange={handleInputChange}/></td>
+            <td><input name="birth_date" value={animal.birth_date} onChange={handleInputChange} /></td>
+            <td><input name="pattern" value={animal.pattern} onChange={handleInputChange} /></td>
             <td>
                 <button className="button" onClick={
                     function () {
-                         if (!animal.name) {
-                              setError('name');
-                              return;
-                         }
-                         if (!animal.species) {
-                               setError('species');
-                               return;
-                          }
-                         if (!animal.implant_chip_id) {
-                               setError('implant_chip_id');
-                               return;
-                         }
-                         if (!animal.primary_color) {
-                               setError('primary_color');
-                               return;
-                         }
-                         if (!animal.gender) {
-                               setError('gender');
-                               return;
-                         }
+                        if (!animal.name) {
+                            setError('name');
+                            return;
+                        }
+                        if (!animal.species) {
+                            setError('species');
+                            return;
+                        }
+                        if (!animal.implant_chip_id) {
+                            setError('implant_chip_id');
+                            return;
+                        }
+                        if (!animal.primary_color) {
+                            setError('primary_color');
+                            return;
+                        }
+                        if (!animal.gender) {
+                            setError('gender');
+                            return;
+                        }
 
                         addAnimal(
                             {
@@ -153,11 +170,11 @@ function AddAnimal() {
                                     birth_date: animal.birth_date,
                                     pattern: animal.pattern
                                 }
-                            }).catch( (error1) => { showError( {error: error1})});
+                            }).catch((error1) => { showError({ error: error1 }) });
 
                         clearFields();
                     }} className="round-button-with-border">
-                      Add
+                    Add
                 </button>
             </td>
         </tr>
