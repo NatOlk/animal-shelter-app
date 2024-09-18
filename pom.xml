@@ -11,7 +11,7 @@
 
     <modules>
         <module>animals-shelter-service</module>
-        <module>notification-service</module>
+        <module>animals-shelter-notification-service</module>
     </modules>
 
     <properties>
