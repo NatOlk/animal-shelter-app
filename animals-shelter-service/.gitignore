@@ -33,3 +33,8 @@ build/
 .vscode/
 /node_modules/
 /data/
+/.mvn/
+/.mvn/wrapper/
+/.mvn/wrapper/maven-wrapper.jar
+/.mvn/wrapper/maven-wrapper.properties
+/.mvn/
