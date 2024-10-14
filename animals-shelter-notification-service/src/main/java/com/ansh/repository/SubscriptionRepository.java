@@ -1,6 +1,6 @@
-package com.example.ansh.repository;
+package com.ansh.repository;
 
-import com.example.ansh.repository.data.Subscription;
+import com.ansh.repository.data.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;

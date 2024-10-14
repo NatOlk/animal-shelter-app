@@ -1,7 +1,7 @@
-package com.example.ansh.notifications;
+package com.ansh.notifications;
 
-import com.example.ansh.service.EmailService;
-import com.example.ansh.service.TopicSubscriberRegistry;
+import com.ansh.service.EmailService;
+import com.ansh.service.TopicSubscriberRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
