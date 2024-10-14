@@ -1,0 +1,30 @@
+body {
+    background-color: #c2c0a7;
+    font-family: 'Tahoma', sans-serif;
+    font-size: 12px;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+ main {
+    flex: 1 0 auto;
+  }
+
+table {
+    background: #efeacd;
+    width: 100%;
+}
+
+.long {
+    width: 100%;
+}
+
+.headbackgroud {
+     background-image: url('img/grass.jpg');
+     background-size: cover;
+     background-position: center;
+     height: 100px !important;
+     line-height: 100px !important;
+     width: 100% !important;
+ }
