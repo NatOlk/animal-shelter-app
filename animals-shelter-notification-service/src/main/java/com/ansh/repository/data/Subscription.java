@@ -1,4 +1,4 @@
-package com.example.ansh.repository.data;
+package com.ansh.repository.data;
 
 
 import jakarta.persistence.*;

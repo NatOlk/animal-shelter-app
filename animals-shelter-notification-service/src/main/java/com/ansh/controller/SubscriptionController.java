@@ -1,7 +1,7 @@
-package com.example.ansh.controller;
+package com.ansh.controller;
 
-import com.example.ansh.service.SubscriptionService;
-import com.example.ansh.service.TopicSubscriberRegistry;
+import com.ansh.service.SubscriptionService;
+import com.ansh.service.TopicSubscriberRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

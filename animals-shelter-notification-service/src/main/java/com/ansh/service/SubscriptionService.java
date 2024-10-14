@@ -1,4 +1,4 @@
-package com.example.ansh.service;
+package com.ansh.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.example.ansh.notifications.SubscriptionMessages.SUBSCRIPTION_SUBJECT;
+import static com.ansh.notifications.SubscriptionMessages.SUBSCRIPTION_SUBJECT;
 
 @Service
 public class SubscriptionService {

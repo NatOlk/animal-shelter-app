@@ -1,8 +1,8 @@
-package com.example.ansh.service;
+package com.ansh.service;
 
 
-import com.example.ansh.repository.SubscriptionRepository;
-import com.example.ansh.repository.data.Subscription;
+import com.ansh.repository.SubscriptionRepository;
+import com.ansh.repository.data.Subscription;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
