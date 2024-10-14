@@ -1,4 +1,4 @@
-package com.example.ansh.service;
+package com.ansh.service;
 
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;

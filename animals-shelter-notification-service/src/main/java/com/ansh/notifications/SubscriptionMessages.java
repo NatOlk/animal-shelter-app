@@ -1,4 +1,4 @@
-package com.example.ansh.notifications;
+package com.ansh.notifications;
 
 public interface SubscriptionMessages {
     String ADD_ANIMAL_MSG = "Animal %s (%s) has been added";
