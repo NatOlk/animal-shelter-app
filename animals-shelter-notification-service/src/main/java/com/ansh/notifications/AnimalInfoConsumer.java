@@ -1,5 +1,10 @@
 package com.ansh.notifications;
 
+import static com.ansh.notifications.SubscriptionMessages.ADD_ANIMAL_EVENT;
+import static com.ansh.notifications.SubscriptionMessages.ADD_VACCINE_EVENT;
+import static com.ansh.notifications.SubscriptionMessages.REMOVE_ANIMAL_EVENT;
+import static com.ansh.notifications.SubscriptionMessages.REMOVE_VACCINE_EVENT;
+
 import com.ansh.service.EmailService;
 import com.ansh.service.TopicSubscriberRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +32,9 @@ public class AnimalInfoConsumer {
     @Value("${animalGroupTopicId}")
     private String animalGroupTopicId;
 
+    @Value("${animalShelterNotificationApp}")
+    private String animalShelterNotificationApp;
+
     @KafkaListener(topics = "animalGroupId", groupId = "animalGroupId")
     public void listen(ConsumerRecord<String, String> record) throws IOException {
 
@@ -39,21 +47,21 @@ public class AnimalInfoConsumer {
         String templateName;
 
         switch (eventType) {
-            case "addAnimal":
+            case ADD_ANIMAL_EVENT:
                 subject = "New Animal Added";
                 templateName = "addAnimalTemplate";
                 break;
-            case "removeAnimal":
+            case REMOVE_ANIMAL_EVENT:
                 subject = "Animal Removed";
                 templateName = "removeAnimalTemplate";
                 break;
-            case "updateAnimal":
-                subject = "Update Animal";
-                templateName = "updateAnimalTemplate";
-                break;
-            case "addVaccine":
+            case ADD_VACCINE_EVENT:
                 subject = "New Vaccine Added";
                 templateName = "addVaccineTemplate";
+                break;
+            case REMOVE_VACCINE_EVENT:
+                subject = "Vaccine Removed";
+                templateName = "removeVaccineTemplate";
                 break;
             default:
                 LOG.warn("Unknown event type: {}", eventType);
@@ -62,8 +70,7 @@ public class AnimalInfoConsumer {
         topicSubscriberRegistry.getSubscribers("animalGroupId")
                 .forEach(email -> {
                     params.put("name", email);
-                    //TODO update it
-                    params.put("unsubscribeLink", "http://localhost:8081/unsubscribe/" + email);
+                    params.put("unsubscribeLink", animalShelterNotificationApp + email);
                     emailService.sendSimpleMessage(email, subject, templateName, params);
                 });
     }

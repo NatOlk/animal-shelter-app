@@ -36,6 +36,7 @@ public class NotificationService {
         Map<String, Object> params = new HashMap<>();
 
         addAnimalInformation(animal, params);
+
         params.put("reason", reason);
         params.put("dateRemoved", new Date());
 
