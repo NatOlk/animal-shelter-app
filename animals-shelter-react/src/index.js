@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createRoot } from "react-dom/client";
-import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
 import 'materialize-css/dist/css/materialize.min.css';
 import 'materialize-css/dist/js/materialize.min.js';
 
@@ -44,13 +45,31 @@ const getCookie = (name) => {
   return null;
 };
 
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) => {
+      console.error(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      );
+
+      if (message === 'Unauthorized') {
+        window.location.href = '/login';
+      }
+    });
+  }
+
+  if (networkError) {
+    console.error(`[Network error]: ${networkError}`);
+  }
+});
+
 const httpLink = new HttpLink({
   uri: `${apiUrl}/graphql`,
   credentials: 'include',
 });
 
 const client = new ApolloClient({
-  link: httpLink,
+  link: ApolloLink.from([errorLink, httpLink]),
   cache: new InMemoryCache(),
 });
 

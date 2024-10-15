@@ -26,8 +26,8 @@ function AllVaccinationsList() {
     const perPage = 10;
     const [currentPage, setCurrentPage] = useState(0);
 
-    const { loading, error, data } = useQuery(ALL_VACCINATIONS_QUERY, {
-        fetchPolicy: "network-only",
+    const { loading, error, data, refetch } = useQuery(ALL_VACCINATIONS_QUERY, {
+        fetchPolicy: "network-only"
     });
 
     if (loading) {
@@ -38,22 +38,21 @@ function AllVaccinationsList() {
         return <p>Error: {error.message}</p>;
     }
 
-
     const pageCount = Math.ceil(data.allVaccinations.length / perPage);
     const vaccinationsList = data.allVaccinations
         .slice(currentPage * perPage, (currentPage + 1) * perPage)
         .map(vaccination => (
             <tr key={vaccination.id}>
+                <td>{vaccination.id}</td>
                 <td>{vaccination.animal.name}</td>
                 <td>{vaccination.animal.species}</td>
-                <td>{vaccination.id}</td>
                 <td>{vaccination.vaccine}</td>
                 <td>{vaccination.batch}</td>
                 <td>{vaccination.vaccinationTime}</td>
                 <td>{vaccination.comments}</td>
                 <td>{vaccination.email}</td>
                 <td>
-                    <DeleteVaccination id={vaccination.id}/>
+                    <DeleteVaccination id={vaccination.id} onDeleted={refetch}/>
                 </td>
             </tr>
         ));
