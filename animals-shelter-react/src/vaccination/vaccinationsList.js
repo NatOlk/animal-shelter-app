@@ -1,6 +1,5 @@
 import React, { useState }  from 'react';
 import {Container, Table} from 'reactstrap';
-
 import {gql} from 'graphql-tag';
 import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
@@ -8,7 +7,6 @@ import AddVaccination from "./addVaccination";
 import UpdateVaccination from "./updateVaccination";
 import { useLocation, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-
 
 const VACCINATIONS_QUERY = gql`
     query vaccinationByAnimalId($animalId: ID!) {

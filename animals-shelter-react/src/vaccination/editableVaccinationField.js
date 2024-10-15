@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { gql } from 'graphql-tag';
-import { VACCINATIONS_QUERY } from '../graphqlQueries.js';
+import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 
 const UPDATE_VACCINATION = gql`
     mutation UpdateVaccination($id: ID!,
