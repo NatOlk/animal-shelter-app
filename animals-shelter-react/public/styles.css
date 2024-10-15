@@ -1,5 +1,5 @@
 body {
-    background-color: #c2c0a7;
+    background-color: #EFEACD;
     font-family: 'Tahoma', sans-serif;
     font-size: 12px;
     display: flex;
@@ -12,8 +12,9 @@ body {
   }
 
 table {
-    background: #efeacd;
+    background: #F6F2D1;
     width: 100%;
+    font-size: 12px !important;
 }
 
 .long {
