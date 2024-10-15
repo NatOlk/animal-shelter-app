@@ -3,8 +3,8 @@ import { gql } from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import axios from 'axios';
 import showError from "./showError";
-import useConfig from '../useConfig';
-import { VACCINATIONS_QUERY } from '../graphqlQueries.js';
+import useConfig from '../common/useConfig';
+import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 
 const ADD_VACCINATION = gql`
     mutation (

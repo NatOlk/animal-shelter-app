@@ -1,7 +1,6 @@
 import React from 'react';
 import {createRoot} from "react-dom/client";
 
-
 function ShowErrors({error}) {
     const errorDiv = createRoot(document.getElementById("error"));
 

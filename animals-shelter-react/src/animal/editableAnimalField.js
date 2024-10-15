@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { gql } from 'graphql-tag';
 import DeleteAnimal from './deleteAnimal';
-import { ANIMALS_QUERY } from '../graphqlQueries.js';
+import { ANIMALS_QUERY } from '../common/graphqlQueries.js';
 
 const UPDATE_ANIMAL = gql`
     mutation UpdateAnimal($id: ID!,

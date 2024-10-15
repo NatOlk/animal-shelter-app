@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { gql } from "graphql-tag";
 import { useMutation } from "@apollo/client";
-import { ANIMALS_QUERY } from '../graphqlQueries.js';
+import { ANIMALS_QUERY } from '../common/graphqlQueries.js';
 import M from 'materialize-css';
 
 const DELETE_ANIMAL = gql`
