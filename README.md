@@ -2,8 +2,6 @@ Animal Shelter
 
 ## Description
 
-## Description
-
 Animal Shelter App is a comprehensive solution for managing animals in a shelter. With this application, users can:
 
 - **Add New Animals:** Easily register new animals with details such as name, species, color, breed, and more.
@@ -15,72 +13,72 @@ The application is designed to streamline the management of shelter animals and 
 
 ## Installation
 
-1. **Clone the repository:**
+## Deployment Instructions
 
-   ```bash
-   git clone https://github.com/NatOlk/animal-shelter-app.git
+To deploy the application using the provided docker-compose.yml file, follow these steps:
 
-    Navigate to the project directory:
+    Pre-requisites
+        Ensure Docker and Docker Compose are installed on your system.
+            To check if Docker is installed, run: docker --version and docker-compose --version.
+            If Docker is not installed, download and install it from the official Docker website.
 
-    bash
-
-    cd path/to/your/project
-
-Running the Project
-
-    Make sure you have Docker and Docker Compose installed.
-        Docker
-        Docker Compose
-
-    Start the project using Docker Compose:
-
-    In the project directory, run:
+##    Clone the project repository
 
     bash
 
-docker-compose up
+git clone <repository-url>
+cd <repository-name>
 
-This command will create and start the containers specified in the docker-compose.yml file.
+##    Check the project structure
 
-Stop and remove the containers:
+    Ensure that the folders animals-shelter-service, animals-shelter-notification-service, and animals-shelter-react are in the root directory and contain a Dockerfile for each service.
 
-When you are done, you can stop and remove the containers with:
+##    Configure environment variables
+
+    Make sure there is an .env file in the animals-shelter-react folder for configuring the React app.
+    If the .env file is missing, create it and add the necessary configurations.
+
+##     Start the application using Docker Compose
+
+    In the root directory of the project, run:
 
 bash
 
-    docker-compose down
+docker-compose up --build
 
-Accessing the Application
+This command will build and start all the services defined in the docker-compose.yml.
 
-Once the project is running, your application will be accessible at http://localhost
-. Replace port with the appropriate port number specified in the docker-compose.yml.
-Usage
+Verify that the services are running
 
-Describe how to use the project after it is running, if necessary. Include any commands that can be used or actions that need to be performed.
-Examples
+    The application should be accessible at the following URLs:
+        Animal Shelter Service: http://localhost:8080
+        Notification Service: http://localhost:8081
+        React App: http://localhost:3000
 
-If your project has usage examples or requests, add them here.
-License
+##   Manage the containers
 
-Specify the type of license under which the project is distributed, if applicable.
+    To check the status of the running containers:
 
-markdown
+    bash
 
+docker-compose ps
 
-### **Explanations for Sections**
+##  To stop all the services:
 
-1. **Description:** Provide a brief summary of what the project does and why it is useful.
+bash
 
-2. **Installation:** Explain how to clone the repository and navigate to the project directory.
+docker-compose down
 
-3. **Running the Project:** Provide instructions for running the project using Docker Compose. Include details on installing Docker and Docker Compose, and the commands for starting and stopping containers.
+##  To restart specific services:
 
-4. **Accessing the Application:** Describe where and how users can access the application once it is running.
+bash
 
-5. **Usage:** Include instructions on how to use the application, if necessary.
+        docker-compose restart <service_name>
 
-6. **Examples:** Add any relevant usage examples or requests.
+##  Important Notes:
 
-7. **License:** Mention the license under which the project is distributed, if applicable.
+    Zookeeper and Kafka: Used for handling notifications via message queues.
+    PostgreSQL Databases: Two separate databases are set up for the main service and the notification service.
+    Email Configuration (Spring Mail): Make sure that the correct email server credentials are provided.
 
-This template will help users understand how to set up and run your project effectively. If you h
+Following these steps will allow you to deploy and run the application successfully.
