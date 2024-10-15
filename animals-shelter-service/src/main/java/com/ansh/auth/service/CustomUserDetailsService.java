@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
   @Autowired
-  private UserService userService; // Ваш сервис для работы с пользователями
+  private UserService userService;
 
   @Override
   public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
