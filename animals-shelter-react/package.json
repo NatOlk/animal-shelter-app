@@ -1,7 +1,7 @@
 {
   "name": "ansh",
   "version": "0.1.0",
-  "description": "Animal Shelter",
+  "description": "Animal Shelter React app",
   "keywords": [
     "rest",
     "hateoas",
@@ -30,7 +30,6 @@
   "proxy": "http://localhost:8080",
   "scripts": {
     "start": "webpack serve --config webpack.config.js",
-    "generate": "graphql-codegen --config ../codegen.yml",
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --watch --config webpack.config.js"
   },
