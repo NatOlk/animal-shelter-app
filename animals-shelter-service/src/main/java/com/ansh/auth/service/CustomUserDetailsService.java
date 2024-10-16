@@ -1,7 +1,7 @@
 package com.ansh.auth.service;
 
 
-import com.ansh.auth.entity.User;
+import com.ansh.auth.entity.UserProfile;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
-    Optional<User> user = userService.findByIdentifier(identifier);
+    Optional<UserProfile> user = userService.findByIdentifier(identifier);
     if (user.isPresent()) {
       return new org.springframework.security.core.userdetails.User(
           user.get().getName(),

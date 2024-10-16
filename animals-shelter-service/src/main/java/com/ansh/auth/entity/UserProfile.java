@@ -1,18 +1,15 @@
 package com.ansh.auth.entity;
 
-import java.util.Collection;
 import lombok.Data;
 
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name = "users", schema = "public")
+@Table(name = "userprofiles", schema = "public")
 @Data
-public class User {
+public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,11 +28,21 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    public User() {}
+    public UserProfile() {}
 
     public void addRole(Role role) {
         this.roles.add(role);
         role.getUsers().add(this);
+    }
+
+    @Override
+    public String toString() {
+        return "UserProfile{" +
+            "id=" + id +
+            ", email='" + email + '\'' +
+            ", name='" + name + '\'' +
+            ", roles=" + roles +
+            '}';
     }
 }
 
