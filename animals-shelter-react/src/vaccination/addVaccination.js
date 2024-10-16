@@ -1,37 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { gql } from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import axios from 'axios';
 import showError from "./showError";
 import useConfig from '../common/useConfig';
-import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
-
-const ADD_VACCINATION = gql`
-    mutation (
-        $animalId: ID!,
-        $vaccine: String!,
-        $batch: String!,
-        $vaccinationTime: String!,
-        $comments: String,
-        $email: String!)
-    {
-        addVaccination(
-            animalId: $animalId,
-            vaccine:  $vaccine,
-            batch: $batch,
-            vaccinationTime: $vaccinationTime,
-            comments: $comments,
-            email:  $email)
-        {
-            id
-            vaccine
-            batch
-            vaccinationTime
-            comments
-            email
-        }
-    }
-`;
+import { VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries.js';
 
 function AddVaccination({ animalId }) {
     const [vaccines, setVaccines] = useState([]);
