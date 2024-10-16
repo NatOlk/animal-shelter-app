@@ -1,43 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { gql } from 'graphql-tag';
 import { useMutation } from '@apollo/client';
 import showError from './showError';
 import useConfig from '../common/useConfig';
 import M from 'materialize-css';
-import { ANIMALS_QUERY } from '../common/graphqlQueries.js';
-
-const ADD_ANIMAL = gql`
-    mutation ($name: String!,
-        $species: String!,
-        $primaryColor: String!,
-        $breed: String,
-        $implantChipId: String,
-        $gender: String!,
-        $birthDate: String,
-        $pattern: String)
-    {
-        addAnimal(name: $name,
-            species: $species,
-            primaryColor:  $primaryColor,
-            breed: $breed,
-            implantChipId: $implantChipId,
-            gender: $gender,
-            birthDate: $birthDate,
-            pattern: $pattern)
-        {
-            id
-            name
-            species
-            primaryColor
-            breed
-            implantChipId
-            gender
-            birthDate
-            pattern
-        }
-    }
-`;
+import { ANIMALS_QUERY, ADD_ANIMAL } from '../common/graphqlQueries.js';
 
 function AddAnimal() {
     const initialValues = {

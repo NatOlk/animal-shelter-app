@@ -1,30 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { gql } from 'graphql-tag';
-import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
-
-const UPDATE_VACCINATION = gql`
-    mutation UpdateVaccination($id: ID!,
-                              $vaccine: String,
-                              $batch: String,
-                              $vaccinationTime: String,
-                              $comments: String,
-                              $email: String) {
-        updateVaccination(id: $id,
-                           vaccine: $vaccine,
-                           batch: $batch,
-                           vaccinationTime: $vaccinationTime,
-                           comments: $comments,
-                           email: $email) {
-            id
-            vaccine
-            batch
-            vaccinationTime
-            comments
-            email
-        }
-    }
-`;
+import { VACCINATIONS_QUERY, UPDATE_VACCINATION } from '../common/graphqlQueries.js';
 
 const EditableVaccineField = ({ vaccination, value, name, values }) => {
   const [isEditing, setIsEditing] = useState(false);

@@ -3,24 +3,7 @@ import { Container, Table } from 'reactstrap';
 import { gql } from 'graphql-tag';
 import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
-
-const ALL_VACCINATIONS_QUERY = gql`
-    {
-        allVaccinations {
-            id
-            vaccine
-            batch
-            vaccinationTime
-            comments
-            email
-            animal {
-                id
-                name
-                species
-            }
-        }
-    }
-`;
+import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 
 function AllVaccinationsList() {
     const perPage = 10;
