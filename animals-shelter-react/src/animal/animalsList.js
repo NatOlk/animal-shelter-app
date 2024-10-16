@@ -1,27 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Table } from 'reactstrap';
-import { gql } from 'graphql-tag';
 import { useQuery } from "@apollo/client";
 import DeleteAnimal from "./deleteAnimal";
 import AddAnimal from "./addAnimal";
 import UpdateAnimal from "./updateAnimal";
-
-const ANIMALS_QUERY = gql`
-    {
-        allAnimals {
-            id
-            name
-            species
-            primaryColor
-            breed
-            implantChipId
-            gender
-            birthDate
-            pattern
-            vaccinationCount
-        }
-    }
-`;
+import { ANIMALS_QUERY } from '../common/graphqlQueries.js';
 
 function AnimalsList() {
     const perPage = 10;
