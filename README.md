@@ -27,7 +27,7 @@ To deploy the application using the provided docker-compose.yml file, follow the
     bash
 
   ```git clone <repository-url>
-     cd <repository-name>
+     cd <repository-name>```
 
 ##    Check the project structure
 
@@ -44,7 +44,7 @@ To deploy the application using the provided docker-compose.yml file, follow the
 
      bash
 
-  ```docker-compose up --build
+  ```docker-compose up --build```
 
 This command will build and start all the services defined in the docker-compose.yml.
 
@@ -61,19 +61,19 @@ Verify that the services are running
 
     bash
 
-docker-compose ps
+```docker-compose ps```
 
 ##  To stop all the services:
 
 bash
 
-docker-compose down
+```docker-compose down```
 
 ##  To restart specific services:
 
 bash
 
-        docker-compose restart <service_name>
+        ```docker-compose restart <service_name>```
 
 ##  Important Notes:
 
