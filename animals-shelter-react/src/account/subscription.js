@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-const Subscription = () => {
-    const [email, setEmail] = useState('');
+const Subscription = ({ email: initialEmail }) => {
+    const [email, setEmail] = useState(initialEmail || '');
     const [subscribers, setSubscribers] = useState([]);
     const [notificationAppUrl, setNotificationAppUrl] = useState('');
 
@@ -86,6 +86,10 @@ const Subscription = () => {
             loadSubscribers();
         }
     }, [notificationAppUrl]);
+
+    useEffect(() => {
+        setEmail(initialEmail);
+    }, [initialEmail]);
 
     return (
         <>
