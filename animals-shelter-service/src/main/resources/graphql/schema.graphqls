@@ -45,5 +45,5 @@ type Mutation {
     updateAnimal(id: ID!, primaryColor: String, breed: String, gender: String, birthDate: String, pattern: String) : Animal
     addVaccination(animalId: ID!, vaccine: String!, batch: String!, vaccinationTime: String!, comments: String, email: String!) : Vaccination
     deleteVaccination(id: ID!) : Vaccination
-    updateVaccination(id: ID!, vaccine: String, batch: String, vaccination_time: String, comments: String, email: String) : Vaccination
+    updateVaccination(id: ID!, vaccine: String, batch: String, vaccinationTime: String, comments: String, email: String) : Vaccination
 }
