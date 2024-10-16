@@ -1,33 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { gql } from 'graphql-tag';
 import DeleteAnimal from './deleteAnimal';
-import { ANIMALS_QUERY } from '../common/graphqlQueries.js';
-
-const UPDATE_ANIMAL = gql`
-    mutation UpdateAnimal($id: ID!,
-                          $primaryColor: String,
-                          $breed: String,
-                          $gender: String,
-                          $birthDate: String,
-                          $pattern: String) {
-        updateAnimal(id: $id,
-                     primaryColor: $primaryColor,
-                     breed: $breed,
-                     gender: $gender,
-                     birthDate: $birthDate,
-                     pattern: $pattern) {
-                          id
-                          name
-                          species
-                          primaryColor
-                          breed
-                          gender
-                          birthDate
-                          pattern
-        }
-    }
-`;
+import { ANIMALS_QUERY, UPDATE_ANIMAL} from '../common/graphqlQueries.js';
 
 const EditableAnimalField = ({ animal, value, name, values }) => {
   const [isEditing, setIsEditing] = useState(false);

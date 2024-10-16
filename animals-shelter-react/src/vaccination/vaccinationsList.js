@@ -1,25 +1,13 @@
 import React, { useState }  from 'react';
 import {Container, Table} from 'reactstrap';
-import {gql} from 'graphql-tag';
 import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
 import AddVaccination from "./addVaccination";
 import UpdateVaccination from "./updateVaccination";
 import { useLocation, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 
-const VACCINATIONS_QUERY = gql`
-    query vaccinationByAnimalId($animalId: ID!) {
-        vaccinationByAnimalId(animalId: $animalId) {
-            id
-            vaccine
-            batch
-            vaccinationTime
-            comments
-            email
-        }
-    }
-`;
 function VaccinationsList() {
 
     const perPage = 10;
@@ -27,7 +15,6 @@ function VaccinationsList() {
 
     const location = useLocation();
     const { animalId, name, species } = location.state;
-
 
     if (!animalId) {
         return (<div>
