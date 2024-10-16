@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
+import Subscription from './subscription';
 
 const GET_CURRENT_USER = gql`
   query {
@@ -28,6 +29,7 @@ const UserProfile = () => {
           <h2>User Details</h2>
           <p><strong>Name:</strong> {currentUser.name}</p>
           <p><strong>Email:</strong> {currentUser.email}</p>
+          <p><Subscription email={currentUser.email} /></p>
           <h3>Roles</h3>
           <ul>
             {currentUser.roles && currentUser.roles.length > 0 ? (

@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from './authContext';
+import { useAuth } from './common/authContext';
 import { Link } from "react-router-dom";
 import Logout from './logout';
 

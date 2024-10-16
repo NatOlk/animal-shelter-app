@@ -3,7 +3,7 @@ import axios from 'axios';
 import { gql } from 'graphql-tag';
 import { useMutation } from '@apollo/client';
 import showError from './showError';
-import useConfig from '../useConfig';
+import useConfig from '../common/useConfig';
 import M from 'materialize-css';
 import { ANIMALS_QUERY } from '../common/graphqlQueries.js';
 
