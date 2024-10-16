@@ -1,4 +1,4 @@
-Animal Shelter
+### Animal Shelter
 
 ## Description
 
@@ -26,8 +26,8 @@ To deploy the application using the provided docker-compose.yml file, follow the
 
     bash
 
-git clone <repository-url>
-cd <repository-name>
+  ```git clone <repository-url>
+     cd <repository-name>
 
 ##    Check the project structure
 
@@ -42,9 +42,9 @@ cd <repository-name>
 
     In the root directory of the project, run:
 
-bash
+     bash
 
-docker-compose up --build
+  ```docker-compose up --build
 
 This command will build and start all the services defined in the docker-compose.yml.
 
