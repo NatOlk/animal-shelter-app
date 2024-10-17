@@ -1,17 +1,7 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import Subscription from './subscription';
-
-const GET_CURRENT_USER = gql`
-  query {
-    currentUser {
-      id
-      name
-      email
-      roles
-    }
-  }
-`;
+import { GET_CURRENT_USER } from '../common/graphqlQueries.js';
 
 const UserProfile = () => {
   const { loading, error, data } = useQuery(GET_CURRENT_USER);
