@@ -4,7 +4,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import axios from 'axios';
 import DeleteAnimal from './deleteAnimal';
 import EditableAnimalField from './editableAnimalField';
-import useConfig from '../common/useConfig';
+import { useConfig } from '../common/configContext';
 
 const UpdateAnimal = ({ animal }) => {
   const [genders, setGenders] = useState([]);
@@ -26,7 +26,7 @@ const UpdateAnimal = ({ animal }) => {
         animal={animal}
         value={animal.primaryColor}
         name="primaryColor"
-        values={config.colors}/>
+        values={config.config.colors}/>
       <EditableAnimalField
         animal={animal}
         value={animal.breed}

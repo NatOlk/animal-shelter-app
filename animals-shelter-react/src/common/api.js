@@ -4,14 +4,18 @@ const handleUnauthorized = () => {
     window.location.href = '/login';
 };
 
-export const apiFetch = async (url) => {
+export const apiFetch = async (url, options = {}) => {
+    const { method = 'GET', body, headers = {} } = options;
+
     try {
         const response = await fetch(`${apiUrl}${url}`, {
-            method: 'GET',
+            method,
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
+                ...headers,
             },
+            body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
         });
 
         if (response.status === 403) {

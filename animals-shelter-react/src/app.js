@@ -5,6 +5,7 @@ import VaccinationsList from "./vaccination/vaccinationsList";
 import SideBarContent from './sideBarContent';
 import AllVaccinationsList from "./vaccination/allVaccinationsList";
 import UserProfile from './account/userProfile';
+import { ConfigProvider } from './common/configContext';
 import Login from "./login";
 import Logout from "./logout";
 import ProtectedRoute from "./common/protectedRoute";
@@ -35,6 +36,11 @@ const AppContent = () => {
           )}
         </div>
       </nav>
+
+<div className="valign-wrapper">
+  <h1> </h1>
+</div>
+
       <div className="row">
         <div className="col s2">
           <SideBarContent />
@@ -83,9 +89,11 @@ const App = () => {
   }, []);
 
   return (
-    <AuthProvider>
+  <AuthProvider>
       <Router>
+       <ConfigProvider>
         <AppContent />
+         </ConfigProvider>
       </Router>
     </AuthProvider>
   );

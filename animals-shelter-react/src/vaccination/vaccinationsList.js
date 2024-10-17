@@ -23,9 +23,10 @@ function VaccinationsList() {
             </div>);
     }
 
-    const {loading, error, data} = useQuery(VACCINATIONS_QUERY, {
-                                       variables: { animalId: animalId},
-                                   });
+   const { loading, error, data } = useQuery(VACCINATIONS_QUERY, {
+      variables: { animalId: animalId },
+      fetchPolicy: 'network-only',
+    });
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error :(</p>;

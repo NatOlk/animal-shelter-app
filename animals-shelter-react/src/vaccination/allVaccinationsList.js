@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Container, Table } from 'reactstrap';
-import { gql } from 'graphql-tag';
 import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
 import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
@@ -9,9 +8,7 @@ function AllVaccinationsList() {
     const perPage = 10;
     const [currentPage, setCurrentPage] = useState(0);
 
-    const { loading, error, data, refetch } = useQuery(ALL_VACCINATIONS_QUERY, {
-        fetchPolicy: "network-only"
-    });
+    const { loading, error, data } = useQuery(ALL_VACCINATIONS_QUERY);
 
     if (loading) {
         return <p>Loading...</p>;
@@ -35,7 +32,7 @@ function AllVaccinationsList() {
                 <td>{vaccination.comments}</td>
                 <td>{vaccination.email}</td>
                 <td>
-                    <DeleteVaccination id={vaccination.id} onDeleted={refetch}/>
+                    <DeleteVaccination id={vaccination.id}/>
                 </td>
             </tr>
         ));
