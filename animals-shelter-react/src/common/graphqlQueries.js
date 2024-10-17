@@ -12,6 +12,7 @@ export const ANIMALS_QUERY = gql`
             gender
             birthDate
             pattern
+            vaccinationCount
         }}
 `;
 
