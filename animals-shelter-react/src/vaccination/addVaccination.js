@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMutation } from "@apollo/client";
 import axios from 'axios';
 import showError from "./showError";
-import useConfig from '../common/useConfig';
+import { useConfig } from '../common/configContext';
 import { VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries.js';
 
 function AddVaccination({ animalId }) {
@@ -53,7 +53,7 @@ function AddVaccination({ animalId }) {
                 value={vaccination.vaccine}
                 className="browser-default"
                 onChange={handleInputChange}>
-                    {config.vaccines.map(vaccine => (
+                    {config.config.vaccines.map(vaccine => (
                         <option key={vaccine} value={vaccine}>{vaccine}</option>
                     ))}
                 </select>

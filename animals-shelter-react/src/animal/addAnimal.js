@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useMutation } from '@apollo/client';
 import showError from './showError';
-import useConfig from '../common/useConfig';
+import { useConfig } from '../common/configContext';
 import M from 'materialize-css';
 import { ANIMALS_QUERY, ADD_ANIMAL } from '../common/graphqlQueries.js';
 
@@ -27,21 +27,9 @@ function AddAnimal() {
                 });
     }, []);
 
-    const [animal, setAnimal] = useState(initialValues);
-    const [validationError, setError] = useState(null);
-    const [addAnimal] = useMutation(ADD_ANIMAL, {
-        update(cache, { data: { addAnimal } }) {
-            try {
-                const { allAnimals } = cache.readQuery({ query: ANIMALS_QUERY });
-                cache.writeQuery({
-                    query: ANIMALS_QUERY,
-                    data: { allAnimals: [...allAnimals, addAnimal] },
-                });
-            } catch (error) {
-                console.error("Error updating cache:", error);
-            }
-        }
-    });
+   const [animal, setAnimal] = useState(initialValues);
+   const [validationError, setError] = useState(null);
+   const [addAnimal] = useMutation(ADD_ANIMAL);
 
    const config = useConfig();
    if (!config) {
@@ -77,7 +65,7 @@ function AddAnimal() {
                     onChange={handleInputChange}
                     className="browser-default"
                     placeholder={validationError === 'species' ? 'Species is mandatory' : ''}>
-                    {config.animals.map(animal => (
+                    {config.config.animals.map(animal => (
                         <option key={animal} value={animal}>{animal}</option>
                     ))}
                 </select>
@@ -89,7 +77,7 @@ function AddAnimal() {
                     onChange={handleInputChange}
                     className="browser-default"
                     placeholder={validationError === 'primaryColor' ? 'Primary color is mandatory' : ''}>
-                    {config.colors.map(color => (
+                    {config.config.colors.map(color => (
                         <option key={color} value={color}>{color}</option>
                     ))}
                 </select>
@@ -106,7 +94,7 @@ function AddAnimal() {
                     onChange={handleInputChange}
                     className="browser-default"
                     placeholder={validationError === 'gender' ? 'Gender is mandatory' : ''}>
-                    {config.genders.map(gender => (
+                    {config.config.genders.map(gender => (
                         <option key={gender} value={gender}>{gender}</option>
                     ))}
                 </select>

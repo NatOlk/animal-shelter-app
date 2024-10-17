@@ -1,6 +1,5 @@
 import React from "react";
-import {gql} from "graphql-tag";
-import {useMutation} from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, DELETE_VACCINATION } from '../common/graphqlQueries.js';
 
 function DeleteVaccination ({id})
