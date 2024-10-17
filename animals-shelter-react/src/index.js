@@ -51,7 +51,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       console.error(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       );
-
+      console.info(`!1error` + message);
       if (message === 'Unauthorized') {
         window.location.href = '/login';
       }
@@ -60,6 +60,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
   if (networkError) {
     console.error(`[Network error]: ${networkError}`);
+    window.location.href = '/login';
   }
 });
 
