@@ -67,7 +67,6 @@ const Login = () => {
                     className="validate"
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    autoComplete="no-password"
                 />
             </div>
              <div className="col s12 m8 l6 offset-m2 offset-l3">

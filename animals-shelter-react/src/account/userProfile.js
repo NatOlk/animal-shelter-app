@@ -1,6 +1,6 @@
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
 import Subscription from './subscription';
+import { useQuery } from "@apollo/client";
 import { GET_CURRENT_USER } from '../common/graphqlQueries.js';
 
 const UserProfile = () => {
@@ -13,22 +13,25 @@ const UserProfile = () => {
 
   return (
     <div className="user-profile">
-      <h4>User Profile</h4>
       {currentUser && (
-        <div>
-          <h2>User Details</h2>
-          <p><strong>Name:</strong> {currentUser.name}</p>
-          <p><strong>Email:</strong> {currentUser.email}</p>
-          <p><Subscription email={currentUser.email} /></p>
-          <h3>Roles</h3>
-          <ul>
-            {currentUser.roles && currentUser.roles.length > 0 ? (
-              currentUser.roles.map((role, index) => (
-                <li key={index}>{role}</li>
-              ))
-            ) : (
-              <li>No roles assigned</li>
-            )}
+        <div class="row">
+          <ul class="collection with-header">
+            <li class="collection-header">User Profile</li>
+            <li class="collection-item">Name: {currentUser.name}</li>
+            <li class="collection-item">Email: {currentUser.email}</li>
+            <li class="collection-item"><Subscription email={currentUser.email} /></li>
+            <li class="collection-header">Roles</li>
+            <li class="collection-item">
+              <ul class="collection">
+                {currentUser.roles && currentUser.roles.length > 0 ? (
+                  currentUser.roles.map((role, index) => (
+                    <li class="collection-item" key={role}>{role}</li>
+                  ))
+                ) : (
+                  <li>No roles assigned</li>
+                )}
+              </ul>
+            </li>
           </ul>
         </div>
       )}

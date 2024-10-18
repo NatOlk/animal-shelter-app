@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useMutation } from '@apollo/client';
-import axios from 'axios';
+import React from 'react';
 import DeleteVaccination from './deleteVaccination';
 import EditableVaccinationField from './editableVaccinationField';
 import { useConfig } from '../common/configContext';
 
 const UpdateVaccination = ({ vaccination }) => {
-  const [vaccines, setVaccines] = useState([]);
 
   const config = useConfig();
   if (!config) {
@@ -23,22 +20,22 @@ const UpdateVaccination = ({ vaccination }) => {
         vaccination={vaccination}
         value={vaccination.vaccine}
         name="vaccine"
-        values={config.config.vaccines}/>
+        values={config.config.vaccines} />
       <td>{vaccination.batch}</td>
       <EditableVaccinationField
         vaccination={vaccination}
         value={vaccination.vaccinationTime}
-        name="vaccinationTime"/>
+        name="vaccinationTime" />
       <EditableVaccinationField
         vaccination={vaccination}
         value={vaccination.comments}
-        name="comments"/>
+        name="comments" />
       <EditableVaccinationField
         vaccination={vaccination}
         value={vaccination.email}
-        name="email"/>
+        name="email" />
       <td>
-        <DeleteVaccination id={vaccination.id}/>
+        <DeleteVaccination id={vaccination.id} />
       </td>
     </tr>
   );

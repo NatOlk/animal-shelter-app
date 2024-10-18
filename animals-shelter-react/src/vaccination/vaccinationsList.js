@@ -1,10 +1,9 @@
-import React, { useState }  from 'react';
-import {Container, Table} from 'reactstrap';
+import React, { useState } from 'react';
+import { Container, Table } from 'reactstrap';
 import { useQuery } from "@apollo/client";
-import DeleteVaccination from "./deleteVaccination";
 import AddVaccination from "./addVaccination";
 import UpdateVaccination from "./updateVaccination";
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 
@@ -20,12 +19,12 @@ function VaccinationsList() {
         return (<div>
             <Link to="/">Back to Animals</Link>
             <p>Error: No animalId provided!</p>;
-            </div>);
+        </div>);
     }
 
-   const { loading, error, data } = useQuery(VACCINATIONS_QUERY, {
-      variables: { animalId: animalId },
-      fetchPolicy: 'network-only',
+    const { loading, error, data } = useQuery(VACCINATIONS_QUERY, {
+        variables: { animalId: animalId },
+        fetchPolicy: 'network-only',
     });
 
     if (loading) return <p>Loading...</p>;
@@ -45,29 +44,29 @@ function VaccinationsList() {
                 <h5>Vaccinations for animal: {name} ({species})</h5>
                 <Table className="highlight responsive-table">
                     <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Vaccine</th>
-                        <th>Batch</th>
-                        <th>Vaccination time</th>
-                        <th>Comments</th>
-                        <th>Email</th>
-                        <th></th>
-                    </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Vaccine</th>
+                            <th>Batch</th>
+                            <th>Vaccination time</th>
+                            <th>Comments</th>
+                            <th>Email</th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
-                      <AddVaccination animalId={animalId}/>
-                      {vaccinationsList}
-                     </tbody>
-                     </Table>
-                    <div>
-                        {
-                         Array.from({length: pageCount}, (_, index) => (
-                           <button key={index} className="round-button-with-border"
-                              onClick={() => setCurrentPage(index)}>{index + 1}</button>
-                         ))
-                         }
-                    </div>
+                        <AddVaccination animalId={animalId} />
+                        {vaccinationsList}
+                    </tbody>
+                </Table>
+                <div>
+                    {
+                        Array.from({ length: pageCount }, (_, index) => (
+                            <button key={index} className="round-button-with-border"
+                                onClick={() => setCurrentPage(index)}>{index + 1}</button>
+                        ))
+                    }
+                </div>
             </Container>
         </div>
     );

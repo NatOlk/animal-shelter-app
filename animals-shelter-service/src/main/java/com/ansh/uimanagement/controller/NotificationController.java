@@ -6,11 +6,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class NotificationController {
-    @Value("${animal-shelter-notification-app}")
-    private String notificationAppUrl;
 
-    @GetMapping("/notification-url")
-    public String getNotificationAppUrl() {
-        return notificationAppUrl;
-    }
+  @Value("${animal-shelter-notification-app}")
+  private String notificationAppUrl;
+
+  @GetMapping("/notification-url")
+  public String getNotificationAppUrl() {
+    return notificationAppUrl;
+  }
 }

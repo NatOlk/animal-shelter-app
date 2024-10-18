@@ -6,15 +6,15 @@ import M from 'materialize-css';
 function DeleteAnimal({ id }) {
     const [reason, setReason] = useState("");
     const [deleteAnimal, { loading, error }] = useMutation(DELETE_ANIMAL, {
-             update(cache, { data: { deleteAnimal } }) {
-                 const existingAnimals = cache.readQuery({ query: ANIMALS_QUERY });
-                 const newAnimals = existingAnimals.allAnimals.filter(animal => animal.id !== deleteAnimal.id);
-                 cache.writeQuery({
-                     query: ANIMALS_QUERY,
-                     data: { allAnimals: newAnimals },
-                 });
-             }
-             });
+        update(cache, { data: { deleteAnimal } }) {
+            const existingAnimals = cache.readQuery({ query: ANIMALS_QUERY });
+            const newAnimals = existingAnimals.allAnimals.filter(animal => animal.id !== deleteAnimal.id);
+            cache.writeQuery({
+                query: ANIMALS_QUERY,
+                data: { allAnimals: newAnimals },
+            });
+        }
+    });
 
     useEffect(() => {
         const elems = document.querySelectorAll('.modal');

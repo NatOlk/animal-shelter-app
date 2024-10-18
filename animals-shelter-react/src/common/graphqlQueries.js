@@ -173,3 +173,14 @@ export const UPDATE_VACCINATION = gql`
         }
     }
 `;
+
+export const GET_CURRENT_USER = gql`
+  query {
+    currentUser {
+      id
+      name
+      email
+      roles
+    }
+  }
+`;
