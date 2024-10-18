@@ -14,6 +14,7 @@ import org.springframework.util.StreamUtils;
 @Component
 @Profile("init-user")
 public class DataInitializer implements CommandLineRunner {
+
   private static final Logger LOG = LoggerFactory.getLogger(DataInitializer.class);
 
   @Autowired
@@ -26,6 +27,6 @@ public class DataInitializer implements CommandLineRunner {
 
     jdbcTemplate.execute(sql);
 
-   LOG.info("SQL script executed: init.sql");
+    LOG.info("SQL script executed: init.sql");
   }
 }

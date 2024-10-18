@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useMutation } from '@apollo/client';
 import showError from './showError';
 import { useConfig } from '../common/configContext';
 import M from 'materialize-css';
-import { ANIMALS_QUERY, ADD_ANIMAL } from '../common/graphqlQueries.js';
+import { ADD_ANIMAL, ANIMALS_QUERY } from '../common/graphqlQueries.js';
 
 function AddAnimal() {
     const initialValues = {
@@ -17,27 +16,39 @@ function AddAnimal() {
         birthDate: "2012-01-01 00:00:00.0",
         pattern: "Broken"
     };
-   useEffect(() => {
+    useEffect(() => {
         var datepickerElems = document.querySelectorAll('.datepicker');
-         M.Datepicker.init(datepickerElems, {
-                    format: 'yyyy-mm-dd',
-                    onSelect: (date) => {
-                        handleInputChange({ target: { name: 'birthDate', value: date } });
-                    },
-                });
+        M.Datepicker.init(datepickerElems, {
+            format: 'yyyy-mm-dd',
+            onSelect: (date) => {
+                handleInputChange({ target: { name: 'birthDate', value: date } });
+            },
+        });
     }, []);
 
-   const [animal, setAnimal] = useState(initialValues);
-   const [validationError, setError] = useState(null);
-   const [addAnimal] = useMutation(ADD_ANIMAL);
+    const [animal, setAnimal] = useState(initialValues);
+    const [validationError, setValidationError] = useState(null);
+    const [addAnimal] = useMutation(ADD_ANIMAL, {
+        update(cache, { data: { addAnimal } }) {
+            try {
+                const { allAnimals } = cache.readQuery({ query: ANIMALS_QUERY });
+                cache.writeQuery({
+                    query: ANIMALS_QUERY,
+                    data: { allAnimals: [...allAnimals, addAnimal] },
+                });
+            } catch (error) {
+                console.error("Error updating cache:", error);
+            }
+        }
+    });
 
-   const config = useConfig();
-   if (!config) {
-    return (
-      <tr>
-        <td colSpan="5">Loading animals configs...</td>
-      </tr>
-    );
+    const config = useConfig();
+    if (!config) {
+        return (
+            <tr>
+                <td colSpan="5">Loading animals configs...</td>
+            </tr>
+        );
     };
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -54,7 +65,8 @@ function AddAnimal() {
     return (
         <tr>
             <td></td>
-            <td><input name="name" value={animal.name}
+            <td><input name="name"
+                value={animal.name}
                 onChange={handleInputChange}
                 placeholder={validationError === 'name' ? 'Name is mandatory' : ''} />
             </td>
@@ -82,10 +94,15 @@ function AddAnimal() {
                     ))}
                 </select>
             </td>
-            <td><input name="breed" value={animal.breed} onChange={handleInputChange} /></td>
-            <td><input className="long" name="implantChipId" value={animal.implantChipId}
-                onChange={handleInputChange}
-                placeholder={validationError === 'implantChipId' ? 'implantChipId is mandatory' : ''} />
+            <td>
+                <input name="breed" value={animal.breed} onChange={handleInputChange} />
+            </td>
+            <td>
+                <input className="long"
+                    name="implantChipId"
+                    value={animal.implantChipId}
+                    onChange={handleInputChange}
+                    placeholder={validationError === 'implantChipId' ? 'implantChipId is mandatory' : ''} />
             </td>
             <td>
                 <select
@@ -100,31 +117,31 @@ function AddAnimal() {
                 </select>
             </td>
             <td>
-            <input name="birthDate" className="datepicker"
-             value={animal.birthDate} onChange={handleInputChange} />
+                <input name="birthDate" className="datepicker"
+                    value={animal.birthDate} onChange={handleInputChange} />
             </td>
             <td><input name="pattern" value={animal.pattern} onChange={handleInputChange} /></td>
             <td>
-                <button className="button" onClick={
+                <button onClick={
                     function () {
                         if (!animal.name) {
-                            setError('name');
+                            setValidationError('name');
                             return;
                         }
                         if (!animal.species) {
-                            setError('species');
+                            setValidationError('species');
                             return;
                         }
                         if (!animal.implantChipId) {
-                            setError('implantChipId');
+                            setValidationError('implantChipId');
                             return;
                         }
                         if (!animal.primaryColor) {
-                            setError('primaryColor');
+                            setValidationError('primaryColor');
                             return;
                         }
                         if (!animal.gender) {
-                            setError('gender');
+                            setValidationError('gender');
                             return;
                         }
 

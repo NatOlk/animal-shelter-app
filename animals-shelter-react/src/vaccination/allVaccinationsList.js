@@ -32,7 +32,7 @@ function AllVaccinationsList() {
                 <td>{vaccination.comments}</td>
                 <td>{vaccination.email}</td>
                 <td>
-                    <DeleteVaccination id={vaccination.id}/>
+                    <DeleteVaccination id={vaccination.id} />
                 </td>
             </tr>
         ));

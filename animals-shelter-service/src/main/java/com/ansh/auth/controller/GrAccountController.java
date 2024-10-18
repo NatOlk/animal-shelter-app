@@ -15,28 +15,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GrAccountController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrAccountController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(GrAccountController.class);
 
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @QueryMapping
-    public UserProfile currentUser() {
+  @QueryMapping
+  public UserProfile currentUser() {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+      Object principal = authentication.getPrincipal();
 
-            if (principal instanceof UserDetails userDetails) {
-                String username = userDetails.getUsername();
-                Optional<UserProfile> userProfileOpt = userService.findByIdentifier(username);
+      if (principal instanceof UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        Optional<UserProfile> userProfileOpt = userService.findByIdentifier(username);
 
-                if(userProfileOpt.isPresent()) {
-                    LOG.info(userProfileOpt.get().toString());
-                    return userProfileOpt.get();
-                }
-            }
-         }
-        return null;
+        if (userProfileOpt.isPresent()) {
+          LOG.info(userProfileOpt.get().toString());
+          return userProfileOpt.get();
+        }
+      }
     }
+    return null;
+  }
 }

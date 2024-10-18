@@ -6,10 +6,9 @@ import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication(scanBasePackages = "com.ansh")
 @Configuration
-public class AnimalShelterServiceApplication
-{
-	public static void main(String[] args)
-	{
-		SpringApplication.run(AnimalShelterServiceApplication.class, args);
-	}
+public class AnimalShelterServiceApplication {
+
+  public static void main(String[] args) {
+    SpringApplication.run(AnimalShelterServiceApplication.class, args);
+  }
 }
