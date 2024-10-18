@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery, useMutation } from '@apollo/client';
-import axios from 'axios';
 import DeleteAnimal from './deleteAnimal';
 import EditableAnimalField from './editableAnimalField';
 import { useConfig } from '../common/configContext';
 
 const UpdateAnimal = ({ animal }) => {
-  const [genders, setGenders] = useState([]);
 
   const config = useConfig();
   if (!config) {
@@ -26,25 +23,25 @@ const UpdateAnimal = ({ animal }) => {
         animal={animal}
         value={animal.primaryColor}
         name="primaryColor"
-        values={config.config.colors}/>
+        values={config.config.colors} />
       <EditableAnimalField
         animal={animal}
         value={animal.breed}
-        name="breed"/>
+        name="breed" />
       <td>{animal.implantChipId}</td>
       <EditableAnimalField
         animal={animal}
         value={animal.gender}
         name="gender"
-        values={config.genders}/>
+        values={config.genders} />
       <EditableAnimalField
         animal={animal}
         value={animal.birthDate}
-        name="birthDate"/>
+        name="birthDate" />
       <EditableAnimalField
         animal={animal}
         value={animal.pattern}
-        name="pattern"/>
+        name="pattern" />
       <td>
         <DeleteAnimal id={animal.id} />
         <Link

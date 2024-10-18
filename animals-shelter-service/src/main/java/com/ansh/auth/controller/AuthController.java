@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,55 +22,53 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AuthController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
-    @Autowired
-    private AuthenticationManager authenticationManager;
+  private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
+  @Autowired
+  private AuthenticationManager authenticationManager;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String identifier,
-        @RequestParam String password,
-        HttpServletRequest request,
-        HttpServletResponse response) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(identifier, password)
-            );
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestParam String identifier,
+      @RequestParam String password,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    try {
+      Authentication authentication = authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(identifier, password)
+      );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      request.getSession()
+          .setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+              SecurityContextHolder.getContext());
 
-            String SESSION_ID = request.getSession().getId();
-            LOG.info("Session id " + SESSION_ID);
+      String SESSION_ID = request.getSession().getId();
+      LOG.info("Session id " + SESSION_ID);
 
-            Cookie cookie = new Cookie("JSESSIONID", SESSION_ID);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
-            response.setHeader("Set-Cookie",
-                "JSESSIONID=" + SESSION_ID + "; Path=/; HttpOnly; SameSite=None; Secure");
+      Cookie cookie = new Cookie("JSESSIONID", SESSION_ID);
+      cookie.setPath("/");
+      cookie.setHttpOnly(true);
+      response.setHeader("Set-Cookie",
+          "JSESSIONID=" + SESSION_ID + "; Path=/; HttpOnly; SameSite=None; Secure");
 
-            Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("message", "Login successful");
-            responseMap.put("user", identifier);
+      Map<String, Object> responseMap = new HashMap<>();
+      responseMap.put("message", "Login successful");
+      responseMap.put("user", identifier);
 
-            return ResponseEntity.ok(responseMap);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
+      return ResponseEntity.ok(responseMap);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
+  }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpSession session) {
-        session.removeAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-        session.invalidate();
-        return ResponseEntity.ok("Logout successful");
-    }
+  @PostMapping("/logout")
+  public ResponseEntity<String> logout(HttpSession session) {
+    session.removeAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+    session.invalidate();
+    return ResponseEntity.ok("Logout successful");
+  }
 }
