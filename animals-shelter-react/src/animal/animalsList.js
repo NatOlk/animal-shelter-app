@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Table } from 'reactstrap';
 import { useQuery } from "@apollo/client";
-import DeleteAnimal from "./deleteAnimal";
 import AddAnimal from "./addAnimal";
 import UpdateAnimal from "./updateAnimal";
 import { ANIMALS_QUERY } from '../common/graphqlQueries.js';

@@ -2,46 +2,50 @@ package com.ansh.controller;
 
 import com.ansh.service.SubscriptionService;
 import com.ansh.service.TopicSubscriberRegistry;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SubscriptionController {
-    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionController.class);
-    @Value("${animalGroupTopicId}")
-    private String animalGroupTopicId;
-    @Autowired
-    private TopicSubscriberRegistry topicSubscriberRegistry;
-    @Autowired
-    private SubscriptionService subscriptionService;
 
-    @PostMapping("/subscribe")
-    public void subscribe(@RequestBody String email) {
-        email = email.replace("\"", "");
-        topicSubscriberRegistry.registerSubscriber(animalGroupTopicId, email);
-    }
+  private static final Logger LOG = LoggerFactory.getLogger(SubscriptionController.class);
+  @Value("${animalGroupTopicId}")
+  private String animalGroupTopicId;
+  @Autowired
+  private TopicSubscriberRegistry topicSubscriberRegistry;
+  @Autowired
+  private SubscriptionService subscriptionService;
 
-    @PostMapping("/unsubscribe/{email}")
-    public void unsubscribe(@PathVariable String email) {
-        email = email.replace("\"", "");
-        topicSubscriberRegistry.unregisterSubscriber(animalGroupTopicId, email);
-    }
+  @PostMapping("/subscribe")
+  public void subscribe(@RequestBody String email) {
+    email = email.replace("\"", "");
+    topicSubscriberRegistry.registerSubscriber(animalGroupTopicId, email);
+  }
+
+  @PostMapping("/unsubscribe/{email}")
+  public void unsubscribe(@PathVariable String email) {
+    email = email.replace("\"", "");
+    topicSubscriberRegistry.unregisterSubscriber(animalGroupTopicId, email);
+  }
 
 
-    @GetMapping("/subscribers")
-    public List<String> subscribers() {
-        return topicSubscriberRegistry.getSubscribers(animalGroupTopicId);
-    }
+  @GetMapping("/subscribers")
+  public List<String> subscribers() {
+    return topicSubscriberRegistry.getSubscribers(animalGroupTopicId);
+  }
 
-    @GetMapping("/checkSubscription/{token}")
-    public String checkSubscription(@PathVariable String token) {
-        boolean isAccepted = topicSubscriberRegistry.confirmSubscription(token);
+  @GetMapping("/checkSubscription/{token}")
+  public String checkSubscription(@PathVariable String token) {
+    boolean isAccepted = topicSubscriberRegistry.confirmSubscription(token);
 
-        return "Subscription with token " + token + " is " + (isAccepted ? "valid" : "invalid");
-    }
+    return "Subscription with token " + token + " is " + (isAccepted ? "valid" : "invalid");
+  }
 }
