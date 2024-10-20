@@ -70,7 +70,7 @@ const Login = () => {
                 />
             </div>
              <div className="col s12 m8 l6 offset-m2 offset-l3">
-                  <button className="btn waves-effect waves-light" type="submit">Login</button>
+                  <button className="btn waves-effect waves-orange" type="submit">Login</button>
                 </div>
            </div>
         </form>

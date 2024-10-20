@@ -21,16 +21,16 @@ const EditableAnimalField = ({ animal, value, name, values }) => {
     updateField({ variables }).catch(err => console.error(err));
   };
 
-  const inputStyle = isEditing ? { backgroundColor: '#FFC0CB' } : {};
+  const inputStyle = isEditing ? `red-background` : {};
+  const combinedClassName = `${inputStyle} browser-default`;
 
   return (
     <td>
       {isEditing ? (
         values && values.length > 0 ? (
           <select
-            style={inputStyle}
             value={fieldValue}
-            className="browser-default"
+            className={combinedClassName}
             onChange={(e) => setFieldValue(e.target.value)}
           >
             {values.map((val) => (
@@ -41,7 +41,7 @@ const EditableAnimalField = ({ animal, value, name, values }) => {
           </select>
         ) : (
           <input
-            style={inputStyle}
+            className={combinedClassName}
             value={fieldValue}
             onChange={(e) => setFieldValue(e.target.value)}
           />
@@ -49,9 +49,8 @@ const EditableAnimalField = ({ animal, value, name, values }) => {
       ) : (
         values && values.length > 0 ? (
           <select
-            style={inputStyle}
             value={fieldValue}
-            className="browser-default"
+            className={combinedClassName}
             readOnly
             onDoubleClick={() => {
               setOldValue(fieldValue);
@@ -66,7 +65,7 @@ const EditableAnimalField = ({ animal, value, name, values }) => {
           </select>
         ) : (
           <input
-            style={inputStyle}
+            className={combinedClassName}
             value={fieldValue}
             readOnly
             onDoubleClick={() => {

@@ -45,7 +45,6 @@ function VaccinationsList() {
                 <Table className="highlight responsive-table">
                     <thead>
                         <tr>
-                            <th>Id</th>
                             <th>Vaccine</th>
                             <th>Batch</th>
                             <th>Vaccination time</th>
