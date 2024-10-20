@@ -13,17 +13,22 @@ function AddAnimal() {
         gender: "F",
         breed: "",
         implantChipId: "11111111-1111-1111-1111-111111111111",
-        birthDate: "2012-01-01 00:00:00.0",
+        birthDate: "2012-01-01",
         pattern: "Broken"
     };
     useEffect(() => {
-        var datepickerElems = document.querySelectorAll('.datepicker');
-        M.Datepicker.init(datepickerElems, {
+        const datepickerElems = document.querySelectorAll('.datepicker');
+         const instances = M.Datepicker.init(datepickerElems, {
             format: 'yyyy-mm-dd',
             onSelect: (date) => {
                 handleInputChange({ target: { name: 'birthDate', value: date } });
             },
         });
+         return () => {
+                instances.forEach((instance) => {
+                    instance.destroy();
+                });
+            };
     }, []);
 
     const [animal, setAnimal] = useState(initialValues);
@@ -68,6 +73,7 @@ function AddAnimal() {
             <td><input name="name"
                 value={animal.name}
                 onChange={handleInputChange}
+                className="table-column-breed"
                 placeholder={validationError === 'name' ? 'Name is mandatory' : ''} />
             </td>
             <td>
@@ -95,13 +101,17 @@ function AddAnimal() {
                 </select>
             </td>
             <td>
-                <input name="breed" value={animal.breed} onChange={handleInputChange} />
+                <input name="breed"
+                    value={animal.breed}
+                    onChange={handleInputChange}
+                    className='table-column-breed' />
             </td>
             <td>
-                <input className="long"
+                <input
                     name="implantChipId"
                     value={animal.implantChipId}
                     onChange={handleInputChange}
+                    className="table-column-chip"
                     placeholder={validationError === 'implantChipId' ? 'implantChipId is mandatory' : ''} />
             </td>
             <td>
@@ -109,7 +119,7 @@ function AddAnimal() {
                     name="gender"
                     value={animal.gender}
                     onChange={handleInputChange}
-                    className="browser-default"
+                    className="browser-default table-column-gender"
                     placeholder={validationError === 'gender' ? 'Gender is mandatory' : ''}>
                     {config.config.genders.map(gender => (
                         <option key={gender} value={gender}>{gender}</option>
@@ -117,10 +127,17 @@ function AddAnimal() {
                 </select>
             </td>
             <td>
-                <input name="birthDate" className="datepicker"
-                    value={animal.birthDate} onChange={handleInputChange} />
+                <input name="birthDate"
+                    className="datepicker"
+                    value={animal.birthDate}
+                    onChange={handleInputChange} />
             </td>
-            <td><input name="pattern" value={animal.pattern} onChange={handleInputChange} /></td>
+            <td>
+                <input name="pattern"
+                    value={animal.pattern}
+                    onChange={handleInputChange}
+                    className='table-column-breed' />
+            </td>
             <td>
                 <button onClick={
                     function () {
@@ -160,8 +177,8 @@ function AddAnimal() {
                             }).catch((error1) => { showError({ error: error1 }) });
 
                         clearFields();
-                    }} className="waves-effect waves-light btn-small">
-                    Add
+                    }} className="waves-effect waves-orange btn-small">
+                    <i className="small material-icons">add</i>
                 </button>
             </td>
         </tr>

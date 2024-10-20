@@ -10,7 +10,7 @@ function DeleteVaccination({ id }) {
     return (
         <button className="waves-effect waves-light btn-small" onClick={() =>
             deleteVaccination({ variables: { id: id } })}>
-            Delete
+            <i className="small material-icons">remove</i>
         </button>
     )
 }

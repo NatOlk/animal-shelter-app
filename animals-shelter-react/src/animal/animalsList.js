@@ -32,7 +32,7 @@ function AnimalsList() {
                 <Table className="highlight responsive-table">
                     <thead>
                         <tr>
-                            <th>Id</th>
+                            <th>#</th>
                             <th>Name</th>
                             <th>Species</th>
                             <th>Primary color</th>
