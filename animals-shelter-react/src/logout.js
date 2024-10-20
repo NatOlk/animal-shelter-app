@@ -21,7 +21,7 @@ const Logout = () => {
     };
 
     return (
-        <button className="btn waves-effect waves-light" onClick={handleLogout}>
+        <button className="btn waves-effect waves-orange" onClick={handleLogout}>
             Logout
         </button>
     );

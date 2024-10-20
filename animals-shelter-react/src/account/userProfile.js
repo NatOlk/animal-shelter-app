@@ -14,18 +14,18 @@ const UserProfile = () => {
   return (
     <div className="user-profile">
       {currentUser && (
-        <div class="row">
-          <ul class="collection with-header">
-            <li class="collection-header">User Profile</li>
-            <li class="collection-item">Name: {currentUser.name}</li>
-            <li class="collection-item">Email: {currentUser.email}</li>
-            <li class="collection-item"><Subscription email={currentUser.email} /></li>
-            <li class="collection-header">Roles</li>
-            <li class="collection-item">
-              <ul class="collection">
+        <div className="row">
+          <ul className="collection with-header">
+            <li className="collection-header">User Profile</li>
+            <li className="collection-item">Name: {currentUser.name}</li>
+            <li className="collection-item">Email: {currentUser.email}</li>
+            <li className="collection-item"><Subscription email={currentUser.email} /></li>
+            <li className="collection-header">Roles</li>
+            <li className="collection-item">
+              <ul className="collection">
                 {currentUser.roles && currentUser.roles.length > 0 ? (
                   currentUser.roles.map((role, index) => (
-                    <li class="collection-item" key={role}>{role}</li>
+                    <li className="collection-item" key={role}>{role}</li>
                   ))
                 ) : (
                   <li>No roles assigned</li>

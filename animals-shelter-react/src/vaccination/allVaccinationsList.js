@@ -23,7 +23,6 @@ function AllVaccinationsList() {
         .slice(currentPage * perPage, (currentPage + 1) * perPage)
         .map(vaccination => (
             <tr key={vaccination.id}>
-                <td>{vaccination.id}</td>
                 <td>{vaccination.animal.name}</td>
                 <td>{vaccination.animal.species}</td>
                 <td>{vaccination.vaccine}</td>
@@ -44,7 +43,6 @@ function AllVaccinationsList() {
                 <Table className="highlight responsive-table">
                     <thead>
                         <tr>
-                            <th>Id</th>
                             <th>Name</th>
                             <th>Species</th>
                             <th>Vaccine</th>
