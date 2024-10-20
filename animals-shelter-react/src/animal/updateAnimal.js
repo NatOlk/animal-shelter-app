@@ -33,7 +33,7 @@ const UpdateAnimal = ({ animal }) => {
         animal={animal}
         value={animal.gender}
         name="gender"
-        values={config.genders} />
+        values={config.config.genders} />
       <EditableAnimalField
         animal={animal}
         value={animal.birthDate}
@@ -43,12 +43,12 @@ const UpdateAnimal = ({ animal }) => {
         value={animal.pattern}
         name="pattern" />
       <td>
-        <DeleteAnimal id={animal.id} />
+        <DeleteAnimal id={animal.id} />&nbsp;
         <Link
-          className="waves-effect waves-light btn-small"
+          className="waves-effect waves-orange btn-small"
           to={`/vaccinations`}
           state={{ animalId: animal.id, name: animal.name, species: animal.species }}>
-          Vax
+          <i className="small material-icons">collections</i>
           {animal.vaccinationCount !== 0 && (
             <span> ({animal.vaccinationCount})</span>
           )}

@@ -10,8 +10,14 @@ const SideBarContent = () => {
     <>
       {isAuthenticated && (
         <div className="collection">
-          <Link to="/" className="collection-item round-button-with-border"><p>Animals</p></Link>
-          <Link to="/allvaccinations" className="collection-item round-button-with-border"><p>Vaccinations</p></Link>
+          <Link to="/"
+            className="collection-item round-button-with-border">
+            <h6>Animals</h6>
+          </Link>
+          <Link to="/allvaccinations"
+            className="collection-item round-button-with-border">
+            <h6>Vaccinations</h6>
+          </Link>
           <div className="collection-item">
             <Logout />
           </div>

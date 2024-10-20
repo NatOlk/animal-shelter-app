@@ -130,7 +130,7 @@ function AddVaccination({ animalId }) {
 
                     clearFields();
                 }} >
-                    Add
+                  <i className="small material-icons">add</i>
                 </button>
             </td>
         </tr>
