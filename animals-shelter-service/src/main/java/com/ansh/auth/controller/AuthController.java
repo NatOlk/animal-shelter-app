@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AuthController {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
@@ -32,8 +31,7 @@ public class AuthController {
   private AuthenticationManager authenticationManager;
 
   @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestParam String identifier,
-      @RequestParam String password,
+  public ResponseEntity<Object> login(@RequestParam String identifier, @RequestParam String password,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
@@ -46,14 +44,13 @@ public class AuthController {
           .setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
               SecurityContextHolder.getContext());
 
-      String SESSION_ID = request.getSession().getId();
-      LOG.info("Session id " + SESSION_ID);
+      String sessionId = request.getSession().getId();
 
-      Cookie cookie = new Cookie("JSESSIONID", SESSION_ID);
+      Cookie cookie = new Cookie("JSESSIONID", sessionId);
       cookie.setPath("/");
       cookie.setHttpOnly(true);
       response.setHeader("Set-Cookie",
-          "JSESSIONID=" + SESSION_ID + "; Path=/; HttpOnly; SameSite=None; Secure");
+          "JSESSIONID=" + sessionId + "; Path=/; HttpOnly; SameSite=None; Secure");
 
       Map<String, Object> responseMap = new HashMap<>();
       responseMap.put("message", "Login successful");
