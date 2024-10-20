@@ -2,16 +2,21 @@ package com.ansh;
 
 
 import com.ansh.auth.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,25 +28,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
+  @Value("${animalShelterReactApp}")
+  private String animalShelterReactApp;
+
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
+        .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/login").permitAll()
             .requestMatchers("/api/auth/logout").permitAll()
             .requestMatchers("/resources/**").permitAll()
-            //   .requestMatchers("/graphql").permitAll()
             .requestMatchers("/**").authenticated()
         )
-        /*.formLogin(form -> form
-            .loginPage("/login")
-            .loginProcessingUrl("/api/auth/login")
-            .defaultSuccessUrl("/")
-            .failureUrl("/logout")
-            .permitAll()
-        )*/
         .logout(logout -> logout
             .logoutSuccessUrl("/logout")
             .invalidateHttpSession(true)
@@ -61,14 +61,15 @@ public class SecurityConfig {
 
   @Bean
   public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder(); // Не забудьте добавить метод для кодировщика паролей
+    //TODO: add method for password coders
+    return new BCryptPasswordEncoder();
   }
 
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+    configuration.setAllowedOrigins(List.of(animalShelterReactApp));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(
         Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
@@ -82,7 +83,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  public CustomUserDetailsService userDetailsService() {
+  public UserDetailsService userDetailsService() {
     return new CustomUserDetailsService();
   }
 
@@ -95,5 +96,14 @@ public class SecurityConfig {
         .userDetailsService(userDetailsService())
         .passwordEncoder(passwordEncoder());
     return authenticationManagerBuilder.build();
+
+  }
+
+  @Bean
+  public DaoAuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(passwordEncoder());
+    provider.setUserDetailsService(userDetailsService());
+    return provider;
   }
 }
