@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../common/api';
 
 const Subscription = ({ email: initialEmail }) => {
     const [email, setEmail] = useState(initialEmail || '');
@@ -7,15 +8,11 @@ const Subscription = ({ email: initialEmail }) => {
 
     const fetchNotificationAppUrl = async () => {
         try {
-            const response = await fetch('/api/config/notification-app');
-            if (response.ok) {
-                const url = await response.text();
-                setNotificationAppUrl(url);
-            } else {
-                console.error('Failed to load notification app URL');
-            }
+            const url = await apiFetch('/api/config/notification-app');
+            console.info('URL ' + url);
+            setNotificationAppUrl(url);
         } catch (error) {
-            console.error('Error fetching notification app URL:', error);
+            console.error('Failed to load notification app URL:', error);
         }
     };
 
@@ -23,17 +20,12 @@ const Subscription = ({ email: initialEmail }) => {
         if (!notificationAppUrl) return;
 
         try {
-            const response = await fetch(`${notificationAppUrl}/subscribers`, {
+            const data = await apiFetch(`${notificationAppUrl}/subscribers`, {
                 cache: 'no-cache',
             });
-            if (response.ok) {
-                const data = await response.json();
-                setSubscribers(data);
-            } else {
-                console.error('Failed to load subscribers');
-            }
+            setSubscribers(data);
         } catch (error) {
-            console.error('Error fetching subscribers:', error);
+            console.error('Failed to load subscribers:', error);
         }
     };
 
@@ -42,17 +34,12 @@ const Subscription = ({ email: initialEmail }) => {
         if (!notificationAppUrl) return;
 
         try {
-            const response = await fetch(`${notificationAppUrl}/subscribe`, {
+            await apiFetch(`${notificationAppUrl}/subscribe`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(email),
+                body: email,
             });
-            if (response.ok) {
-                setEmail('');
-                loadSubscribers();
-            }
+            setEmail('');
+            loadSubscribers();
         } catch (error) {
             console.error('Error during subscription:', error);
         }
@@ -62,16 +49,11 @@ const Subscription = ({ email: initialEmail }) => {
         if (!notificationAppUrl) return;
 
         try {
-            const response = await fetch(`${notificationAppUrl}/unsubscribe`, {
+            await apiFetch(`${notificationAppUrl}/unsubscribe`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(email),
+                body: email,
             });
-            if (response.ok) {
-                loadSubscribers();
-            }
+            loadSubscribers();
         } catch (error) {
             console.error('Error during unsubscription:', error);
         }
@@ -94,6 +76,7 @@ const Subscription = ({ email: initialEmail }) => {
     return (
         <>
             <form onSubmit={handleSubmit}>
+            <div className="input-field col s6">
                 <input
                     type="email"
                     value={email}
@@ -101,7 +84,8 @@ const Subscription = ({ email: initialEmail }) => {
                     placeholder="Please insert your email"
                     required
                 />
-                <button type="submit">Subscribe</button>
+                <button type="submit" className="waves-effect waves-orange btn-small">Subscribe</button>
+                </div>
             </form>
             <div>
                 {subscribers.map((subscriber, index) => (
