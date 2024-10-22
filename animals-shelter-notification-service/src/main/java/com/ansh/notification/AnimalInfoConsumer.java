@@ -1,9 +1,9 @@
-package com.ansh.notifications;
+package com.ansh.notification;
 
-import static com.ansh.notifications.SubscriptionMessages.ADD_ANIMAL_EVENT;
-import static com.ansh.notifications.SubscriptionMessages.ADD_VACCINE_EVENT;
-import static com.ansh.notifications.SubscriptionMessages.REMOVE_ANIMAL_EVENT;
-import static com.ansh.notifications.SubscriptionMessages.REMOVE_VACCINE_EVENT;
+import static com.ansh.notification.SubscriptionMessages.ADD_ANIMAL_EVENT;
+import static com.ansh.notification.SubscriptionMessages.ADD_VACCINE_EVENT;
+import static com.ansh.notification.SubscriptionMessages.REMOVE_ANIMAL_EVENT;
+import static com.ansh.notification.SubscriptionMessages.REMOVE_VACCINE_EVENT;
 
 import com.ansh.service.EmailService;
 import com.ansh.service.TopicSubscriberRegistry;

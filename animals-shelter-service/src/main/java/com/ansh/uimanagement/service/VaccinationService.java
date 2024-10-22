@@ -2,7 +2,7 @@ package com.ansh.uimanagement.service;
 
 import com.ansh.entity.Animal;
 import com.ansh.entity.Vaccination;
-import com.ansh.notifications.NotificationService;
+import com.ansh.notification.NotificationService;
 import com.ansh.repository.AnimalRepository;
 import com.ansh.repository.VaccinationRepository;
 import com.ansh.uimanagement.service.exception.VaccinationCreationException;

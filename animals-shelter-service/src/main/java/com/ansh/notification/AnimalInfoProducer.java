@@ -1,4 +1,4 @@
-package com.ansh.notifications;
+package com.ansh.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
