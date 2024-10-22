@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.example</groupId>
     <artifactId>ansh-notification-service</artifactId>
-    <version>1</version>
+    <version>1.0</version>
     <name>ansh-notification-service</name>
     <description>Notification service</description>
     <properties>
@@ -85,6 +85,11 @@
             <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
+      <dependency>
+        <groupId>com.ansh</groupId>
+        <artifactId>ansh-common</artifactId>
+        <version>1.0</version>
+      </dependency>
     </dependencies>
 
     <build>
