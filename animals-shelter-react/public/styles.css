@@ -75,3 +75,12 @@ tr td.table-column-chip {
   line-height: 100px !important;
   width: 100% !important;
 }
+
+textarea.removal {
+  height: 50px;
+}
+
+.font12 {
+  font-size: 22px !important;
+  font-weight: bold;
+}

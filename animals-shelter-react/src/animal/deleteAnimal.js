@@ -18,7 +18,11 @@ function DeleteAnimal({ id }) {
 
     useEffect(() => {
         const elems = document.querySelectorAll('.modal');
-        M.Modal.init(elems);
+        const instances = M.Modal.init(elems);
+
+        return () => {
+            instances.forEach(instance => instance.destroy());
+        };
     }, []);
 
     const handleDelete = () => {
@@ -46,13 +50,32 @@ function DeleteAnimal({ id }) {
 
             <div id="modal1" className="modal">
                 <div className="modal-content">
-                    <h4>Reason for Deletion</h4>
-                    <p>Please set the reason for deletion</p>
-                    <textarea value={reason} onChange={(e) => setReason(e.target.value)} />
+                    <h4>Reason for removal</h4>
+                    <p>Please set the reason for removal</p>
+                    <textarea value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        className="removal materialize-textarea"/>
                 </div>
                 <div className="modal-footer">
-                    <a onClick={handleDelete} className="modal-close waves-effect waves-green btn-flat">Confirm</a>
-                    <a onClick={handleCancel} className="modal-close waves-effect waves-red btn-flat">Cancel</a>
+                    <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={handleDelete}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleDelete(); }}
+                        className="modal-close waves-effect waves-green btn-flat"
+                    >
+                        Confirm
+                    </div>
+                    <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={handleCancel}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleCancel(); }}
+                        className="modal-close waves-effect waves-red btn-flat"
+                    >
+                        Cancel
+                    </div>
+
                 </div>
             </div>
         </>
