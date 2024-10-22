@@ -1,6 +1,6 @@
 package com.ansh.service;
 
-import static com.ansh.notifications.SubscriptionMessages.SUBSCRIPTION_SUBJECT;
+import static com.ansh.notification.SubscriptionMessages.SUBSCRIPTION_SUBJECT;
 
 import java.util.HashMap;
 import java.util.Map;
