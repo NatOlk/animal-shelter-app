@@ -48,10 +48,8 @@ const UpdateAnimal = ({ animal }) => {
           className="waves-effect waves-orange btn-small"
           to={`/vaccinations`}
           state={{ animalId: animal.id, name: animal.name, species: animal.species }}>
-          <i className="small material-icons">collections</i>
-          {animal.vaccinationCount !== 0 && (
-            <span> ({animal.vaccinationCount})</span>
-          )}
+          <i className="small material-icons">vaccines</i>
+            <span className="font12"> {animal.vaccinationCount}</span>
         </Link>
       </td>
     </tr>

@@ -20,7 +20,6 @@ function AddVaccination({ animalId }) {
             onSelect: (date) => {
                 const selectedDate = date.toISOString().split('T')[0];
                 setVaccination(prev => ({ ...prev, vaccinationTime: selectedDate }));
-                // handleInputChange({ target: { name: 'vaccinationTime', value: date } });
             },
         });
     }, []);
@@ -60,7 +59,7 @@ function AddVaccination({ animalId }) {
     const clearFields = () => {
         setVaccination({
             vaccine: 'Rabies',
-            batch: 'RTL-0001',
+            batch: '',
             vaccinationTime: new Date().toISOString().split('.')[0],
             comments: 'Add new vaccine',
             email: 'nolkoeva@gmail.com'
