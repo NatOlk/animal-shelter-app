@@ -10,8 +10,8 @@
     <name>animal-shelter-app</name>
 
     <modules>
-        <module>animals-shelter-service</module>
-        <module>animals-shelter-notification-service</module>
+        <module>ansh-service</module>
+        <module>ansh-notification-service</module>
         <module>ansh-common</module>
     </modules>
 
