@@ -2,9 +2,11 @@ package com.ansh.notification;
 
 import com.ansh.entity.Animal;
 import com.ansh.entity.Vaccination;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import com.ansh.event.AddAnimalEvent;
+import com.ansh.event.AddVaccinationEvent;
+import com.ansh.event.AnimalEvent;
+import com.ansh.event.RemoveAnimalEvent;
+import com.ansh.event.RemoveVaccinationEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,64 +21,24 @@ public class NotificationService {
   private String animalGroupTopicId;
 
   public void sendAddAnimalMessage(Animal animal) {
-    Map<String, Object> message = new HashMap<>();
-    message.put("eventType", "addAnimal");
-    Map<String, Object> params = new HashMap<>();
+    AnimalEvent addAnimalEvent = new AddAnimalEvent(animal);
 
-    addAnimalInformation(animal, params);
-    message.put("data", params);
-
-    animalInfoProducer.sendMessage(animalGroupTopicId, message);
+    animalInfoProducer.sendMessage(animalGroupTopicId, addAnimalEvent);
   }
 
   public void sendRemoveAnimalMessage(Animal animal, String reason) {
-    Map<String, Object> message = new HashMap<>();
-    message.put("eventType", "removeAnimal");
-    Map<String, Object> params = new HashMap<>();
+    AnimalEvent removeAnimalEvent = new RemoveAnimalEvent(animal, reason);
 
-    addAnimalInformation(animal, params);
-
-    params.put("reason", reason);
-    params.put("dateRemoved", new Date());
-
-    message.put("data", params);
-
-    animalInfoProducer.sendMessage(animalGroupTopicId, message);
+    animalInfoProducer.sendMessage(animalGroupTopicId, removeAnimalEvent);
   }
 
   public void sendAddVaccinationMessage(Vaccination vaccination) {
-    Map<String, Object> message = new HashMap<>();
-    message.put("eventType", "addVaccine");
-    Map<String, Object> params = new HashMap<>();
-
-    addAnimalInformation(vaccination.getAnimal(), params);
-    addVaccinationInformation(vaccination, params);
-
-    message.put("data", params);
-
-    animalInfoProducer.sendMessage(animalGroupTopicId, message);
+    AnimalEvent addVaccinationEvent = new AddVaccinationEvent(vaccination.getAnimal(), vaccination);
+    animalInfoProducer.sendMessage(animalGroupTopicId, addVaccinationEvent);
   }
 
-  public void sendAdoptAnimalMessage(String name) {
-    Map<String, Object> message = new HashMap<>();
-    Map<String, Object> params = new HashMap<>();
-
-    params.put("name", name);
-    message.put("data", params);
-
-    animalInfoProducer.sendMessage(animalGroupTopicId, message);
-  }
-
-  private void addAnimalInformation(Animal animal, Map<String, Object> params) {
-    params.put("animalName", animal.getName());
-    params.put("animalSpecies", animal.getSpecies());
-    params.put("animalImplantChip", animal.getImplantChipId());
-    params.put("animalGender", animal.getGender());
-    params.put("dateAdded", animal.getAdmissionDate());
-  }
-
-  private void addVaccinationInformation(Vaccination vaccination, Map<String, Object> params) {
-    params.put("vaccineName", vaccination.getVaccine());
-    params.put("vaccineDate", vaccination.getVaccinationTime());
+  public void sendRemoveVaccinationMessage(Vaccination vaccination) {
+    AnimalEvent addVaccinationEvent = new RemoveVaccinationEvent(vaccination.getAnimal(), vaccination);
+    animalInfoProducer.sendMessage(animalGroupTopicId, addVaccinationEvent);
   }
 }
