@@ -8,16 +8,13 @@
         <version>3.1.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.example</groupId>
-    <artifactId>ansh-notification-service</artifactId>
+    <groupId>com.ansh</groupId>
+    <artifactId>ansh</artifactId>
     <version>1.0</version>
-    <name>ansh-notification-service</name>
-    <description>Notification service</description>
+    <name>ansh-service</name>
+    <description>Animal shelter application</description>
     <properties>
         <java.version>17</java.version>
-        <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
-        <nodeVersion>v18.17.1</nodeVersion>
-        <npmVersion>10.2.0</npmVersion>
     </properties>
     <dependencies>
         <dependency>
@@ -60,12 +57,15 @@
             <artifactId>spring-graphql-test</artifactId>
             <scope>test</scope>
         </dependency>
-      <dependency>
+        <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Spring Data JPA -->
+       <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -89,10 +89,8 @@
         <groupId>com.ansh</groupId>
         <artifactId>ansh-common</artifactId>
         <version>1.0</version>
-        <scope>compile</scope>
       </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -109,5 +107,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
