@@ -12,6 +12,7 @@
     <modules>
         <module>animals-shelter-service</module>
         <module>animals-shelter-notification-service</module>
+        <module>ansh-common</module>
     </modules>
 
     <properties>
