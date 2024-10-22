@@ -89,6 +89,7 @@
         <groupId>com.ansh</groupId>
         <artifactId>ansh-common</artifactId>
         <version>1.0</version>
+        <scope>compile</scope>
       </dependency>
     </dependencies>
 
