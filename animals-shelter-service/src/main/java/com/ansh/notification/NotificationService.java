@@ -1,4 +1,4 @@
-package com.ansh.notifications;
+package com.ansh.notification;
 
 import com.ansh.entity.Animal;
 import com.ansh.entity.Vaccination;

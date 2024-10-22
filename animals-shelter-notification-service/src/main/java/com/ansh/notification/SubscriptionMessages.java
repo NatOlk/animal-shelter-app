@@ -1,4 +1,4 @@
-package com.ansh.notifications;
+package com.ansh.notification;
 
 public interface SubscriptionMessages {
 
