@@ -1,5 +1,6 @@
 package com.ansh.notification;
 
+import com.ansh.event.AnimalEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -21,9 +22,9 @@ public class AnimalInfoProducer {
     this.objectMapper = objectMapper;
   }
 
-  public void sendMessage(String topic, Map<String, Object> message) {
+  public void sendMessage(String topic, AnimalEvent animalEvent) {
     try {
-      String jsonMessage = objectMapper.writeValueAsString(message);
+      String jsonMessage = objectMapper.writeValueAsString(animalEvent);
       kafkaTemplate.send(topic, jsonMessage);
     } catch (Exception e) {
       LOG.error("Exception during sending message:", e.getMessage());
