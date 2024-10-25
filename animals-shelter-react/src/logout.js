@@ -10,10 +10,8 @@ const Logout = () => {
 
     const handleLogout = async () => {
         try {
-            console.log('Logging out...');
             await axios.post(`${apiUrl}/api/auth/logout`, {}, { withCredentials: true });
             logout();
-            console.log('Logout successful, navigating to login...');
             navigate('/login');
         } catch (error) {
             console.error('Error logging out:', error);
