@@ -32,7 +32,11 @@ const AppContent = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/error" element={<ErrorPage />} />
-            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
             <Route path="/" element={
               <ProtectedRoute>
                 <AnimalsList />
