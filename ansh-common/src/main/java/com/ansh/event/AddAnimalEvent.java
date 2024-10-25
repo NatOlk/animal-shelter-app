@@ -8,4 +8,7 @@ public class AddAnimalEvent extends AnimalEvent {
     super(animal);
   }
 
+  public AddAnimalEvent() {
+    super();
+  }
 }

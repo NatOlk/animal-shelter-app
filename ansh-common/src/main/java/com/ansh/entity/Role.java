@@ -1,4 +1,4 @@
-package com.ansh.auth.entity;
+package com.ansh.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

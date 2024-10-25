@@ -64,8 +64,8 @@ public class VaccinationService {
       vaccination.setAnimal(animal);
       //	vaccination.setVaccination_time(new Date());
 
-      notificationService.sendAddVaccinationMessage(vaccination);
       vaccinationRepository.save(vaccination);
+      notificationService.sendAddVaccinationMessage(vaccination);
 
       return vaccination;
     } catch (Exception e) {

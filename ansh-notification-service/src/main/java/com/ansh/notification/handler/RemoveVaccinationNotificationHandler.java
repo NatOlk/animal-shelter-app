@@ -16,9 +16,6 @@ public class RemoveVaccinationNotificationHandler extends AbstractAnimalNotifica
     return SubscriptionMessages.REMOVE_VACCINE_TEMPLATE;
   }
 
-  /**
-   * @return
-   */
   @Override
   public Class getHandledEventType() {
     return RemoveVaccinationEvent.class;

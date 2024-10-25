@@ -2,7 +2,6 @@ package com.ansh.notification;
 
 import com.ansh.event.AnimalEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;

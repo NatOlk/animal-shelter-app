@@ -1,19 +1,36 @@
 package com.ansh.event;
 
 import com.ansh.entity.Animal;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = AddAnimalEvent.class, name = "addAnimalEvent"),
+    @JsonSubTypes.Type(value = RemoveAnimalEvent.class, name = "removeAnimalEvent"),
+    @JsonSubTypes.Type(value = AddVaccinationEvent.class, name = "addVaccinationEvent"),
+    @JsonSubTypes.Type(value = RemoveVaccinationEvent.class, name = "removeVaccinationEvent")
+})
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class AnimalEvent {
 
-  private final Animal animal;
+  private static final Logger LOG = LoggerFactory.getLogger(AnimalEvent.class);
 
-  protected AnimalEvent(Animal animal) {
-    this.animal = animal;
-  }
+  private Animal animal;
 
   public Map<String, Object> getParams() {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
 
     params.put("animalName", animal.getName());
     params.put("animalSpecies", animal.getSpecies());

@@ -2,20 +2,23 @@ package com.ansh.notification.handler;
 
 import com.ansh.event.AnimalEvent;
 import com.ansh.service.EmailService;
-import com.ansh.service.TopicSubscriberRegistry;
+import com.ansh.service.TopicSubscriberRegistryService;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 public abstract class AbstractAnimalNotificationHandler implements AnimalEventNotificationHandler {
 
+  private static final Logger LOG = LoggerFactory.getLogger(
+      AbstractAnimalNotificationHandler.class);
+  @Value("${animalShelterNotificationApp}")
+  private String animalShelterNotificationApp;
   @Autowired
   private EmailService emailService;
   @Autowired
-  private TopicSubscriberRegistry topicSubscriberRegistry;
-
-  @Value("${animalShelterNotificationApp}")
-  private String animalShelterNotificationApp;
+  private TopicSubscriberRegistryService topicSubscriberRegistry;
 
   @Override
   public void handle(AnimalEvent event) {
@@ -27,12 +30,13 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   protected abstract String getNotificationTemplate();
 
   private void sendNotifications(Map<String, Object> params, String subject, String templateName) {
-    topicSubscriberRegistry.getSubscribers("animalGroupId")
-        .forEach(email -> {
-          params.put("name", email);
+    LOG.info("Send notifications " + params);
+    topicSubscriberRegistry.getSubscribers()
+        .forEach(subscription -> {
+          params.put("name", subscription.getEmail());
           params.put("unsubscribeLink", animalShelterNotificationApp
-              + "/unsubscribe/" + email);
-          emailService.sendSimpleMessage(email, subject, templateName, params);
+              + "/animal-notify-unsubscribe/" + subscription.getToken());
+          emailService.sendSimpleMessage(subscription.getEmail(), subject, templateName, params);
         });
   }
 }

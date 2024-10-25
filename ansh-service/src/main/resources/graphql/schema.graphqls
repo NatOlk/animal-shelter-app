@@ -4,7 +4,7 @@ type Query {
     allVaccinations : [Vaccination]
     vaccinationByAnimalId(animalId: ID!): [Vaccination]
     vaccinationCountById(id: ID!): Int!
-    currentUser: User
+    currentUserProfile: UserProfile
 }
 
 type Animal {
@@ -32,11 +32,12 @@ type Vaccination {
     animal: Animal!
 }
 
-type User {
+type UserProfile {
     id: ID!
     name: String!
     email: String!
     roles: [String!]
+    animalNotifyStatus: String!
 }
 
 type Mutation {

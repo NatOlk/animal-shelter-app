@@ -1,6 +1,6 @@
 package com.ansh.auth.service;
 
-import com.ansh.auth.entity.UserProfile;
+import com.ansh.entity.UserProfile;
 import com.ansh.auth.repository.RoleRepository;
 import com.ansh.auth.repository.UserProfileRepository;
 import java.util.Optional;
