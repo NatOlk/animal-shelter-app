@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ansh</groupId>
-    <artifactId>ansh</artifactId>
+    <artifactId>ansh-service</artifactId>
     <version>1.0</version>
     <name>ansh-service</name>
     <description>Animal shelter application</description>
