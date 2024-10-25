@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Subscription Confirmation</title>
+</head>
+<body>
+<h2>Subscription Confirmation</h2>
+<p>Dear <span th:text="${name}"></span>,</p>
+<p>You are already subscribed to our notifications and will continue receiving the latest updates about our shelter.</p>
+
+<p>If you wish to unsubscribe from these notifications, please click the link below:</p>
+<p><a th:href="${unsubscribeLink}">Unsubscribe</a></p>
+<p>Best regards,</p>
+<p>Animal Shelter Team</p>
+</body>
+</html>

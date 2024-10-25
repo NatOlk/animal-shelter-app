@@ -174,13 +174,14 @@ export const UPDATE_VACCINATION = gql`
     }
 `;
 
-export const GET_CURRENT_USER = gql`
+export const GET_CURRENT_USER_PROFILE = gql`
   query {
-    currentUser {
+    currentUserProfile {
       id
       name
       email
       roles
+      animalNotifyStatus
     }
   }
 `;

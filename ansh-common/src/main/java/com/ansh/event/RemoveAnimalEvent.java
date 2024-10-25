@@ -1,11 +1,23 @@
 package com.ansh.event;
 
 import com.ansh.entity.Animal;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RemoveAnimalEvent extends AnimalEvent {
 
+  private static final Logger LOG = LoggerFactory.getLogger(RemoveAnimalEvent.class);
+
+  @JsonProperty("reason")
   private String reason;
 
   public RemoveAnimalEvent(Animal animal) {
@@ -13,8 +25,13 @@ public class RemoveAnimalEvent extends AnimalEvent {
   }
 
   public RemoveAnimalEvent(Animal animal, String reason) {
+
     super(animal);
     this.reason = reason;
+  }
+
+  public RemoveAnimalEvent() {
+    super();
   }
 
   @Override

@@ -1,7 +1,7 @@
 package com.ansh.auth.service;
 
 
-import com.ansh.auth.entity.UserProfile;
+import com.ansh.entity.UserProfile;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
