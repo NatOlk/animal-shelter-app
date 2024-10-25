@@ -1,5 +1,6 @@
 package com.ansh.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Table(name = "vaccinations", schema = "public")
@@ -30,7 +32,8 @@ public class Vaccination {
   private Date vaccinationTime;
   @Column
   private String comments;
-
+  @JsonBackReference
+  @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "animal_id")
   private Animal animal;

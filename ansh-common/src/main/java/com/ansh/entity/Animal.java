@@ -1,5 +1,6 @@
 package com.ansh.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +11,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Entity
@@ -26,7 +28,7 @@ public class Animal {
   private String species;
   @Column
   private String primaryColor;
-  @Column
+  @Column(unique = true)
   private String implantChipId;
   @Column
   private String breed;
@@ -38,6 +40,7 @@ public class Animal {
   private String pattern;
   @Column
   private Date admissionDate;
+  @JsonManagedReference
   @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Vaccination> vaccinations;
 }
