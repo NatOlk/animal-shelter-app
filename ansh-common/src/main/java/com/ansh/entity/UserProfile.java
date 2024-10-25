@@ -1,8 +1,10 @@
-package com.ansh.auth.entity;
+package com.ansh.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,6 +31,9 @@ public class UserProfile {
   private String name;
   @Column
   private String password;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "animal_notif_status", nullable = false)
+  private AnimalNotificationSubscriptionStatus animalNotifyStatus = AnimalNotificationSubscriptionStatus.NONE;
 
   @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
   @JoinTable(
@@ -46,14 +51,10 @@ public class UserProfile {
     role.getUsers().add(this);
   }
 
-  @Override
-  public String toString() {
-    return "UserProfile{" +
-        "id=" + id +
-        ", email='" + email + '\'' +
-        ", name='" + name + '\'' +
-        ", roles=" + roles +
-        '}';
+  protected enum AnimalNotificationSubscriptionStatus {
+    NONE,
+    PENDING,
+    ACTIVE
   }
 }
 

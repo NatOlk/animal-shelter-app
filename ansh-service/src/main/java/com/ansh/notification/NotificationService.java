@@ -38,7 +38,8 @@ public class NotificationService {
   }
 
   public void sendRemoveVaccinationMessage(Vaccination vaccination) {
-    AnimalEvent addVaccinationEvent = new RemoveVaccinationEvent(vaccination.getAnimal(), vaccination);
+    AnimalEvent addVaccinationEvent = new RemoveVaccinationEvent(vaccination.getAnimal(),
+        vaccination);
     animalInfoProducer.sendMessage(animalGroupTopicId, addVaccinationEvent);
   }
 }
