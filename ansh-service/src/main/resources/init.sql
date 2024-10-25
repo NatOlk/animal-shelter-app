@@ -1,5 +1,5 @@
-INSERT INTO userprofiles (email, name, password) VALUES ('nolkoeva@gmail.com', 'admin', '$2b$12$rAbcG66.Jawjm31LImq3GOjA.oGlYhlWiNaQPL2SEzBcg9SGBvw26');
-COMMIT;
+INSERT INTO userprofiles (email, name, password, animal_notif_status)
+VALUES ('nolkoeva@gmail.com', 'admin', '$2b$12$rAbcG66.Jawjm31LImq3GOjA.oGlYhlWiNaQPL2SEzBcg9SGBvw26', 'NONE');
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
 VALUES ('2024-10-17', '2022-05-01', 'Bulldog', 'M', '11111111-1111-1111-1111-111111111111', 'Max', 'Solid', 'Brown', 'Dog', 99999);
