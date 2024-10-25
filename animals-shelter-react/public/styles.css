@@ -84,3 +84,8 @@ textarea.removal {
   font-size: 22px !important;
   font-weight: bold;
 }
+
+input::placeholder {
+    color: red;
+    font-weight: bold;
+}
