@@ -1,6 +1,6 @@
 FROM openjdk:21
 
-COPY target/ansh-notification-service-1.jar ansh-notification-service.jar
+COPY target/ansh-notification-service-1.0.jar ansh-notification-service.jar
 
 EXPOSE 8081
 
