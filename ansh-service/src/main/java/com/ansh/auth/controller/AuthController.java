@@ -1,8 +1,6 @@
 package com.ansh.auth.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +28,9 @@ public class AuthController {
   private AuthenticationManager authenticationManager;
 
   @PostMapping("/login")
-  public ResponseEntity<Object> login(@RequestParam String identifier, @RequestParam String password,
-      HttpServletRequest request,
-      HttpServletResponse response) {
+  public ResponseEntity<Object> login(@RequestParam String identifier,
+      @RequestParam String password,
+      HttpServletRequest request) {
     try {
       Authentication authentication = authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(identifier, password)
@@ -42,14 +40,6 @@ public class AuthController {
       request.getSession()
           .setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
               SecurityContextHolder.getContext());
-
-      String sessionId = request.getSession().getId();
-
-      Cookie cookie = new Cookie("JSESSIONID", sessionId);
-      cookie.setPath("/");
-      cookie.setHttpOnly(true);
-      response.setHeader("Set-Cookie",
-          "JSESSIONID=" + sessionId + "; Path=/; HttpOnly; SameSite=None; Secure");
 
       Map<String, Object> responseMap = new HashMap<>();
       responseMap.put("message", "Login successful");
