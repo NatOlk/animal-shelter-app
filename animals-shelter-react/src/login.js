@@ -3,7 +3,6 @@ import { useAuth } from './common/authContext';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-
     const apiUrl = process.env.REACT_APP_API_URL;
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
@@ -29,9 +28,12 @@ const Login = () => {
             });
 
             if (response.ok) {
-                const responseBody = await response.text();
-                const userData = JSON.parse(responseBody);
-                login(userData.user);
+                const responseBody = await response.json();
+                const userData = {
+                    id: responseBody.user,
+                    email: responseBody.email
+                };
+                login(userData);
                 navigate('/');
             } else {
                 setErrorMessage('Login failed');
@@ -42,38 +44,46 @@ const Login = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} autoComplete="off">
-         {errorMessage && <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
-         <h5 className="red">{errorMessage}</h5></div>}
-           <div className="row">
-               <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
-                <input
-                    type="text"
-                    id="identifier"
-                    name="identifier"
-                    className="validate"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    required
-                    autoComplete="off"
-                />
+        <div className="container">
+            <div className="valign-wrapper">
+                <h1> </h1>
             </div>
-           <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={password}
-                    className="validate"
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+            <div>
+                <form onSubmit={handleSubmit} autoComplete="off">
+                    {errorMessage && <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
+                        <h5 className="red">{errorMessage}</h5>
+                    </div>}
+                    <div className="row">
+                        <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
+                            <input
+                                type="text"
+                                id="identifier"
+                                name="identifier"
+                                className="validate"
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
+                                required
+                                autoComplete="off"
+                            />
+                        </div>
+                        <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={password}
+                                className="validate"
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="col s12 m8 l6 offset-m2 offset-l3">
+                            <button className="btn waves-effect waves-orange" type="submit">Login</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-             <div className="col s12 m8 l6 offset-m2 offset-l3">
-                  <button className="btn waves-effect waves-orange" type="submit">Login</button>
-                </div>
-           </div>
-        </form>
+        </div>
     );
 };
 

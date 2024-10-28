@@ -1,6 +1,5 @@
 package com.ansh.repository.entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +18,8 @@ public class Subscription {
   private Long id;
   @Column
   private String email;
+  @Column
+  private String approver;
   @Column
   private String topic;
   @Column
