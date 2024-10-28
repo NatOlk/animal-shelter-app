@@ -19,10 +19,12 @@ import 'materialize-css/dist/js/materialize.min.js';
 const AppContent = () => {
   return (
     <>
-      <NavBarContent />
-      <div className="valign-wrapper">
-        <h1> </h1>
+      <div className="row">
+        <div className="col s12">
+          <NavBarContent />
+        </div>
       </div>
+
       <div className="row">
         <div className="col s2">
           <SideBarContent />

@@ -73,7 +73,7 @@ function AddAnimal() {
             <td><input name="name"
                 value={animal.name}
                 onChange={handleInputChange}
-                className="table-column-breed"
+                className="table-column-breed mandatory"
                 placeholder={validationError === 'name' ? 'Name is mandatory' : ''} />
             </td>
             <td>
@@ -81,7 +81,7 @@ function AddAnimal() {
                     name="species"
                     value={animal.species}
                     onChange={handleInputChange}
-                    className="browser-default"
+                    className="browser-default mandatory"
                     placeholder={validationError === 'species' ? 'Species is mandatory' : ''}>
                     {config.config.animals.map(animal => (
                         <option key={animal} value={animal}>{animal}</option>
@@ -93,7 +93,7 @@ function AddAnimal() {
                     name="primaryColor"
                     value={animal.primaryColor}
                     onChange={handleInputChange}
-                    className="browser-default"
+                    className="browser-default mandatory"
                     placeholder={validationError === 'primaryColor' ? 'Primary color is mandatory' : ''}>
                     {config.config.colors.map(color => (
                         <option key={color} value={color}>{color}</option>
@@ -111,7 +111,7 @@ function AddAnimal() {
                     name="implantChipId"
                     value={animal.implantChipId}
                     onChange={handleInputChange}
-                    className="table-column-chip"
+                    className="table-column-chip mandatory"
                     placeholder={validationError === 'implantChipId' ? 'implantChipId is mandatory' : ''} />
             </td>
             <td>
@@ -119,7 +119,7 @@ function AddAnimal() {
                     name="gender"
                     value={animal.gender}
                     onChange={handleInputChange}
-                    className="browser-default table-column-gender"
+                    className="browser-default table-column-gender mandatory"
                     placeholder={validationError === 'gender' ? 'Gender is mandatory' : ''}>
                     {config.config.genders.map(gender => (
                         <option key={gender} value={gender}>{gender}</option>

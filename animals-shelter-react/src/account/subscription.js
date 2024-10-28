@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-const Subscription = ({ email: initialEmail }) => {
+const Subscription = ({ email: initialEmail, readOnly = false }) => {
     const apiUrl = process.env.REACT_APP_NOTIFICATION_APP_API_URL;
     const [email, setEmail] = useState(initialEmail || '');
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,9 +20,9 @@ const Subscription = ({ email: initialEmail }) => {
         }
     };
 
-    const handleUnsubscribe = async (subscriber) => {
+    const handleUnsubscribe = async () => {
         try {
-            await fetch(`${apiUrl}/animal-notify-unsubscribe/${subscriber.email}`, {
+            await fetch(`${apiUrl}/animal-notify-unsubscribe/${email}`, {
                 method: 'POST',
             });
         } catch (error) {
@@ -34,15 +33,27 @@ const Subscription = ({ email: initialEmail }) => {
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <div className="input-field col s6">
+                <div className="input-field inline">
                     <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Please insert your email"
                         required
+                        readOnly={true}
                     />
-                    <button type="submit" className="waves-effect waves-orange btn-small">Subscribe</button>
+                    {!readOnly && (
+                        <button type="submit" className="waves-effect waves-orange btn-small">Subscribe</button>
+                    )}
+                    {!readOnly && (
+                        <button
+                            type="button"
+                            className="waves-effect waves-red btn-small"
+                            onClick={handleUnsubscribe}
+                        >
+                            Unsubscribe
+                        </button>
+                    )}
                 </div>
             </form>
         </>
