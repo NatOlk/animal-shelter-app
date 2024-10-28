@@ -4,6 +4,7 @@ import showError from "./showError";
 import { useConfig } from '../common/configContext';
 import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries.js';
 import M from 'materialize-css';
+import { useAuth } from '../common/authContext';
 
 function AddVaccination({ animalId }) {
     const [vaccination, setVaccination] = useState({
@@ -13,8 +14,15 @@ function AddVaccination({ animalId }) {
         comments: 'Add new vaccine',
         email: ''
     });
+    const [validationError, setError] = useState(null);
+    const { isAuthenticated, user } = useAuth();
+
     useEffect(() => {
-        var datepickerElems = document.querySelectorAll('.datepicker');
+        if (isAuthenticated && user) {
+            setVaccination((prev) => ({ ...prev, email: user.email }));
+        }
+
+        const datepickerElems = document.querySelectorAll('.datepicker');
         M.Datepicker.init(datepickerElems, {
             format: 'yyyy-mm-dd',
             onSelect: (date) => {
@@ -22,9 +30,8 @@ function AddVaccination({ animalId }) {
                 setVaccination(prev => ({ ...prev, vaccinationTime: selectedDate }));
             },
         });
-    }, []);
+    }, [isAuthenticated, user]);
 
-    const [validationError, setError] = useState(null);
     const [addVaccination] = useMutation(ADD_VACCINATION, {
         refetchQueries: [VACCINATIONS_QUERY],
         update(cache, { data: { addVaccination } }) {
@@ -47,7 +54,8 @@ function AddVaccination({ animalId }) {
                 <td colSpan="5">Loading animals configs...</td>
             </tr>
         );
-    };
+    }
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setVaccination({
@@ -62,9 +70,9 @@ function AddVaccination({ animalId }) {
             batch: '',
             vaccinationTime: new Date().toISOString().split('.')[0],
             comments: 'Add new vaccine',
-            email: 'nolkoeva@gmail.com'
+            email: user.email
         });
-    }
+    };
 
     return (
         <tr>
@@ -129,7 +137,7 @@ function AddVaccination({ animalId }) {
 
                     clearFields();
                 }} >
-                  <i className="small material-icons">add</i>
+                    <i className="small material-icons">add</i>
                 </button>
             </td>
         </tr>
