@@ -70,8 +70,8 @@ tr td.table-column-chip {
 .headbackgroud {
   background-image: url('img/grass.jpg');
   background-size: cover;
-  background-position: center;
-  height: 100px !important;
+  background-position: center !important;
+  height: 140px !important;
   line-height: 100px !important;
   width: 100% !important;
 }
@@ -85,7 +85,22 @@ textarea.removal {
   font-weight: bold;
 }
 
+input.mandatory::placeholder {
+  color: red;
+  font-weight: bold;
+}
+
+.nav-wrapper .right a:hover {
+  background-color: transparent;
+}
+
 input::placeholder {
-    color: red;
-    font-weight: bold;
+  color: black;
+  font-weight: bold;
+}
+
+.card-color {
+  background-color: white !important;
+  font-size: 14px !important;
+  color: #4db6ac !important;
 }
