@@ -64,6 +64,34 @@ function AddVaccination({ animalId }) {
         });
     };
 
+    const handleAddVaccination = () => () => {
+        if (!vaccination.vaccine) {
+            setError('vaccine');
+            return;
+        }
+        if (!vaccination.batch) {
+            setError('batch');
+            return;
+        }
+        if (!vaccination.vaccinationTime) {
+            setError('vaccinationTime');
+            return;
+        }
+
+        addVaccination({
+            variables: {
+                animalId: animalId,
+                vaccine: vaccination.vaccine,
+                batch: vaccination.batch,
+                vaccinationTime: vaccination.vaccinationTime.split('T')[0],
+                comments: vaccination.comments,
+                email: vaccination.email
+            }
+        }).catch(error => { showError({ error: error }) });
+
+        clearFields();
+    }
+
     const clearFields = () => {
         setVaccination({
             vaccine: 'Rabies',
@@ -110,33 +138,7 @@ function AddVaccination({ animalId }) {
                 <input name="email" value={vaccination.email} onChange={handleInputChange} />
             </td>
             <td>
-                <button className="waves-effect waves-light btn-small" onClick={() => {
-                    if (!vaccination.vaccine) {
-                        setError('vaccine');
-                        return;
-                    }
-                    if (!vaccination.batch) {
-                        setError('batch');
-                        return;
-                    }
-                    if (!vaccination.vaccinationTime) {
-                        setError('vaccinationTime');
-                        return;
-                    }
-
-                    addVaccination({
-                        variables: {
-                            animalId: animalId,
-                            vaccine: vaccination.vaccine,
-                            batch: vaccination.batch,
-                            vaccinationTime: vaccination.vaccinationTime.split('T')[0],
-                            comments: vaccination.comments,
-                            email: vaccination.email
-                        }
-                    }).catch(error => { showError({ error: error }) });
-
-                    clearFields();
-                }} >
+                <button className="waves-effect waves-light btn-small" onClick={handleAddVaccination} >
                     <i className="small material-icons">add</i>
                 </button>
             </td>
