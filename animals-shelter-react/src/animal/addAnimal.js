@@ -18,17 +18,17 @@ function AddAnimal() {
     };
     useEffect(() => {
         const datepickerElems = document.querySelectorAll('.datepicker');
-         const instances = M.Datepicker.init(datepickerElems, {
+        const instances = M.Datepicker.init(datepickerElems, {
             format: 'yyyy-mm-dd',
             onSelect: (date) => {
                 handleInputChange({ target: { name: 'birthDate', value: date } });
             },
         });
-         return () => {
-                instances.forEach((instance) => {
-                    instance.destroy();
-                });
-            };
+        return () => {
+            instances.forEach((instance) => {
+                instance.destroy();
+            });
+        };
     }, []);
 
     const [animal, setAnimal] = useState(initialValues);
@@ -62,7 +62,44 @@ function AddAnimal() {
             [name]: value,
         });
     };
+    const handleAddAnimal = () => {
+        if (!animal.name) {
+            setValidationError('name');
+            return;
+        }
+        if (!animal.species) {
+            setValidationError('species');
+            return;
+        }
+        if (!animal.implantChipId) {
+            setValidationError('implantChipId');
+            return;
+        }
+        if (!animal.primaryColor) {
+            setValidationError('primaryColor');
+            return;
+        }
+        if (!animal.gender) {
+            setValidationError('gender');
+            return;
+        }
 
+        addAnimal(
+            {
+                variables: {
+                    name: animal.name,
+                    species: animal.species,
+                    primaryColor: animal.primaryColor,
+                    breed: animal.breed,
+                    implantChipId: animal.implantChipId,
+                    gender: animal.gender,
+                    birthDate: animal.birthDate,
+                    pattern: animal.pattern
+                }
+            }).catch((error1) => { showError({ error: error1 }) });
+
+        clearFields();
+    };
     const clearFields = () => {
         setAnimal(initialValues);
     };
@@ -139,45 +176,7 @@ function AddAnimal() {
                     className='table-column-breed' />
             </td>
             <td>
-                <button onClick={
-                    function () {
-                        if (!animal.name) {
-                            setValidationError('name');
-                            return;
-                        }
-                        if (!animal.species) {
-                            setValidationError('species');
-                            return;
-                        }
-                        if (!animal.implantChipId) {
-                            setValidationError('implantChipId');
-                            return;
-                        }
-                        if (!animal.primaryColor) {
-                            setValidationError('primaryColor');
-                            return;
-                        }
-                        if (!animal.gender) {
-                            setValidationError('gender');
-                            return;
-                        }
-
-                        addAnimal(
-                            {
-                                variables: {
-                                    name: animal.name,
-                                    species: animal.species,
-                                    primaryColor: animal.primaryColor,
-                                    breed: animal.breed,
-                                    implantChipId: animal.implantChipId,
-                                    gender: animal.gender,
-                                    birthDate: animal.birthDate,
-                                    pattern: animal.pattern
-                                }
-                            }).catch((error1) => { showError({ error: error1 }) });
-
-                        clearFields();
-                    }} className="waves-effect waves-orange btn-small">
+                <button onClick={handleAddAnimal} className="waves-effect waves-orange btn-small">
                     <i className="small material-icons">add</i>
                 </button>
             </td>
