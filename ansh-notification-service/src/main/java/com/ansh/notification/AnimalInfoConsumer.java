@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AnimalInfoConsumer {
-  @Value("${animalGroupTopicId}")
-  private String animalGroupTopicId;
+  @Value("${animalTopicId}")
+  private String animalTopicId;
 
   @Autowired
   private AnimalEventHandlerRegistry handlerRegistry;
 
-  @KafkaListener(topics = "${animalGroupTopicId}", groupId = "animalGroupId")
+  @KafkaListener(topics = "${animalTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> record) throws IOException {
 
     AnimalEvent animalEvent = new ObjectMapper().readValue(record.value(), AnimalEvent.class);
