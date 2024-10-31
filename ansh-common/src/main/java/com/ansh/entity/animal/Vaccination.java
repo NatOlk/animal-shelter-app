@@ -1,4 +1,4 @@
-package com.ansh.entity;
+package com.ansh.entity.animal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;

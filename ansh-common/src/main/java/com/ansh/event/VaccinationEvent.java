@@ -1,7 +1,7 @@
 package com.ansh.event;
 
-import com.ansh.entity.Animal;
-import com.ansh.entity.Vaccination;
+import com.ansh.entity.animal.Animal;
+import com.ansh.entity.animal.Vaccination;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
