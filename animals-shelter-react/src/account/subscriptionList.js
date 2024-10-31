@@ -72,12 +72,10 @@ function SubscriptionList() {
                 <td>{subscriber.topic}</td>
                 <td>{subscriber.accepted ? 'Yes' : 'No'}</td>
                 <td>
-                    {!subscriber.accepted && (
-                        <button onClick={() => handleUnsubscribe(subscriber.token)}
-                            className="btn btn-primary">
-                            Unsubscribe
-                        </button>
-                    )}
+                    <button onClick={() => handleUnsubscribe(subscriber.token)}
+                        className="btn btn-primary">
+                        Unsubscribe
+                    </button>
                 </td>
             </tr>
         ));
