@@ -30,12 +30,11 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   protected abstract String getNotificationTemplate();
 
   private void sendNotifications(Map<String, Object> params, String subject, String templateName) {
-    LOG.info("Send notifications " + params);
     topicSubscriberRegistry.getSubscribers()
         .forEach(subscription -> {
           params.put("name", subscription.getEmail());
           params.put("unsubscribeLink", animalShelterNotificationApp
-              + "/animal-notify-unsubscribe/" + subscription.getToken());
+              + "/external/animal-notify-unsubscribe/" + subscription.getToken());
           emailService.sendSimpleMessage(subscription.getEmail(), subject, templateName, params);
         });
   }

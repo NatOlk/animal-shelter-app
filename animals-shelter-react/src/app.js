@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AnimalsList from "./animal/animalsList";
 import VaccinationsList from "./vaccination/vaccinationsList";
 import SideBarContent from './sideBarContent';
@@ -12,11 +12,10 @@ import Logout from "./logout";
 import ProtectedRoute from "./common/protectedRoute";
 import ErrorPage from "./errorPage";
 import { AuthProvider } from './common/authContext';
-import M from 'materialize-css';
-import 'materialize-css/dist/css/materialize.min.css';
-import 'materialize-css/dist/js/materialize.min.js';
+import QuickSubscribe from './account/quickSubscribe';
 
 const AppContent = () => {
+
   return (
     <>
       <div className="row">
@@ -57,12 +56,13 @@ const AppContent = () => {
           </Routes>
         </div>
       </div>
+      <QuickSubscribe />
+
     </>
   );
 };
 
 const App = () => {
-
   return (
     <AuthProvider>
       <Router>
