@@ -28,7 +28,7 @@ public class SubscriptionNotificationService {
     Map<String, Object> params = new HashMap<>(2);
     params.put("name", email);
     String confirmationLink = animalShelterNotificationApp +
-        "/animal-notify-subscribe-check/" + token;
+        "/external/animal-notify-subscribe-check/" + token;
     params.put("confirmationLink", confirmationLink);
     params.put("subscriptionLink", confirmationLink);
     emailService.sendSimpleMessage(email, SUBSCRIPTION_SUBJECT,
