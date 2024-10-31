@@ -1,6 +1,6 @@
 package com.ansh.event;
 
-import com.ansh.entity.Animal;
+import com.ansh.entity.animal.Animal;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.HashMap;

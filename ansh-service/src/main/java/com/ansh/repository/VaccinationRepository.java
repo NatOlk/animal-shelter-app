@@ -1,6 +1,6 @@
 package com.ansh.repository;
 
-import com.ansh.entity.Vaccination;
+import com.ansh.entity.animal.Vaccination;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

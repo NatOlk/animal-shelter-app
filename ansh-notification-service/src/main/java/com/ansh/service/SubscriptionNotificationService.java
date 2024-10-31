@@ -6,7 +6,7 @@ import static com.ansh.notification.handler.SubscriptionMessages.SUBSCRIPTION_SU
 import static com.ansh.notification.handler.SubscriptionMessages.SUCCESS_SUBSCRIPTION_SUBJECT;
 import static com.ansh.notification.handler.SubscriptionMessages.SUCCESS_SUBSCRIPTION_TEMPLATE;
 
-import com.ansh.repository.entity.Subscription;
+import com.ansh.entity.subscription.Subscription;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
