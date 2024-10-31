@@ -1,6 +1,6 @@
 package com.ansh.repository;
 
-import com.ansh.entity.Animal;
+import com.ansh.entity.animal.Animal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

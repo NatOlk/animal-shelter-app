@@ -1,6 +1,6 @@
 package com.ansh.controller;
 
-import com.ansh.repository.entity.Subscription;
+import com.ansh.entity.subscription.Subscription;
 import com.ansh.service.TopicSubscriberRegistryService;
 import java.util.List;
 import org.slf4j.Logger;

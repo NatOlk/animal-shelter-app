@@ -1,6 +1,6 @@
 package com.ansh.event;
 
-import com.ansh.entity.Animal;
+import com.ansh.entity.animal.Animal;
 
 public class AddAnimalEvent extends AnimalEvent {
 

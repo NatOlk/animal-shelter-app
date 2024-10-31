@@ -1,4 +1,4 @@
-package com.ansh.entity;
+package com.ansh.entity.animal;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

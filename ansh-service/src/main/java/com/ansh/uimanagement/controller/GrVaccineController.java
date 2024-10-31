@@ -1,7 +1,7 @@
 package com.ansh.uimanagement.controller;
 
-import com.ansh.entity.Animal;
-import com.ansh.entity.Vaccination;
+import com.ansh.entity.animal.Animal;
+import com.ansh.entity.animal.Vaccination;
 import com.ansh.uimanagement.service.VaccinationService;
 import com.ansh.uimanagement.service.exception.VaccinationCreationException;
 import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
