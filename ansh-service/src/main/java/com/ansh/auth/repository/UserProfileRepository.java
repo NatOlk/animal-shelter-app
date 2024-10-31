@@ -1,6 +1,6 @@
 package com.ansh.auth.repository;
 
-import com.ansh.entity.UserProfile;
+import com.ansh.entity.animal.UserProfile;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

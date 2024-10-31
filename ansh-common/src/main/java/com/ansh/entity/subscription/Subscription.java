@@ -1,4 +1,4 @@
-package com.ansh.repository.entity;
+package com.ansh.entity.subscription;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +24,8 @@ public class Subscription {
   private String topic;
   @Column
   private boolean accepted;
+  @Column
+  private boolean approved;
   @Column
   private String token;
 
