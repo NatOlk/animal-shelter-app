@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class AnimalNotificationUserSubscribedEvent {
   private String email;
+  private String approver;
 }
