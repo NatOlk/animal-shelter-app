@@ -64,7 +64,7 @@ function AddVaccination({ animalId }) {
         });
     };
 
-    const handleAddVaccination = () => () => {
+    const handleAddVaccination = () => {
         if (!vaccination.vaccine) {
             setError('vaccine');
             return;
