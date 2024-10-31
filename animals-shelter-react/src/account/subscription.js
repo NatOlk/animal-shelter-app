@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 
-const Subscription = ({ email: initialEmail, readOnly = false }) => {
+const Subscription = ({ email: initialEmail, approver: initialApprover, readOnly = false }) => {
     const apiUrl = process.env.REACT_APP_NOTIFICATION_APP_API_URL;
     const [email, setEmail] = useState(initialEmail || '');
+    const [approver, setApprover] = useState(initialApprover || '');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await fetch(`${apiUrl}/animal-notify-subscribe`, {
+            await fetch(`${apiUrl}/external/animal-notify-subscribe`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'text/plain',
+                    'Content-Type': 'application/json',
                 },
-                body: email,
+                body: JSON.stringify({
+                    email,
+                    approver
+                }),
             });
             setEmail('');
+            setApprover('');
         } catch (error) {
             console.error('Error during subscription:', error);
         }
@@ -22,7 +27,7 @@ const Subscription = ({ email: initialEmail, readOnly = false }) => {
 
     const handleUnsubscribe = async () => {
         try {
-            await fetch(`${apiUrl}/animal-notify-unsubscribe/${email}`, {
+            await fetch(`${apiUrl}/external/animal-notify-unsubscribe/${email}`, {
                 method: 'POST',
             });
         } catch (error) {
@@ -40,7 +45,7 @@ const Subscription = ({ email: initialEmail, readOnly = false }) => {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Please insert your email"
                         required
-                        readOnly={true}
+                        readOnly={readOnly}
                     />
                     {!readOnly && (
                         <button type="submit" className="waves-effect waves-orange btn-small">Subscribe</button>

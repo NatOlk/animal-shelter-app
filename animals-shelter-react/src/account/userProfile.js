@@ -27,7 +27,7 @@ const UserProfile = () => {
         return <span>
           <i className="small material-icons">unsubscribe</i> You’re currently unsubscribed from our animal updates.
           We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
-          <Subscription email={currentUserProfile.email} readOnly={false} />
+          <Subscription email={currentUserProfile.email} approver={currentUserProfile.email} readOnly={false} />
         </span>;
       case 'PENDING':
         return (<span>
@@ -35,7 +35,7 @@ const UserProfile = () => {
             hourglass_empty
           </i>
           Your subscription status is in progress. Once it is approved, you will start receiving notifications.
-          <Subscription email={currentUserProfile.email} readOnly={true} />
+          <Subscription email={currentUserProfile.email} approver={currentUserProfile.email} readOnly={true} />
         </span>
         );
       case 'ACTIVE':
@@ -43,7 +43,8 @@ const UserProfile = () => {
           <span>
             <i className="small material-icons green-text text-darken-1">
               notifications_active
-            </i> You are subscribed to the animal notifications. <Subscription email={currentUserProfile.email} readOnly={true} />
+            </i> You are subscribed to the animal notifications.
+            <Subscription email={currentUserProfile.email} approver={currentUserProfile.email} readOnly={true} />
           </span>
         );
       default:
@@ -69,7 +70,7 @@ const UserProfile = () => {
                     <div className="collapsible-body"><span>ADMIN, EMPLOYEE</span></div>
                   </li>
                   <li>
-                    <div className="collapsible-header"><i className="material-icons">place</i>Subscription</div>
+                    <div className="collapsible-header"><i className="material-icons">place</i>Your subscriptions</div>
                     <div className="collapsible-body">
                       {renderIconBasedOnStatus()}
                     </div>
