@@ -20,33 +20,34 @@ public class SubscriptionController {
   @Autowired
   private TopicSubscriberRegistryService topicSubscriberRegistry;
 
-  @PostMapping("/animal-notify-subscribe")
-  public void subscribe(@RequestBody String email) {
-    email = email.replace("\"", "");
-    topicSubscriberRegistry.registerSubscriber(email);
+  @PostMapping("/external/animal-notify-subscribe")
+  public void subscribe(@RequestBody SubscriptionRequest request) {
+    String email = request.getEmail().replace("\"", "");
+    String approver = request.getApprover().replace("\"", "");
+    topicSubscriberRegistry.registerSubscriber(email, approver);
   }
 
-  @GetMapping("/animal-notify-unsubscribe/{token}")
+  @GetMapping("/external/animal-notify-subscribe-check/{token}")
+  public String checkSubscription(@PathVariable String token) {
+    boolean isAccepted = topicSubscriberRegistry.confirmSubscription(token);
+
+    return "Subscription with token " + token + " is " + (isAccepted ? "valid" : "invalid");
+  }
+
+  @GetMapping("/external/animal-notify-unsubscribe/{token}")
   public String unsubscribe(@PathVariable String token) {
     topicSubscriberRegistry.unregisterSubscriber(token);
 
     return "Subscription with token " + token + " removed";
   }
 
-  @GetMapping("/animal-notify-subscribes")
+  @GetMapping("/internal/animal-notify-subscribes")
   public List<Subscription> subscribers() {
     return topicSubscriberRegistry.getSubscribers();
   }
 
-  @GetMapping("/animal-notify-all-subscribes")
+  @GetMapping("/internal/animal-notify-all-subscribes")
   public List<Subscription> allSubscribers() {
     return topicSubscriberRegistry.getAllSubscribers();
-  }
-
-  @GetMapping("/animal-notify-subscribe-check/{token}")
-  public String checkSubscription(@PathVariable String token) {
-    boolean isAccepted = topicSubscriberRegistry.confirmSubscription(token);
-
-    return "Subscription with token " + token + " is " + (isAccepted ? "valid" : "invalid");
   }
 }
