@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AnimalsList from "./animal/animalsList";
 import VaccinationsList from "./vaccination/vaccinationsList";
@@ -11,10 +11,12 @@ import Login from "./login";
 import Logout from "./logout";
 import ProtectedRoute from "./common/protectedRoute";
 import ErrorPage from "./errorPage";
-import { AuthProvider } from './common/authContext';
+import { AuthProvider, AuthContext } from './common/authContext';
 import QuickSubscribe from './account/quickSubscribe';
+import { useAuth } from './common/authContext';
 
 const AppContent = () => {
+ const { isAuthenticated, user } = useAuth();
 
   return (
     <>
@@ -56,8 +58,7 @@ const AppContent = () => {
           </Routes>
         </div>
       </div>
-      <QuickSubscribe />
-
+      {isAuthenticated && <QuickSubscribe />}
     </>
   );
 };
