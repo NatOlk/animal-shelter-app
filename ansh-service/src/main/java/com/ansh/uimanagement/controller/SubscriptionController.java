@@ -45,7 +45,7 @@ public class SubscriptionController {
 
   @GetMapping("/subscribers")
   public List<Subscription> getSubscribers() {
-    String url = "http://ansh-notification-service:8081/internal/animal-notify-all-subscribes";
+    String url = animalShelterNotificationApp + "/internal/animal-notify-all-subscribes";
 
     HttpHeaders headers = new HttpHeaders();
     headers.set("X-API-KEY", notificationApiKey);
@@ -56,7 +56,8 @@ public class SubscriptionController {
         url,
         HttpMethod.GET,
         entity,
-        new ParameterizedTypeReference<List<Subscription>>() {}
+        new ParameterizedTypeReference<>() {
+        }
     );
 
     return response.getBody();
