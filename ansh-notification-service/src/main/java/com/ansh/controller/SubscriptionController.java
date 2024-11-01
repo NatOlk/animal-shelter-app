@@ -40,4 +40,13 @@ public class SubscriptionController {
 
     return "Subscription with token " + token + " removed";
   }
+  @GetMapping("/internal/animal-notify-subscribes")
+  public List<Subscription> subscribers() {
+    return topicSubscriberRegistry.getSubscribers();
+  }
+
+  @GetMapping("/internal/animal-notify-all-subscribes")
+  public List<Subscription> allSubscribers() {
+    return topicSubscriberRegistry.getAllSubscribers();
+  }
 }

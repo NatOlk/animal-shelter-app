@@ -52,13 +52,9 @@ public class SubscriptionController {
 
     HttpEntity<String> entity = new HttpEntity<>(headers);
 
-    ResponseEntity<List<Subscription>> response = restTemplate.exchange(
-        url,
-        HttpMethod.GET,
-        entity,
+    ResponseEntity<List<Subscription>> response = restTemplate.exchange(url, HttpMethod.GET, entity,
         new ParameterizedTypeReference<>() {
-        }
-    );
+        });
 
     return response.getBody();
   }
