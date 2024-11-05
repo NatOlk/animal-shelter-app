@@ -18,13 +18,11 @@ public class NotificationService {
 
   public void sendAddAnimalMessage(Animal animal) {
     AnimalEvent addAnimalEvent = new AddAnimalEvent(animal);
-
     animalInfoProducer.sendMessage(addAnimalEvent);
   }
 
   public void sendRemoveAnimalMessage(Animal animal, String reason) {
     AnimalEvent removeAnimalEvent = new RemoveAnimalEvent(animal, reason);
-
     animalInfoProducer.sendMessage(removeAnimalEvent);
   }
 

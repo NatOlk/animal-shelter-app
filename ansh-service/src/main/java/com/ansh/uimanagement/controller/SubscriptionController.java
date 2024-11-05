@@ -1,61 +1,49 @@
 package com.ansh.uimanagement.controller;
 
+import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.entity.PendingSubscriber;
+import com.ansh.uimanagement.service.AnimalTopicSubscriptionService;
 import com.ansh.uimanagement.service.SubscriptionService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class SubscriptionController {
 
-  @Value("${animalShelterNotificationApp}")
-  private String animalShelterNotificationApp;
-  @Value("${notification.api.key}")
-  private String notificationApiKey;
-
   @Autowired
   private SubscriptionService subscriptionService;
-
   @Autowired
-  private RestTemplate restTemplate;
+  private AnimalTopicSubscriptionService animalTopicSubscriptionService;
 
-  @PostMapping("/animal-notify-approve")
-  public void approve(@RequestBody String email) {
-    //TODO: fix it
-    email = email.replace("\"", "");
-    subscriptionService.approveSubscriber(email);
+  @PostMapping("/animal-notify-approve-subscriber")
+  public void approve(@RequestBody SubscriptionRequest subscriptionRequest) {
+    animalTopicSubscriptionService.approveSubscriber(subscriptionRequest.getEmail(),
+        subscriptionRequest.getApprover());
   }
 
-  @GetMapping("/pending-subscribers")
-  public List<PendingSubscriber> getPendingSubscribers() {
-    return subscriptionService.getPendingSubscribers();
+  @PostMapping("/animal-notify-reject-subscriber")
+  public void reject(@RequestBody SubscriptionRequest subscriptionRequest) {
+    animalTopicSubscriptionService.rejectSubscriber(subscriptionRequest.getEmail());
   }
 
-  @GetMapping("/subscribers")
-  public List<Subscription> getSubscribers() {
-    String url = animalShelterNotificationApp + "/internal/animal-notify-all-subscribes";
+  @PostMapping(value = "/animal-notify-pending-subscribers")
+  public List<PendingSubscriber> getPendingSubscribers(
+      @RequestBody SubscriptionRequest subscriptionRequest) {
+    return subscriptionService.getPendingSubscribers(subscriptionRequest.getApprover());
+  }
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("X-API-KEY", notificationApiKey);
+  @GetMapping("/animal-notify-pending-no-approver-subscribers")
+  public List<PendingSubscriber> getPendingNoApproverSubscribers() {
+    return subscriptionService.getPendingNoApproverSubscribers();
+  }
 
-    HttpEntity<String> entity = new HttpEntity<>(headers);
-
-    ResponseEntity<List<Subscription>> response = restTemplate.exchange(url, HttpMethod.GET, entity,
-        new ParameterizedTypeReference<>() {
-        });
-
-    return response.getBody();
+  @PostMapping("/animal-notify-all-approver-subscriptions")
+  public List<Subscription> getSubscribers(@RequestBody SubscriptionRequest subscriptionRequest) {
+    return subscriptionService.getAllSubscriptionByApprover(subscriptionRequest.getApprover());
   }
 }

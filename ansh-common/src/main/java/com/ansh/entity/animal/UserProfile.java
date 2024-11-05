@@ -51,7 +51,7 @@ public class UserProfile {
     role.getUsers().add(this);
   }
 
-  protected enum AnimalNotificationSubscriptionStatus {
+  public enum AnimalNotificationSubscriptionStatus {
     NONE,
     PENDING,
     ACTIVE
