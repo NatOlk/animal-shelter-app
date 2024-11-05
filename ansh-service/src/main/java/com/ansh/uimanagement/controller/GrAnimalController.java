@@ -43,19 +43,17 @@ public class GrAnimalController {
 
   @MutationMapping
   public Animal addAnimal(@Argument String name, @Argument String species,
-      @Argument String primaryColor,
-      @Argument String breed, @Argument String implantChipId, @Argument String gender,
-      @Argument String birthDate,
-      @Argument String pattern) throws AnimalCreationException {
+      @Argument String primaryColor, @Argument String breed, @Argument String implantChipId,
+      @Argument String gender, @Argument String birthDate, @Argument String pattern)
+      throws AnimalCreationException {
     return animalsService.addAnimal(name, species, primaryColor, breed, implantChipId, gender,
         birthDate, pattern);
   }
 
   @MutationMapping
   public Animal updateAnimal(@Argument Long id, @Argument String primaryCcolor,
-      @Argument String breed, @Argument String gender,
-      @Argument String birthDate, @Argument String pattern)
-      throws AnimalNotFoundException, AnimalUpdateException {
+      @Argument String breed, @Argument String gender, @Argument String birthDate,
+      @Argument String pattern) throws AnimalNotFoundException, AnimalUpdateException {
     return animalsService.updateAnimal(id, primaryCcolor, breed, gender, birthDate, pattern);
   }
 
@@ -73,12 +71,8 @@ public class GrAnimalController {
 
   @GraphQlExceptionHandler
   public GraphQLError handle(@NonNull Throwable ex, @NonNull DataFetchingEnvironment environment) {
-    return GraphQLError
-        .newError()
-        .errorType(ErrorType.BAD_REQUEST)
-        .message(ex.getMessage())
+    return GraphQLError.newError().errorType(ErrorType.BAD_REQUEST).message(ex.getMessage())
         .path(environment.getExecutionStepInfo().getPath())
-        .location(environment.getField().getSourceLocation())
-        .build();
+        .location(environment.getField().getSourceLocation()).build();
   }
 }

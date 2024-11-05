@@ -1,18 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Subscription from './subscription';
-import SubscriptionList from './subscriptionList';
+import AllApproverSubscriptionList from './allApproverSubscriptionList';
 import { useQuery } from "@apollo/client";
-import { GET_CURRENT_USER_PROFILE } from '../common/graphqlQueries.js';
+import PendingSubscriptionList from './pendingSubscriptionList';
+import NoApproverSubscriptionList from './noApproverSubscriptionList';
+import { GET_CURRENT_USER_PROFILE } from '../common/graphqlQueries';
 
 const UserProfile = () => {
-  const { loading, error, data } = useQuery(GET_CURRENT_USER_PROFILE);
+  const { loading, error, data } = useQuery(GET_CURRENT_USER_PROFILE, {
+    fetchPolicy: "network-only"
+  });
+
+  const [isNoApproverOpen, setIsNoApproverOpen] = useState(false);
+  const [isAllOpen, setIsAllOpen] = useState(false);
 
   useEffect(() => {
     if (data) {
       const elems = document.querySelectorAll('.collapsible');
       const options = {};
-      M.Collapsible.init(elems, options);
+      const instances = M.Collapsible.init(elems, options);
 
+      return () => {
+        instances.forEach(instance => instance.destroy());
+      };
     }
   }, [data]);
 
@@ -20,36 +30,45 @@ const UserProfile = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   const { currentUserProfile } = data;
+  const { name, email, animalNotifyStatus } = currentUserProfile;
 
   const renderIconBasedOnStatus = () => {
-    switch (currentUserProfile.animalNotifyStatus) {
+    switch (animalNotifyStatus) {
       case 'NONE':
-        return <span>
-          <i className="small material-icons">unsubscribe</i> You’re currently unsubscribed from our animal updates.
-          We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
-          <Subscription email={currentUserProfile.email} approver={currentUserProfile.email} readOnly={false} />
-        </span>;
+        return (
+          <span>
+            <i className="small material-icons">unsubscribe</i> You’re currently unsubscribed from our animal updates.
+            We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
+            <Subscription />
+          </span>
+        );
       case 'PENDING':
-        return (<span>
-          <i className="small material-icons amber-text text-accent-4">
-            hourglass_empty
-          </i>
-          Your subscription status is in progress. Once it is approved, you will start receiving notifications.
-          <Subscription email={currentUserProfile.email} approver={currentUserProfile.email} readOnly={true} />
-        </span>
+        return (
+          <span>
+            <div className="progress">
+              <div className="indeterminate"></div>
+            </div>
+          </span>
         );
       case 'ACTIVE':
         return (
           <span>
-            <i className="small material-icons green-text text-darken-1">
+            <i className="medium material-icons green-text text-darken-1">
               notifications_active
             </i> You are subscribed to the animal notifications.
-            <Subscription email={currentUserProfile.email} approver={currentUserProfile.email} readOnly={true} />
           </span>
         );
       default:
         return <p>Status loading...</p>;
     }
+  };
+
+  const toggleNoApproverList = () => {
+    setIsNoApproverOpen(!isNoApproverOpen);
+  };
+
+  const toggleAllList = () => {
+    setIsAllOpen(!isAllOpen);
   };
 
   return (
@@ -60,8 +79,8 @@ const UserProfile = () => {
             <div className="card card-color">
               <div className="card-content">
                 <span className="card-title">User profile</span>
-                <p>Hello, {currentUserProfile.name}! How are you? Happy to see you!</p>
-                <p><i className="small material-icons">alternate_email</i> {currentUserProfile.email}</p>
+                <p>Hello, {name}! How are you? Happy to see you!</p>
+                <p><i className="small material-icons">alternate_email</i> {email}</p>
               </div>
               <div className="card-action">
                 <ul className="collapsible">
@@ -79,7 +98,36 @@ const UserProfile = () => {
               </div>
             </div>
           </div>
-          <SubscriptionList />
+
+          <div className="row">
+            <div className="col s12 m12">
+              <ul className="collapsible card-color">
+                <li className="active">
+                  <div className="collapsible-header">
+                    <i className="material-icons">pending_actions</i>Pending Subscribers</div>
+                  <div className="collapsible-body">
+                    <PendingSubscriptionList userProfile={currentUserProfile} />
+                  </div>
+                </li>
+                <li>
+                  <div className="collapsible-header" onClick={toggleNoApproverList}>
+                    <i className="material-icons">no_accounts</i>No Approver Subscribers
+                  </div>
+                  <div className="collapsible-body">
+                    {isNoApproverOpen && <NoApproverSubscriptionList userProfile={currentUserProfile} />}
+                  </div>
+                </li>
+                <li>
+                  <div className="collapsible-header" onClick={toggleAllList}>
+                    <i className="material-icons">how_to_reg</i>All Subscribers
+                  </div>
+                  <div className="collapsible-body">
+                    {isAllOpen && <AllApproverSubscriptionList userProfile={currentUserProfile} />}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       )}
     </div>

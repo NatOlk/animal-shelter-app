@@ -1,4 +1,4 @@
-package com.ansh.controller;
+package com.ansh.dto;
 
 import lombok.Data;
 

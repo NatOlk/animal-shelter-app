@@ -16,14 +16,13 @@ public class PendingSubscriber {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
   @Column(nullable = false)
   private String email;
-
-  @Column(nullable = false)
+  @Column
   private String approver;
-
-  @Column(nullable = false)
+  @Column
+  private String topic;
+  @Column
   private Boolean approved = false;
 }
 

@@ -1,8 +1,7 @@
 package com.ansh.notification;
 
 import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
-import com.ansh.notification.handler.AnimalEventHandlerRegistry;
-import com.ansh.service.TopicSubscriberRegistryService;
+import com.ansh.service.AnimalTopicSubscriberRegistryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -18,7 +17,7 @@ public class SubscriberNotificationInfoConsumer {
   private String approveTopicId;
 
   @Autowired
-  private TopicSubscriberRegistryService topicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryService topicSubscriberRegistryService;
 
   @KafkaListener(topics = "${approveTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> record) throws IOException {
@@ -26,6 +25,8 @@ public class SubscriberNotificationInfoConsumer {
     AnimalNotificationUserSubscribedEvent animalEvent = new ObjectMapper().readValue(record.value(),
         AnimalNotificationUserSubscribedEvent.class);
     String email = animalEvent.getEmail();
-    topicSubscriberRegistryService.approveSubscriber(email);
+    String approver = animalEvent.getApprover();
+    String topic = animalEvent.getTopic();
+    topicSubscriberRegistryService.approveSubscriber(email, approver, topic);
   }
 }

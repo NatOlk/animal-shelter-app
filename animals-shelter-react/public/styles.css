@@ -104,3 +104,10 @@ input::placeholder {
   font-size: 14px !important;
   color: #4db6ac !important;
 }
+
+.header-color {
+  color: #26a69a;
+  display: block;
+  line-height: 32px;
+  margin-bottom: 8px;
+}

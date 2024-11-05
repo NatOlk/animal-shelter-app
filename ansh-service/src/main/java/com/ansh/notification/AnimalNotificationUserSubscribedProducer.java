@@ -1,6 +1,5 @@
 package com.ansh.notification;
 
-import com.ansh.event.AnimalEvent;
 import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -26,13 +25,13 @@ public class AnimalNotificationUserSubscribedProducer {
     this.objectMapper = objectMapper;
   }
 
-  public void sendApprove(String email, String approver) {
+  public void sendApprove(String email, String approver, String topic) {
     try {
       AnimalNotificationUserSubscribedEvent animalNotificationUserSubscribedEvent =
           new AnimalNotificationUserSubscribedEvent();
       animalNotificationUserSubscribedEvent.setEmail(email);
       animalNotificationUserSubscribedEvent.setApprover(approver);
-
+      animalNotificationUserSubscribedEvent.setTopic(topic);
       String jsonMessage = objectMapper.writeValueAsString(animalNotificationUserSubscribedEvent);
 
       kafkaTemplate.send(approveTopicId, jsonMessage);

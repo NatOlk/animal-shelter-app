@@ -2,7 +2,7 @@ package com.ansh.notification.handler;
 
 import com.ansh.event.AnimalEvent;
 import com.ansh.service.EmailService;
-import com.ansh.service.TopicSubscriberRegistryService;
+import com.ansh.service.AnimalTopicSubscriberRegistryService;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   @Autowired
   private EmailService emailService;
   @Autowired
-  private TopicSubscriberRegistryService topicSubscriberRegistry;
+  private AnimalTopicSubscriberRegistryService topicSubscriberRegistry;
 
   @Override
   public void handle(AnimalEvent event) {
@@ -30,7 +30,7 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   protected abstract String getNotificationTemplate();
 
   private void sendNotifications(Map<String, Object> params, String subject, String templateName) {
-    topicSubscriberRegistry.getSubscribers()
+    topicSubscriberRegistry.getAcceptedAndApprovedSubscribers()
         .forEach(subscription -> {
           params.put("name", subscription.getEmail());
           params.put("unsubscribeLink", animalShelterNotificationApp
