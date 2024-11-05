@@ -18,7 +18,7 @@ import java.util.Set;
 import lombok.Data;
 
 @Entity
-@Table(name = "userprofiles", schema = "public")
+@Table(name = "user_profiles", schema = "public")
 @Data
 public class UserProfile {
 
