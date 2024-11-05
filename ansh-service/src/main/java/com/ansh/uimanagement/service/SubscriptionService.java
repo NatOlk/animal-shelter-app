@@ -7,6 +7,7 @@ import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class SubscriptionService {
   @Autowired
   private UserProfileService userProfileService;
 
+  @Transactional
   public void savePendingSubscriber(String email, String approver, String topic) {
     Optional<PendingSubscriber> pendingSubscriber =
         pendingSubscriberRepository.findByEmailAndTopic(email, topic);
