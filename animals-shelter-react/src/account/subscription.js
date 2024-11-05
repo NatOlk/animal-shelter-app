@@ -31,7 +31,7 @@ const Subscription = () => {
 
     return (
         <div className="row" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-            <div className="input-field inline" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+           {!loading && ( <div className="input-field inline" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <input
                     id="subscribe-email"
                     type="email"
@@ -46,7 +46,7 @@ const Subscription = () => {
                     disabled={loading}>
                     <i className="medium material-icons">add_reaction</i>
                 </button>
-            </div>
+            </div> )}
 
             {loading && (
                 <div className="progress" style={{ width: '100%', marginTop: '10px' }}>
