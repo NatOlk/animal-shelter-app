@@ -30,12 +30,11 @@ public class GrVaccineController {
   private VaccinationService vaccinationService;
 
   @MutationMapping
-  public Vaccination updateVaccination(@Argument Long id,
-      @Argument String vaccine, @Argument String batch,
-      @Argument String vaccinationTime, @Argument String comments,
+  public Vaccination updateVaccination(@Argument Long id, @Argument String vaccine,
+      @Argument String batch, @Argument String vaccinationTime, @Argument String comments,
       @Argument String email) throws VaccinationNotFoundException, VaccinationUpdateException {
-    return vaccinationService.updateVaccination(id, vaccine, batch, vaccinationTime,
-        comments, email);
+    return vaccinationService.updateVaccination(id, vaccine, batch, vaccinationTime, comments,
+        email);
   }
 
   @MutationMapping
@@ -61,8 +60,8 @@ public class GrVaccineController {
 
   @MutationMapping
   public Vaccination addVaccination(@Argument Long animalId, @Argument String vaccine,
-      @Argument String batch, @Argument String vaccinationTime,
-      @Argument String comments, @Argument String email) throws VaccinationCreationException {
+      @Argument String batch, @Argument String vaccinationTime, @Argument String comments,
+      @Argument String email) throws VaccinationCreationException {
     return vaccinationService.addVaccination(animalId, vaccine, batch, vaccinationTime, comments,
         email);
   }
@@ -80,12 +79,8 @@ public class GrVaccineController {
 
   @GraphQlExceptionHandler
   public GraphQLError handle(@NonNull Throwable ex, @NonNull DataFetchingEnvironment environment) {
-    return GraphQLError
-        .newError()
-        .errorType(ErrorType.BAD_REQUEST)
-        .message(ex.getMessage())
+    return GraphQLError.newError().errorType(ErrorType.BAD_REQUEST).message(ex.getMessage())
         .path(environment.getExecutionStepInfo().getPath())
-        .location(environment.getField().getSourceLocation())
-        .build();
+        .location(environment.getField().getSourceLocation()).build();
   }
 }

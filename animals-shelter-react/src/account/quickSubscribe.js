@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../common/authContext';
 
 const QuickSubscribe = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const apiUrl = process.env.REACT_APP_NOTIFICATION_APP_API_URL;
 
@@ -29,19 +29,14 @@ const QuickSubscribe = () => {
     <div className="fixed-action-btn" style={{ bottom: '45px', right: '24px' }}>
       <div
         className="input-field"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-        }}>
+        style={{  display: 'flex', alignItems: 'center', }}>
         <input
           id="subscribe-email"
           type="email"
           placeholder="Want to subscribe?"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{
-            marginRight: '8px',
-          }} />
+          style={{ marginRight: '8px', }} />
         <button onClick={handleSubscribe} className="waves-effect waves-orange btn-small" >
           <i className="small material-icons">add_reaction</i>
         </button>

@@ -1,10 +1,6 @@
 package com.ansh.service;
 
-import static com.ansh.notification.handler.SubscriptionMessages.ACCEPT_SUBSCRIPTION_TEMPLATE;
-import static com.ansh.notification.handler.SubscriptionMessages.REPEAT_SUBSCRIPTION_TEMPLATE;
-import static com.ansh.notification.handler.SubscriptionMessages.SUBSCRIPTION_SUBJECT;
-import static com.ansh.notification.handler.SubscriptionMessages.SUCCESS_SUBSCRIPTION_SUBJECT;
-import static com.ansh.notification.handler.SubscriptionMessages.SUCCESS_SUBSCRIPTION_TEMPLATE;
+import static com.ansh.notification.handler.SubscriptionMessages.*;
 
 import com.ansh.entity.subscription.Subscription;
 import java.util.HashMap;
@@ -23,39 +19,33 @@ public class SubscriptionNotificationService {
   private EmailService emailService;
 
   public void sendNeedAcceptSubscriptionEmail(Subscription sb) {
-    String email = sb.getEmail();
-    String token = sb.getToken();
-    Map<String, Object> params = new HashMap<>(2);
-    params.put("name", email);
-    String confirmationLink = animalShelterNotificationApp +
-        "/external/animal-notify-subscribe-check/" + token;
-    params.put("confirmationLink", confirmationLink);
-    params.put("subscriptionLink", confirmationLink);
-    emailService.sendSimpleMessage(email, SUBSCRIPTION_SUBJECT,
-        ACCEPT_SUBSCRIPTION_TEMPLATE, params);
+    Map<String, Object> params = createEmailParams(sb.getEmail(), sb.getToken(), true);
+    emailService.sendSimpleMessage(sb.getEmail(), SUBSCRIPTION_SUBJECT, ACCEPT_SUBSCRIPTION_TEMPLATE, params);
   }
 
   public void sendSuccessTokenConfirmationEmail(Subscription sb) {
-    String email = sb.getEmail();
-    String token = sb.getToken();
-    Map<String, Object> params = new HashMap<>(2);
-    params.put("name", email);
-    String confirmationLink = animalShelterNotificationApp +
-        "/animal-notify-unsubscribe/" + token;
-    params.put("unsubscribeLink", confirmationLink);
-    emailService.sendSimpleMessage(email, SUCCESS_SUBSCRIPTION_SUBJECT,
-        SUCCESS_SUBSCRIPTION_TEMPLATE, params);
+    Map<String, Object> params = createEmailParams(sb.getEmail(), sb.getToken(), false);
+    emailService.sendSimpleMessage(sb.getEmail(), SUCCESS_SUBSCRIPTION_SUBJECT, SUCCESS_SUBSCRIPTION_TEMPLATE, params);
   }
 
   public void sendRepeatConfirmationEmail(Subscription sb) {
-    String email = sb.getEmail();
-    String token = sb.getToken();
-    Map<String, Object> params = new HashMap<>(2);
+    Map<String, Object> params = createEmailParams(sb.getEmail(), sb.getToken(), false);
+    emailService.sendSimpleMessage(sb.getEmail(), SUCCESS_SUBSCRIPTION_SUBJECT, REPEAT_SUBSCRIPTION_TEMPLATE, params);
+  }
+
+  private Map<String, Object> createEmailParams(String email, String token, boolean includeSubscriptionLink) {
+    Map<String, Object> params = new HashMap<>();
     params.put("name", email);
-    String confirmationLink = animalShelterNotificationApp +
-        "/animal-notify-unsubscribe/" + token;
-    params.put("unsubscribeLink", confirmationLink);
-    emailService.sendSimpleMessage(email, SUCCESS_SUBSCRIPTION_SUBJECT,
-        REPEAT_SUBSCRIPTION_TEMPLATE, params);
+
+    String unsubscribeLink = animalShelterNotificationApp + "/external/animal-notify-unsubscribe/" + token;
+    params.put("unsubscribeLink", unsubscribeLink);
+
+    if (includeSubscriptionLink) {
+      String confirmationLink = animalShelterNotificationApp + "/external/animal-notify-subscribe-check/" + token;
+      params.put("confirmationLink", confirmationLink);
+      params.put("subscriptionLink", confirmationLink);
+    }
+
+    return params;
   }
 }
