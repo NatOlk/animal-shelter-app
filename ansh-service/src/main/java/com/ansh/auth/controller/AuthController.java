@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,10 +47,13 @@ public class AuthController {
       Map<String, Object> responseMap = new HashMap<>();
       responseMap.put("user", identifier);
 
-      UserProfile userProfile = userProfileService.findAuthenticatedUser();
+      Optional<UserProfile> userProfileOtp = userProfileService.findAuthenticatedUser();
 
-      responseMap.put("email", userProfile.getEmail());
-      return ResponseEntity.ok(responseMap);
+      if (userProfileOtp.isPresent()) {
+        responseMap.put("email", userProfileOtp.get().getEmail());
+        return ResponseEntity.ok(responseMap);
+      }
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User profile not found");
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }

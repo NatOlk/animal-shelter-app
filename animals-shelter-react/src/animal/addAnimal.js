@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
-import showError from './showError';
+import showError from '../common/showError';
 import { useConfig } from '../common/configContext';
 import M from 'materialize-css';
 import { ADD_ANIMAL, ANIMALS_QUERY } from '../common/graphqlQueries.js';

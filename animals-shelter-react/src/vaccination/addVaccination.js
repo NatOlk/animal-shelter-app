@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from "@apollo/client";
-import showError from "./showError";
+import showError from "../common/showError";
 import { useConfig } from '../common/configContext';
 import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries.js';
 import M from 'materialize-css';

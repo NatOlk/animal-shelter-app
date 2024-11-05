@@ -42,10 +42,6 @@ public class VaccinationService {
     return vaccinationRepository.findVaccinationCountByAnimalId(id);
   }
 
-  public Optional<Vaccination> findByKey(Long id) {
-    return vaccinationRepository.findById(id);
-  }
-
   public Vaccination addVaccination(@NonNull Long animalId, @NonNull String vaccine,
       @NonNull String batch, @NonNull String vaccinationTime,
       String comments, @NonNull String email) throws VaccinationCreationException {
@@ -110,6 +106,7 @@ public class VaccinationService {
     Vaccination vaccination = vaccinationRepository.findById(id)
         .orElseThrow(() -> new VaccinationNotFoundException("Vaccination not found for: " + id));
     vaccinationRepository.delete(vaccination);
+    notificationService.sendRemoveVaccinationMessage(vaccination);
     return vaccination;
   }
 }

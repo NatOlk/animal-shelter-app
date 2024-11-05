@@ -1,8 +1,8 @@
 package com.ansh.service;
 
+import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.SubscriberNotificationInfoProducer;
 import com.ansh.repository.SubscriptionRepository;
-import com.ansh.entity.subscription.Subscription;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TopicSubscriberRegistryService {
+public class AnimalTopicSubscriberRegistryService {
 
   @Value("${animalTopicId}")
   private String animalTopicId;
@@ -31,7 +31,8 @@ public class TopicSubscriberRegistryService {
 
   @Transactional
   public void registerSubscriber(String email, String approver) {
-    List<Subscription> subscriptions = subscriptionRepository.getSubscriptionByEmail(email);
+    List<Subscription> subscriptions = subscriptionRepository.findByEmailAndTopic(email,
+        animalTopicId);
     if (subscriptions.isEmpty()) {
       Subscription sb = new Subscription();
       sb.setTopic(animalTopicId);
@@ -42,7 +43,7 @@ public class TopicSubscriberRegistryService {
       sb.setToken(generateConfirmationToken());
       subscriptionRepository.save(sb);
 
-      subscriberNotificationInfoProducer.sendApproveRequest(email, approver);
+      subscriberNotificationInfoProducer.sendApproveRequest(email, approver, animalTopicId);
     } else {
 
       Subscription sb = subscriptions.get(0);
@@ -57,10 +58,16 @@ public class TopicSubscriberRegistryService {
   }
 
   @Transactional
-  public void approveSubscriber(String email) {
-    List<Subscription> subscriptions = subscriptionRepository.getSubscriptionByEmail(email);
+  public void unregisterSubscriber(String token) {
+    subscriptionRepository.deleteByTokenAndTopic(token, animalTopicId);
+  }
+
+  @Transactional
+  public void approveSubscriber(String email, String approver, String topic) {
+    List<Subscription> subscriptions = subscriptionRepository.findByEmailAndTopic(email, topic);
     if (!subscriptions.isEmpty()) {
       Subscription sb = subscriptions.get(0);
+      sb.setApprover(approver);
       sb.setApproved(true);
       subscriptionRepository.save(sb);
       subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
@@ -68,29 +75,9 @@ public class TopicSubscriberRegistryService {
   }
 
   @Transactional
-  public void unregisterSubscriber(String token) {
-    subscriptionRepository.removeAllByTokenAndTopic(token, animalTopicId);
-  }
-
-  public List<Subscription> getSubscribers() {
-    return subscriptionRepository.getAllSubscriptionsByTopic(animalTopicId)
-        .stream()
-        .filter(Subscription::isApproved)
-        .filter(Subscription::isAccepted)
-        .toList();
-  }
-
-  public List<Subscription> getAllSubscribers() {
-    return subscriptionRepository.getAllSubscriptionsByTopic(animalTopicId)
-        .stream()
-        .toList();
-  }
-
-
-  @Transactional
   public boolean confirmSubscription(String token) {
     AtomicBoolean updated = new AtomicBoolean(false);
-    subscriptionRepository.getAllSubscriptionsByToken(token)
+    subscriptionRepository.findByToken(token)
         .forEach(subscription -> {
           subscription.setAccepted(true);
           subscriptionRepository.save(subscription);
@@ -98,6 +85,14 @@ public class TopicSubscriberRegistryService {
           updated.set(true);
         });
     return updated.get();
+  }
+
+  public List<Subscription> getAcceptedAndApprovedSubscribers() {
+    return subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(animalTopicId);
+  }
+
+  public List<Subscription> getAllSubscriptions(String approver) {
+    return subscriptionRepository.findByTopicAndApprover(animalTopicId, approver);
   }
 
   private String generateConfirmationToken() {

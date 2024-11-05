@@ -26,13 +26,13 @@ public class SubscriberNotificationInfoProducer {
     this.objectMapper = objectMapper;
   }
 
-  public void sendApproveRequest(String email, String approver) {
+  public void sendApproveRequest(String email, String approver, String topic) {
     try {
       AnimalNotificationUserSubscribedEvent animalNotificationUserSubscribedEvent =
           new AnimalNotificationUserSubscribedEvent();
       animalNotificationUserSubscribedEvent.setEmail(email);
       animalNotificationUserSubscribedEvent.setApprover(approver);
-
+      animalNotificationUserSubscribedEvent.setTopic(topic);
       String jsonMessage = objectMapper.writeValueAsString(animalNotificationUserSubscribedEvent);
 
       kafkaTemplate.send(subscriptionTopicId, jsonMessage);
