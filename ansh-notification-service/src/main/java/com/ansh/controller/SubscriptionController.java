@@ -1,6 +1,7 @@
 package com.ansh.controller;
 
 import com.ansh.dto.SubscriptionRequest;
+import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.service.AnimalTopicSubscriberRegistryService;
 import java.util.List;
@@ -39,5 +40,10 @@ public class SubscriptionController {
   @PostMapping("/internal/animal-notify-all-approver-subscriptions")
   public List<Subscription> allSubscribeptionsByApprover(@RequestBody SubscriptionRequest request) {
     return animalTopicSubscriberRegistryService.getAllSubscriptions(request.getApprover());
+  }
+
+  @PostMapping("/internal/animal-notify-approver-status")
+  public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(@RequestBody SubscriptionRequest request) {
+    return animalTopicSubscriberRegistryService.getStatusByApprover(request.getApprover());
   }
 }

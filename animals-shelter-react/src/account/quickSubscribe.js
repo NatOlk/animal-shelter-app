@@ -26,18 +26,17 @@ const QuickSubscribe = () => {
   };
 
   return (
-    <div className="fixed-action-btn" style={{ bottom: '45px', right: '24px' }}>
-      <div
-        className="input-field"
-        style={{  display: 'flex', alignItems: 'center', }}>
+    <div className="quick-subscribe-btn">
+      <div className="input-field quick-subscribe-input-container">
         <input
           id="subscribe-email"
           type="email"
           placeholder="Want to subscribe?"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ marginRight: '8px', }} />
-        <button onClick={handleSubscribe} className="waves-effect waves-orange btn-small" >
+          className="quick-subscribe-input"
+        />
+        <button onClick={handleSubscribe} className="waves-effect waves-orange btn-small quick-subscribe-button">
           <i className="small material-icons">add_reaction</i>
         </button>
       </div>

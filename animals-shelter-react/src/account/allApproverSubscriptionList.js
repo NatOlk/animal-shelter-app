@@ -48,11 +48,13 @@ function AllApproverSubscriptionList({ userProfile }) {
       <td>{subscriber.email}</td>
       <td>{subscriber.approver}</td>
       <td>{subscriber.topic}</td>
-      <td>{subscriber.accepted}</td>
+      <td>{subscriber.accepted ? 'Yes' : 'No'}</td>
       <td>
-        <button onClick={() => handleUnsubscribe(subscriber.token)} className="red lighten-1 waves-effect waves-orange btn-small">
-          <i className="small material-icons">person_remove</i>
-        </button>
+        {subscriber.approved && (
+          <button onClick={() => handleUnsubscribe(subscriber.token)} className="red lighten-1 waves-effect waves-orange btn-small">
+            <i className="small material-icons">person_remove</i>
+          </button>
+        )}
       </td>
     </tr>
   ));

@@ -7,11 +7,17 @@ const Subscription = () => {
     const [loading, setLoading] = useState(false);
     const apiUrl = process.env.REACT_APP_NOTIFICATION_APP_API_URL;
 
+    useEffect(() => {
+        if (user.email) {
+            setEmail(user.email);
+        }
+    }, [user.email]);
+
     const handleSubscribe = async (e) => {
         e.preventDefault();
 
         if (!email.trim()) return;
-        setLoading(true);
+
         try {
             await fetch(`${apiUrl}/external/animal-notify-subscribe`, {
                 method: 'POST',
@@ -24,32 +30,34 @@ const Subscription = () => {
                 }),
             });
             setEmail('');
+            setLoading(true);
         } catch (error) {
             console.error('Error during subscription:', error);
         }
     };
 
     return (
-        <div className="row" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-           {!loading && ( <div className="input-field inline" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input
-                    id="subscribe-email"
-                    type="email"
-                    placeholder="Want to subscribe?"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    style={{ marginRight: '10px' }}
-                />
-                <button
-                    onClick={handleSubscribe}
-                    className="waves-effect waves-orange btn-small"
-                    disabled={loading}>
-                    <i className="medium material-icons">add_reaction</i>
-                </button>
-            </div> )}
+        <div className="subscription-container">
+            {!loading && (
+                <div className="input-container quick-subscribe-input-container">
+                    <input
+                        id="subscribe-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="quick-subscribe-input"
+                    />
+                    <button
+                        onClick={handleSubscribe}
+                        className="waves-effect waves-orange btn-small quick-subscribe-button"
+                        disabled={loading}>
+                        <i className="material-icons">add_reaction</i>
+                    </button>
+                </div>
+            )}
 
             {loading && (
-                <div className="progress" style={{ width: '100%', marginTop: '10px' }}>
+                <div className="progress">
                     <div className="indeterminate"></div>
                 </div>
             )}
