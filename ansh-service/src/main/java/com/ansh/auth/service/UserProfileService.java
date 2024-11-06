@@ -9,6 +9,7 @@ import com.ansh.auth.repository.UserProfileRepository;
 import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
 import com.ansh.entity.subscription.Subscription;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -51,34 +52,13 @@ public class UserProfileService {
     return Optional.empty();
   }
 
-  public void updateNotificationStatusOfAuthUser(List<Subscription> subscriptions) {
+  @Transactional
+  public void updateNotificationStatusOfAuthUser(UserProfile.AnimalNotificationSubscriptionStatus status) {
 
     Optional<UserProfile> userProfile = findAuthenticatedUser();
-
-    userProfile
-        .filter(profile -> profile.getAnimalNotifyStatus()
-            .equals(PENDING))
-        .ifPresent(profile ->
-            subscriptions.stream()
-                .filter(subscriber -> subscriber.getEmail().equals(profile.getEmail()))
-                .filter(Subscription::isAccepted)
-                .findFirst()
-                .ifPresent(s -> {
-                  profile.setAnimalNotifyStatus(ACTIVE);
-                  userRepository.save(profile);
-                })
-        );
-    userProfile
-        .filter(profile -> profile.getAnimalNotifyStatus().equals(ACTIVE) ||
-            profile.getAnimalNotifyStatus().equals(PENDING))
-        .ifPresent(profile -> {
-              boolean isNonExist = subscriptions.stream()
-                  .noneMatch(subscriber -> subscriber.getEmail().equals(profile.getEmail()));
-              if (isNonExist) {
-                    profile.setAnimalNotifyStatus(NONE);
-                    userRepository.save(profile);
-              }
-            }
-        );
+    if (userProfile.isPresent()) {
+      userProfile.get().setAnimalNotifyStatus(status);
+      userRepository.save(userProfile.get());
+    }
   }
 }
