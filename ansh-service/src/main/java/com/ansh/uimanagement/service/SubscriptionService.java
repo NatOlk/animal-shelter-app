@@ -3,6 +3,7 @@ package com.ansh.uimanagement.service;
 import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.PENDING;
 
 import com.ansh.auth.service.UserProfileService;
+import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
@@ -84,8 +85,34 @@ public class SubscriptionService {
         entity, new ParameterizedTypeReference<>() {});
 
     List<Subscription> subscriptions = response.getBody();
-    userProfileService.updatePendingStatusOfCurrentUser(subscriptions);
+  //  userProfileService.updateNotificationStatusOfAuthUser(subscriptions);
     return subscriptions;
+  }
 
+  public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(String approver) {
+    String url = animalShelterNotificationApp + "/internal/animal-notify-approver-status";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("X-API-KEY", notificationApiKey);
+    headers.setContentType(MediaType.APPLICATION_JSON);
+
+    Map<String, String> requestBody = new HashMap<>();
+    requestBody.put("approver", approver);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String jsonBody;
+    try {
+      jsonBody = objectMapper.writeValueAsString(requestBody);
+    } catch (Exception e) {
+      throw new RuntimeException("Error during json creation ", e);
+    }
+
+    HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
+
+    ResponseEntity<UserProfile.AnimalNotificationSubscriptionStatus> response = restTemplate.exchange(url, HttpMethod.POST,
+        entity, new ParameterizedTypeReference<>() {});
+
+    UserProfile.AnimalNotificationSubscriptionStatus status = response.getBody();
+    return status;
   }
 }

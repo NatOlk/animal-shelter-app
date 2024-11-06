@@ -17,8 +17,9 @@ const UserProfile = () => {
   useEffect(() => {
     if (data) {
       const elems = document.querySelectorAll('.collapsible');
-      const options = {};
-      const instances = M.Collapsible.init(elems, options);
+      const instances = M.Collapsible.init(elems, {});
+      var elemsTooltips = document.querySelectorAll('.tooltipped');
+      var instancesTooltips = M.Tooltip.init(elemsTooltips, {});
 
       return () => {
         instances.forEach(instance => instance.destroy());
@@ -37,14 +38,16 @@ const UserProfile = () => {
       case 'NONE':
         return (
           <span>
-            <i className="small material-icons">unsubscribe</i> You’re currently unsubscribed from our animal updates.
-            We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
+            You’re currently unsubscribed from our animal updates.
+            We highly recommend subscribing to stay informed about all the latest happenings at the shelter!"
             <Subscription />
           </span>
         );
       case 'PENDING':
         return (
           <span>
+          Your subscription is pending approval.
+          Please wait for an approval email. Once you receive it, follow the instructions to complete your subscription activation.
             <div className="progress">
               <div className="indeterminate"></div>
             </div>
@@ -53,9 +56,11 @@ const UserProfile = () => {
       case 'ACTIVE':
         return (
           <span>
-            <i className="medium material-icons green-text text-darken-1">
-              notifications_active
-            </i> You are subscribed to the animal notifications.
+            <a className="tooltipped" data-position="bottom" data-tooltip="You are subscribed!">
+              <i className="medium material-icons green-text text-darken-1">
+                notifications_active
+              </i>
+            </a>
           </span>
         );
       default:
@@ -85,11 +90,17 @@ const UserProfile = () => {
               <div className="card-action">
                 <ul className="collapsible">
                   <li>
-                    <div className="collapsible-header"><i className="material-icons">group</i>Roles</div>
-                    <div className="collapsible-body"><span>ADMIN, EMPLOYEE</span></div>
+                    <div className="collapsible-header">
+                      <i className="material-icons">group</i>Roles
+                    </div>
+                    <div className="collapsible-body">
+                      <span>ADMIN, EMPLOYEE</span>
+                    </div>
                   </li>
                   <li>
-                    <div className="collapsible-header"><i className="material-icons">place</i>Your subscriptions</div>
+                    <div className="collapsible-header">
+                      <i className="material-icons">place</i>Your subscriptions
+                    </div>
                     <div className="collapsible-body">
                       {renderIconBasedOnStatus()}
                     </div>
