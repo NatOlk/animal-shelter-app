@@ -1,4 +1,4 @@
-INSERT INTO userprofiles (email, name, password, animal_notif_status)
+INSERT INTO user_profiles (email, name, password, animal_notif_status)
 VALUES ('nolkoeva@gmail.com', 'admin', '$2b$12$rAbcG66.Jawjm31LImq3GOjA.oGlYhlWiNaQPL2SEzBcg9SGBvw26', 'NONE');
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
