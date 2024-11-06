@@ -1,5 +1,6 @@
 package com.ansh.uimanagement.controller;
 
+import com.ansh.auth.service.UserProfileService;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
 import com.ansh.entity.subscription.Subscription;
@@ -20,6 +21,8 @@ public class SubscriptionController {
   private SubscriptionService subscriptionService;
   @Autowired
   private AnimalTopicSubscriptionService animalTopicSubscriptionService;
+  @Autowired
+  private UserProfileService userProfileService;
 
   @PostMapping("/animal-notify-approve-subscriber")
   public void approve(@RequestBody SubscriptionRequest subscriptionRequest) {
@@ -51,6 +54,10 @@ public class SubscriptionController {
   @PostMapping("/animal-notify-approver-status")
   public AnimalNotificationSubscriptionStatus getApproverStatus(
       @RequestBody SubscriptionRequest subscriptionRequest) {
-    return subscriptionService.getStatusByApprover(subscriptionRequest.getApprover());
+
+    AnimalNotificationSubscriptionStatus status =
+        subscriptionService.getStatusByApprover(subscriptionRequest.getApprover());
+    userProfileService.updateNotificationStatusOfAuthUser(status);
+    return status;
   }
 }
