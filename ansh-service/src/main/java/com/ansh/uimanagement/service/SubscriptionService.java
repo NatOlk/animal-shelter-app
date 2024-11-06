@@ -84,9 +84,7 @@ public class SubscriptionService {
     ResponseEntity<List<Subscription>> response = restTemplate.exchange(url, HttpMethod.POST,
         entity, new ParameterizedTypeReference<>() {});
 
-    List<Subscription> subscriptions = response.getBody();
-  //  userProfileService.updateNotificationStatusOfAuthUser(subscriptions);
-    return subscriptions;
+    return response.getBody();
   }
 
   public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(String approver) {
@@ -112,7 +110,6 @@ public class SubscriptionService {
     ResponseEntity<UserProfile.AnimalNotificationSubscriptionStatus> response = restTemplate.exchange(url, HttpMethod.POST,
         entity, new ParameterizedTypeReference<>() {});
 
-    UserProfile.AnimalNotificationSubscriptionStatus status = response.getBody();
-    return status;
+    return response.getBody();
   }
 }
