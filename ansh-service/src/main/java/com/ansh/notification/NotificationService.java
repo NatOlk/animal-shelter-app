@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
   @Autowired
-  private AnimalInfoProducer animalInfoProducer;
+  private AnimalInfoNotificationProducer animalInfoProducer;
 
   public void sendAddAnimalMessage(Animal animal) {
     AnimalEvent addAnimalEvent = new AddAnimalEvent(animal);

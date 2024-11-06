@@ -67,37 +67,42 @@ function PendingSubscriptionList({ userProfile }) {
     return (
         <Container fluid>
             {pendingSubscribers.length > 0 ? (
-                <Table className="highlight responsive-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Email</th>
-                            <th>Approver</th>
-                            <th>Topic</th>
-                            <th>Accepted</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pendingSubscribers.map((subscriber) => (
-                            <tr key={subscriber.id}>
-                                <td>{subscriber.id}</td>
-                                <td>{subscriber.email}</td>
-                                <td>{subscriber.approver}</td>
-                                <td>{subscriber.topic}</td>
-                                <td>No</td>
-                                <td>
-                                    <button onClick={() => handleApprove(subscriber.email, userProfile.email)} className="waves-effect waves-orange btn-small">
-                                        <i className="small material-icons">add_task</i>
-                                    </button>
-                                    <button onClick={() => handleReject(subscriber.email)} className="red lighten-1 waves-effect waves-orange btn-small">
-                                        <i className="small material-icons">unpublished</i>
-                                    </button>
-                                </td>
+                <div>
+                    <p>
+                        Please review the list of potential subscribers and approve or reject users as needed.
+                    </p>
+                    <Table className="highlight responsive-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Email</th>
+                                <th>Approver</th>
+                                <th>Topic</th>
+                                <th>Accepted</th>
+                                <th>Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                        </thead>
+                        <tbody>
+                            {pendingSubscribers.map((subscriber) => (
+                                <tr key={subscriber.id}>
+                                    <td>{subscriber.id}</td>
+                                    <td>{subscriber.email}</td>
+                                    <td>{subscriber.approver}</td>
+                                    <td>{subscriber.topic}</td>
+                                    <td>No</td>
+                                    <td>
+                                        <button onClick={() => handleApprove(subscriber.email, userProfile.email)} className="waves-effect waves-orange btn-small">
+                                            <i className="small material-icons">add_task</i>
+                                        </button>
+                                        <button onClick={() => handleReject(subscriber.email)} className="red lighten-1 waves-effect waves-orange btn-small">
+                                            <i className="small material-icons">unpublished</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </div>
             ) : (
                 <p>No pending subscribers</p>
             )}

@@ -1,5 +1,10 @@
 package com.ansh.service;
 
+import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.ACTIVE;
+import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.NONE;
+import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.PENDING;
+
+import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.SubscriberNotificationInfoProducer;
 import com.ansh.repository.SubscriptionRepository;
@@ -92,7 +97,20 @@ public class AnimalTopicSubscriberRegistryService {
   }
 
   public List<Subscription> getAllSubscriptions(String approver) {
-    return subscriptionRepository.findByTopicAndApprover(animalTopicId, approver);
+    return subscriptionRepository.findByApproverAndTopic(approver, animalTopicId);
+  }
+
+  public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(String approver) {
+    List<Subscription> subscriptions = subscriptionRepository.findByEmailAndTopic(approver,
+        animalTopicId);
+    if (subscriptions.isEmpty()) {
+      return NONE;
+    }
+    Subscription subscription = subscriptions.get(0);
+    if (subscription.isAccepted()) {
+      return ACTIVE;
+    }
+    return PENDING;
   }
 
   private String generateConfirmationToken() {

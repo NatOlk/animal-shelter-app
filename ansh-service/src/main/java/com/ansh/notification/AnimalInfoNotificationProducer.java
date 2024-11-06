@@ -9,16 +9,16 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AnimalInfoProducer {
+public class AnimalInfoNotificationProducer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AnimalInfoProducer.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AnimalInfoNotificationProducer.class);
   @Value("${animalTopicId}")
   private String animalTopicId;
 
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapper objectMapper;
 
-  public AnimalInfoProducer(KafkaTemplate<String, String> kafkaTemplate,
+  public AnimalInfoNotificationProducer(KafkaTemplate<String, String> kafkaTemplate,
       ObjectMapper objectMapper) {
     this.kafkaTemplate = kafkaTemplate;
     this.objectMapper = objectMapper;

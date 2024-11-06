@@ -111,3 +111,41 @@ input::placeholder {
   line-height: 32px;
   margin-bottom: 8px;
 }
+
+.subscription-container {
+    display: flex;
+    max-width: 400px;
+    gap: 10px;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.subscription-progress {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.quick-subscribe-btn {
+    position: fixed;
+    bottom: 45px;
+    right: 24px;
+}
+
+.quick-subscribe-input-container {
+    display: flex;
+    align-items: center;
+}
+
+.quick-subscribe-input {
+    margin-right: 8px;
+}
+
+.quick-subscribe-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

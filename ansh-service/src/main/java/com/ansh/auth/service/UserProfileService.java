@@ -51,7 +51,7 @@ public class UserProfileService {
     return Optional.empty();
   }
 
-  public void updatePendingStatusOfCurrentUser(List<Subscription> subscriptions) {
+  public void updateNotificationStatusOfAuthUser(List<Subscription> subscriptions) {
 
     Optional<UserProfile> userProfile = findAuthenticatedUser();
 
@@ -69,8 +69,8 @@ public class UserProfileService {
                 })
         );
     userProfile
-        .filter(profile -> profile.getAnimalNotifyStatus()
-            .equals(ACTIVE))
+        .filter(profile -> profile.getAnimalNotifyStatus().equals(ACTIVE) ||
+            profile.getAnimalNotifyStatus().equals(PENDING))
         .ifPresent(profile -> {
               boolean isNonExist = subscriptions.stream()
                   .noneMatch(subscriber -> subscriber.getEmail().equals(profile.getEmail()));
