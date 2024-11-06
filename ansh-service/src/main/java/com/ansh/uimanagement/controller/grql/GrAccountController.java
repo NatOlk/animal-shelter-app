@@ -1,4 +1,4 @@
-package com.ansh.auth.controller;
+package com.ansh.uimanagement.controller.grql;
 
 import com.ansh.auth.service.UserProfileService;
 import com.ansh.entity.animal.UserProfile;

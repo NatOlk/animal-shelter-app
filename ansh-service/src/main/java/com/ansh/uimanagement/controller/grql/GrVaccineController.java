@@ -1,4 +1,4 @@
-package com.ansh.uimanagement.controller;
+package com.ansh.uimanagement.controller.grql;
 
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;

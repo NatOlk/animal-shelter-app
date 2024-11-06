@@ -9,7 +9,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Inte
 
   void deleteByTokenAndTopic(@NonNull String token, @NonNull String topic);
 
-  List<Subscription> findByTopicAndApprover(String topic, String approver);
+  List<Subscription> findByApproverAndTopic(String approver, String topic);
 
   List<Subscription> findByTopicAndAcceptedTrueAndApprovedTrue(String topic);
 
