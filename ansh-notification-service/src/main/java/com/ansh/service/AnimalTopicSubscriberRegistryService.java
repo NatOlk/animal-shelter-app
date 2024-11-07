@@ -10,6 +10,7 @@ import com.ansh.notification.SubscriberNotificationInfoProducer;
 import com.ansh.repository.SubscriptionRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,29 +37,12 @@ public class AnimalTopicSubscriberRegistryService {
 
   @Transactional
   public void registerSubscriber(String email, String approver) {
-    List<Subscription> subscriptions = subscriptionRepository.findByEmailAndTopic(email,
-        animalTopicId);
-    if (subscriptions.isEmpty()) {
-      Subscription sb = new Subscription();
-      sb.setTopic(animalTopicId);
-      sb.setEmail(email);
-      sb.setAccepted(false);
-      sb.setApprover(approver);
-      sb.setApproved(false);
-      sb.setToken(generateConfirmationToken());
-      subscriptionRepository.save(sb);
+    Optional<Subscription> subscriptionOpt = findAnimalTopicSubscription(email);
 
-      subscriberNotificationInfoProducer.sendApproveRequest(email, approver, animalTopicId);
+    if (subscriptionOpt.isEmpty()) {
+      createNewAnimalTopicSubscription(email, approver);
     } else {
-
-      Subscription sb = subscriptions.get(0);
-      if (sb.isApproved()) {
-        if (sb.isAccepted()) {
-          subscriptionNotificationService.sendRepeatConfirmationEmail(sb);
-        } else {
-          subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
-        }
-      }
+      resendExistingSubscriptionNotification(subscriptionOpt.get());
     }
   }
 
@@ -68,15 +52,14 @@ public class AnimalTopicSubscriberRegistryService {
   }
 
   @Transactional
-  public void handleSubscriptionApproval(String email, String approver, String topic, boolean reject) {
-    List<Subscription> subscriptions = subscriptionRepository.findByEmailAndTopic(email, topic);
-    if (!subscriptions.isEmpty()) {
-      Subscription sb = subscriptions.get(0);
+  public void handleSubscriptionApproval(String email, String approver, String topic,
+      boolean reject) {
+    Optional<Subscription> subscriptionOpt = findSubscriptionForTopic(email, topic);
+
+    if (subscriptionOpt.isPresent()) {
+      Subscription sb = subscriptionOpt.get();
       if (!reject) {
-        sb.setApprover(approver);
-        sb.setApproved(true);
-        subscriptionRepository.save(sb);
-        subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
+        approveSubscription(sb, approver);
       } else {
         subscriptionRepository.deleteByEmailAndTopic(email, topic);
       }
@@ -105,16 +88,51 @@ public class AnimalTopicSubscriberRegistryService {
   }
 
   public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(String approver) {
-    List<Subscription> subscriptions = subscriptionRepository.findByEmailAndTopic(approver,
-        animalTopicId);
-    if (subscriptions.isEmpty()) {
+    Optional<Subscription> subscriptionOpt = findAnimalTopicSubscription(approver);
+
+    if (subscriptionOpt.isEmpty()) {
       return NONE;
     }
-    Subscription subscription = subscriptions.get(0);
-    if (subscription.isAccepted()) {
-      return ACTIVE;
+
+    Subscription subscription = subscriptionOpt.get();
+    return subscription.isAccepted() ? ACTIVE : PENDING;
+  }
+
+  private void createNewAnimalTopicSubscription(String email, String approver) {
+    Subscription sb = new Subscription();
+    sb.setTopic(animalTopicId);
+    sb.setEmail(email);
+    sb.setAccepted(false);
+    sb.setApprover(approver);
+    sb.setApproved(false);
+    sb.setToken(generateConfirmationToken());
+    subscriptionRepository.save(sb);
+    subscriberNotificationInfoProducer.sendApproveRequest(email, approver, animalTopicId);
+  }
+
+  private void resendExistingSubscriptionNotification(Subscription sb) {
+    if (sb.isApproved()) {
+      if (sb.isAccepted()) {
+        subscriptionNotificationService.sendRepeatConfirmationEmail(sb);
+      } else {
+        subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
+      }
     }
-    return PENDING;
+  }
+
+  private void approveSubscription(Subscription sb, String approver) {
+    sb.setApprover(approver);
+    sb.setApproved(true);
+    subscriptionRepository.save(sb);
+    subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
+  }
+
+  private Optional<Subscription> findAnimalTopicSubscription(String email) {
+    return subscriptionRepository.findByEmailAndTopic(email, animalTopicId).stream().findFirst();
+  }
+
+  private Optional<Subscription> findSubscriptionForTopic(String email, String topic) {
+    return subscriptionRepository.findByEmailAndTopic(email, topic).stream().findFirst();
   }
 
   private String generateConfirmationToken() {
