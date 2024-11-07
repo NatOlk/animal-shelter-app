@@ -19,9 +19,9 @@ public class AnimalInfoConsumer {
   private AnimalEventHandlerRegistry handlerRegistry;
 
   @KafkaListener(topics = "${animalTopicId}", groupId = "animalGroupId")
-  public void listen(ConsumerRecord<String, String> record) throws IOException {
+  public void listen(ConsumerRecord<String, String> message) throws IOException {
 
-    AnimalEvent animalEvent = new ObjectMapper().readValue(record.value(), AnimalEvent.class);
+    AnimalEvent animalEvent = new ObjectMapper().readValue(message.value(), AnimalEvent.class);
     handlerRegistry.handleEvent(animalEvent);
   }
 }
