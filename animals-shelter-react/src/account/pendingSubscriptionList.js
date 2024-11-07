@@ -84,7 +84,10 @@ function PendingSubscriptionList({ userProfile }) {
                         </thead>
                         <tbody>
                             {pendingSubscribers.map((subscriber) => (
-                                <tr key={subscriber.id}>
+                                <tr
+                                    key={subscriber.id}
+                                    className={subscriber.email === userProfile.email ? 'highlight-own-subscription' : ''}
+                                >
                                     <td>{subscriber.id}</td>
                                     <td>{subscriber.email}</td>
                                     <td>{subscriber.approver}</td>
