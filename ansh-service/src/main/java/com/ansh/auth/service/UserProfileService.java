@@ -1,19 +1,11 @@
 package com.ansh.auth.service;
 
-import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.ACTIVE;
-import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.NONE;
-import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.PENDING;
-
 import com.ansh.auth.repository.RoleRepository;
 import com.ansh.auth.repository.UserProfileRepository;
 import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
-import com.ansh.entity.subscription.Subscription;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +15,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserProfileService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(UserProfileService.class);
   @Autowired
   private UserProfileRepository userRepository;
 
@@ -53,7 +44,8 @@ public class UserProfileService {
   }
 
   @Transactional
-  public void updateNotificationStatusOfAuthUser(UserProfile.AnimalNotificationSubscriptionStatus status) {
+  public void updateNotificationStatusOfAuthUser(
+      UserProfile.AnimalNotificationSubscriptionStatus status) {
 
     Optional<UserProfile> userProfile = findAuthenticatedUser();
     if (userProfile.isPresent()) {
