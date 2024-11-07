@@ -68,14 +68,18 @@ public class AnimalTopicSubscriberRegistryService {
   }
 
   @Transactional
-  public void approveSubscriber(String email, String approver, String topic) {
+  public void handleSubscriptionApproval(String email, String approver, String topic, boolean reject) {
     List<Subscription> subscriptions = subscriptionRepository.findByEmailAndTopic(email, topic);
     if (!subscriptions.isEmpty()) {
       Subscription sb = subscriptions.get(0);
-      sb.setApprover(approver);
-      sb.setApproved(true);
-      subscriptionRepository.save(sb);
-      subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
+      if (!reject) {
+        sb.setApprover(approver);
+        sb.setApproved(true);
+        subscriptionRepository.save(sb);
+        subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
+      } else {
+        subscriptionRepository.deleteByEmailAndTopic(email, topic);
+      }
     }
   }
 
