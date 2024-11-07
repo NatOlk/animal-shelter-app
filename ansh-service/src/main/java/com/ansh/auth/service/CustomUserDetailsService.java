@@ -1,6 +1,5 @@
 package com.ansh.auth.service;
 
-
 import com.ansh.entity.animal.UserProfile;
 import java.util.ArrayList;
 import java.util.Optional;

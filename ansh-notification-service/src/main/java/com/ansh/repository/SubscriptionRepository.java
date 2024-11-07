@@ -9,6 +9,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Inte
 
   void deleteByTokenAndTopic(@NonNull String token, @NonNull String topic);
 
+  void deleteByEmailAndTopic(@NonNull String email, @NonNull String topic);
+
   List<Subscription> findByApproverAndTopic(String approver, String topic);
 
   List<Subscription> findByTopicAndAcceptedTrueAndApprovedTrue(String topic);

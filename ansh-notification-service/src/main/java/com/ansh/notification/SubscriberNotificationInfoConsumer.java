@@ -27,6 +27,7 @@ public class SubscriberNotificationInfoConsumer {
     String email = animalEvent.getEmail();
     String approver = animalEvent.getApprover();
     String topic = animalEvent.getTopic();
-    topicSubscriberRegistryService.approveSubscriber(email, approver, topic);
+    boolean reject = animalEvent.isReject();
+    topicSubscriberRegistryService.handleSubscriptionApproval(email, approver, topic, reject);
   }
 }
