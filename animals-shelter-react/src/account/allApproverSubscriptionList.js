@@ -24,7 +24,7 @@ function AllApproverSubscriptionList({ userProfile }) {
     };
 
     fetchSubscribers();
-  }, []);
+  }, [userProfile.email]);
 
   const handleUnsubscribe = async (token) => {
     try {
@@ -43,7 +43,10 @@ function AllApproverSubscriptionList({ userProfile }) {
   if (error) return <p>Error: {error.message}</p>;
 
   const subscriberRows = allSubscribers.map((subscriber) => (
-    <tr key={subscriber.id}>
+    <tr
+      key={subscriber.id}
+      className={subscriber.email === userProfile.email ? 'highlight-own-subscription' : ''}
+    >
       <td>{subscriber.id}</td>
       <td>{subscriber.email}</td>
       <td>{subscriber.approver}</td>

@@ -149,3 +149,7 @@ input::placeholder {
     align-items: center;
     justify-content: center;
 }
+
+.highlight-own-subscription {
+  background-color: #e0f2f1;
+}
