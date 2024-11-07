@@ -21,12 +21,9 @@ const UserProfile = () => {
       setAnimalNotifyStatusProfile(data.currentUserProfile.animalNotifyStatus || "NONE");
       const elems = document.querySelectorAll('.collapsible');
       const instances = M.Collapsible.init(elems, {});
-      const elemsTooltips = document.querySelectorAll('.tooltipped');
-      const instancesTooltips = M.Tooltip.init(elemsTooltips, {});
 
       return () => {
         instances.forEach(instance => instance.destroy());
-        instancesTooltips.forEach(instance => instance.destroy());
       };
     }
   }, [data]);
@@ -51,14 +48,16 @@ const UserProfile = () => {
       case 'NONE':
         return (
           <span>
-            You’re currently unsubscribed from our animal updates. We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
+            You’re currently unsubscribed from our animal updates.
+            We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
             <Subscription />
           </span>
         );
       case 'PENDING':
         return (
           <span>
-            Your subscription is pending approval. Please wait for an approval email. Once you receive it, follow the instructions to complete your subscription activation.
+            Your subscription is pending approval. Please wait for an approval email.
+            Once you receive it, follow the instructions to complete your subscription activation.
             <div className="progress">
               <div className="indeterminate"></div>
             </div>
@@ -76,6 +75,17 @@ const UserProfile = () => {
         return <p>Status unknown</p>;
     }
   };
+
+  useEffect(() => {
+    if (animalNotifyStatusProfile) {
+      const elemsTooltips = document.querySelectorAll('.tooltipped');
+      const instancesTooltips = M.Tooltip.init(elemsTooltips, {});
+
+      return () => {
+        instancesTooltips.forEach(instance => instance.destroy());
+      };
+    }
+  }, [animalNotifyStatusProfile]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
