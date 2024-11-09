@@ -25,7 +25,8 @@ const UpdateVaccination = ({ vaccination }) => {
       <EditableVaccinationField
         vaccination={vaccination}
         value={vaccination.vaccinationTime}
-        name="vaccinationTime" />
+        name="vaccinationTime"
+        isDate={true}/>
       <EditableVaccinationField
         vaccination={vaccination}
         value={vaccination.comments}
