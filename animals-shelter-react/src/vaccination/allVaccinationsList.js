@@ -19,6 +19,13 @@ function AllVaccinationsList() {
     }
 
     const pageCount = Math.ceil(data.allVaccinations.length / perPage);
+
+    const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toISOString().slice(0, 10);
+    };
+
     const vaccinationsList = data.allVaccinations
         .slice(currentPage * perPage, (currentPage + 1) * perPage)
         .map(vaccination => (
@@ -28,7 +35,7 @@ function AllVaccinationsList() {
                 <td>{vaccination.animal.species}</td>
                 <td>{vaccination.vaccine}</td>
                 <td>{vaccination.batch}</td>
-                <td>{vaccination.vaccinationTime}</td>
+                <td>{formatDate(vaccination.vaccinationTime)}</td>
                 <td>{vaccination.comments}</td>
                 <td>{vaccination.email}</td>
                 <td>

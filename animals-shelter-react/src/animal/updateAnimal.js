@@ -37,7 +37,8 @@ const UpdateAnimal = ({ animal }) => {
       <EditableAnimalField
         animal={animal}
         value={animal.birthDate}
-        name="birthDate" />
+        name="birthDate"
+        isDate={true}/>
       <EditableAnimalField
         animal={animal}
         value={animal.pattern}

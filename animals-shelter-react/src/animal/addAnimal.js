@@ -16,20 +16,6 @@ function AddAnimal() {
         birthDate: "2012-01-01",
         pattern: "Broken"
     };
-    useEffect(() => {
-        const datepickerElems = document.querySelectorAll('.datepicker');
-        const instances = M.Datepicker.init(datepickerElems, {
-            format: 'yyyy-mm-dd',
-            onSelect: (date) => {
-                handleInputChange({ target: { name: 'birthDate', value: date } });
-            },
-        });
-        return () => {
-            instances.forEach((instance) => {
-                instance.destroy();
-            });
-        };
-    }, []);
 
     const [animal, setAnimal] = useState(initialValues);
     const [validationError, setValidationError] = useState(null);
@@ -55,6 +41,7 @@ function AddAnimal() {
             </tr>
         );
     };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setAnimal({
@@ -62,7 +49,25 @@ function AddAnimal() {
             [name]: value,
         });
     };
+
+    useEffect(() => {
+        const datepickerElems = document.querySelectorAll('.datepicker');
+        const instances = M.Datepicker.init(datepickerElems, {
+            format: 'yyyy-mm-dd',
+            onSelect: (date) => {
+                setAnimal(prevAnimal => ({
+                    ...prevAnimal,
+                    birthDate: date.toISOString().split('T')[0]
+                }));
+            },
+        });
+        return () => {
+            instances.forEach((instance) => instance.destroy());
+        };
+    }, []);
+
     const handleAddAnimal = () => {
+        // Валидация полей
         if (!animal.name) {
             setValidationError('name');
             return;
@@ -84,22 +89,22 @@ function AddAnimal() {
             return;
         }
 
-        addAnimal(
-            {
-                variables: {
-                    name: animal.name,
-                    species: animal.species,
-                    primaryColor: animal.primaryColor,
-                    breed: animal.breed,
-                    implantChipId: animal.implantChipId,
-                    gender: animal.gender,
-                    birthDate: animal.birthDate,
-                    pattern: animal.pattern
-                }
-            }).catch((error1) => { showError({ error: error1 }) });
+        addAnimal({
+            variables: {
+                name: animal.name,
+                species: animal.species,
+                primaryColor: animal.primaryColor,
+                breed: animal.breed,
+                implantChipId: animal.implantChipId,
+                gender: animal.gender,
+                birthDate: animal.birthDate,
+                pattern: animal.pattern
+            }
+        }).catch((error1) => { showError({ error: error1 }) });
 
         clearFields();
     };
+
     const clearFields = () => {
         setAnimal(initialValues);
     };
@@ -167,7 +172,8 @@ function AddAnimal() {
                 <input name="birthDate"
                     className="datepicker"
                     value={animal.birthDate}
-                    onChange={handleInputChange} />
+                    readOnly
+                />
             </td>
             <td>
                 <input name="pattern"
