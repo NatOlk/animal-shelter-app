@@ -83,7 +83,7 @@ function AddVaccination({ animalId }) {
                 animalId: animalId,
                 vaccine: vaccination.vaccine,
                 batch: vaccination.batch,
-                vaccinationTime: vaccination.vaccinationTime.split('T')[0],
+                vaccinationTime: vaccination.vaccinationTime,
                 comments: vaccination.comments,
                 email: vaccination.email
             }
@@ -96,7 +96,7 @@ function AddVaccination({ animalId }) {
         setVaccination({
             vaccine: 'Rabies',
             batch: '',
-            vaccinationTime: new Date().toISOString().split('.')[0],
+            vaccinationTime: new Date().toISOString().split('T')[0],
             comments: 'Add new vaccine',
             email: user.email
         });
