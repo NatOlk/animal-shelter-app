@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
+import M from 'materialize-css';
 import { VACCINATIONS_QUERY, UPDATE_VACCINATION } from '../common/graphqlQueries.js';
 
-const EditableVaccineField = ({ vaccination, value, name, values }) => {
+const EditableVaccineField = ({ vaccination, value, name, values, isDate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [fieldValue, setFieldValue] = useState(value || "");
   const [oldValue, setOldValue] = useState("");
@@ -12,24 +13,38 @@ const EditableVaccineField = ({ vaccination, value, name, values }) => {
     onCompleted: () => setIsEditing(false),
   });
 
+  useEffect(() => {
+    if (isDate && isEditing) {
+      const datepickerElem = document.querySelector(`#${name}-${vaccination.id}`);
+      const instance = M.Datepicker.init(datepickerElem, {
+        format: 'yyyy-mm-dd',
+        onSelect: (date) => {
+          setFieldValue(date.toISOString().slice(0, 10));
+        },
+      });
+      return () => instance && instance.destroy();
+    }
+  }, [isDate, isEditing, name, vaccination.id]);
+
   const handleSave = () => {
     const variables = {
       id: vaccination.id,
-      [name]: fieldValue
+      [name]: fieldValue,
     };
+
     updateField({ variables }).catch(err => console.error(err));
   };
 
-  const inputStyle = isEditing ? { backgroundColor: '#FFC0CB' } : {};
+  const inputStyle = isEditing ? `red-background` : {};
+  const combinedClassName = `${inputStyle} browser-default`;
 
   return (
     <td>
-      {values && values.length > 0 ? (
-        isEditing ? (
+      {isEditing ? (
+        values && values.length > 0 ? (
           <select
-            style={inputStyle}
             value={fieldValue}
-            className="browser-default"
+            className={combinedClassName}
             onChange={(e) => setFieldValue(e.target.value)}
           >
             {values.map((val) => (
@@ -38,41 +53,48 @@ const EditableVaccineField = ({ vaccination, value, name, values }) => {
               </option>
             ))}
           </select>
-        ) : (
-          <select
-            style={inputStyle}
+        ) : isDate ? (
+          <input
+            type="text"
+            id={`${name}-${vaccination.id}`}
+            className={`${combinedClassName} datepicker`}
             value={fieldValue}
-            className="browser-default"
-            readOnly
-            onDoubleClick={() => {
-              setOldValue(fieldValue);
-              setIsEditing(true);
-            }}>
-            {values.map((val) => (
-              <option key={val} value={val}>
-                {val}
-              </option>
-            ))}
-          </select>
+            onChange={(e) => setFieldValue(e.target.value)}
+          />
+        ) : (
+          <input
+            className={combinedClassName}
+            value={fieldValue}
+            onChange={(e) => setFieldValue(e.target.value)}
+          />
         )
       ) : (
-        <input
-          style={inputStyle}
-          value={fieldValue}
+        <span
           onDoubleClick={() => {
             setOldValue(fieldValue);
             setIsEditing(true);
           }}
-          onChange={(e) => setFieldValue(e.target.value)}
-        />
+        >
+          {fieldValue}
+        </span>
       )}
       {isEditing && (
         <>
-          <button className="round-button-with-border" onClick={handleSave}>+</button>
-          <button className="round-button-with-border" onClick={() => {
-            setFieldValue(oldValue);
-            setIsEditing(false);
-          }}>-</button>
+          <button
+            className="round-button-with-border"
+            onClick={handleSave}
+          >
+            +
+          </button>
+          <button
+            className="round-button-with-border"
+            onClick={() => {
+              setFieldValue(oldValue);
+              setIsEditing(false);
+            }}
+          >
+            -
+          </button>
         </>
       )}
     </td>

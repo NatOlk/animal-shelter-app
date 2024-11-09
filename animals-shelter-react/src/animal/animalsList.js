@@ -19,16 +19,29 @@ function AnimalsList() {
 
     const pageCount = Math.ceil(data.allAnimals.length / perPage);
 
+    const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toISOString().slice(0, 10);
+    };
+
     const animalsList = data.allAnimals
         .slice(currentPage * perPage, (currentPage + 1) * perPage)
-        .map(animal => <UpdateAnimal key={animal.id} animal={animal} />);
+        .map(animal => (
+            <UpdateAnimal
+                key={animal.id}
+                animal={{
+                    ...animal,
+                    birthDate: formatDate(animal.birthDate)
+                }}
+            />
+        ));
 
     return (
         <div>
             <div id="error" className="errorAlarm"></div>
 
             <Container fluid>
-
                 <Table className="highlight responsive-table">
                     <thead>
                         <tr>
@@ -52,8 +65,11 @@ function AnimalsList() {
 
                 <div>
                     {Array.from({ length: pageCount }, (_, index) => (
-                        <button key={index} className="round-button-with-border"
-                            onClick={() => setCurrentPage(index)}>
+                        <button
+                            key={index}
+                            className="round-button-with-border"
+                            onClick={() => setCurrentPage(index)}
+                        >
                             {index + 1}
                         </button>
                     ))}
