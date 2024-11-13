@@ -13,11 +13,11 @@
     <li><strong>Species:</strong> <span th:text="${animalSpecies}"></span></li>
     <li><strong>Implant chip id:</strong> <span th:text="${animalImplantChip}"></span></li>
     <li><strong>Gender:</strong> <span th:text="${animalGender}"></span></li>
-    <li><strong>Date Added:</strong> <span th:text="${dateAdded}"></span></li>
+    <li><strong>Date Added:</strong> <span th:text="${#dates.format(dateAdded, 'EEEE, MMMM d, yyyy')}"></span></li>
 </ul>
 <p>If you no longer wish to receive these notifications, please click the link below:</p>
 <p><a th:href="${unsubscribeLink}">Unsubscribe</a></p>
 <p>Regards,</p>
-<p>Animal Shelter Team</p>
+<p>Animal Shelter Hippo Team</p>
 </body>
 </html>

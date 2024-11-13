@@ -6,15 +6,15 @@
 <body>
 <h2>Vaccine Update</h2>
 <p>Hello <span th:text="${name}"></span>,</p>
-<p>A vaccine has been added for <span th:text="${animalName}">(<span th:text="${animalSpecies}">)</span>:</p>
+<p>A vaccine has been added for <span th:text="${animalName}"></span> (<span th:text="${animalSpecies}"></span>):</p>
 <ul>
     <li><strong>Vaccine Name:</strong> <span th:text="${vaccineName}"></span></li>
     <li><strong>Vaccine Batch:</strong> <span th:text="${vaccineBatch}"></span></li>
-    <li><strong>Date Administered:</strong> <span th:text="${vaccineDate}"></span></li>
+    <li><strong>Date Administered:</strong> <span th:text="${#dates.format(vaccineDate, 'EEEE, MMMM d, yyyy')}"></span></li>
 </ul>
 <p>If you wish to stop receiving these notifications, please use the link below:</p>
 <p><a th:href="${unsubscribeLink}">Unsubscribe</a></p>
 <p>Regards,</p>
-<p>Animal Shelter Team</p>
+<p>Animal Shelter Hippo Team</p>
 </body>
 </html>
