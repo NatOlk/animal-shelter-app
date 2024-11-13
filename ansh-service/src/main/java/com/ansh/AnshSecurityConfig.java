@@ -52,11 +52,6 @@ public class AnshSecurityConfig {
   }
 
   @Bean
-  public WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) -> web.ignoring().requestMatchers("/resources/**", "/static/**");
-  }
-
-  @Bean
   public PasswordEncoder passwordEncoder() {
     //TODO: add method for password coders
     return new BCryptPasswordEncoder();
