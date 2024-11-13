@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Animal Removed</title>
+    <title>Vaccine Removed</title>
 </head>
 <body>
 <h2>Vaccine Removed</h2>
@@ -11,7 +11,7 @@
     <li><strong>Name:</strong> <span th:text="${animalName}"></span></li>
     <li><strong>Species:</strong> <span th:text="${animalSpecies}"></span></li>
     <li><strong>Vaccine Name:</strong> <span th:text="${vaccineName}"></span></li>
-    <li><strong>Date Administered:</strong> <span th:text="${vaccineDate}"></span></li>
+    <li><strong>Date Administered:</strong> <span th:text="${#dates.format(vaccineDate, 'EEEE, MMMM d, yyyy')}"></span></li>
 </ul>
 <p><strong>Reason for Removal:</strong> <span th:text="${reason}"></span></p>
 
@@ -20,6 +20,6 @@
 <p><a th:href="${unsubscribeLink}">Unsubscribe</a></p>
 
 <p>Best regards,</p>
-<p>Animal Shelter Team</p>
+<p>Animal Shelter Hippo Team</p>
 </body>
 </html>
