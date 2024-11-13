@@ -8,17 +8,29 @@ import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.SubscriberNotificationInfoProducer;
 import com.ansh.repository.SubscriptionRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AnimalTopicSubscriberRegistryService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(
+      AnimalTopicSubscriberRegistryService.class);
+
+  private static final String SUBSCRIPTIONS_CACHE = "animalNotificationSubscriptionsCache";
 
   @Value("${animalTopicId}")
   private String animalTopicId;
@@ -35,52 +47,110 @@ public class AnimalTopicSubscriberRegistryService {
   @Autowired
   private EmailService emailService;
 
+  @Autowired
+  private RedisTemplate<String, Subscription> redisTemplate;
+
+  @PostConstruct
+  public void initializeCache() {
+    List<Subscription> subscriptions = subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(animalTopicId);
+    LOG.debug("[init] Starting to fulfill cache with subscription qtx: {}", subscriptions.size());
+    subscriptions.forEach(subscription -> {
+      redisTemplate.opsForValue()
+          .set(SUBSCRIPTIONS_CACHE + ":" + subscription.getToken(), subscription);
+      LOG.debug("[init] Have put subscription with key {}", subscription.getToken());
+    });
+  }
+
+  @Scheduled(cron = "0 0 20 * * ?", zone = "Europe/Berlin")
+  public void reloadCache() {
+    LOG.info("[reload] Current time: {} - Perfect timing for a cache reload!", LocalTime.now());
+    clearCache();
+    initializeCache();
+    LOG.debug("[reload] Cache has been reloaded with updated subscriptions");
+  }
+
   @Transactional
   public void registerSubscriber(String email, String approver) {
-    Optional<Subscription> subscriptionOpt = findAnimalTopicSubscription(email);
-
-    if (subscriptionOpt.isEmpty()) {
-      createNewAnimalTopicSubscription(email, approver);
-    } else {
-      resendExistingSubscriptionNotification(subscriptionOpt.get());
-    }
+    findSubscriptionByEmail(email)
+        .ifPresentOrElse(this::resendExistingSubscriptionNotification,
+            () -> createAndRegisterNewSubscription(email, approver));
   }
 
   @Transactional
   public void unregisterSubscriber(String token) {
-    subscriptionRepository.deleteByTokenAndTopic(token, animalTopicId);
+    removeSubscriptionFromCacheAndDb(token);
   }
 
   @Transactional
-  public void handleSubscriptionApproval(String email, String approver, String topic,
-      boolean reject) {
-    Optional<Subscription> subscriptionOpt = findSubscriptionForTopic(email, topic);
-
-    if (subscriptionOpt.isPresent()) {
-      Subscription sb = subscriptionOpt.get();
-      if (!reject) {
-        approveSubscription(sb, approver);
+  public void handleSubscriptionApproval(String email, String approver, boolean reject) {
+    findSubscriptionByEmail(email).ifPresent(subscription -> {
+      if (reject) {
+        removeSubscriptionFromCacheAndDb(subscription.getToken());
       } else {
-        subscriptionRepository.deleteByEmailAndTopic(email, topic);
+        approveSubscription(subscription, approver);
+      }
+    });
+  }
+
+  @Transactional
+  public boolean acceptSubscription(String token) {
+    List<Subscription> subscriptions = subscriptionRepository.findByToken(token);
+
+    subscriptions.forEach(subscription -> {
+      subscription.setAccepted(true);
+      subscriptionRepository.save(subscription);
+      cacheSubscription(subscription);
+      subscriptionNotificationService.sendSuccessTokenConfirmationEmail(subscription);
+    });
+
+    return !subscriptions.isEmpty();
+  }
+
+  private void clearCache() {
+    Set<String> keys = redisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
+    if (keys != null) {
+      RedisTemplate<String, Subscription> subscriptionRedisTemplate = redisTemplate;
+      for (String key : keys) {
+        subscriptionRedisTemplate.delete(key);
       }
     }
   }
 
-  @Transactional
-  public boolean confirmSubscription(String token) {
-    AtomicBoolean updated = new AtomicBoolean(false);
-    subscriptionRepository.findByToken(token)
-        .forEach(subscription -> {
-          subscription.setAccepted(true);
-          subscriptionRepository.save(subscription);
-          subscriptionNotificationService.sendSuccessTokenConfirmationEmail(subscription);
-          updated.set(true);
-        });
-    return updated.get();
+  private void createAndRegisterNewSubscription(String email, String approver) {
+    Subscription newSubscription = new Subscription();
+    newSubscription.setTopic(animalTopicId);
+    newSubscription.setEmail(email);
+    newSubscription.setApprover(approver);
+    newSubscription.setToken(UUID.randomUUID().toString());
+    newSubscription.setAccepted(false);
+    newSubscription.setApproved(false);
+
+    subscriptionRepository.save(newSubscription);
+    subscriberNotificationInfoProducer.sendApproveRequest(email, approver, animalTopicId);
   }
 
-  public List<Subscription> getAcceptedAndApprovedSubscribers() {
-    return subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(animalTopicId);
+
+  private void cacheSubscription(Subscription subscription) {
+    if (!subscription.isApproved() || !subscription.isAccepted()) {
+      return;
+    }
+    redisTemplate.opsForValue()
+        .set(SUBSCRIPTIONS_CACHE + ":" + subscription.getToken(), subscription);
+    LOG.debug("[add] Have added approved and accepted subscription with key {}", subscription.getToken());
+  }
+
+
+  private void removeSubscriptionFromCacheAndDb(String token) {
+    subscriptionRepository.deleteByTokenAndTopic(token, animalTopicId);
+    redisTemplate.delete(SUBSCRIPTIONS_CACHE + ":" + token);
+    LOG.debug("[remove] Have removed subscription with key {}", token);
+  }
+
+  public List<Subscription> getAcceptedAndApprovedSubscribersFromCache() {
+    return getAllSubscriptionsFromCache().stream()
+        .filter(Subscription::isAccepted)
+        .filter(Subscription::isApproved)
+        .toList();
   }
 
   public List<Subscription> getAllSubscriptions(String approver) {
@@ -88,54 +158,43 @@ public class AnimalTopicSubscriberRegistryService {
   }
 
   public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(String approver) {
-    Optional<Subscription> subscriptionOpt = findAnimalTopicSubscription(approver);
-
-    if (subscriptionOpt.isEmpty()) {
-      return NONE;
-    }
-
-    Subscription subscription = subscriptionOpt.get();
-    return subscription.isAccepted() ? ACTIVE : PENDING;
-  }
-
-  private void createNewAnimalTopicSubscription(String email, String approver) {
-    Subscription sb = new Subscription();
-    sb.setTopic(animalTopicId);
-    sb.setEmail(email);
-    sb.setAccepted(false);
-    sb.setApprover(approver);
-    sb.setApproved(false);
-    sb.setToken(generateConfirmationToken());
-    subscriptionRepository.save(sb);
-    subscriberNotificationInfoProducer.sendApproveRequest(email, approver, animalTopicId);
+    return findSubscriptionByEmail(approver)
+        .map(subscription -> subscription.isAccepted() ? ACTIVE : PENDING)
+        .orElse(NONE);
   }
 
   private void resendExistingSubscriptionNotification(Subscription sb) {
-    if (sb.isApproved()) {
-      if (sb.isAccepted()) {
-        subscriptionNotificationService.sendRepeatConfirmationEmail(sb);
-      } else {
-        subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
-      }
+    if (!sb.isApproved()) {
+      return;
     }
+    if (sb.isAccepted()) {
+      subscriptionNotificationService.sendRepeatConfirmationEmail(sb);
+    } else {
+      subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
+    }
+
   }
 
-  private void approveSubscription(Subscription sb, String approver) {
-    sb.setApprover(approver);
-    sb.setApproved(true);
-    subscriptionRepository.save(sb);
-    subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
+  private void approveSubscription(Subscription subscription, String approver) {
+    subscription.setApprover(approver);
+    subscription.setApproved(true);
+    subscriptionRepository.save(subscription);
+    subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(subscription);
   }
 
-  private Optional<Subscription> findAnimalTopicSubscription(String email) {
+  private Optional<Subscription> findSubscriptionByEmail(String email) {
     return subscriptionRepository.findByEmailAndTopic(email, animalTopicId).stream().findFirst();
   }
 
-  private Optional<Subscription> findSubscriptionForTopic(String email, String topic) {
-    return subscriptionRepository.findByEmailAndTopic(email, topic).stream().findFirst();
-  }
-
-  private String generateConfirmationToken() {
-    return UUID.randomUUID().toString();
+  private List<Subscription> getAllSubscriptionsFromCache() {
+    Set<String> keys = redisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
+    LOG.debug("[all] Get all subscriptions: Keys: {}", keys);
+    List<Subscription> subscriptions = new ArrayList<>();
+    if (keys != null) {
+      keys.stream()
+          .map(key -> redisTemplate.opsForValue().get(key))
+          .forEach(subscriptions::add);
+    }
+    return subscriptions;
   }
 }

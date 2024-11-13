@@ -33,17 +33,18 @@ public class SubscriptionController {
 
   @GetMapping("/external/animal-notify-subscribe-check/{token}")
   public String checkSubscription(@PathVariable String token) {
-    boolean isAccepted = animalTopicSubscriberRegistryService.confirmSubscription(token);
+    boolean isAccepted = animalTopicSubscriberRegistryService.acceptSubscription(token);
     return "Subscription with token " + token + " is " + (isAccepted ? "valid" : "invalid");
   }
 
   @PostMapping("/internal/animal-notify-all-approver-subscriptions")
-  public List<Subscription> allSubscribeptionsByApprover(@RequestBody SubscriptionRequest request) {
+  public List<Subscription> allSubscriptionsByApprover(@RequestBody SubscriptionRequest request) {
     return animalTopicSubscriberRegistryService.getAllSubscriptions(request.getApprover());
   }
 
   @PostMapping("/internal/animal-notify-approver-status")
-  public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(@RequestBody SubscriptionRequest request) {
+  public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(
+      @RequestBody SubscriptionRequest request) {
     return animalTopicSubscriberRegistryService.getStatusByApprover(request.getApprover());
   }
 }
