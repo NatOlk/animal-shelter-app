@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 
 public abstract class AbstractAnimalNotificationHandler implements AnimalEventNotificationHandler {
 
@@ -18,7 +19,7 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   @Autowired
   private EmailService emailService;
   @Autowired
-  private AnimalTopicSubscriberRegistryService topicSubscriberRegistry;
+  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
 
   @Override
   public void handle(AnimalEvent event) {
@@ -30,12 +31,17 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   protected abstract String getNotificationTemplate();
 
   private void sendNotifications(Map<String, Object> params, String subject, String templateName) {
-    topicSubscriberRegistry.getAcceptedAndApprovedSubscribers()
+    animalTopicSubscriberRegistryService.getAcceptedAndApprovedSubscribersFromCache()
         .forEach(subscription -> {
           params.put("name", subscription.getEmail());
           params.put("unsubscribeLink", animalShelterNotificationApp
               + "/external/animal-notify-unsubscribe/" + subscription.getToken());
-          emailService.sendSimpleMessage(subscription.getEmail(), subject, templateName, params);
+          sendEmailAsync(subscription.getEmail(), subject, templateName, params);
         });
+  }
+
+  @Async
+  private void sendEmailAsync(String email, String subject, String templateName, Map<String, Object> params) {
+    emailService.sendSimpleMessage(email, subject, templateName, params);
   }
 }
