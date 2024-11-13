@@ -11,7 +11,6 @@ import com.ansh.uimanagement.service.exception.VaccinationUpdateException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -58,7 +57,6 @@ public class VaccinationService {
       vaccination.setComments(comments);
       vaccination.setEmail(email);
       vaccination.setAnimal(animal);
-      //	vaccination.setVaccination_time(new Date());
 
       vaccinationRepository.save(vaccination);
       notificationService.sendAddVaccinationMessage(vaccination);

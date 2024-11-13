@@ -20,14 +20,14 @@ public class SubscriberNotificationInfoConsumer {
   private AnimalTopicSubscriberRegistryService topicSubscriberRegistryService;
 
   @KafkaListener(topics = "${approveTopicId}", groupId = "animalGroupId")
-  public void listen(ConsumerRecord<String, String> record) throws IOException {
+  public void listen(ConsumerRecord<String, String> message) throws IOException {
 
-    AnimalNotificationUserSubscribedEvent animalEvent = new ObjectMapper().readValue(record.value(),
+    AnimalNotificationUserSubscribedEvent animalEvent = new ObjectMapper().readValue(message.value(),
         AnimalNotificationUserSubscribedEvent.class);
     String email = animalEvent.getEmail();
     String approver = animalEvent.getApprover();
     String topic = animalEvent.getTopic();
     boolean reject = animalEvent.isReject();
-    topicSubscriberRegistryService.handleSubscriptionApproval(email, approver, topic, reject);
+    topicSubscriberRegistryService.handleSubscriptionApproval(email, approver, reject);
   }
 }
