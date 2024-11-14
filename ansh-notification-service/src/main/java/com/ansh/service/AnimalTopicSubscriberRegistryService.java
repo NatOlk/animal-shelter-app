@@ -10,6 +10,7 @@ import com.ansh.notification.SubscriberNotificationInfoProducer;
 import com.ansh.repository.SubscriptionRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,7 +32,8 @@ public class AnimalTopicSubscriberRegistryService {
   private static final Logger LOG = LoggerFactory.getLogger(
       AnimalTopicSubscriberRegistryService.class);
 
-  private static final String SUBSCRIPTIONS_CACHE = "animalNotificationSubscriptionsCache";
+  private static final String SUBSCRIPTIONS_CACHE = "animal_notification_subscriptions";
+  private static final String CACHE_LAST_UPDATED = "cache_last_updated";
 
   @Value("${animalTopicId}")
   private String animalTopicId;
@@ -48,25 +51,50 @@ public class AnimalTopicSubscriberRegistryService {
   private EmailService emailService;
 
   @Autowired
-  private RedisTemplate<String, Subscription> redisTemplate;
+  @Qualifier("subscriptionRedisTemplate")
+  private RedisTemplate<String, Subscription> subscriptionRedisTemplate;
+
+  @Autowired
+  @Qualifier("updRedisTemplate")
+  private RedisTemplate<String, String> updRedisTemplate;
 
   @PostConstruct
   public void initializeCache() {
-    List<Subscription> subscriptions = subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(animalTopicId);
+    List<Subscription> subscriptions = subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(
+        animalTopicId);
     LOG.debug("[init] Starting to fulfill cache with subscription qtx: {}", subscriptions.size());
+
     subscriptions.forEach(subscription -> {
-      redisTemplate.opsForValue()
+      subscriptionRedisTemplate.opsForValue()
           .set(SUBSCRIPTIONS_CACHE + ":" + subscription.getToken(), subscription);
       LOG.debug("[init] Have put subscription with key {}", subscription.getToken());
     });
+
+    updRedisTemplate.opsForValue().set(CACHE_LAST_UPDATED, LocalDate.now().toString());
   }
 
   @Scheduled(cron = "0 0 20 * * ?", zone = "Europe/Berlin")
   public void reloadCache() {
-    LOG.info("[reload] Current time: {} - Perfect timing for a cache reload!", LocalTime.now());
-    clearCache();
-    initializeCache();
-    LOG.debug("[reload] Cache has been reloaded with updated subscriptions");
+    LOG.info("[reload] Time to reload the cache: {}", LocalTime.now());
+
+    if (shouldUpdateCache()) {
+      clearCache();
+      initializeCache();
+      LOG.debug("[reload] Cache reloaded with updated subscriptions.");
+    } else {
+      LOG.info("[reload] Cache already updated today, skipping reload.");
+    }
+  }
+
+  private boolean shouldUpdateCache() {
+    String lastUpdateDate = updRedisTemplate.opsForValue().get(CACHE_LAST_UPDATED);
+    String today = LocalDate.now().toString();
+    if (lastUpdateDate == null || !lastUpdateDate.equals(today)) {
+      LOG.debug("Cache update needed: Last update was on [{}], today is [{}]", lastUpdateDate,
+          today);
+      return true;
+    }
+    return false;
   }
 
   @Transactional
@@ -107,12 +135,9 @@ public class AnimalTopicSubscriberRegistryService {
   }
 
   private void clearCache() {
-    Set<String> keys = redisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
+    Set<String> keys = subscriptionRedisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
     if (keys != null) {
-      RedisTemplate<String, Subscription> subscriptionRedisTemplate = redisTemplate;
-      for (String key : keys) {
-        subscriptionRedisTemplate.delete(key);
-      }
+      keys.forEach(subscriptionRedisTemplate::delete);
     }
   }
 
@@ -134,16 +159,15 @@ public class AnimalTopicSubscriberRegistryService {
     if (!subscription.isApproved() || !subscription.isAccepted()) {
       return;
     }
-    redisTemplate.opsForValue()
+    subscriptionRedisTemplate.opsForValue()
         .set(SUBSCRIPTIONS_CACHE + ":" + subscription.getToken(), subscription);
-    LOG.debug("[add] Have added approved and accepted subscription with key {}", subscription.getToken());
+    LOG.debug("[cache] Subscription added to cache with key {}", subscription.getToken());
   }
-
 
   private void removeSubscriptionFromCacheAndDb(String token) {
     subscriptionRepository.deleteByTokenAndTopic(token, animalTopicId);
-    redisTemplate.delete(SUBSCRIPTIONS_CACHE + ":" + token);
-    LOG.debug("[remove] Have removed subscription with key {}", token);
+    subscriptionRedisTemplate.delete(SUBSCRIPTIONS_CACHE + ":" + token);
+    LOG.debug("[remove] Subscription removed from cache and DB with key {}", token);
   }
 
   public List<Subscription> getAcceptedAndApprovedSubscribersFromCache() {
@@ -172,7 +196,6 @@ public class AnimalTopicSubscriberRegistryService {
     } else {
       subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
     }
-
   }
 
   private void approveSubscription(Subscription subscription, String approver) {
@@ -182,17 +205,18 @@ public class AnimalTopicSubscriberRegistryService {
     subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(subscription);
   }
 
+
   private Optional<Subscription> findSubscriptionByEmail(String email) {
     return subscriptionRepository.findByEmailAndTopic(email, animalTopicId).stream().findFirst();
   }
 
   private List<Subscription> getAllSubscriptionsFromCache() {
-    Set<String> keys = redisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
-    LOG.debug("[all] Get all subscriptions: Keys: {}", keys);
+    Set<String> keys = subscriptionRedisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
+    LOG.debug("[all] Retrieved all subscriptions from cache. Keys: {}", keys);
     List<Subscription> subscriptions = new ArrayList<>();
     if (keys != null) {
       keys.stream()
-          .map(key -> redisTemplate.opsForValue().get(key))
+          .map(key -> subscriptionRedisTemplate.opsForValue().get(key))
           .forEach(subscriptions::add);
     }
     return subscriptions;
