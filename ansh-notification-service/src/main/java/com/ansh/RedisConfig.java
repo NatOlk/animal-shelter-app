@@ -4,6 +4,7 @@ import com.ansh.entity.subscription.Subscription;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
@@ -28,8 +29,10 @@ public class RedisConfig {
             RedisSerializationContext.SerializationPair.fromSerializer(serializer)));
   }
 
-  @Bean
-  public RedisTemplate<String, Subscription> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+  @Bean(name = "subscriptionRedisTemplate")
+  @Primary
+  public RedisTemplate<String, Subscription> subscriptionRedisTemplate(
+      RedisConnectionFactory redisConnectionFactory) {
     RedisTemplate<String, Subscription> template = new RedisTemplate<>();
     template.setConnectionFactory(redisConnectionFactory);
     template.setKeySerializer(new StringRedisSerializer());
@@ -37,4 +40,13 @@ public class RedisConfig {
     return template;
   }
 
+  @Bean(name = "updRedisTemplate")
+  public RedisTemplate<String, String> updRedisTemplate(
+      RedisConnectionFactory redisConnectionFactory) {
+    RedisTemplate<String, String> template = new RedisTemplate<>();
+    template.setConnectionFactory(redisConnectionFactory);
+    template.setKeySerializer(new StringRedisSerializer());
+    template.setValueSerializer(new StringRedisSerializer());
+    return template;
+  }
 }
