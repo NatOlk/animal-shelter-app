@@ -153,3 +153,8 @@ input::placeholder {
 .highlight-own-subscription {
   background-color: #e0f2f1;
 }
+
+.subscription-title {
+  color: #4db6ac !important;
+   font-weight: bold;
+}
