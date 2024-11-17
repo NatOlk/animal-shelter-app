@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Table } from 'reactstrap';
 import { apiFetch } from '../common/api';
+import M from 'materialize-css';
 
 function AllApproverSubscriptionList({ userProfile }) {
   const apiUrl = process.env.REACT_APP_NOTIFICATION_APP_API_URL;
@@ -25,6 +26,14 @@ function AllApproverSubscriptionList({ userProfile }) {
 
     fetchSubscribers();
   }, [userProfile.email]);
+
+  useEffect(() => {
+    const elemsTooltips = document.querySelectorAll('.tooltipped');
+    const instancesTooltips = M.Tooltip.init(elemsTooltips, {});
+    return () => {
+      instancesTooltips.forEach((instance) => instance.destroy());
+    };
+  }, [allSubscribers]);
 
   const handleUnsubscribe = async (token) => {
     try {
@@ -54,7 +63,11 @@ function AllApproverSubscriptionList({ userProfile }) {
       <td>{subscriber.accepted ? 'Yes' : 'No'}</td>
       <td>
         {subscriber.approved && (
-          <button onClick={() => handleUnsubscribe(subscriber.token)} className="red lighten-1 waves-effect waves-orange btn-small">
+          <button
+            onClick={() => handleUnsubscribe(subscriber.token)}
+            className="tooltipped red lighten-1 waves-effect waves-orange btn-small"
+            data-position="bottom"
+            data-tooltip="Unsubscribe">
             <i className="small material-icons">person_remove</i>
           </button>
         )}
@@ -76,9 +89,7 @@ function AllApproverSubscriptionList({ userProfile }) {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {subscriberRows}
-          </tbody>
+          <tbody>{subscriberRows}</tbody>
         </Table>
       ) : (
         <p>No subscribers</p>

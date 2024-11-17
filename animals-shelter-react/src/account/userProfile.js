@@ -17,7 +17,7 @@ const UserProfile = () => {
   const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState(null);
 
   useEffect(() => {
-    if (data && data.currentUserProfile) {
+    if (data?.currentUserProfile) {
       setAnimalNotifyStatusProfile(data.currentUserProfile.animalNotifyStatus || "NONE");
       const elems = document.querySelectorAll('.collapsible');
       const instances = M.Collapsible.init(elems, {});
@@ -130,14 +130,17 @@ const UserProfile = () => {
             <ul className="collapsible card-color">
               <li className="active">
                 <div className="collapsible-header">
-                  <i className="material-icons">pending_actions</i>Pending Subscribers</div>
+                  <i className="material-icons">pending_actions</i>
+                  <span className="subscription-title">Pending Subscribers</span>
+                </div>
                 <div className="collapsible-body">
                   <PendingSubscriptionList userProfile={data.currentUserProfile} />
                 </div>
               </li>
               <li>
                 <div className="collapsible-header" onClick={() => setIsNoApproverOpen(!isNoApproverOpen)}>
-                  <i className="material-icons">no_accounts</i>No Approver Subscribers
+                  <i className="material-icons">no_accounts</i>
+                  <span className="subscription-title">No Approver Subscribers</span>
                 </div>
                 <div className="collapsible-body">
                   {isNoApproverOpen && <NoApproverSubscriptionList userProfile={data.currentUserProfile} />}
@@ -145,7 +148,8 @@ const UserProfile = () => {
               </li>
               <li>
                 <div className="collapsible-header" onClick={() => setIsAllOpen(!isAllOpen)}>
-                  <i className="material-icons">how_to_reg</i>All Subscribers
+                  <i className="material-icons">how_to_reg</i>
+                  <span className="subscription-title">All Subscribers</span>
                 </div>
                 <div className="collapsible-body">
                   {isAllOpen && <AllApproverSubscriptionList userProfile={data.currentUserProfile} />}
