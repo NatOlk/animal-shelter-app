@@ -41,7 +41,7 @@ function DeleteAnimal({ id }) {
     return (
         <>
             <button data-target="modal1" className="waves-effect waves-light modal-trigger btn-small">
-                <i className="small material-icons">remove</i>
+                <i className="material-icons">close</i>
             </button>
 
             <div id="modal1" className="modal">
