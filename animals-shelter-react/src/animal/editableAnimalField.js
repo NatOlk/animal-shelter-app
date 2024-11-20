@@ -8,7 +8,7 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
   const [fieldValue, setFieldValue] = useState(value);
   const [oldValue, setOldValue] = useState("");
 
-  const [updateField, { loading, error }] = useMutation(UPDATE_ANIMAL, {
+  const [updateField] = useMutation(UPDATE_ANIMAL, {
     refetchQueries: [ANIMALS_QUERY],
     onCompleted: () => setIsEditing(false),
   });
@@ -35,7 +35,7 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
     updateField({ variables }).catch(err => console.error(err));
   };
 
-  const inputStyle = isEditing ? `red-background` : {};
+  const inputStyle = isEditing ? "red-background" : "editable-field";
   const combinedClassName = `${inputStyle} browser-default`;
 
   return (
@@ -45,8 +45,7 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
           <select
             value={fieldValue}
             className={combinedClassName}
-            onChange={(e) => setFieldValue(e.target.value)}
-          >
+            onChange={(e) => setFieldValue(e.target.value)}>
             {values.map((val) => (
               <option key={val} value={val}>
                 {val}
@@ -59,17 +58,16 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
             id={`${name}-${animal.id}`}
             className={`${combinedClassName} datepicker`}
             value={fieldValue}
-            onChange={(e) => setFieldValue(e.target.value)}
-          />
+            onChange={(e) => setFieldValue(e.target.value)}/>
         ) : (
           <input
             className={combinedClassName}
             value={fieldValue}
-            onChange={(e) => setFieldValue(e.target.value)}
-          />
+            onChange={(e) => setFieldValue(e.target.value)}/>
         )
       ) : (
         <span
+          className="editable-field"
           onDoubleClick={() => {
             setOldValue(fieldValue);
             setIsEditing(true);
