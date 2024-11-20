@@ -67,7 +67,6 @@ function AddAnimal() {
     }, []);
 
     const handleAddAnimal = () => {
-        // Валидация полей
         if (!animal.name) {
             setValidationError('name');
             return;
