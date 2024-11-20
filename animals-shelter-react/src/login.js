@@ -29,11 +29,16 @@ const Login = () => {
 
             if (response.ok) {
                 const responseBody = await response.json();
+                const token = responseBody.token;
+                if (token === 'undefined' || token === null || token === '') {
+                    navigate('/login');
+                    return;
+                }
                 const userData = {
                     id: responseBody.user,
                     email: responseBody.email
                 };
-                login(userData);
+                login(userData, token);
                 navigate('/');
             } else {
                 setErrorMessage('Login failed');
