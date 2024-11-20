@@ -7,12 +7,14 @@ const handleUnauthorized = () => {
 export const apiFetch = async (url, options = {}) => {
     const { method = 'GET', body, headers = {} } = options;
 
+    const token = localStorage.getItem('jwt');
+
     try {
         const response = await fetch(`${apiUrl}${url}`, {
             method,
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: token ? `Bearer ${token}` : '',
                 ...headers,
             },
             body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
