@@ -2,8 +2,10 @@ package com.ansh;
 
 
 import com.ansh.auth.service.CustomUserDetailsService;
+import com.ansh.auth.service.JwtAuthenticationFilter;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,12 +14,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -30,6 +32,8 @@ public class AnshSecurityConfig {
   @Value("${animalShelterReactApp}")
   private String animalShelterReactApp;
 
+  @Autowired
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
@@ -39,12 +43,14 @@ public class AnshSecurityConfig {
             .requestMatchers("/api/auth/login").permitAll()
             .requestMatchers("/api/auth/logout").permitAll()
             .requestMatchers("/resources/**").permitAll()
+            .requestMatchers("/graphql").authenticated()
             .requestMatchers("/**").authenticated()
         )
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .securityContext((securityContext) -> securityContext.requireExplicitSave(false))
         .logout(logout -> logout
             .logoutSuccessUrl("/logout")
             .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID")
             .permitAll()
         );
 
