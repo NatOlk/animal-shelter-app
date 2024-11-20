@@ -3,8 +3,7 @@ import { Container, Table } from 'reactstrap';
 import { useQuery } from "@apollo/client";
 import AddVaccination from "./addVaccination";
 import UpdateVaccination from "./updateVaccination";
-import { useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 
 function VaccinationsList() {
