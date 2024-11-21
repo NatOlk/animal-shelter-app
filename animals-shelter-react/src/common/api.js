@@ -1,6 +1,7 @@
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const handleUnauthorized = () => {
+    localStorage.removeItem('jwt');
     window.location.href = '/login';
 };
 
@@ -19,6 +20,11 @@ export const apiFetch = async (url, options = {}) => {
             },
             body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
         });
+
+       if (response.status === 401) {
+            handleUnauthorized();
+            throw new Error('Unauthorized');
+        }
 
         if (response.status === 403) {
             handleUnauthorized();
