@@ -15,7 +15,7 @@ import { AuthProvider, useAuth } from './common/authContext';
 import QuickSubscribe from './account/quickSubscribe';
 
 const AppContent = () => {
- const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
@@ -57,7 +57,7 @@ const AppContent = () => {
           </Routes>
         </div>
       </div>
-     {isAuthenticated && <QuickSubscribe />}
+      {isAuthenticated && <QuickSubscribe />}
     </>
   );
 };
