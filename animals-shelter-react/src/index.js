@@ -9,49 +9,12 @@ import App from "./app";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const CookieContext = createContext();
-
-export const CookieProvider = ({ children }) => {
-  const [sessionId, setSessionId] = useState(getCookie('JSESSIONID'));
-
-  useEffect(() => {
-    const updateSessionId = () => {
-      const newSessionId = getCookie('JSESSIONID');
-      if (newSessionId !== sessionId) {
-        setSessionId(newSessionId);
-      }
-    };
-
-    window.addEventListener('cookieChange', updateSessionId);
-
-    return () => {
-      window.removeEventListener('cookieChange', updateSessionId);
-    };
-  }, [sessionId]);
-
-  return (
-    <CookieContext.Provider value={{ sessionId }}>
-      {children}
-    </CookieContext.Provider>
-  );
-};
-
-export const useCookie = () => useContext(CookieContext);
-
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-  return null;
-};
-
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
       console.error(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       );
-      console.info(`!1error` + message);
       if (message === 'Unauthorized') {
         window.location.href = '/login';
       }
@@ -76,9 +39,7 @@ const client = new ApolloClient({
 
 const root = createRoot(document.getElementById("root"));
 root.render(
-  <CookieProvider>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  </CookieProvider>
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>
 );
