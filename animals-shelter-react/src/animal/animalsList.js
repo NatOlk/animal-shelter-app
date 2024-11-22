@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/client";
 import AddAnimal from "./addAnimal";
 import UpdateAnimal from "./updateAnimal";
 import { ANIMALS_QUERY } from '../common/graphqlQueries.js';
+import Pagination from '../common/pagination'
 
 function AnimalsList() {
     const perPage = 10;
@@ -62,18 +63,11 @@ function AnimalsList() {
                         {animalsList}
                     </tbody>
                 </Table>
-
-                <div>
-                    {Array.from({ length: pageCount }, (_, index) => (
-                        <button
-                            key={index}
-                            className="round-button-with-border"
-                            onClick={() => setCurrentPage(index)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    pageCount={pageCount}
+                    onPageChange={setCurrentPage}
+                />
             </Container>
         </div>
     );
