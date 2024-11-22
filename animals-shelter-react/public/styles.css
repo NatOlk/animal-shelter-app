@@ -113,41 +113,41 @@ input::placeholder {
 }
 
 .subscription-container {
-    display: flex;
-    max-width: 400px;
-    gap: 10px;
+  display: flex;
+  max-width: 400px;
+  gap: 10px;
 }
 
 .input-container {
-    display: flex;
-    gap: 10px;
-    width: 100%;
+  display: flex;
+  gap: 10px;
+  width: 100%;
 }
 
 .subscription-progress {
-    width: 100%;
-    margin-top: 10px;
+  width: 100%;
+  margin-top: 10px;
 }
 
 .quick-subscribe-btn {
-    position: fixed;
-    bottom: 45px;
-    right: 24px;
+  position: fixed;
+  bottom: 45px;
+  right: 24px;
 }
 
 .quick-subscribe-input-container {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .quick-subscribe-input {
-    margin-right: 8px;
+  margin-right: 8px;
 }
 
 .quick-subscribe-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .highlight-own-subscription {
@@ -156,7 +156,7 @@ input::placeholder {
 
 .subscription-title {
   color: #4db6ac !important;
-   font-weight: bold;
+  font-weight: bold;
 }
 
 .editable-field {
@@ -170,4 +170,77 @@ input::placeholder {
 .editable-field:hover {
   background-color: #e0e0e0;
   cursor: pointer;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.pagination li {
+  margin: 0 5px;
+}
+
+.pagination a {
+  display: block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #555;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination li.active a {
+  background-color: #26a69a;
+  color: #fff;
+  border-color: #3f51b5;
+}
+
+.pagination li.disabled a {
+  color: #aaa;
+  pointer-events: none;
+  border-color: #eee;
+}
+
+.pagination a:hover {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+.pagination li.disabled a {
+  color: #aaa;
+  pointer-events: none;
+  cursor: default;
+}
+
+.pagination li a {
+  display: inline-block;
+  padding: 6px 12px;
+  text-decoration: none;
+  color: #000;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.pagination li.active a {
+  background-color: #2196F3;
+  color: white;
+  border: 1px solid #2196F3;
+}
+
+.pagination li a:hover {
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
 }

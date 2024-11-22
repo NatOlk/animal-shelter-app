@@ -3,6 +3,7 @@ import { Container, Table } from 'reactstrap';
 import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
 import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
+import Pagination from '../common/pagination'
 
 function AllVaccinationsList() {
     const perPage = 10;
@@ -66,18 +67,11 @@ function AllVaccinationsList() {
                         {vaccinationsList}
                     </tbody>
                 </Table>
-                <div>
-                    {
-                        Array.from({ length: pageCount }, (_, index) => (
-                            <button
-                                key={index}
-                                className="round-button-with-border"
-                                onClick={() => setCurrentPage(index)}>
-                                {index + 1}
-                            </button>
-                        ))
-                    }
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    pageCount={pageCount}
+                    onPageChange={setCurrentPage}
+                />
             </Container>
         </div>
     );

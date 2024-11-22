@@ -5,6 +5,7 @@ import AddVaccination from "./addVaccination";
 import UpdateVaccination from "./updateVaccination";
 import { useLocation, Link } from 'react-router-dom';
 import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
+import Pagination from '../common/pagination'
 
 function VaccinationsList() {
     const perPage = 10;
@@ -73,19 +74,12 @@ function VaccinationsList() {
                         {vaccinationsList}
                     </tbody>
                 </Table>
-                <div>
-                    {
-                        Array.from({ length: pageCount }, (_, index) => (
-                            <button
-                                key={index}
-                                className="round-button-with-border"
-                                onClick={() => setCurrentPage(index)}
-                            >
-                                {index + 1}
-                            </button>
-                        ))
-                    }
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    pageCount={pageCount}
+                    onPageChange={setCurrentPage}
+                />
+
             </Container>
         </div>
     );
