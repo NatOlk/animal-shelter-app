@@ -29,7 +29,7 @@ public class AnimalService {
   private NotificationService notificationService;
 
   public List<Animal> getAllAnimals() {
-    return animalRepository.findAll();
+    return animalRepository.findAllByOrderByNameAsc();
   }
 
   public Animal findById(Long id) throws AnimalNotFoundException {
