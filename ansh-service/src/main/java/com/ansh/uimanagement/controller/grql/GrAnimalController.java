@@ -30,9 +30,6 @@ public class GrAnimalController {
   @QueryMapping
   public List<Animal> allAnimals() {
     List<Animal> animals = animalsService.getAllAnimals();
-
-    Collections.sort(animals, Comparator.comparing(animal -> animal.getId()));
-
     return animals;
   }
 
