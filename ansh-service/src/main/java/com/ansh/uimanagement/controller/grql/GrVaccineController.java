@@ -66,7 +66,6 @@ public class GrVaccineController {
         email);
   }
 
-
   @SchemaMapping(typeName = "Animal", field = "vaccinations")
   public List<Vaccination> getVaccinations(Animal animal) {
     return vaccinationService.findByAnimalId(animal.getId());

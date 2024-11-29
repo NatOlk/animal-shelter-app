@@ -35,11 +35,6 @@ public class ConfigController {
     );
   }
 
-  @GetMapping("/api/config/notification-app")
-  public String getNotificationAppUrl() {
-    return animalShelterNotificationApp;
-  }
-
   @Data
   public static class ConfigResponse {
 

@@ -43,4 +43,8 @@ public class AnimalTopicSubscriptionService {
               subscriber.getApprover(), subscriber.getTopic());
         });
   }
+
+  protected void setAnimalTopicId(String animalTopicId) {
+    this.animalTopicId = animalTopicId;
+  }
 }
