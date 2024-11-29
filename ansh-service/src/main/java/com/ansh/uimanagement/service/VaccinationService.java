@@ -44,12 +44,13 @@ public class VaccinationService {
   public Vaccination addVaccination(@NonNull Long animalId, @NonNull String vaccine,
       @NonNull String batch, @NonNull String vaccinationTime,
       String comments, @NonNull String email) throws VaccinationCreationException {
-    try {
-      Animal animal = animalRepository.findById(animalId).orElse(null);
-      if (animal == null) {
-        throw new VaccinationCreationException("Animal is not found " + animalId);
-      }
 
+    Animal animal = animalRepository.findById(animalId).orElse(null);
+    if (animal == null) {
+      throw new VaccinationCreationException("Animal is not found " + animalId);
+    }
+
+    try {
       Vaccination vaccination = new Vaccination();
       vaccination.setVaccine(vaccine);
       vaccination.setBatch(batch);
@@ -60,10 +61,9 @@ public class VaccinationService {
 
       vaccinationRepository.save(vaccination);
       notificationService.sendAddVaccinationMessage(vaccination);
-
       return vaccination;
-    } catch (Exception e) {
-      throw new VaccinationCreationException("Error during add vaccination : ");
+    } catch (Exception ex) {
+      throw new VaccinationCreationException("An error occurred while adding the vaccination for animal " + animalId);
     }
   }
 

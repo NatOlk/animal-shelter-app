@@ -48,16 +48,15 @@ public class GrAnimalController {
   }
 
   @MutationMapping
-  public Animal updateAnimal(@Argument Long id, @Argument String primaryCcolor,
+  public Animal updateAnimal(@Argument Long id, @Argument String primaryColor,
       @Argument String breed, @Argument String gender, @Argument String birthDate,
       @Argument String pattern) throws AnimalNotFoundException, AnimalUpdateException {
-    return animalsService.updateAnimal(id, primaryCcolor, breed, gender, birthDate, pattern);
+    return animalsService.updateAnimal(id, primaryColor, breed, gender, birthDate, pattern);
   }
 
   @MutationMapping
   public Animal deleteAnimal(@Argument Long id, @Argument String reason)
       throws AnimalNotFoundException {
-    //TODO refactor
     return animalsService.removeAnimal(id, reason);
   }
 
