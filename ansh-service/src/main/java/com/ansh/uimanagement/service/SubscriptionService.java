@@ -112,4 +112,12 @@ public class SubscriptionService {
 
     return response.getBody();
   }
+
+  protected void setAnimalShelterNotificationApp(String animalShelterNotificationApp) {
+    this.animalShelterNotificationApp = animalShelterNotificationApp;
+  }
+
+  protected void setNotificationApiKey(String notificationApiKey) {
+    this.notificationApiKey = notificationApiKey;
+  }
 }

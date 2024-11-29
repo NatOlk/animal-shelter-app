@@ -1,6 +1,9 @@
 INSERT INTO user_profiles (email, name, password, animal_notif_status)
 VALUES ('nolkoeva@gmail.com', 'admin', '$2b$12$rAbcG66.Jawjm31LImq3GOjA.oGlYhlWiNaQPL2SEzBcg9SGBvw26', 'NONE');
 
+INSERT INTO user_profiles (email, name, password, animal_notif_status)
+VALUES ('olkoeva@mail.ru', 'natol', '$2b$12$rAbcG66.Jawjm31LImq3GOjA.oGlYhlWiNaQPL2SEzBcg9SGBvw26', 'NONE');
+
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
 VALUES ('2024-06-17', '2018-04-16', 'Persian', 'F', '11111111-2111-1111-1111-111111111112', 'BoBo', '', 'Brown', 'Cat', 1);
 

@@ -36,7 +36,7 @@ public class AnshSecurityConfig {
   private JwtAuthenticationFilter jwtAuthenticationFilter;
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
+   http
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
