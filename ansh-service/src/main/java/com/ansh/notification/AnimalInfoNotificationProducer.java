@@ -29,7 +29,11 @@ public class AnimalInfoNotificationProducer {
       String jsonMessage = objectMapper.writeValueAsString(animalEvent);
       kafkaTemplate.send(animalTopicId, jsonMessage);
     } catch (Exception e) {
-      LOG.error("Exception during sending message:", e.getMessage());
+      LOG.error("Exception during sending message: {}", e.getMessage());
     }
+  }
+
+  protected void setAnimalTopicId(String animalTopicId) {
+    this.animalTopicId = animalTopicId;
   }
 }

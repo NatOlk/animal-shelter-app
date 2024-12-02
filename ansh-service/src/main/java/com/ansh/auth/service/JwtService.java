@@ -45,7 +45,7 @@ public class JwtService {
         .compact();
   }
 
-  private SecretKey getSigningKey() {
+  protected SecretKey getSigningKey() {
     return Keys.hmacShaKeyFor(jwtSecretKey.getBytes());
   }
 
@@ -56,5 +56,9 @@ public class JwtService {
 
   private boolean isTokenExpired(String token) {
     return extractClaim(token, Claims::getExpiration).before(new Date());
+  }
+
+  protected void setJwtSecretKey(String jwtSecretKey) {
+    this.jwtSecretKey = jwtSecretKey;
   }
 }
