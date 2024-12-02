@@ -1,12 +1,11 @@
 package com.ansh.uimanagement.controller.grql;
 
 import com.ansh.entity.animal.Animal;
-import com.ansh.entity.animal.Vaccination;
 import com.ansh.uimanagement.service.AnimalService;
 import com.ansh.uimanagement.service.exception.AnimalCreationException;
 import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,6 @@ import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.GraphQlTester.Response;
-
-import java.util.List;
 
 @GraphQlTest(controllers = GrAnimalController.class)
 class GrAnimalControllerTest {
@@ -86,7 +83,9 @@ class GrAnimalControllerTest {
     animal.setId(1L);
     animal.setName("Fido");
 
-    Mockito.when(animalService.addAnimal("Fido", "Dog", "Brown", "Labrador", "12345", "Male", "2022-01-01", "Spotted"))
+    Mockito.when(
+            animalService.addAnimal("Fido", "Dog", "Brown", "Labrador", "12345", "Male", "2022-01-01",
+                "Spotted"))
         .thenReturn(animal);
 
     String query = """
@@ -106,7 +105,8 @@ class GrAnimalControllerTest {
   }
 
   @Test
-  void updateAnimal_shouldReturnUpdatedAnimal() throws AnimalUpdateException, AnimalNotFoundException {
+  void updateAnimal_shouldReturnUpdatedAnimal()
+      throws AnimalUpdateException, AnimalNotFoundException {
     Animal animal = new Animal();
     animal.setId(1L);
     animal.setName("Fido");

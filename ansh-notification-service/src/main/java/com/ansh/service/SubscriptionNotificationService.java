@@ -48,4 +48,8 @@ public class SubscriptionNotificationService {
 
     return params;
   }
+
+  protected void setAnimalShelterNotificationApp(String animalShelterNotificationApp) {
+    this.animalShelterNotificationApp = animalShelterNotificationApp;
+  }
 }

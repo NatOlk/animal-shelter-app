@@ -115,7 +115,8 @@ class AnimalServiceTest {
     when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
     when(animalRepository.save(any(Animal.class))).thenReturn(animal);
 
-    var updatedAnimal = animalService.updateAnimal(1L, "Black", null, "M", "2023-01-01", null);
+    var updatedAnimal = animalService.updateAnimal(1L, "Black", null, "M",
+        "2023-01-01", null);
 
     assertEquals('M', updatedAnimal.getGender());
     assertEquals("Black", updatedAnimal.getPrimaryColor());
@@ -133,7 +134,8 @@ class AnimalServiceTest {
         new RuntimeException("Database error"));
 
     assertThrows(AnimalUpdateException.class, () -> animalService
-        .updateAnimal(1L, "Black", null, "M", "2023-01-01", null));
+        .updateAnimal(1L, "Black", null, "M",
+            "2023-01-01", null));
   }
 
   @Test
@@ -148,7 +150,8 @@ class AnimalServiceTest {
     assertNotNull(removedAnimal);
     verify(animalRepository, times(1)).findById(1L);
     verify(animalRepository, times(1)).delete(animal);
-    verify(notificationService, times(1)).sendRemoveAnimalMessage(animal, "Adopted");
+    verify(notificationService, times(1))
+        .sendRemoveAnimalMessage(animal, "Adopted");
   }
 
   @Test
