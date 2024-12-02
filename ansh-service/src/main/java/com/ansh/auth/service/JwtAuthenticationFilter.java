@@ -1,5 +1,6 @@
 package com.ansh.auth.service;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
       filterChain.doFilter(request, response);
 
-    } catch (io.jsonwebtoken.ExpiredJwtException e) {
+    } catch (ExpiredJwtException e) {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       response.setHeader("Location", "/login");
       response.flushBuffer();
