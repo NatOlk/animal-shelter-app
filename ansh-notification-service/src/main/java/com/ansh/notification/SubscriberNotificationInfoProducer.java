@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class SubscriberNotificationInfoProducer {
 
   private static final Logger LOG = LoggerFactory.getLogger(
@@ -37,7 +37,11 @@ public class SubscriberNotificationInfoProducer {
 
       kafkaTemplate.send(subscriptionTopicId, jsonMessage);
     } catch (Exception e) {
-      LOG.error("Exception during sending message:", e.getMessage());
+      LOG.error("Exception during sending message: {}", e.getMessage());
     }
+  }
+
+  protected void setSubscriptionTopicId(String subscriptionTopicId) {
+    this.subscriptionTopicId = subscriptionTopicId;
   }
 }

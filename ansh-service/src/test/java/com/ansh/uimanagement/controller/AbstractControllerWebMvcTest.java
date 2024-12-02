@@ -4,6 +4,7 @@ import com.ansh.AnshSecurityConfig;
 import com.ansh.auth.service.CustomUserDetailsService;
 import com.ansh.auth.service.JwtService;
 import com.ansh.auth.service.UserProfileService;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
 
 @WebMvcTest
 @Import(AnshSecurityConfig.class)
