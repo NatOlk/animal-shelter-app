@@ -24,4 +24,8 @@ public class AnimalInfoConsumer {
     AnimalEvent animalEvent = new ObjectMapper().readValue(message.value(), AnimalEvent.class);
     handlerRegistry.handleEvent(animalEvent);
   }
+
+  protected void setAnimalTopicId(String animalTopicId) {
+    this.animalTopicId = animalTopicId;
+  }
 }

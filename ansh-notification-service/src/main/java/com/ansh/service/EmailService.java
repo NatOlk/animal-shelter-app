@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -21,7 +22,7 @@ public class EmailService {
   private JavaMailSender emailSender;
 
   @Autowired
-  private TemplateEngine templateEngine;
+  private ITemplateEngine templateEngine;
 
   public void sendSimpleMessage(String email, String subject, String template,
       Map<String, Object> templateModel) {

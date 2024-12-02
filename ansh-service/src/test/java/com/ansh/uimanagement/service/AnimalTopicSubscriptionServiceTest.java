@@ -46,12 +46,15 @@ class AnimalTopicSubscriptionServiceTest {
 
     animalTopicSubscriptionService.approveSubscriber("test@example.com", "approver@example.com");
 
-    verify(pendingSubscriberRepository, times(1)).findByEmailAndTopic("test@example.com",
-        "animalTopic");
-    verify(animalNotificationUserSubscribedProducer, times(1)).sendApprove("test@example.com",
-        "approver@example.com", "animalTopic");
-    verify(pendingSubscriberRepository, times(1)).deleteByEmailAndTopic("test@example.com",
-        "animalTopic");
+    verify(pendingSubscriberRepository, times(1))
+        .findByEmailAndTopic("test@example.com",
+            "animalTopic");
+    verify(animalNotificationUserSubscribedProducer, times(1))
+        .sendApprove("test@example.com",
+            "approver@example.com", "animalTopic");
+    verify(pendingSubscriberRepository, times(1))
+        .deleteByEmailAndTopic("test@example.com",
+            "animalTopic");
   }
 
   @Test
@@ -61,8 +64,9 @@ class AnimalTopicSubscriptionServiceTest {
 
     animalTopicSubscriptionService.approveSubscriber("test@example.com", "approver@example.com");
 
-    verify(pendingSubscriberRepository, times(1)).findByEmailAndTopic("test@example.com",
-        "animalTopic");
+    verify(pendingSubscriberRepository, times(1))
+        .findByEmailAndTopic("test@example.com",
+            "animalTopic");
     verify(animalNotificationUserSubscribedProducer, never()).sendApprove(any(), any(), any());
     verify(pendingSubscriberRepository, never()).deleteByEmailAndTopic(any(), any());
   }
@@ -74,12 +78,15 @@ class AnimalTopicSubscriptionServiceTest {
 
     animalTopicSubscriptionService.rejectSubscriber("test@example.com");
 
-    verify(pendingSubscriberRepository, times(1)).findByEmailAndTopic("test@example.com",
-        "animalTopic");
-    verify(animalNotificationUserSubscribedProducer, times(1)).sendReject("test@example.com",
-        "approver@example.com", "animalTopic");
-    verify(pendingSubscriberRepository, times(1)).deleteByEmailAndTopic("test@example.com",
-        "animalTopic");
+    verify(pendingSubscriberRepository, times(1))
+        .findByEmailAndTopic("test@example.com",
+            "animalTopic");
+    verify(animalNotificationUserSubscribedProducer, times(1))
+        .sendReject("test@example.com",
+            "approver@example.com", "animalTopic");
+    verify(pendingSubscriberRepository, times(1))
+        .deleteByEmailAndTopic("test@example.com",
+            "animalTopic");
   }
 
   @Test
@@ -89,8 +96,9 @@ class AnimalTopicSubscriptionServiceTest {
 
     animalTopicSubscriptionService.rejectSubscriber("test@example.com");
 
-    verify(pendingSubscriberRepository, times(1)).findByEmailAndTopic("test@example.com",
-        "animalTopic");
+    verify(pendingSubscriberRepository, times(1))
+        .findByEmailAndTopic("test@example.com",
+            "animalTopic");
     verify(animalNotificationUserSubscribedProducer, never()).sendReject(any(), any(), any());
     verify(pendingSubscriberRepository, never()).deleteByEmailAndTopic(any(), any());
   }

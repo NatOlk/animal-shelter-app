@@ -221,4 +221,8 @@ public class AnimalTopicSubscriberRegistryService {
     }
     return subscriptions;
   }
+
+  protected void setAnimalTopicId(String animalTopicId) {
+    this.animalTopicId = animalTopicId;
+  }
 }
