@@ -48,4 +48,8 @@ public class AnimalNotificationUserSubscribedProducer {
       LOG.error("Exception during sending message to topic {}: {}", approveTopicId, e.getMessage(), e);
     }
   }
+
+  protected void setApproveTopicId(String approveTopicId) {
+    this.approveTopicId = approveTopicId;
+  }
 }
