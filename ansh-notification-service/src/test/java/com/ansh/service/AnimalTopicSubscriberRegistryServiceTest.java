@@ -41,7 +41,7 @@ class AnimalTopicSubscriberRegistryServiceTest {
   private AnimalTopicSubscriberRegistryService registryService;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     MockitoAnnotations.openMocks(this);
     registryService.setAnimalTopicId(ANIMAL_TOPIC);
   }

@@ -3,7 +3,6 @@ package com.ansh.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,13 +35,13 @@ class EmailServiceTest {
   @InjectMocks
   private EmailService emailService;
 
+  @Mock
   private MimeMessage mimeMessage;
 
   @BeforeEach
   void setUp() throws Exception {
     MockitoAnnotations.openMocks(this);
 
-    mimeMessage = mock(MimeMessage.class);
     when(emailSender.createMimeMessage()).thenReturn(mimeMessage);
 
     MimeMultipart multipart = new MimeMultipart();
