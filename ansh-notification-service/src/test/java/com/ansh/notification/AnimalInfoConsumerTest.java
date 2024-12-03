@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 
-public class AnimalInfoConsumerTest {
+class AnimalInfoConsumerTest {
 
   private static final String ANIMAL_TOPIC = "animalTopicId";
 
