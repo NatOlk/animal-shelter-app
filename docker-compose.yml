@@ -1,5 +1,6 @@
 version: '3.8'
 services:
+
   redis:
     image: redis:latest
     env_file:
@@ -99,6 +100,9 @@ services:
       POSTGRES_DB: animal_shelter_notification
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+      ANIMAL_SHELTER_NOTIFICATION_APP: http://ansh-notification-service:8081
+      ANIMAL_SHELTER_REACT_APP: http://ansh-react-app:3000
+      ANIMAL_SHELTER_APP: http://ansh-service:8080
     volumes:
       - ./ansh-notification-service:/app
     networks:
@@ -131,6 +135,8 @@ services:
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
       SPRING_PROFILES_ACTIVE: init-user
+      ANIMAL_SHELTER_REACT_APP: http://ansh-react-app:3000
+      ANIMAL_SHELTER_APP: http://ansh-service:8080
     volumes:
       - ./ansh-service:/app
     networks:
