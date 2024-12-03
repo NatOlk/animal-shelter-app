@@ -64,7 +64,7 @@ services:
     image: postgres:13
     environment:
       POSTGRES_DB: animal_shelter_notification
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_NOTIFICATION}
       POSTGRES_INITDB_ARGS: "--auth-local=trust"
     ports:
       - "5433:5432"
@@ -95,8 +95,8 @@ services:
       JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-animal-shelter-notification:5432/animal_shelter_notification
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD_NOTIFICATION}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_NOTIFICATION}
       POSTGRES_DB: animal_shelter_notification
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
