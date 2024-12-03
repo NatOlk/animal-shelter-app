@@ -59,7 +59,6 @@ public class AnshSecurityConfig {
 
   @Bean
   public PasswordEncoder passwordEncoder() {
-    //TODO: add method for password coders
     return new BCryptPasswordEncoder();
   }
 
