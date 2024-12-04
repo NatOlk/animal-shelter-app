@@ -92,12 +92,14 @@ Boot**, **Redis**, **Kafka**, and **Docker**.
    This email address will be used specifically for sending notifications to subscribers. 
    For now, a Google account is required because of its simplicity in development environments. 
    The reasons for this choice and additional configuration details are explained below.
+   A user with the username **admin** and password **admin** will be created. This user can be used to log in to the system.
 ```bash
    INSERT INTO user_profiles (email, name, password, animal_notif_status)
    VALUES ('your_email_box_address@gmail.com', 'admin', '$2b$12$rAbcG66.Jawjm31LImq3GOjA.oGlYhlWiNaQPL2SEzBcg9SGBvw26', 'NONE');
    ```
    Additionally, this initialization file contains several lines for adding animals along with their vaccination records.
-3. **Configure the environment variables file:**
+
+3.**Configure the environment variables file:**
    
    An .env file will be created in the appropriate directory, where you need to update the following
    details:
@@ -181,7 +183,7 @@ inter-service communication, and secure authentication.
 5. **Open the application in your browser**
 
    Navigate to http://localhost:3000
-
+   Now you will be able to log in with the user admin.
 
 ## **Future Plans**
 
