@@ -34,10 +34,10 @@ This service is responsible for managing subscriber lists, sending notifications
 - **PostgreSQL** stores subscribers information.
 - **Redis** caches data for approved and accepted subscribers who are eligible to receive emails, helping to reduce database load and improve response times. 
    This cache does not store all subscribers, but only those who have been explicitly approved for email notifications.
-## **Open endpoints**
+## **Public endpoints**
 
 ### 1. **Subscribe request**
-   Endpoint for users to subscribe for notifications via email.
+   Endpoint for users to send a subscribe request for notifications via email.
   
    This is not the subscription itself but rather a subscription request. Once it is approved by an admin in the main Animal Shelter application, 
     the user will receive a subscription invitation with a link to confirm the subscription. The link will include a token generated for their email.
@@ -57,14 +57,14 @@ This service is responsible for managing subscriber lists, sending notifications
   ```
 - **Response**: `200 OK`
 
-### 2. **Approve subscription**
-   This endpoint is designed to handle approval requests generated via email. 
-   
-   The link containing this endpoint is included in the subscription approval email sent to the user. It includes a unique token associated with the user's email address.
+### 2. **Accept subscription**
+  This endpoint is designed to handle accept requests generated via email.
 
-   The token ensures secure validation and prevents unauthorized approval of subscription requests. Only users with access to the generated email link can approve the request.
+  The link containing this endpoint is included in the subscription accept email sent to the user. It includes a unique token associated with the user's email address.
 
-   This endpoint is publicly accessible and is not protected by any security settings.
+  The token ensures secure validation and prevents unauthorized acceptance of subscription requests. Only users with access to the generated email link can accept the request.
+
+  This endpoint is publicly accessible and is not protected by any security settings.
 - **URL**: `GET /external/animal-notify-subscribe-check/{token}`
 - **Response**: `Subscription with token *token* is valid`
 
@@ -75,7 +75,9 @@ This service is responsible for managing subscriber lists, sending notifications
   The unsubscription process is based on a unique token generated for the specific email address.
 
   Typically, the link to this endpoint is included in notification emails sent to subscribers. By clicking on the link, the subscriber can easily opt out of the mailing list at any time, ensuring they maintain control over their subscription preferences.
-  
+
+  Additionally, this endpoint is also utilized in the main React application. Admins can manually unsubscribe a user for specific reasons, such as policy violations or other administrative decisions.
+
   This endpoint is publicly accessible and is not protected by any security settings.
 - **URL**: `GET /external/animal-notify-unsubscribe/{token}`
 - **Response**: `Subscription with token *token* removed`
