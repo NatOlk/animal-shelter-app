@@ -1,86 +1,70 @@
-Animal Shelter
+# **Animal Shelter Service**
 
-## Description
+## **Overview**
+This application is designed for managing an animal shelter, allowing the shelter to manage animal records, track vaccinations, and send email notifications to subscribers. The system interacts with a notification service to send email alerts about various events, such as the addition of new animals or updates to existing animals.
 
-## Description
+## **Technologies Used**
 
-Animal Shelter App is a comprehensive solution for managing animals in a shelter. With this application, users can:
+- **Spring Boot**: A Java-based framework for building microservices.
+- **Kafka**: A distributed message queue used for sending events (e.g., animal updates, user subscription changes) to the **Notification Service**.
+- **PostgreSQL**: A relational database used to store animals, vaccinations and profiles data.
+- **GraphQL**: A query language for APIs and a runtime for executing those queries by using a type system. It provides a more efficient, powerful, and flexible alternative to REST. In this application, GraphQL is used for managing data related to animals, vaccinations, and user subscriptions. 
+  This allows for precise querying and mutation of data, reducing over-fetching and under-fetching, and providing more control to the clients.
 
-- **Add New Animals:** Easily register new animals with details such as name, species, color, breed, and more.
-- **Manage Vaccinations:** Track and manage vaccinations for each animal, including vaccine details, batch numbers, and vaccination dates.
-- **Update Animal Information:** Edit and update the information of existing animals, such as their primary color, breed, and other relevant details.
-- **View and Organize Data:** Access a user-friendly interface to view and organize information about animals and their vaccinations.
+## **Core Features**
+- **Animal Management**:
+   - Add, update, and remove animals in the shelter's database.
+   - Manage animal details like name, species, breed, and vaccination records.
 
-The application is designed to streamline the management of shelter animals and ensure their health records are kept up-to-date.
+- **Vaccination Tracking**:
+   - Track vaccinations for each animal, with detailed information on vaccine types, dates, and statuses.
 
-## Installation
+- **Profile Management**:
+  - Users can review their profile data.
+  - Users can view their roles and permissions (Note: rights management is still under development).
+  - Users can opt-in to receive notifications about animals via email.
+  
+  - **Subscription Management**:
+     - Admin can approve or reject subscriber requests.
+     - Admin can unsubscribe user from notifications.
 
-1. **Clone the repository:**
+   >  ***Data Exchange Between Animal Service and Notification Service:***
+   > 
+   >  **Subscription Approval Process:**
+  >  The Notification Service sends an event to the Animal Service, and pending subscribers are stored in the internal database.
+  >
+  >  When an admin visits their profile page, they can see a list of subscribers awaiting their approval or rejection. Additionally, the admin can view subscribers who have requested a subscription from an external service without an assigned approver. These also require approval or rejection.
+  >
+  >  Subscribers without an assigned approver are displayed in a separate list. While the admin is not obligated to approve them as their own subscribers, it is recommended to process these requests for better user experience and system consistency.
+  >
+  >  **Approval/Reject Decision Communication:**
+  >  Once the admin makes a decision (approve or reject), this decision is sent back to the Notification Service.
+  >  Based on the admin's decision, the subscriber will either be approved or removed from the subscription list in the Notification Service.
+  >
+  >  **Admin Access to Subscriber List:**
+  >  Admins will have access to a list of all subscribers for whom they are the approvers, allowing them to manage and monitor the subscription status.
+- **Event Dispatch for Application Events**:
 
-   ```bash
-   git clone https://github.com/NatOlk/animal-shelter-app.git
+  - The application generates events related to various actions (e.g., animal arrivals, vaccinations) and sends them to a Kafka queue. Currently, there is a single topic for these events, but separate topics can be created for different types of notifications.
+  - The notification service listens to this queue, processes the events, and sends the emails. The main application does not directly send emails but triggers the process by publishing events to the Kafka queue with the appropriate topic name.
 
-    Navigate to the project directory:
+## API Endpoints
+  The application primarily uses GraphQL to handle operations related to animals and vaccinations. This allows for flexible and efficient querying and mutation of data.
+   
+   All endpoints are protected by Spring Security settings and are accessible only to logged-in users. Only the login and logout endpoints are publicly available.
 
-    bash
+   To access any of the protected endpoints, a user must have a valid JWT token, which is generated only after the user provides correct login credentials (username and password). This token must be included in the request headers for all protected endpoints.
+## Security
+  - **Endpoint Protection**:
+    
+   Almost all endpoints in the Animal Service application are secured using Spring Security configurations. Only the login and logout endpoints are publicly accessible. To access secured endpoints, users must authenticate themselves with valid credentials to obtain a JWT token, which is required for subsequent requests.
 
-    cd path/to/your/project
-
-Running the Project
-
-    Make sure you have Docker and Docker Compose installed.
-        Docker
-        Docker Compose
-
-    Start the project using Docker Compose:
-
-    In the project directory, run:
-
-    bash
-
-docker-compose up
-
-This command will create and start the containers specified in the docker-compose.yml file.
-
-Stop and remove the containers:
-
-When you are done, you can stop and remove the containers with:
-
-bash
-
-    docker-compose down
-
-Accessing the Application
-
-Once the project is running, your application will be accessible at http://localhost
-. Replace port with the appropriate port number specified in the docker-compose.yml.
-Usage
-
-Describe how to use the project after it is running, if necessary. Include any commands that can be used or actions that need to be performed.
-Examples
-
-If your project has usage examples or requests, add them here.
-License
-
-Specify the type of license under which the project is distributed, if applicable.
-
-markdown
+  - **Inter-Service Communication**:
+    
+    Communication between the Animal Service and the Notification Service is secured using custom HTTP headers. These headers include an API key that verifies the authenticity of requests exchanged between the services. This mechanism ensures that only authorized services can interact with each other, protecting against unauthorized access or tampering.
 
 
-### **Explanations for Sections**
+## **Future Plans**
 
-1. **Description:** Provide a brief summary of what the project does and why it is useful.
-
-2. **Installation:** Explain how to clone the repository and navigate to the project directory.
-
-3. **Running the Project:** Provide instructions for running the project using Docker Compose. Include details on installing Docker and Docker Compose, and the commands for starting and stopping containers.
-
-4. **Accessing the Application:** Describe where and how users can access the application once it is running.
-
-5. **Usage:** Include instructions on how to use the application, if necessary.
-
-6. **Examples:** Add any relevant usage examples or requests.
-
-7. **License:** Mention the license under which the project is distributed, if applicable.
-
-This template will help users understand how to set up and run your project effectively. If you h
+- **Template-based Notifications**: Integrate a more flexible template system for email content customization.
+- **Advanced Filtering**: Allow users to subscribe to specific types of notifications, such as only new animal arrivals or animal adoption status updates.
