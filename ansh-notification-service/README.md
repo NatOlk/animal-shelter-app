@@ -36,16 +36,17 @@ This service is responsible for managing subscriber lists, sending notifications
    This cache does not store all subscribers, but only those who have been explicitly approved for email notifications.
 ## **Open endpoints**
 
-### 1. **Subscribe**
-  Endpoint for users to subscribe for notifications via email.
-  This is not the subscription itself but rather a subscription request. Once it is approved by an admin in the main Animal Shelter application, 
-  the user will receive a subscription invitation with a link to confirm the subscription. The link will include a token generated for their email.
-
-  Any user can make a subscription request without needing an approver initially. This request can be made from any widget where this endpoint is integrated.
-
-  Additionally, this request can also be made from the main application through the React frontend. In this case, the approver will be the logged-in user who was asked to initiate the subscription request.
+### 1. **Subscribe request**
+   Endpoint for users to subscribe for notifications via email.
   
-  This endpoint is publicly accessible and is not protected by any security settings.
+   This is not the subscription itself but rather a subscription request. Once it is approved by an admin in the main Animal Shelter application, 
+    the user will receive a subscription invitation with a link to confirm the subscription. The link will include a token generated for their email.
+
+   Any user can make a subscription request without needing an approver initially. This request can be made from any widget where this endpoint is integrated.
+
+   Additionally, this request can also be made from the main application through the React frontend. In this case, the approver will be the logged-in user who was asked to initiate the subscription request.
+  
+   This endpoint is publicly accessible and is not protected by any security settings.
 - **URL**: `POST /external/animal-notify-subscribe`
 - **Request Body**:
   ```json
@@ -56,20 +57,29 @@ This service is responsible for managing subscriber lists, sending notifications
   ```
 - **Response**: `200 OK`
 
-### 2. **Unsubscribe** 
+### 2. **Approve subscription**
+   This endpoint is designed to handle approval requests generated via email. 
+   
+   The link containing this endpoint is included in the subscription approval email sent to the user. It includes a unique token associated with the user's email address.
+
+   The token ensures secure validation and prevents unauthorized approval of subscription requests. Only users with access to the generated email link can approve the request.
+
+   This endpoint is publicly accessible and is not protected by any security settings.
+- **URL**: `GET /external/animal-notify-subscribe-check/{token}`
+- **Response**: `Subscription with token *token* is valid`
+
+### 3. **Unsubscribe** 
+
+  This endpoint handles requests for unsubscribing users from notifications. 
   
-  Endpoint for unsubscribing a user from notifications.
+  The unsubscription process is based on a unique token generated for the specific email address.
+
+  Typically, the link to this endpoint is included in notification emails sent to subscribers. By clicking on the link, the subscriber can easily opt out of the mailing list at any time, ensuring they maintain control over their subscription preferences.
   
   This endpoint is publicly accessible and is not protected by any security settings.
 - **URL**: `GET /external/animal-notify-unsubscribe/{token}`
 - **Response**: `Subscription with token *token* removed`
 
-### 3. **Approve subscription**
-   Approve subscription by token.
-   
-   This endpoint is publicly accessible and is not protected by any security settings.
-- **URL**: `GET /external/animal-notify-subscribe-check/{token}`
-- **Response**: `Subscription with token *token* is valid`
 
 ## **Architecture**
 
