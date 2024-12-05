@@ -57,7 +57,7 @@ This application is designed for managing an animal shelter, allowing the shelte
 ## Security
   - **Endpoint Protection**:
     
-   Almost all endpoints in the Animal Service application are secured using Spring Security configurations. Only the login and logout endpoints are publicly accessible. To access secured endpoints, users must authenticate themselves with valid credentials to obtain a JWT token, which is required for subsequent requests.
+    Almost all endpoints in the Animal Service application are secured using Spring Security configurations. Only the login and logout endpoints are publicly accessible. To access secured endpoints, users must authenticate themselves with valid credentials to obtain a JWT token, which is required for subsequent requests.
 
   - **Inter-Service Communication**:
     
