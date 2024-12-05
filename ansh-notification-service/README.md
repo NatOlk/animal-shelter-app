@@ -92,9 +92,10 @@ This service is responsible for managing subscriber lists, sending notifications
 
 ## **Security**
 
-- **Encryption**: Sensitive data (e.g., email addresses) should be encrypted or hashed before storage, especially if any personal data is involved.
+ Public and Private Endpoints: Currently, some endpoints are open for public use (e.g., subscription endpoints), while others are protected by Spring Security settings 
+ and are used exclusively for communication between the two services. This ensures that subscription endpoints are accessible to users, while private endpoints remain secure for internal service communication.
 
-## **Future Enhancements**
+## **Future Plans**
 
 - **Template-based Notifications**: Integrate a more flexible template system for email content customization.
 - **Advanced Filtering**: Allow users to subscribe to specific types of notifications, such as only new animal arrivals or animal adoption status updates.
