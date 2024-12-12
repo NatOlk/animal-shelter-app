@@ -51,6 +51,7 @@ const UserProfile = () => {
               You’re currently unsubscribed from our animal updates.
               We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
             </p>
+            <Spacer y={10} />
             <Subscription />
           </div>
         );

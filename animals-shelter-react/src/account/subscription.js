@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../common/authContext';
-import { Input, Button, Spacer } from "@nextui-org/react";
-import { Progress } from "@nextui-org/progress";
+import { Input, Button, Progress, Spacer } from "@nextui-org/react";
 
 const Subscription = () => {
     const { user } = useAuth();
@@ -39,27 +38,24 @@ const Subscription = () => {
     return (
         <>
             {!loading && (
-                <div className="input-field">
+                <div className="flex items-center gap-3">
                     <Input
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         isReadOnly
-                        className="max-w-xs"
                         variant="bordered"
                         type="email"
+                        className="max-w-xs"
                     />
-                    <Button
-                        onClick={handleSubscribe}
-                        color="default">
+                    <Button onClick={handleSubscribe} color="default">
                         <i className="small material-icons">add_reaction</i>
                     </Button>
                 </div>
-            )
-            }
+            )}
             {loading && (
                 <>
-                    <Spacer y={10} />
+                    <Spacer y={1} />
                     <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
                 </>
             )}
