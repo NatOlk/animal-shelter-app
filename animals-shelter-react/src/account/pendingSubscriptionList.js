@@ -1,133 +1,130 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table } from 'reactstrap';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import { apiFetch } from '../common/api';
-import M from 'materialize-css';
+import { Tooltip, Button, Spacer } from "@nextui-org/react";
+import { HiX } from "react-icons/hi";
+import { HiOutlineUserAdd } from "react-icons/hi";
 
 function PendingSubscriptionList({ userProfile }) {
+  const [pendingSubscribers, setPendingSubscribers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const [pendingSubscribers, setPendingSubscribers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchSubscribers = async () => {
-            try {
-                const pendingData = await apiFetch(`/animal-notify-pending-subscribers`, {
-                    method: 'POST',
-                    body: { approver: userProfile.email },
-                });
-                setPendingSubscribers(pendingData);
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSubscribers();
-    }, []);
-
-    useEffect(() => {
-        const elemsTooltips = document.querySelectorAll('.tooltipped');
-        const instancesTooltips = M.Tooltip.init(elemsTooltips, {});
-        return () => {
-            instancesTooltips.forEach((instance) => instance.destroy());
-        };
-    }, [pendingSubscribers]);
-
-    const handleApprove = async (email, approver) => {
-        try {
-            await apiFetch(`/animal-notify-approve-subscriber`, {
-                method: 'POST',
-                body: {
-                    email: email,
-                    approver: approver
-                },
-            });
-
-            setPendingSubscribers((prevPending) =>
-                prevPending.filter((subscriber) => subscriber.email !== email)
-            );
-        } catch (error) {
-            console.error('Error approving subscriber:', error);
-        }
+  useEffect(() => {
+    const fetchSubscribers = async () => {
+      try {
+        const pendingData = await apiFetch(`/animal-notify-pending-subscribers`, {
+          method: 'POST',
+          body: { approver: userProfile.email },
+        });
+        setPendingSubscribers(pendingData);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleReject = async (email) => {
-        try {
-            await apiFetch(`/animal-notify-reject-subscriber`, {
-                method: 'POST',
-                body: {
-                    email: email
-                },
-            });
+    fetchSubscribers();
+  }, []);
 
-            setPendingSubscribers((prevPending) =>
-                prevPending.filter((subscriber) => subscriber.email !== email)
-            );
-        } catch (error) {
-            console.error('Error rejecting subscriber:', error);
+  const handleApprove = async (email, approver) => {
+    try {
+      await apiFetch(`/animal-notify-approve-subscriber`, {
+        method: 'POST',
+        body: {
+          email: email,
+          approver: approver
+        },
+      });
+
+      setPendingSubscribers((prevPending) =>
+        prevPending.filter((subscriber) => subscriber.email !== email)
+      );
+    } catch (error) {
+      console.error('Error approving subscriber:', error);
+    }
+  };
+
+  const handleReject = async (email) => {
+    try {
+      await apiFetch(`/animal-notify-reject-subscriber`, {
+        method: 'POST',
+        body: {
+          email: email
+        },
+      });
+
+      setPendingSubscribers((prevPending) =>
+        prevPending.filter((subscriber) => subscriber.email !== email)
+      );
+    } catch (error) {
+      console.error('Error rejecting subscriber:', error);
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <>
+      <Spacer y={10} />
+      <Table>
+        <TableHeader>
+          <TableColumn>#</TableColumn>
+          <TableColumn>Email</TableColumn>
+          <TableColumn>Approver</TableColumn>
+          <TableColumn>Topic</TableColumn>
+          <TableColumn>Accepted</TableColumn>
+          <TableColumn>Actions</TableColumn>
+        </TableHeader>
+        {pendingSubscribers.length > 0 ? (
+          <TableBody>
+            {pendingSubscribers.map((subscriber) => (
+              <TableRow
+                key={subscriber.id}
+                hover
+                style={{
+                  backgroundColor:
+                    subscriber.email === userProfile.email
+                      ? 'rgba(0, 255, 0, 0.1)'
+                      : undefined,
+                }}>
+                <TableCell>{subscriber.id}</TableCell>
+                <TableCell>{subscriber.email}</TableCell>
+                <TableCell>{subscriber.approver}</TableCell>
+                <TableCell>{subscriber.topic}</TableCell>
+                <TableCell>No</TableCell>
+                <TableCell>
+                  <Tooltip content="Approve">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleApprove(subscriber.email, userProfile.email)}>
+                      <HiOutlineUserAdd className="h-4 w-4" />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Reject">
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      onClick={() => handleReject(subscriber.email)}>
+                      <HiX className="h-4 w-4" />
+                    </Button>
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        ) : (
+          <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
+        )
         }
-    };
-
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error.message}</p>;
-
-    return (
-        <Container fluid>
-            {pendingSubscribers.length > 0 ? (
-                <div>
-                    <p>
-                        Please review the list of potential subscribers and approve or reject users as needed.
-                    </p>
-                    <Table className="highlight responsive-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Email</th>
-                                <th>Approver</th>
-                                <th>Topic</th>
-                                <th>Accepted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {pendingSubscribers.map((subscriber) => (
-                                <tr
-                                    key={subscriber.id}
-                                    className={subscriber.email === userProfile.email ? 'highlight-own-subscription' : ''}
-                                >
-                                    <td>{subscriber.id}</td>
-                                    <td>{subscriber.email}</td>
-                                    <td>{subscriber.approver}</td>
-                                    <td>{subscriber.topic}</td>
-                                    <td>No</td>
-                                    <td>
-                                        <button
-                                            onClick={() => handleApprove(subscriber.email, userProfile.email)}
-                                            className="tooltipped waves-effect waves-orange btn-small"
-                                            data-position="bottom"
-                                            data-tooltip="Approve">
-                                            <i className="small material-icons">add_task</i>
-                                        </button>
-                                        <button
-                                            onClick={() => handleReject(subscriber.email)}
-                                            className="tooltipped red lighten-1 waves-effect waves-orange btn-small"
-                                            data-position="bottom"
-                                            data-tooltip="Reject">
-                                            <i className="small material-icons">unpublished</i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </div>
-            ) : (
-                <p>No pending subscribers</p>
-            )}
-        </Container>
-    );
+      </Table>
+    </>
+  );
 }
 
 export default PendingSubscriptionList;

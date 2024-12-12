@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Container, Table } from 'reactstrap';
 import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
 import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 import Pagination from '../common/pagination'
+import { Select, SelectSection, SelectItem, Spacer,
+    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell
+} from "@nextui-org/react";
+import { Link, Button } from "@nextui-org/react";
 
 function AllVaccinationsList() {
     const perPage = 10;
@@ -28,51 +31,45 @@ function AllVaccinationsList() {
     };
 
     const vaccinationsList = data.allVaccinations
-        .slice(currentPage * perPage, (currentPage + 1) * perPage)
-        .map(vaccination => (
-            <tr key={vaccination.id}>
-                <td>{vaccination.id}</td>
-                <td>{vaccination.animal.name}</td>
-                <td>{vaccination.animal.species}</td>
-                <td>{vaccination.vaccine}</td>
-                <td>{vaccination.batch}</td>
-                <td>{formatDate(vaccination.vaccinationTime)}</td>
-                <td>{vaccination.comments}</td>
-                <td>{vaccination.email}</td>
-                <td>
-                    <DeleteVaccination id={vaccination.id} />
-                </td>
-            </tr>
-        ));
+        .slice(currentPage * perPage, (currentPage + 1) * perPage);
 
     return (
         <div>
             <div id="error" className="errorAlarm"></div>
-            <Container fluid>
-                <Table className="highlight responsive-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Species</th>
-                            <th>Vaccine</th>
-                            <th>Batch</th>
-                            <th>Vaccination time</th>
-                            <th>Comments</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {vaccinationsList}
-                    </tbody>
-                </Table>
-                <Pagination
-                    currentPage={currentPage}
-                    pageCount={pageCount}
-                    onPageChange={setCurrentPage}
-                />
-            </Container>
+            <Table className="highlight responsive-table">
+                <TableHeader>
+                    <TableColumn>#</TableColumn>
+                    <TableColumn>Name</TableColumn>
+                    <TableColumn>Species</TableColumn>
+                    <TableColumn>Vaccine</TableColumn>
+                    <TableColumn>Batch</TableColumn>
+                    <TableColumn>Vaccination time</TableColumn>
+                    <TableColumn>Comments</TableColumn>
+                    <TableColumn>Email</TableColumn>
+                    <TableColumn>Actions</TableColumn>
+                </TableHeader>
+                <TableBody>
+                    {vaccinationsList.map((vaccination, index) => (
+                        <TableRow key={vaccination.id}>
+                            <TableCell>{vaccination.id}</TableCell>
+                            <TableCell>{vaccination.animal.name}</TableCell>
+                            <TableCell>{vaccination.animal.species}</TableCell>
+                            <TableCell>{vaccination.vaccine}</TableCell>
+                            <TableCell>{vaccination.batch}</TableCell>
+                            <TableCell>{formatDate(vaccination.vaccinationTime)}</TableCell>
+                            <TableCell>{vaccination.comments}</TableCell>
+                            <TableCell>{vaccination.email}</TableCell>
+                            <TableCell>
+                                <DeleteVaccination id={vaccination.id} />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <Pagination
+                currentPage={currentPage}
+                pageCount={pageCount}
+                onPageChange={setCurrentPage} />
         </div>
     );
 }

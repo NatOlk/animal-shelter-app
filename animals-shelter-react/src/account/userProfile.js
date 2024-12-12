@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from 'react';
 import Subscription from './subscription';
 import AllApproverSubscriptionList from './allApproverSubscriptionList';
@@ -6,12 +7,16 @@ import PendingSubscriptionList from './pendingSubscriptionList';
 import NoApproverSubscriptionList from './noApproverSubscriptionList';
 import { GET_CURRENT_USER_PROFILE } from '../common/graphqlQueries';
 import { apiFetch } from '../common/api';
+import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
+import { Divider } from "@nextui-org/divider";
+import { Progress } from "@nextui-org/progress";
+import { Tooltip, Button, Spacer } from "@nextui-org/react";
+import { Tabs, Tab } from "@nextui-org/tabs";
 
 const UserProfile = () => {
   const { loading, error, data } = useQuery(GET_CURRENT_USER_PROFILE, {
     fetchPolicy: "network-only"
   });
-
   const [isNoApproverOpen, setIsNoApproverOpen] = useState(false);
   const [isAllOpen, setIsAllOpen] = useState(false);
   const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState(null);
@@ -19,12 +24,6 @@ const UserProfile = () => {
   useEffect(() => {
     if (data?.currentUserProfile) {
       setAnimalNotifyStatusProfile(data.currentUserProfile.animalNotifyStatus || "NONE");
-      const elems = document.querySelectorAll('.collapsible');
-      const instances = M.Collapsible.init(elems, {});
-
-      return () => {
-        instances.forEach(instance => instance.destroy());
-      };
     }
   }, [data]);
 
@@ -47,45 +46,45 @@ const UserProfile = () => {
     switch (animalNotifyStatusProfile) {
       case 'NONE':
         return (
-          <span>
-            You’re currently unsubscribed from our animal updates.
-            We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
+          <div>
+            <p className="text-small text-default-500">
+              You’re currently unsubscribed from our animal updates.
+              We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
+            </p>
+            <Spacer y={10} />
             <Subscription />
-          </span>
+          </div>
         );
       case 'PENDING':
         return (
-          <span>
-            Your subscription is pending approval. Please wait for an approval email.
-            Once you receive it, follow the instructions to complete your subscription activation.
-            <div className="progress">
-              <div className="indeterminate"></div>
-            </div>
-          </span>
+          <div>
+            <p className="text-small text-default-500">
+              Your subscription is pending approval. Please wait for an approval email.
+              Once you receive it, follow the instructions to complete your subscription activation.
+            </p>
+            <Spacer y={10} />
+            <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
+          </div >
         );
       case 'ACTIVE':
         return (
-          <span>
-            <a className="tooltipped" data-position="bottom" data-tooltip="You are subscribed!">
-              <i className="medium material-icons green-text text-darken-1">notifications_active</i>
-            </a>
-          </span>
+          <div>
+            <p className="text-small text-default-500">
+              You are subscribed to notifications about animals and their vaccinations, removal of animals, and other updates.
+              This will help you stay informed about the activities of our shelter.
+              To unsubscribe from these notifications, please review the list of all subscribers, find your email in the list,
+              and click the Unsubscribe button.
+            </p>
+            <Spacer y={10} />
+            <Tooltip data-position="bottom" content="You are subscribed!">
+              <i className="small material-icons green-text text-darken-1">notifications_active</i>
+            </Tooltip>
+          </div>
         );
       default:
         return <p>Status unknown</p>;
     }
   };
-
-  useEffect(() => {
-    if (animalNotifyStatusProfile) {
-      const elemsTooltips = document.querySelectorAll('.tooltipped');
-      const instancesTooltips = M.Tooltip.init(elemsTooltips, {});
-
-      return () => {
-        instancesTooltips.forEach(instance => instance.destroy());
-      };
-    }
-  }, [animalNotifyStatusProfile]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -93,73 +92,64 @@ const UserProfile = () => {
   const { name, email } = data.currentUserProfile;
 
   return (
-    <div>
-      <div className="row">
-        <div className="col s12 m12">
-          <div className="card card-color">
-            <div className="card-content">
-              <span className="card-title">User profile</span>
-              <p>Hello, {name}! How are you? Happy to see you!</p>
-              <p><i className="small material-icons">alternate_email</i> {email}</p>
-            </div>
-            <div className="card-action">
-              <ul className="collapsible">
-                <li>
-                  <div className="collapsible-header">
-                    <i className="material-icons">group</i>Roles
-                  </div>
-                  <div className="collapsible-body">
-                    <span>ADMIN, EMPLOYEE</span>
-                  </div>
-                </li>
-                <li>
-                  <div className="collapsible-header" onClick={updateSubscriptionStatus}>
-                    <i className="material-icons">place</i>Your subscriptions
-                  </div>
-                  <div className="collapsible-body">
+    <>
+      <Card className="w-full">
+        <CardHeader className="flex gap-3">
+          <div className="flex flex-col">
+            <p className="text-md">User profile</p>
+          </div>
+        </CardHeader>
+        <Divider />
+        <CardBody>
+          <p className="text-small text-default-500">Hello, {name}! How are you? Happy to see you!</p>
+          <p className="text-small text-default-500"><i className="small material-icons">alternate_email</i> {email}</p>
+          <Spacer y={10} />
+          <div className="flex w-full flex-col">
+            <Tabs aria-label="Options" size="lg" variant="light" onSelectionChange={updateSubscriptionStatus}>
+              <Tab key="roles" title="Roles">
+                <Card className="max-w-[400px]">
+                  <CardBody>
+                    Admin, Employee
+                    <Spacer y={20} />
+                  </CardBody>
+                </Card>
+              </Tab>
+              <Tab key="subscriptions" title="Subscriptions">
+                <Card className="max-w-[800px]">
+                  <CardBody>
                     {renderIconBasedOnStatus()}
-                  </div>
-                </li>
-              </ul>
-            </div>
+                    <Spacer y={20} />
+                  </CardBody>
+                </Card>
+              </Tab>
+            </Tabs>
           </div>
-        </div>
-
-        <div className="row">
-          <div className="col s12 m12">
-            <ul className="collapsible card-color">
-              <li className="active">
-                <div className="collapsible-header">
-                  <i className="material-icons">pending_actions</i>
-                  <span className="subscription-title">Pending Subscribers</span>
-                </div>
-                <div className="collapsible-body">
-                  <PendingSubscriptionList userProfile={data.currentUserProfile} />
-                </div>
-              </li>
-              <li>
-                <div className="collapsible-header" onClick={() => setIsNoApproverOpen(!isNoApproverOpen)}>
-                  <i className="material-icons">no_accounts</i>
-                  <span className="subscription-title">No Approver Subscribers</span>
-                </div>
-                <div className="collapsible-body">
-                  {isNoApproverOpen && <NoApproverSubscriptionList userProfile={data.currentUserProfile} />}
-                </div>
-              </li>
-              <li>
-                <div className="collapsible-header" onClick={() => setIsAllOpen(!isAllOpen)}>
-                  <i className="material-icons">how_to_reg</i>
-                  <span className="subscription-title">All Subscribers</span>
-                </div>
-                <div className="collapsible-body">
-                  {isAllOpen && <AllApproverSubscriptionList userProfile={data.currentUserProfile} />}
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
+        </CardBody>
+        <CardFooter>
+        </CardFooter>
+      </Card>
+      <Spacer y={20} />
+      <div className="flex w-full flex-col">
+        <Tabs aria-label="Options" size="lg" variant="bordered">
+          <Tab key="pending" title="Pending subscribers">
+            <Card>
+              <CardBody>
+                <PendingSubscriptionList userProfile={data.currentUserProfile} />
+                <Divider className="my-4" />
+                <NoApproverSubscriptionList userProfile={data.currentUserProfile} />
+              </CardBody>
+            </Card>
+          </Tab>
+          <Tab key="all" title="All subscribers">
+            <Card>
+              <CardBody>
+                <AllApproverSubscriptionList userProfile={data.currentUserProfile} />
+              </CardBody>
+            </Card>
+          </Tab>
+        </Tabs>
       </div>
-    </div>
+    </>
   );
 };
 
