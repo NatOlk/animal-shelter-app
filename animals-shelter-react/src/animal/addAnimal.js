@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import showError from '../common/showError';
 import { useConfig } from '../common/configContext';
-import M from 'materialize-css';
+import { Button, Input, Select, SelectSection, SelectItem, Spacer } from '@nextui-org/react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from "@nextui-org/react";
 import { ADD_ANIMAL, ANIMALS_QUERY } from '../common/graphqlQueries.js';
 
 function AddAnimal() {
@@ -36,9 +37,9 @@ function AddAnimal() {
     const config = useConfig();
     if (!config) {
         return (
-            <tr>
-                <td colSpan="5">Loading animals configs...</td>
-            </tr>
+            <TableRow>
+                <TableCell colSpan="5">Loading animals configs...</TableCell>
+            </TableRow>
         );
     };
 
@@ -48,6 +49,13 @@ function AddAnimal() {
             ...animal,
             [name]: value,
         });
+    };
+
+    const handleSelectChange = (name, value) => {
+        setAnimal((prevAnimal) => ({
+            ...prevAnimal,
+            [name]: value,
+        }));
     };
 
     useEffect(() => {
@@ -109,83 +117,92 @@ function AddAnimal() {
     };
 
     return (
-        <tr>
-            <td></td>
-            <td><input name="name"
-                value={animal.name}
-                onChange={handleInputChange}
-                className="table-column-breed mandatory"
-                placeholder={validationError === 'name' ? 'Name is mandatory' : ''} />
-            </td>
-            <td>
-                <select
-                    name="species"
-                    value={animal.species}
+         <TableRow>
+            <TableCell></TableCell>
+            <TableCell>
+                <Input
+                    name="name"
+                    value={animal.name}
                     onChange={handleInputChange}
-                    className="browser-default mandatory"
-                    placeholder={validationError === 'species' ? 'Species is mandatory' : ''}>
+                    aria-label="Animal Name"
+                    status={validationError === 'name' ? 'error' : 'default'}
+                    helperText={validationError === 'name' ? 'Name is mandatory' : ''}
+                />
+            </TableCell>
+            <TableCell>
+                <Select
+                    selectedKeys={new Set([animal.species])}
+                    onValueChange={(value) => handleSelectChange('species', value)}
+                    aria-label="Species"
+                    validationState={validationError === 'species' ? 'invalid' : 'valid'}>
                     {config.config.animals.map(animal => (
-                        <option key={animal} value={animal}>{animal}</option>
+                        <SelectItem key={animal} value={animal}>{animal}</SelectItem>
                     ))}
-                </select>
-            </td>
-            <td>
-                <select
-                    name="primaryColor"
-                    value={animal.primaryColor}
-                    onChange={handleInputChange}
-                    className="browser-default mandatory"
-                    placeholder={validationError === 'primaryColor' ? 'Primary color is mandatory' : ''}>
+                </Select>
+            </TableCell>
+            <TableCell>
+                <Select
+                    selectedKeys={new Set([animal.primaryColor])}
+                    onValueChange={(value) => handleSelectChange('primaryColor', value)}
+                    aria-label="Primary Color"
+                    validationState={validationError === 'primaryColor' ? 'invalid' : 'valid'}>
                     {config.config.colors.map(color => (
-                        <option key={color} value={color}>{color}</option>
+                        <SelectItem key={color} value={color}>{color}</SelectItem>
                     ))}
-                </select>
-            </td>
-            <td>
-                <input name="breed"
+                </Select>
+            </TableCell>
+            <TableCell>
+                <Input
+                    name="breed"
                     value={animal.breed}
                     onChange={handleInputChange}
-                    className='table-column-breed' />
-            </td>
-            <td>
-                <input
+                    aria-label="Breed"/>
+            </TableCell>
+            <TableCell>
+                <Input
                     name="implantChipId"
                     value={animal.implantChipId}
                     onChange={handleInputChange}
-                    className="table-column-chip mandatory"
-                    placeholder={validationError === 'implantChipId' ? 'implantChipId is mandatory' : ''} />
-            </td>
-            <td>
-                <select
-                    name="gender"
-                    value={animal.gender}
-                    onChange={handleInputChange}
-                    className="browser-default table-column-gender mandatory"
-                    placeholder={validationError === 'gender' ? 'Gender is mandatory' : ''}>
+                    aria-label="Implant Chip ID"
+                    status={validationError === 'implantChipId' ? 'error' : 'default'}
+                    helperText={validationError === 'implantChipId' ? 'Implant Chip ID is mandatory' : ''}/>
+            </TableCell>
+            <TableCell>
+                <Select
+                    selectedKeys={new Set([animal.gender])}
+                    onValueChange={(value) => handleSelectChange('gender', value)}
+                    aria-label="Gender"
+                    validationState={validationError === 'gender' ? 'invalid' : 'valid'}>
                     {config.config.genders.map(gender => (
-                        <option key={gender} value={gender}>{gender}</option>
+                        <SelectItem key={gender} value={gender}>{gender}</SelectItem>
                     ))}
-                </select>
-            </td>
-            <td>
-                <input name="birthDate"
-                    className="datepicker"
+                </Select>
+            </TableCell>
+            <TableCell>
+                <Input
+                    name="birthDate"
                     value={animal.birthDate}
                     readOnly
-                />
-            </td>
-            <td>
-                <input name="pattern"
+                    aria-label="Birth Date"
+                    className="datepicker"/>
+            </TableCell>
+            <TableCell>
+                <Input
+                    name="pattern"
                     value={animal.pattern}
                     onChange={handleInputChange}
-                    className='table-column-breed' />
-            </td>
-            <td>
-                <button onClick={handleAddAnimal} className="waves-effect waves-orange btn-small">
-                    <i className="small material-icons">add</i>
-                </button>
-            </td>
-        </tr>
+                    aria-label="Pattern"/>
+            </TableCell>
+            <TableCell>
+                <Button
+                    onClick={handleAddAnimal}
+                    color="success"
+                    auto
+                    icon={<i className="small material-icons">add</i>}>
+                    Add Animal
+                </Button>
+            </TableCell>
+        </TableRow>
     );
 }
 

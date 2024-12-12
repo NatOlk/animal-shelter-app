@@ -54,7 +54,6 @@ const EditableVaccineField = ({ vaccination, value, name, values, isDate }) => {
           </select>
         ) : isDate ? (
           <input
-            type="text"
             id={`${name}-${vaccination.id}`}
             className={`${combinedClassName} datepicker`}
             value={fieldValue}

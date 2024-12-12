@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
-import { Container, Table } from 'reactstrap';
 import { useQuery } from "@apollo/client";
 import AddVaccination from "./addVaccination";
 import UpdateVaccination from "./updateVaccination";
+import DeleteVaccination from "./deleteVaccination";
 import { useLocation, Link } from 'react-router-dom';
 import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 import Pagination from '../common/pagination'
+import {
+    Select,
+    SelectSection,
+    SelectItem,
+    Spacer,
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+} from "@nextui-org/react";
 
 function VaccinationsList() {
     const perPage = 10;
@@ -40,47 +52,42 @@ function VaccinationsList() {
     };
 
     const vaccinationsList = data.vaccinationByAnimalId
-        .slice(currentPage * perPage, (currentPage + 1) * perPage)
-        .map(vaccination => (
-            <UpdateVaccination
-                key={vaccination.id}
-                vaccination={{
-                    ...vaccination,
-                    vaccinationTime: formatDate(vaccination.vaccinationTime), // Форматируем дату
-                }}
-            />
-        ));
+        .slice(currentPage * perPage, (currentPage + 1) * perPage);
 
     return (
         <div>
             <div id="error" className="errorAlarm"></div>
             <Link to="/">Back to Animals</Link>
-            <Container fluid>
-                <h5>Vaccinations for animal: {name} ({species})</h5>
-                <Table className="highlight responsive-table">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Vaccine</th>
-                            <th>Batch</th>
-                            <th>Vaccination time</th>
-                            <th>Comments</th>
-                            <th>Email</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <AddVaccination animalId={animalId} />
-                        {vaccinationsList}
-                    </tbody>
-                </Table>
-                <Pagination
-                    currentPage={currentPage}
-                    pageCount={pageCount}
-                    onPageChange={setCurrentPage}
-                />
-
-            </Container>
+            <Table className="highlight responsive-table">
+                <TableHeader>
+                    <TableColumn>#</TableColumn>
+                    <TableColumn>Vaccine</TableColumn>
+                    <TableColumn>Batch</TableColumn>
+                    <TableColumn>Vaccination time</TableColumn>
+                    <TableColumn>Comments</TableColumn>
+                    <TableColumn>Email</TableColumn>
+                    <TableColumn>Actions</TableColumn>
+                </TableHeader>
+                <TableBody>
+                    {vaccinationsList.map((vaccination, index) => (
+                        <TableRow key={vaccination.id}>
+                            <TableCell>{vaccination.id}</TableCell>
+                            <TableCell>{vaccination.vaccine}</TableCell>
+                            <TableCell>{vaccination.batch}</TableCell>
+                            <TableCell>{formatDate(vaccination.vaccinationTime)}</TableCell>
+                            <TableCell>{vaccination.comments}</TableCell>
+                            <TableCell>{vaccination.email}</TableCell>
+                            <TableCell>
+                                <DeleteVaccination id={vaccination.id} />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <Pagination
+                currentPage={currentPage}
+                pageCount={pageCount}
+                onPageChange={setCurrentPage} />
         </div>
     );
 }

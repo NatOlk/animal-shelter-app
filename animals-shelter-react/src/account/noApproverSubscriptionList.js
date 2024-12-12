@@ -1,127 +1,114 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table } from 'reactstrap';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import { apiFetch } from '../common/api';
-import M from 'materialize-css';
+import { Tooltip, Button, Spacer } from "@nextui-org/react";
 
-function NoApproverSubscriptionList({ userProfile }) {
-    const [unapprovedSubscribers, setUnapprovedSubscribers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+export default function NoApproverSubscriptionList({ userProfile }) {
+  const [unapprovedSubscribers, setUnapprovedSubscribers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchSubscribers = async () => {
-            try {
-                const unapprovedData = await apiFetch(`/animal-notify-pending-no-approver-subscribers`);
-                setUnapprovedSubscribers(unapprovedData);
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSubscribers();
-    }, []);
-
-    useEffect(() => {
-        const elemsTooltips = document.querySelectorAll('.tooltipped');
-        const instancesTooltips = M.Tooltip.init(elemsTooltips, {});
-        return () => {
-            instancesTooltips.forEach((instance) => instance.destroy());
-        };
-    }, [unapprovedSubscribers]);
-
-    const handleApprove = async (email, approver) => {
-        try {
-            await apiFetch(`/animal-notify-approve-subscriber`, {
-                method: 'POST',
-                body: {
-                    email: email,
-                    approver: approver
-                },
-            });
-
-            setUnapprovedSubscribers((prevSubscribers) =>
-                prevSubscribers.filter((subscriber) => subscriber.email !== email)
-            );
-        } catch (error) {
-            console.error('Error approving subscriber:', error);
-        }
+  useEffect(() => {
+    const fetchSubscribers = async () => {
+      try {
+        const unapprovedData = await apiFetch(`/animal-notify-pending-no-approver-subscribers`);
+        setUnapprovedSubscribers(unapprovedData);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleReject = async (email) => {
-        try {
-            await apiFetch(`/animal-notify-reject-subscriber`, {
-                method: 'POST',
-                body: {
-                    email: email
-                },
-            });
+    fetchSubscribers();
+  }, []);
 
-            setUnapprovedSubscribers((prevSubscribers) =>
-                prevSubscribers.filter((subscriber) => subscriber.email !== email)
-            );
-        } catch (error) {
-            console.error('Error rejecting subscriber:', error);
-        }
-    };
+  const handleApprove = async (email) => {
+    try {
+      await apiFetch('/animal-notify-approve-subscriber', {
+        method: 'POST',
+        body: JSON.stringify({ email, approver: userProfile.email }),
+      });
+      setUnapprovedSubscribers((prev) =>
+        prev.filter((subscriber) => subscriber.email !== email)
+      );
+    } catch (err) {
+      console.error('Error approving subscriber:', err);
+    }
+  };
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error.message}</p>;
+  const handleReject = async (email) => {
+    try {
+      await apiFetch('/animal-notify-reject-subscriber', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+      setUnapprovedSubscribers((prev) =>
+        prev.filter((subscriber) => subscriber.email !== email)
+      );
+    } catch (err) {
+      console.error('Error rejecting subscriber:', err);
+    }
+  };
 
-    const subscriberRows = unapprovedSubscribers.map((subscriber) => (
-        <tr key={subscriber.id}>
-            <td>{subscriber.id}</td>
-            <td>{subscriber.email}</td>
-            <td>{subscriber.approver}</td>
-            <td>{subscriber.topic}</td>
-            <td>No</td>
-            <td>
-                <button
-                    onClick={() => handleApprove(subscriber.email, userProfile.email)}
-                    className="tooltipped waves-effect waves-orange btn-small"
-                    data-position="bottom"
-                    data-tooltip="Approve">
-                    <i className="small material-icons">add_task</i>
-                </button>
-                <button
-                    onClick={() => handleReject(subscriber.email)}
-                    className="tooltipped red lighten-1 waves-effect waves-orange btn-small"
-                    data-position="bottom"
-                    data-tooltip="Reject">
-                    <i className="small material-icons">unpublished</i>
-                </button>
-            </td>
-        </tr>
-    ));
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-    return (
-        <Container fluid>
-            {unapprovedSubscribers.length > 0 ? (
-                <div>
-                    <p>These users are attempting to subscribe from an external service.
-                        As an admin, you can review their requests and approve them, although this is not your primary responsibility.</p>
-                    <Table className="highlight responsive-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Email</th>
-                                <th>Approver</th>
-                                <th>Topic</th>
-                                <th>Accepted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {subscriberRows}
-                        </tbody>
-                    </Table>
-                </div>
-            ) : (
-                <p>No subscribers without approver</p>
-            )}
-        </Container>
-    );
+  return (
+    <>
+      <Spacer y={10} />
+      <h2>Subscribers without an approver</h2>
+      <Spacer y={10} />
+      <Table>
+        <TableHeader>
+          <TableColumn>#</TableColumn>
+          <TableColumn>Email</TableColumn>
+          <TableColumn>Approver</TableColumn>
+          <TableColumn>Topic</TableColumn>
+          <TableColumn>Accepted</TableColumn>
+          <TableColumn>Actions</TableColumn>
+        </TableHeader>
+        {unapprovedSubscribers.length > 0 ? (
+
+          <TableBody>
+            {unapprovedSubscribers.map((subscriber) => (
+              <TableRow key={subscriber.id}>
+                <TableCell>{subscriber.id}</TableCell>
+                <TableCell>{subscriber.email}</TableCell>
+                <TableCell>{subscriber.approver}</TableCell>
+                <TableCell>{subscriber.topic}</TableCell>
+                <TableCell>No</TableCell>
+                <TableCell>
+                  <Tooltip content="Approve">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleApprove(subscriber.email)}
+                    >
+                      Approve
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Reject">
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      onClick={() => handleReject(subscriber.email)}
+                      style={{ marginLeft: 8 }}
+                    >
+                      Reject
+                    </Button>
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+
+        ) : (
+          <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
+        )}
+      </Table>
+    </>
+  );
 }
-
-export default NoApproverSubscriptionList;

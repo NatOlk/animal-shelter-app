@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useMutation } from '@apollo/client';
-import M from 'materialize-css';
-import { ANIMALS_QUERY, UPDATE_ANIMAL } from '../common/graphqlQueries.js';
+import React, { useState, useEffect } from "react";
+import { useMutation } from "@apollo/client";
+import { Input, Button } from "@nextui-org/react";
+import { Dropdown, DropdownMenu, DropdownItem } from "@nextui-org/dropdown";
+import { ANIMALS_QUERY, UPDATE_ANIMAL } from "../common/graphqlQueries.js";
 
 const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -13,90 +14,74 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
     onCompleted: () => setIsEditing(false),
   });
 
-  useEffect(() => {
-    if (isDate && isEditing) {
-      const datepickerElem = document.querySelector(`#${name}-${animal.id}`);
-      const instance = M.Datepicker.init(datepickerElem, {
-        format: 'yyyy-mm-dd',
-        onSelect: (date) => {
-          setFieldValue(date.toISOString().slice(0, 10));
-        },
-      });
-      return () => instance && instance.destroy();
-    }
-  }, [isDate, isEditing]);
-
   const handleSave = () => {
     const variables = {
       id: animal.id,
       [name]: fieldValue,
     };
 
-    updateField({ variables }).catch(err => console.error(err));
+    updateField({ variables }).catch((err) => console.error(err));
   };
 
-  const inputStyle = isEditing ? "red-background" : "editable-field";
-  const combinedClassName = `${inputStyle} browser-default`;
-
   return (
-    <td>
+    <div className="flex items-center gap-3">
       {isEditing ? (
         values && values.length > 0 ? (
-          <select
-            value={fieldValue}
-            className={combinedClassName}
-            onChange={(e) => setFieldValue(e.target.value)}>
-            {values.map((val) => (
-              <option key={val} value={val}>
-                {val}
-              </option>
-            ))}
-          </select>
+          <Dropdown>
+            <DropdownMenu aria-label="Dropdown Variants" variant="bordered">
+              {values.map((val) => (
+                <DropdownItem
+                  key={val}
+                  onClick={() => setFieldValue(val)}>
+                  {val}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
         ) : isDate ? (
-          <input
-            type="text"
-            id={`${name}-${animal.id}`}
-            className={`${combinedClassName} datepicker`}
+          <Input
+            type="date"
             value={fieldValue}
-            onChange={(e) => setFieldValue(e.target.value)}/>
+            onChange={(e) => setFieldValue(e.target.value)}
+          />
         ) : (
-          <input
-            className={combinedClassName}
+          <Input
             value={fieldValue}
-            onChange={(e) => setFieldValue(e.target.value)}/>
+            onChange={(e) => setFieldValue(e.target.value)}
+          />
         )
       ) : (
         <span
-          className="editable-field"
           onDoubleClick={() => {
             setOldValue(fieldValue);
             setIsEditing(true);
           }}
-        >
+          className="cursor-pointer text-primary">
           {fieldValue}
         </span>
       )}
+
       {isEditing && (
         <>
-          <button
-            className="round-button-with-border"
-            onClick={handleSave}
-          >
+          <Button
+            color="success"
+            size="sm"
+            onClick={handleSave}>
             +
-          </button>
-          <button
-            className="round-button-with-border"
+          </Button>
+          <Button
+            color="error"
+            size="sm"
             onClick={() => {
               setFieldValue(oldValue);
               setIsEditing(false);
-            }}
-          >
+            }}>
             -
-          </button>
+          </Button>
         </>
       )}
-    </td>
-  );
+    </div>
+  )
 };
 
 export default EditableAnimalField;

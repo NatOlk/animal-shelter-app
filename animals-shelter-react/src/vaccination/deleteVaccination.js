@@ -1,6 +1,7 @@
 import React from "react";
 import { useMutation } from "@apollo/client";
 import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, DELETE_VACCINATION } from '../common/graphqlQueries.js';
+import { Button } from "@nextui-org/react";
 
 function DeleteVaccination({ id }) {
     const [deleteVaccination] = useMutation(DELETE_VACCINATION, {
@@ -8,10 +9,9 @@ function DeleteVaccination({ id }) {
     });
 
     return (
-        <button className="waves-effect waves-light btn-small" onClick={() =>
-            deleteVaccination({ variables: { id: id } })}>
+        <Button onClick={() => deleteVaccination({ variables: { id: id } })}>
             <i className="material-icons">close</i>
-        </button>
+        </Button>
     )
 }
 
