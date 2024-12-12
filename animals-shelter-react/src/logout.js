@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from './common/authContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Button } from '@nextui-org/react';
 
 const Logout = () => {
     const { logout } = useAuth();
@@ -19,9 +20,9 @@ const Logout = () => {
     };
 
     return (
-        <button className="btn waves-effect waves-orange" onClick={handleLogout}>
+        <Button color="default" onClick={handleLogout}>
             Logout
-        </button>
+        </Button>
     );
 };
 

@@ -4,11 +4,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
 
 const env = Object.keys(process.env)
-  .filter(key => key.startsWith('REACT_APP_'))
-  .reduce((obj, key) => {
-    obj[`process.env.${key}`] = JSON.stringify(process.env[key]);
-    return obj;
-  }, {});
+    .filter(key => key.startsWith('REACT_APP_'))
+    .reduce((obj, key) => {
+        obj[`process.env.${key}`] = JSON.stringify(process.env[key]);
+        return obj;
+    }, {});
 
 module.exports = {
     entry: './src/index.js',

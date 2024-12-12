@@ -1,0 +1,63 @@
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem !important;
+  }
+
+  p,
+  span,
+  input {
+    font-size: 0.7rem !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    padding: 2px !important;
+    font-size: 0.75rem;
+    @apply w-full text-sm border-collapse;
+  }
+
+  th,
+  td {
+    padding: 2px;
+    text-align: left;
+    border: 1px solid #ddd;
+    @apply p-1 border border-gray-300 text-xs;
+  }
+
+  .nextui-table-row,
+  .nextui-table-cell {
+    font-size: 0.75rem;
+    padding: 2px;
+  }
+
+  .highlighted-row {
+    background-color: #e0f7fa;
+  }
+
+  .table-row:hover {
+    background-color: #f4fdfe;
+  }
+
+  .editable-cell-field {
+    background-color: #f0f8ff;
+    cursor: pointer;
+    padding: 2px;
+    margin: 0px;
+    font-size: 0.75rem;
+  }
+
+  .compact-table th,
+  .compact-table td {
+    padding: 2px !important;
+    padding-left: 2px !important;
+    font-size: 0.75rem;
+  }
+}

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../common/authContext';
+import { Input, Button, Progress, Spacer } from "@nextui-org/react";
+import { LuSmilePlus } from "react-icons/lu";
 
 const Subscription = () => {
     const { user } = useAuth();
@@ -15,7 +17,7 @@ const Subscription = () => {
 
     const handleSubscribe = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         if (!email.trim()) return;
 
         try {
@@ -29,39 +31,36 @@ const Subscription = () => {
                     approver: user.email,
                 }),
             });
-            setEmail('');
-            setLoading(true);
         } catch (error) {
             console.error('Error during subscription:', error);
         }
     };
 
     return (
-        <div className="subscription-container">
+        <>
             {!loading && (
-                <div className="input-container quick-subscribe-input-container">
-                    <input
-                        id="subscribe-email"
-                        type="email"
+                <div className="flex items-center gap-3">
+                    <Input
+                        id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="quick-subscribe-input"
+                        isReadOnly
+                        variant="bordered"
+                        type="email"
+                        className="max-w-xs"
                     />
-                    <button
-                        onClick={handleSubscribe}
-                        className="waves-effect waves-orange btn-small quick-subscribe-button"
-                        disabled={loading}>
-                        <i className="material-icons">add_reaction</i>
-                    </button>
+                    <Button onClick={handleSubscribe} color="default">
+                        <LuSmilePlus className="h-4 w-4" />
+                    </Button>
                 </div>
             )}
-
             {loading && (
-                <div className="progress">
-                    <div className="indeterminate"></div>
-                </div>
+                <>
+                    <Spacer y={1} />
+                    <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
+                </>
             )}
-        </div>
+        </>
     );
 };
 
