@@ -38,7 +38,7 @@ function DeleteAnimal({ id }) {
     return (
         <>
             <Button size="sm" onPress={() => setIsModalOpen(true)}>
-                <i className="small material-icons">close</i>
+                Delete
             </Button>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <ModalContent>

@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class Animal {
   @Column
   private String primaryColor;
   @Column(unique = true)
+  @Pattern(regexp = "\\d{8}-\\d{8}-\\d{8}", message = "Value must match the pattern 11111111-11111111-1111")
   private String implantChipId;
   @Column
   private String breed;
