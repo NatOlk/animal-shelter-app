@@ -16,6 +16,7 @@ import { parseDate, getLocalTimeZone } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useAuth } from '../common/authContext';
 import { useConfig } from '../common/configContext';
+import { IoIosAddCircleOutline } from "react-icons/io"
 
 function VaccinationsList() {
     const perPage = 10;
@@ -148,7 +149,7 @@ function VaccinationsList() {
         <div>
             <div id="error" className="errorAlarm"></div>
             <Link to="/">Back to Animals</Link>
-            <Table className="highlight responsive-table">
+            <Table className="compact-table">
                 <TableHeader>
                     <TableColumn>#</TableColumn>
                     <TableColumn>Vaccine</TableColumn>
@@ -159,7 +160,7 @@ function VaccinationsList() {
                     <TableColumn>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
-                    <TableRow style={{ backgroundColor: "#84ffff" }}>
+                    <TableRow className="highlighted-row">
                         <TableCell></TableCell>
                         <TableCell>
                             <Select
@@ -192,7 +193,7 @@ function VaccinationsList() {
                         <TableCell>
                             <Button onPress={handleAddVaccination}
                                 color="default" size="sm">
-                                Add
+                                <IoIosAddCircleOutline className="h-4 w-4" />
                             </Button>
                         </TableCell>
                     </TableRow>

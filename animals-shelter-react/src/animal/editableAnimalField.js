@@ -98,8 +98,15 @@ console.log('BD = ' + birthDate);
           onDoubleClick={() => {
             setOldValue(fieldValue);
             setIsEditing(true);
-          }}>
-          {fieldValue}
+          }} >
+              <Input
+                isDisabled
+                size="sm"
+                variant="bordered"
+                className="editable-cell-field"
+                defaultValue={fieldValue}
+                type="text"
+              />
         </span>
       )}
 

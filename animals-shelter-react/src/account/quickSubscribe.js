@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../common/authContext';
 import { Button, Input } from '@nextui-org/react';
-import { BellAlertIcon } from '@heroicons/react/24/outline';
+import { LuSmilePlus } from "react-icons/lu";
 
 const QuickSubscribe = () => {
   const { user } = useAuth();
@@ -43,7 +43,7 @@ const QuickSubscribe = () => {
           onClick={handleSubscribe}
           color="default"
           size="sm">
-           <BellAlertIcon className="h-4 w-4" />
+           <LuSmilePlus className="h-4 w-4" />
         </Button>
       </div>
     </div>

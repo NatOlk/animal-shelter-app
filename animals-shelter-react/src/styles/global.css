@@ -9,36 +9,55 @@
     font-size: 0.7rem !important;
   }
 
-  p, span, input {
-  font-size: 0.7rem !important;
+  p,
+  span,
+  input {
+    font-size: 0.7rem !important;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
     font-size: 10px;
+    padding: 2px !important;
+    font-size: 0.75rem;
     @apply w-full text-sm border-collapse;
   }
 
   th,
   td {
-    padding: 0.5rem;
+    padding: 2px;
     text-align: left;
     border: 1px solid #ddd;
-    @apply p-2 border border-gray-300 text-sm;
+    @apply p-1 border border-gray-300 text-xs;
   }
 
   .nextui-table-row,
   .nextui-table-cell {
-    font-size: 0.875rem;
-    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    padding: 2px;
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
+  .highlighted-row {
+    background-color: #e0f7fa;
+  }
+
+  .table-row:hover {
+    background-color: #f4fdfe;
+  }
+
+  .editable-cell-field {
+    background-color: #f0f8ff;
+    cursor: pointer;
+    padding: 2px;
+    margin: 0px;
+    font-size: 0.75rem;
+  }
+
+  .compact-table th,
+  .compact-table td {
+    padding: 2px !important;
+    padding-left: 2px !important;
+    font-size: 0.75rem;
   }
 }

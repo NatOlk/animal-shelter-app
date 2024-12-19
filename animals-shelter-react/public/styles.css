@@ -2,30 +2,6 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-.header-color {
-  color: #26a69a;
-  display: block;
-  line-height: 32px;
-  margin-bottom: 8px;
-}
-
-.subscription-container {
-  display: flex;
-  max-width: 400px;
-  gap: 10px;
-}
-
-.input-container {
-  display: flex;
-  gap: 10px;
-  width: 100%;
-}
-
-.subscription-progress {
-  width: 100%;
-  margin-top: 10px;
-}
-
 .quick-subscribe-btn {
   position: fixed;
   bottom: 45px;

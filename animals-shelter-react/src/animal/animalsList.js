@@ -14,8 +14,8 @@ import { Link } from 'react-router-dom';
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate, getLocalTimeZone } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import { EyeDropperIcon } from '@heroicons/react/24/outline';
+import { IoIosAddCircleOutline } from "react-icons/io"
+import { BiInjection } from "react-icons/bi";
 
 function AnimalsList() {
     const perPage = 10;
@@ -158,7 +158,7 @@ function AnimalsList() {
                     </SelectSection>
                 </Select>
             </div>
-            <Table removeWrapper isStriped>
+            <Table className="compact-table">
                 <TableHeader>
                     <TableColumn>#</TableColumn>
                     <TableColumn>Name</TableColumn>
@@ -172,7 +172,7 @@ function AnimalsList() {
                     <TableColumn>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
-                    <TableRow key="0" style={{ backgroundColor: "#84ffff" }}>
+                    <TableRow key="0" className="highlighted-row">
                         <TableCell></TableCell>
                         <TableCell>
                             <Input
@@ -245,14 +245,14 @@ function AnimalsList() {
                         </TableCell>
                         <TableCell>
                             <Button
-                                onClick={handleAddAnimal}
+                                onPress={handleAddAnimal}
                                 color="default" size="sm">
-                                <PlusCircleIcon className="h-4 w-4" />
+                                <IoIosAddCircleOutline className="h-4 w-4" />
                             </Button>
                         </TableCell>
                     </TableRow>
                     {paginatedAnimals.map((animal, index) => (
-                        <TableRow key={animal.id}>
+                        <TableRow key={animal.id} className="table-row">
                             <TableCell>{animal.id}</TableCell>
                             <TableCell>{animal.name}</TableCell>
                             <TableCell>{animal.species}</TableCell>
@@ -291,7 +291,7 @@ function AnimalsList() {
                                     state={{ animalId: animal.id, name: animal.name, species: animal.species }}
                                     size="sm" color="default">
                                    {animal.vaccinationCount}
-                                     <EyeDropperIcon className="h-4 w-4" />
+                                     <BiInjection className="h-4 w-4" />
                                 </Button>
                                 &nbsp;
                                 <DeleteAnimal id={animal.id} />
