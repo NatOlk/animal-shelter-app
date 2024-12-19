@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../common/authContext';
 import { Input, Button, Progress, Spacer } from "@nextui-org/react";
+import { BellAlertIcon } from '@heroicons/react/24/outline';
 
 const Subscription = () => {
     const { user } = useAuth();
@@ -49,7 +50,7 @@ const Subscription = () => {
                         className="max-w-xs"
                     />
                     <Button onClick={handleSubscribe} color="default">
-                        <i className="small material-icons">add_reaction</i>
+                        <BellAlertIcon className="h-4 w-4" />
                     </Button>
                 </div>
             )}

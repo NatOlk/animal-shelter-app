@@ -86,7 +86,7 @@ class AnimalServiceTest {
 
     var addedAnimal = animalService.addAnimal(
         "Bella", "Dog", "Brown", "Labrador",
-        "12345", "F", "2022-01-01", "Spotted");
+        "12345", "F", "01/01/2022", "Spotted");
 
     assertNotNull(addedAnimal);
     assertEquals("Bella", addedAnimal.getName());
@@ -101,7 +101,7 @@ class AnimalServiceTest {
 
     assertThrows(AnimalCreationException.class, () -> animalService.addAnimal(
         "Bella", "Dog", "Brown", "Labrador",
-        "12345", "F", "2022-01-01", "Spotted"));
+        "12345", "F", "01/01/2022", "Spotted"));
 
     verify(animalRepository, times(1)).save(any(Animal.class));
     verify(notificationService, never()).sendAddAnimalMessage(any(Animal.class));
@@ -116,7 +116,7 @@ class AnimalServiceTest {
     when(animalRepository.save(any(Animal.class))).thenReturn(animal);
 
     var updatedAnimal = animalService.updateAnimal(1L, "Black", null, "M",
-        "2023-01-01", null);
+        "01/01/2022", null);
 
     assertEquals('M', updatedAnimal.getGender());
     assertEquals("Black", updatedAnimal.getPrimaryColor());

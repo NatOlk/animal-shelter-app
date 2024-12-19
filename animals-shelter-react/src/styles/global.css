@@ -1,0 +1,44 @@
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem !important;
+  }
+
+  p, span, input {
+  font-size: 0.7rem !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    @apply w-full text-sm border-collapse;
+  }
+
+  th,
+  td {
+    padding: 0.5rem;
+    text-align: left;
+    border: 1px solid #ddd;
+    @apply p-2 border border-gray-300 text-sm;
+  }
+
+  .nextui-table-row,
+  .nextui-table-cell {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+}

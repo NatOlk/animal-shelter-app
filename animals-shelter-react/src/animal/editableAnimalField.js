@@ -1,13 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { Input, Button } from "@nextui-org/react";
+import { Input, Button, Select, SelectSection, SelectItem } from "@nextui-org/react";
 import { Dropdown, DropdownMenu, DropdownItem } from "@nextui-org/dropdown";
 import { ANIMALS_QUERY, UPDATE_ANIMAL } from "../common/graphqlQueries.js";
+import { DatePicker } from "@nextui-org/date-picker";
+import { parseDate, getLocalTimeZone } from "@internationalized/date";
+import { useDateFormatter } from "@react-aria/i18n";
+
+function convertToISO(dateString) {
+  return dateString.replace(" ", "T").split(".")[0] + "Z";
+}
 
 const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
+  console.log('Value = ' + value);
   const [isEditing, setIsEditing] = useState(false);
-  const [fieldValue, setFieldValue] = useState(value);
+
   const [oldValue, setOldValue] = useState("");
+  const [dat, setDat] = useState(isDate && value ? new Date(value) : new Date());
+  console.log('Dat = ' + dat);
+
+  const [birthDate, setBirthDate] = useState(parseDate(dat.toISOString().split('T')[0]));
+console.log('BD = ' + birthDate);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const d = date.toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    console.log('String ' + dateString + ';new date ' + date + '; date ' + d)
+    return d;
+  };
+
+  const [fieldValue, setFieldValue] = useState(isDate && value ? formatDate(birthDate) : value);
+
+   const formatter = new Intl.DateTimeFormat("en-US", {
+           day: "2-digit",
+           month: "2-digit",
+           year: "numeric",
+       });
 
   const [updateField] = useMutation(UPDATE_ANIMAL, {
     refetchQueries: [ANIMALS_QUERY],
@@ -27,36 +59,46 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
     <div className="flex items-center gap-3">
       {isEditing ? (
         values && values.length > 0 ? (
-          <Dropdown>
-            <DropdownMenu aria-label="Dropdown Variants" variant="bordered">
-              {values.map((val) => (
-                <DropdownItem
-                  key={val}
-                  onClick={() => setFieldValue(val)}>
-                  {val}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-        ) : isDate ? (
-          <Input
-            type="date"
+          <Select
             value={fieldValue}
-            onChange={(e) => setFieldValue(e.target.value)}
-          />
+            defaultSelectedKeys={[fieldValue]}
+            isRequired
+            className="w-full md:w-28"
+            onChange={(e) => setFieldValue(e.target.value)}>
+            {values.map(v => (
+              <SelectItem key={v}>{v}</SelectItem>
+            ))}
+          </Select>
+        ) : isDate ? (
+          <div className="flex w-full flex-wrap flex-nowrap gap-4">
+            <DatePicker
+              isRequired
+              value={birthDate}
+              onChange={(e) => {
+                console.log('e = ' + e);
+                if (e) {
+                  const formattedDate = formatter.format(e.toDate(getLocalTimeZone()));
+                  console.log('Formated date = ' + formattedDate);
+                  setFieldValue(formattedDate);
+                  setBirthDate(e);
+                } else {
+                  setFieldValue("");
+                }
+              }}
+            />
+          </div>
         ) : (
           <Input
+           className="w-full md:w-28"
             value={fieldValue}
-            onChange={(e) => setFieldValue(e.target.value)}
-          />
+            onChange={(e) => setFieldValue(e.target.value)} />
         )
       ) : (
         <span
           onDoubleClick={() => {
             setOldValue(fieldValue);
             setIsEditing(true);
-          }}
-          className="cursor-pointer text-primary">
+          }}>
           {fieldValue}
         </span>
       )}

@@ -18,7 +18,7 @@ INSERT INTO vaccinations (animal_id, batch, comments, email, vaccination_time, v
 VALUES (3, 'RTL-0003', 'First vaccination for the new dog.', 'nolkoeva@gmail.com', '2024-10-18 10:00:00', 'Rabies', 3);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
-VALUES ('2024-06-17', '2021-06-01', 'Syrian', 'F', '11111111-11111111-1114', 'Hammy', '', 'Golden', 'Hamster', 4);
+VALUES ('2024-06-17', '2021-06-01', 'Syrian', 'F', '11111111-11111111-1114', 'Hammy', '', 'Gold', 'Hamster', 4);
 
 INSERT INTO vaccinations (animal_id, batch, comments, email, vaccination_time, vaccine, id)
 VALUES (4, 'RTL-0004', 'Hamster first vaccine.', 'nolkoeva@gmail.com', '2024-10-20 10:30:00', 'Distemper', 4);
@@ -60,7 +60,7 @@ INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id,
 VALUES ('2024-06-17', '2022-04-25', 'Rottweiler', 'F', '11111111-11111111-1122', 'Bella', '', 'Black', 'Dog', 12);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
-VALUES ('2024-06-17', '2021-11-12', 'Dutch', 'M', '11111111-11111111-1123', 'Oreo', '', 'Black & White', 'Rabbit', 13);
+VALUES ('2024-06-17', '2021-11-12', 'Dutch', 'M', '11111111-11111111-1123', 'Oreo', '', 'Black', 'Rabbit', 13);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
 VALUES ('2024-06-17', '2023-05-15', 'Persian', 'F', '11111111-11111111-11124', 'Lily', '', 'Cream', 'Cat', 14);
@@ -72,7 +72,7 @@ INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id,
 VALUES ('2024-06-17', '2021-10-20', 'Golden Retriever', 'F', '11111111-11111111-1126', 'Goldie', '', 'Gold', 'Dog', 16);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
-VALUES ('2024-06-17', '2023-02-12', 'Schnauzer', 'M', '11111111-1111-1127', 'Charlie', '', 'Silver', 'Dog', 17);
+VALUES ('2024-06-17', '2023-02-12', 'Schnauzer', 'M', '11111111-11111111-1127', 'Charlie', '', 'Silver', 'Dog', 17);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
 VALUES ('2024-06-17', '2020-06-05', 'Tabby', 'M', '11111111-11111111-1128', 'Max', '', 'Orange', 'Cat', 18);

@@ -1,3 +1,4 @@
+window.process = {};
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AnimalsList from "./animal/animalsList";
@@ -14,6 +15,7 @@ import ErrorPage from "./errorPage";
 import { AuthProvider, useAuth } from './common/authContext';
 import QuickSubscribe from './account/quickSubscribe';
 import { Spacer } from "@nextui-org/react";
+import './styles/global.css';
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();

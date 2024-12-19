@@ -20,7 +20,8 @@ import org.springframework.stereotype.Service;
 public class AnimalService {
 
   private static final Logger LOG = LoggerFactory.getLogger(AnimalService.class);
-  private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+  private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+  private final String DEFAULT_IMPLANT_CHIP_PATTERN = "00000000-00000000-0000";
 
   @Autowired
   private AnimalRepository animalRepository;
@@ -51,7 +52,9 @@ public class AnimalService {
       animal.setBirthDate(formatter.parse(birthDate));
       animal.setAdmissionDate(new Date());
       animal.setPrimaryColor(primaryColor);
-      animal.setImplantChipId(implantChipId);
+      if (!implantChipId.equals(DEFAULT_IMPLANT_CHIP_PATTERN)) {
+        animal.setImplantChipId(implantChipId);
+      }
       animalRepository.save(animal);
 
       notificationService.sendAddAnimalMessage(animal);
@@ -72,7 +75,10 @@ public class AnimalService {
       if (gender != null) {
         animal.setGender(gender.charAt(0));
       }
+      LOG.info("-->" + birthDate);
+
       if (birthDate != null) {
+        LOG.info("f --> " + formatter.parse(birthDate));
         animal.setBirthDate(formatter.parse(birthDate));
       }
       if (pattern != null) {

@@ -11,11 +11,24 @@ import { ANIMALS_QUERY, ADD_ANIMAL } from "../common/graphqlQueries.js";
 import Pagination from "../common/pagination";
 import { useConfig } from "../common/configContext";
 import { Link } from 'react-router-dom';
+import { DatePicker } from "@nextui-org/date-picker";
+import { parseDate, getLocalTimeZone } from "@internationalized/date";
+import { useDateFormatter } from "@react-aria/i18n";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { EyeDropperIcon } from '@heroicons/react/24/outline';
 
 function AnimalsList() {
     const perPage = 10;
     const [currentPage, setCurrentPage] = useState(0);
     const [selectedSpecies, setSelectedSpecies] = useState("all");
+    const [birthDate, setBirthDate] = React.useState(parseDate("2024-04-16"));
+
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+
     const { loading, error, data, refetch } = useQuery(ANIMALS_QUERY);
     const config = useConfig();
 
@@ -25,8 +38,7 @@ function AnimalsList() {
         primaryColor: "White",
         gender: "F",
         breed: "",
-        implantChipId: "11111111-11111111-1111",
-        birthDate: "2012-01-01",
+        implantChipId: "00000000-00000000-0000",
         pattern: "Broken"
     };
 
@@ -61,12 +73,6 @@ function AnimalsList() {
             : allAnimals.filter((animal) => animal.species === selectedSpecies);
 
     const pageCount = Math.ceil(filteredAnimals.length / perPage);
-
-    const formatDate = (dateString) => {
-        if (!dateString) return "";
-        const date = new Date(dateString);
-        return date.toISOString().slice(0, 10);
-    };
 
     const paginatedAnimals = filteredAnimals.slice(
         currentPage * perPage,
@@ -110,7 +116,7 @@ function AnimalsList() {
                 breed: animal.breed,
                 implantChipId: animal.implantChipId,
                 gender: animal.gender,
-                birthDate: animal.birthDate,
+                birthDate: birthDate ? formatter.format(birthDate.toDate(getLocalTimeZone())) : "01/01/2025",
                 pattern: animal.pattern
             }
         }).catch((error1) => {
@@ -152,7 +158,6 @@ function AnimalsList() {
                     </SelectSection>
                 </Select>
             </div>
-
             <Table removeWrapper isStriped>
                 <TableHeader>
                     <TableColumn>#</TableColumn>
@@ -171,16 +176,16 @@ function AnimalsList() {
                         <TableCell></TableCell>
                         <TableCell>
                             <Input
-                                name="name"
-                                value={animal.name}
+                                name="name" value={animal.name}
+                                className="w-full md:w-32"
                                 onChange={handleInputChange}
-                                isRequired/>
+                                isRequired />
                         </TableCell>
                         <TableCell>
                             <Select
                                 name="species"
                                 defaultSelectedKeys={["Cat"]}
-                                className="w-full md:w-32"
+                                className="w-full md:w-28"
                                 variant="bordered"
                                 isRequired
                                 onChange={handleInputChange}>
@@ -203,19 +208,17 @@ function AnimalsList() {
                         </TableCell>
                         <TableCell>
                             <Input
-                                name="breed"
-                                value={animal.breed}
+                                name="breed" value={animal.breed}
                                 onChange={handleInputChange}
-                                className="w-full md:w-28" />
+                                className="w-full md:w-24" />
                         </TableCell>
                         <TableCell>
                             <Input
-                                name="implantChipId"
-                                value={animal.implantChipId}
+                                name="implantChipId" value={animal.implantChipId}
                                 isRequired
                                 onChange={handleInputChange} />
                         </TableCell>
-                        <TableCell classNames="table-column-species">
+                        <TableCell>
                             <Select
                                 name="gender"
                                 defaultSelectedKeys={["F"]}
@@ -228,24 +231,23 @@ function AnimalsList() {
                             </Select>
                         </TableCell>
                         <TableCell>
-                            <Input
-                                name="birthDate"
-                                value={animal.birthDate}
-                                isRequired
-                                aria-label="Birth Date" />
+                            <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                                <DatePicker isRequired className="max-w-[284px]"
+                                    name="birthDate" value={birthDate}
+                                    onChange={setBirthDate} />
+                            </div>
                         </TableCell>
                         <TableCell>
                             <Input
-                                name="pattern"
-                                value={animal.pattern}
-                                onChange={handleInputChange}
-                                aria-label="Pattern" />
+                                name="pattern" value={animal.pattern}
+                                className="w-full md:w-24"
+                                onChange={handleInputChange} />
                         </TableCell>
                         <TableCell>
                             <Button
                                 onClick={handleAddAnimal}
                                 color="default" size="sm">
-                                Add
+                                <PlusCircleIcon className="h-4 w-4" />
                             </Button>
                         </TableCell>
                     </TableRow>
@@ -256,47 +258,44 @@ function AnimalsList() {
                             <TableCell>{animal.species}</TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal}
-                                    value={animal.primaryColor}
+                                    animal={animal} value={animal.primaryColor}
                                     name="primaryColor"
                                     values={config.config.colors} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal}
-                                    value={animal.breed}
+                                    animal={animal} value={animal.breed}
                                     name="breed" />
                             </TableCell>
                             <TableCell>{animal.implantChipId}</TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal}
-                                    value={animal.gender}
+                                    animal={animal} value={animal.gender}
                                     name="gender"
                                     values={config.config.genders} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal}
-                                    value={animal.birthDate}
+                                    animal={animal} value={animal.birthDate}
                                     name="birthDate"
                                     isDate={true} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal}
-                                    value={animal.pattern}
+                                    animal={animal} value={animal.pattern}
                                     name="pattern" />
                             </TableCell>
-                            <TableCell className="w-full md:w-48">
+                            <TableCell>
+                             <div className="flex w-full flex-wrap flex-nowrap">
+                                <Button as={Link} to={`/vaccinations`}
+                                    state={{ animalId: animal.id, name: animal.name, species: animal.species }}
+                                    size="sm" color="default">
+                                   {animal.vaccinationCount}
+                                     <EyeDropperIcon className="h-4 w-4" />
+                                </Button>
+                                &nbsp;
                                 <DeleteAnimal id={animal.id} />
-                                <Link
-                                    className="waves-effect waves-orange btn-small"
-                                    to={`/vaccinations`}
-                                    state={{ animalId: animal.id, name: animal.name, species: animal.species }}>
-                                    Vax (
-                                    <span className="font12"> {animal.vaccinationCount}</span>)
-                                </Link>
+                                </div>
                             </TableCell>
                         </TableRow>
                     ))}

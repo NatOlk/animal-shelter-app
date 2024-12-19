@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import { apiFetch } from '../common/api';
 import { Tooltip, Button, Spacer } from "@nextui-org/react";
+import { UserMinusIcon } from '@heroicons/react/24/outline';
 
 export default function AllApproverSubscriptionList({ userProfile }) {
   const apiUrl = process.env.REACT_APP_NOTIFICATION_APP_API_URL;
@@ -75,7 +76,7 @@ export default function AllApproverSubscriptionList({ userProfile }) {
                       color="secondary"
                       size="small"
                       onClick={() => handleUnsubscribe(subscriber.token)}>
-                      <i className="material-icons">person_remove</i>
+                      <UserMinusIcon className="h-4 w-4" />
                     </Button>
                   </Tooltip>
                 )}

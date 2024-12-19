@@ -18,8 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VaccinationService {
 
-  private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-
+  private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
   @Autowired
   private VaccinationRepository vaccinationRepository;
 

@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from "@apollo/client";
-import AddVaccination from "./addVaccination";
-import UpdateVaccination from "./updateVaccination";
+import { useMutation } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
+import EditableVaccinationField from './editableVaccinationField';
 import { useLocation, Link } from 'react-router-dom';
-import { VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
+import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries.js';
 import Pagination from '../common/pagination'
 import {
-    Select,
-    SelectSection,
-    SelectItem,
-    Spacer,
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
+    Select, SelectSection, SelectItem, Spacer,
+    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+    Button, Input
 } from "@nextui-org/react";
+import { DatePicker } from "@nextui-org/date-picker";
+import { parseDate, getLocalTimeZone } from "@internationalized/date";
+import { useDateFormatter } from "@react-aria/i18n";
+import { useAuth } from '../common/authContext';
+import { useConfig } from '../common/configContext';
 
 function VaccinationsList() {
     const perPage = 10;
@@ -25,6 +23,98 @@ function VaccinationsList() {
 
     const location = useLocation();
     const { animalId, name, species } = location.state;
+    const [birthDate, setBirthDate] = React.useState(parseDate("2024-04-16"));
+
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+    const [vaccination, setVaccination] = useState({
+        vaccine: 'Rabies',
+        batch: '',
+        vaccinationTime: new Date().toISOString().split('T')[0],
+        comments: 'Add new vaccine',
+        email: ''
+    });
+    const [validationError, setError] = useState(null);
+    const { isAuthenticated, user } = useAuth();
+
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            setVaccination((prev) => ({ ...prev, email: user.email }));
+        }
+    }, [isAuthenticated, user]);
+
+    const [addVaccination] = useMutation(ADD_VACCINATION, {
+        refetchQueries: [VACCINATIONS_QUERY],
+        update(cache, { data: { addVaccination } }) {
+            try {
+                const { allVaccinations } = cache.readQuery({ query: ALL_VACCINATIONS_QUERY });
+                cache.writeQuery({
+                    query: ALL_VACCINATIONS_QUERY,
+                    data: { allVaccinations: [...allVaccinations, addVaccination] },
+                });
+            } catch (error) {
+                console.error("Error updating cache:", error);
+            }
+        }
+    });
+
+    const config = useConfig();
+    if (!config) {
+        return (
+            <tr>
+                <td colSpan="5">Loading animals configs...</td>
+            </tr>
+        );
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setVaccination({
+            ...vaccination,
+            [name]: value,
+        });
+    };
+
+    const handleAddVaccination = () => {
+        if (!vaccination.vaccine) {
+            setError('vaccine');
+            return;
+        }
+        if (!vaccination.batch) {
+            setError('batch');
+            return;
+        }
+        if (!vaccination.vaccinationTime) {
+            setError('vaccinationTime');
+            return;
+        }
+
+        addVaccination({
+            variables: {
+                animalId: animalId,
+                vaccine: vaccination.vaccine,
+                batch: vaccination.batch,
+                vaccinationTime: birthDate ? formatter.format(birthDate.toDate(getLocalTimeZone())) : "01/01/2025",
+                comments: vaccination.comments,
+                email: vaccination.email
+            }
+        }).catch(error => { showError({ error: error }) });
+
+        clearFields();
+    }
+
+    const clearFields = () => {
+        setVaccination({
+            vaccine: 'Rabies',
+            batch: '',
+            vaccinationTime: new Date().toISOString().split('T')[0],
+            comments: 'Add new vaccine',
+            email: user.email
+        });
+    };
 
     if (!animalId) {
         return (
@@ -69,14 +159,72 @@ function VaccinationsList() {
                     <TableColumn>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
+                    <TableRow style={{ backgroundColor: "#84ffff" }}>
+                        <TableCell></TableCell>
+                        <TableCell>
+                            <Select
+                                name="vaccine" value={vaccination.vaccine}
+                                className="w-full md:w-32"
+                                onChange={handleInputChange}>
+                                {config.config.vaccines.map(vaccine => (
+                                    <SelectItem key={vaccine}>{vaccine}</SelectItem>
+                                ))}
+                            </Select>
+                        </TableCell>
+                        <TableCell>
+                            <Input name="batch"
+                                value={vaccination.batch}
+                                onChange={handleInputChange}
+                                placeholder={validationError === 'batch' ? 'batch is mandatory' : ''} />
+                        </TableCell>
+                        <TableCell>
+                            <DatePicker isRequired className="max-w-[284px]"
+                                name="birthDate" value={birthDate}
+                                onChange={setBirthDate} />
+                        </TableCell>
+                        <TableCell>
+                            <Input name="comments" value={vaccination.comments}
+                                onChange={handleInputChange} />
+                        </TableCell>
+                        <TableCell>
+                            <Input name="email" value={vaccination.email} onChange={handleInputChange} />
+                        </TableCell>
+                        <TableCell>
+                            <Button onPress={handleAddVaccination}
+                                color="default" size="sm">
+                                Add
+                            </Button>
+                        </TableCell>
+                    </TableRow>
                     {vaccinationsList.map((vaccination, index) => (
                         <TableRow key={vaccination.id}>
                             <TableCell>{vaccination.id}</TableCell>
                             <TableCell>{vaccination.vaccine}</TableCell>
-                            <TableCell>{vaccination.batch}</TableCell>
-                            <TableCell>{formatDate(vaccination.vaccinationTime)}</TableCell>
-                            <TableCell>{vaccination.comments}</TableCell>
-                            <TableCell>{vaccination.email}</TableCell>
+                            <TableCell>
+                                <EditableVaccinationField
+                                    vaccination={vaccination}
+                                    value={vaccination.batch}
+                                    name="email" />
+                            </TableCell>
+                            <TableCell>
+                                <EditableVaccinationField
+                                    vaccination={vaccination}
+                                    value={vaccination.vaccinationTime}
+                                    name="vaccinationTime"
+                                    isDate={true} />
+                            </TableCell>
+                            <TableCell>
+                                <EditableVaccinationField
+                                    vaccination={vaccination}
+                                    value={vaccination.comments}
+                                    name="comments" />
+                            </TableCell>
+                            <TableCell>
+                                <EditableVaccinationField
+                                    vaccination={vaccination}
+                                    value={vaccination.email}
+                                    name="email" />
+                            </TableCell>
                             <TableCell>
                                 <DeleteVaccination id={vaccination.id} />
                             </TableCell>

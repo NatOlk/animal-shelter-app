@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import { apiFetch } from '../common/api';
 import { Tooltip, Button, Spacer } from "@nextui-org/react";
+import { UserPlusIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 function PendingSubscriptionList({ userProfile }) {
   const [pendingSubscribers, setPendingSubscribers] = useState([]);
@@ -100,7 +102,7 @@ function PendingSubscriptionList({ userProfile }) {
                       color="primary"
                       size="small"
                       onClick={() => handleApprove(subscriber.email, userProfile.email)}>
-                      <i className="small material-icons">add_task</i>
+                      <UserPlusIcon className="h-4 w-4" />
                     </Button>
                   </Tooltip>
                   <Tooltip content="Reject">
@@ -109,7 +111,7 @@ function PendingSubscriptionList({ userProfile }) {
                       color="secondary"
                       size="small"
                       onClick={() => handleReject(subscriber.email)}>
-                      <i className="small material-icons">unpublished</i>
+                      <XMarkIcon className="h-4 w-4" />
                     </Button>
                   </Tooltip>
                 </TableCell>

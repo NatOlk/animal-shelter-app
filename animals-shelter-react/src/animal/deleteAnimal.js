@@ -10,6 +10,7 @@ import {
     ModalFooter
 } from "@nextui-org/modal";
 import { Textarea } from "@nextui-org/input";
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 function DeleteAnimal({ id }) {
     const [reason, setReason] = useState("");
@@ -38,7 +39,7 @@ function DeleteAnimal({ id }) {
     return (
         <>
             <Button size="sm" onPress={() => setIsModalOpen(true)}>
-                Delete
+                 <TrashIcon className="h-4 w-4" />
             </Button>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <ModalContent>
@@ -57,10 +58,10 @@ function DeleteAnimal({ id }) {
                         />
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="danger" variant="flat" size="sm" onPress={() => setIsModalOpen(false)}>
+                        <Button color="default" variant="bordered" size="sm" onPress={() => setIsModalOpen(false)}>
                             Cancel
                         </Button>
-                        <Button color="default" variant="flat" size="sm" onPress={handleDelete}>
+                        <Button color="default" variant="bordered" size="sm" onPress={handleDelete}>
                             Confirm
                         </Button>
                     </ModalFooter>

@@ -5,6 +5,7 @@ import { onError } from "@apollo/client/link/error";
 import { NextUIProvider } from "@nextui-org/react";
 import './output.css';
 import App from "./app";
+import './styles/global.css';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 

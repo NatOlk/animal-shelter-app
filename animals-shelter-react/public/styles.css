@@ -1,16 +1,5 @@
 body {
-    font-family: 'Inter', sans-serif;
-}
-
-.font12 {
-  font-size: 22px !important;
-  font-weight: bold;
-}
-
-.card-color {
-  background-color: white !important;
-  font-size: 14px !important;
-  color: #4db6ac !important;
+  font-family: 'Inter', sans-serif;
 }
 
 .header-color {
@@ -40,7 +29,7 @@ body {
 .quick-subscribe-btn {
   position: fixed;
   bottom: 45px;
-  right: 24px;
+  left: 15px;
 }
 
 .quick-subscribe-input-container {
@@ -101,4 +90,3 @@ body {
   padding: 1rem;
   overflow-y: auto;
 }
-

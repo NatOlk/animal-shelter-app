@@ -40,7 +40,7 @@ class VaccinationServiceTest {
   @InjectMocks
   private VaccinationService vaccinationService;
 
-  private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+  private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 
   @BeforeEach
   void setUp() {
@@ -64,7 +64,7 @@ class VaccinationServiceTest {
     Long animalId = 1L;
     String vaccine = "Rabies";
     String batch = "B123";
-    String vaccinationTime = "2024-11-01";
+    String vaccinationTime = "01/11/2024";
     String comments = "First dose";
     String email = "vet@example.com";
 

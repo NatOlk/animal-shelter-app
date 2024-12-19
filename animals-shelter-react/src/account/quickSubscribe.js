@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../common/authContext';
 import { Button, Input } from '@nextui-org/react';
+import { BellAlertIcon } from '@heroicons/react/24/outline';
 
 const QuickSubscribe = () => {
   const { user } = useAuth();
@@ -31,7 +32,8 @@ const QuickSubscribe = () => {
       <div className="input-field quick-subscribe-input-container">
         <Input
           id="subscribe-email"
-          className="max-w-xs"
+          className="min-w-[50px] max-w-[200px]"
+          variant="bordered"
           placeholder="Want to subscribe?"
           value={email}
           type="email"
@@ -41,7 +43,7 @@ const QuickSubscribe = () => {
           onClick={handleSubscribe}
           color="default"
           size="sm">
-          <i className="small material-icons">add_reaction</i>
+           <BellAlertIcon className="h-4 w-4" />
         </Button>
       </div>
     </div>

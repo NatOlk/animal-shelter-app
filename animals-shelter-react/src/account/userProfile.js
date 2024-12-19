@@ -69,6 +69,13 @@ const UserProfile = () => {
       case 'ACTIVE':
         return (
           <div>
+            <p className="text-small text-default-500">
+              You are subscribed to notifications about animals and their vaccinations, removal of animals, and other updates.
+              This will help you stay informed about the activities of our shelter.
+              To unsubscribe from these notifications, please review the list of all subscribers, find your email in the list,
+              and click the Unsubscribe button.
+            </p>
+            <Spacer y={10} />
             <Tooltip data-position="bottom" content="You are subscribed!">
               <i className="small material-icons green-text text-darken-1">notifications_active</i>
             </Tooltip>
@@ -79,17 +86,6 @@ const UserProfile = () => {
     }
   };
 
-  useEffect(() => {
-    if (animalNotifyStatusProfile) {
-      const elemsTooltips = document.querySelectorAll('.tooltipped');
-      const instancesTooltips = M.Tooltip.init(elemsTooltips, {});
-
-      return () => {
-        instancesTooltips.forEach(instance => instance.destroy());
-      };
-    }
-  }, [animalNotifyStatusProfile]);
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
@@ -97,7 +93,7 @@ const UserProfile = () => {
 
   return (
     <>
-      <Card className="max-w-[800px]">
+      <Card className="w-full">
         <CardHeader className="flex gap-3">
           <div className="flex flex-col">
             <p className="text-md">User profile</p>
