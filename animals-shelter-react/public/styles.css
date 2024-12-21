@@ -1,35 +1,6 @@
-body {
-  font-family: 'Inter', sans-serif;
-}
-
-.quick-subscribe-btn {
-  position: fixed;
-  bottom: 45px;
-  left: 15px;
-}
-
-.quick-subscribe-input-container {
-  display: flex;
-  align-items: center;
-}
-
-.quick-subscribe-input {
-  margin-right: 8px;
-}
-
-.quick-subscribe-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .highlight-own-subscription {
   background-color: #e0f2f1;
-}
-
-.subscription-title {
-  color: #4db6ac !important;
-  font-weight: bold;
 }
 
 .editable-field {
@@ -43,22 +14,6 @@ body {
 .editable-field:hover {
   background-color: #e0e0e0;
   cursor: pointer;
-}
-
-.navbar-container {
-  margin-bottom: 1rem;
-}
-
-.main-container {
-  display: flex;
-  height: calc(100vh - 3rem);
-}
-
-.sidebar {
-  width: 250px;
-  background-color: #f4f4f4;
-  padding: 1rem;
-  border-right: 1px solid #ddd;
 }
 
 .content {

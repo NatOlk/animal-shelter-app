@@ -54,36 +54,41 @@ export default function AllApproverSubscriptionList({ userProfile }) {
           <TableColumn>Accepted</TableColumn>
           <TableColumn>Actions</TableColumn>
         </TableHeader>
-        <TableBody>
-          {allSubscribers.map((subscriber) => (
-            <TableRow
-              key={subscriber.id}
-              style={{
-                backgroundColor:
-                  subscriber.email === userProfile.email ? '#f0f8ff' : 'inherit',
-              }}
-            >
-              <TableCell>{subscriber.id}</TableCell>
-              <TableCell>{subscriber.email}</TableCell>
-              <TableCell>{subscriber.approver}</TableCell>
-              <TableCell>{subscriber.topic}</TableCell>
-              <TableCell>{subscriber.accepted ? 'Yes' : 'No'}</TableCell>
-              <TableCell>
-                {subscriber.approved && (
-                  <Tooltip content="Unsubscribe" placement="bottom">
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      size="small"
-                      onClick={() => handleUnsubscribe(subscriber.token)}>
-                      <HiOutlineUserRemove className="h-4 w-4" />
-                    </Button>
-                  </Tooltip>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+        {allSubscribers.length > 0 ? (
+          <TableBody>
+            {allSubscribers.map((subscriber) => (
+              <TableRow
+                key={subscriber.id}
+                style={{
+                  backgroundColor:
+                    subscriber.email === userProfile.email ? '#f0f8ff' : 'inherit',
+                }}
+              >
+                <TableCell>{subscriber.id}</TableCell>
+                <TableCell>{subscriber.email}</TableCell>
+                <TableCell>{subscriber.approver}</TableCell>
+                <TableCell>{subscriber.topic}</TableCell>
+                <TableCell>{subscriber.accepted ? 'Yes' : 'No'}</TableCell>
+                <TableCell>
+                  {subscriber.approved && (
+                    <Tooltip content="Unsubscribe" placement="bottom">
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        onClick={() => handleUnsubscribe(subscriber.token)}>
+                        <HiOutlineUserRemove className="h-4 w-4" />
+                      </Button>
+                    </Tooltip>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        ) : (
+          <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
+        )
+        }
       </Table>
       <Spacer y={10} />
     </>

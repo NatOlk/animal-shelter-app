@@ -12,6 +12,11 @@ import { Divider } from "@nextui-org/divider";
 import { Progress } from "@nextui-org/progress";
 import { Tooltip, Button, Spacer } from "@nextui-org/react";
 import { Tabs, Tab } from "@nextui-org/tabs";
+import { MdOutlineAlternateEmail } from "react-icons/md";
+import { MdGroupAdd } from "react-icons/md";
+import { TbUsersGroup } from "react-icons/tb";
+import { RiAdminLine } from "react-icons/ri";
+import { HiOutlineBellAlert } from "react-icons/hi2";
 
 const UserProfile = () => {
   const { loading, error, data } = useQuery(GET_CURRENT_USER_PROFILE, {
@@ -101,21 +106,28 @@ const UserProfile = () => {
         </CardHeader>
         <Divider />
         <CardBody>
-          <p className="text-small text-default-500">Hello, {name}! How are you? Happy to see you!</p>
-          <p className="text-small text-default-500"><i className="small material-icons">alternate_email</i> {email}</p>
+          <p>Hello, {name}! How are you? Happy to see you!</p>
+          <div className="flex items-center space-x-2"><MdOutlineAlternateEmail/> {email}</div>
           <Spacer y={10} />
           <div className="flex w-full flex-col">
-            <Tabs aria-label="Options" size="lg" variant="light" onSelectionChange={updateSubscriptionStatus}>
-              <Tab key="roles" title="Roles">
-                <Card className="max-w-[400px]">
+            <Tabs aria-label="Options" size="lg" variant="light"
+              onSelectionChange={updateSubscriptionStatus}>
+              <Tab key="roles" title={
+                <div className="flex items-center space-x-2">
+                  <RiAdminLine /><p>Roles</p>
+                </div>}>
+                <Card className="w-full">
                   <CardBody>
                     Admin, Employee
                     <Spacer y={20} />
                   </CardBody>
                 </Card>
               </Tab>
-              <Tab key="subscriptions" title="Subscriptions">
-                <Card className="max-w-[800px]">
+              <Tab key="subscriptions" title={
+                <div className="flex items-center space-x-2">
+                  <HiOutlineBellAlert /><p>Subscriptions</p>
+                </div>}>
+                <Card className="w-full">
                   <CardBody>
                     {renderIconBasedOnStatus()}
                     <Spacer y={20} />
@@ -131,7 +143,10 @@ const UserProfile = () => {
       <Spacer y={20} />
       <div className="flex w-full flex-col">
         <Tabs aria-label="Options" size="lg" variant="bordered">
-          <Tab key="pending" title="Pending subscribers">
+          <Tab key="pending" title={
+            <div className="flex items-center space-x-2">
+              <MdGroupAdd/><p>Pending subscribers</p>
+            </div>}>
             <Card>
               <CardBody>
                 <PendingSubscriptionList userProfile={data.currentUserProfile} />
@@ -140,7 +155,10 @@ const UserProfile = () => {
               </CardBody>
             </Card>
           </Tab>
-          <Tab key="all" title="All subscribers">
+          <Tab key="all" title={
+            <div className="flex items-center space-x-2">
+              <TbUsersGroup/><p>All subscribers</p>
+            </div>}>
             <Card>
               <CardBody>
                 <AllApproverSubscriptionList userProfile={data.currentUserProfile} />
