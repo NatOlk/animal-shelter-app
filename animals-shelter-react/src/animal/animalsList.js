@@ -246,8 +246,9 @@ function AnimalsList() {
                         <TableCell>
                             <Button
                                 onPress={handleAddAnimal}
-                                color="default" size="sm">
-                                <IoIosAddCircleOutline className="h-4 w-4" />
+                                color="default" variant="light"
+                                className="p-2 min-w-2 h-auto">
+                                <IoIosAddCircleOutline />
                             </Button>
                         </TableCell>
                     </TableRow>
@@ -286,15 +287,16 @@ function AnimalsList() {
                                     name="pattern" />
                             </TableCell>
                             <TableCell>
-                             <div className="flex w-full flex-wrap flex-nowrap">
-                                <Button as={Link} to={`/vaccinations`}
-                                    state={{ animalId: animal.id, name: animal.name, species: animal.species }}
-                                    size="sm" color="default">
-                                   {animal.vaccinationCount}
-                                     <BiInjection className="h-4 w-4" />
-                                </Button>
-                                &nbsp;
-                                <DeleteAnimal id={animal.id} />
+                                <div className="flex w-full flex-wrap flex-nowrap">
+                                    <Button as={Link} to={`/vaccinations`}
+                                        state={{ animalId: animal.id, name: animal.name, species: animal.species }}
+                                        color="default" variant="light"
+                                        className="p-2 min-w-2 h-auto">
+                                        {animal.vaccinationCount}
+                                        <BiInjection />
+                                    </Button>
+                                    &nbsp;
+                                    <DeleteAnimal id={animal.id} />
                                 </div>
                             </TableCell>
                         </TableRow>

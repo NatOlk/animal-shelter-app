@@ -69,15 +69,14 @@ export default function AllApproverSubscriptionList({ userProfile }) {
                 <TableCell>{subscriber.approver}</TableCell>
                 <TableCell>{subscriber.topic}</TableCell>
                 <TableCell>{subscriber.accepted ? 'Yes' : 'No'}</TableCell>
-                <TableCell>
+                <TableCell className="w-full md:w-24">
                   {subscriber.approved && (
                     <Tooltip content="Unsubscribe" placement="bottom">
                       <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={() => handleUnsubscribe(subscriber.token)}>
-                        <HiOutlineUserRemove className="h-4 w-4" />
+                        color="default" variant="light"
+                        className="p-2 min-w-2 h-auto"
+                        onPress={() => handleUnsubscribe(subscriber.token)}>
+                        <HiOutlineUserRemove />
                       </Button>
                     </Tooltip>
                   )}

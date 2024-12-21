@@ -115,23 +115,23 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
       {isEditing && (
         <div className="flex items-center gap-0">
           <Button
-            variant="contained"
             color="secondary"
             size="sm"
+            variant="light"
             className="p-1 min-w-0 h-auto"
             onPress={handleSave}>
-            <GrFormAdd className="h-4 w-4" />
+            <GrFormAdd />
           </Button>
           <Button
-            variant="contained"
             color="secondary"
             size="sm"
+            variant="light"
             className="p-1 min-w-0 h-auto"
             onPress={() => {
               setFieldValue(oldValue);
               setIsEditing(false);
             }}>
-            <HiMinusSm className="h-4 w-4" />
+            <HiMinusSm />
           </Button>
         </div>
       )}

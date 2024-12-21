@@ -67,6 +67,7 @@ const Login = () => {
                     label="Username or Email"
                     placeholder="Enter your identifier"
                     type="text"
+                    variant="bordered"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     labelPlacement="outside"
@@ -76,6 +77,7 @@ const Login = () => {
                     label="Password"
                     placeholder="Enter your password"
                     type="password"
+                    variant="bordered"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     labelPlacement="outside"

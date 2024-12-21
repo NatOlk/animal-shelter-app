@@ -85,33 +85,28 @@ function PendingSubscriptionList({ userProfile }) {
                 key={subscriber.id}
                 hover
                 style={{
-                  backgroundColor:
-                    subscriber.email === userProfile.email
-                      ? 'rgba(0, 255, 0, 0.1)'
-                      : undefined,
+                  backgroundColor: subscriber.email === userProfile.email ? '#f1f1f1' : 'transparent',
                 }}>
                 <TableCell>{subscriber.id}</TableCell>
                 <TableCell>{subscriber.email}</TableCell>
                 <TableCell>{subscriber.approver}</TableCell>
                 <TableCell>{subscriber.topic}</TableCell>
                 <TableCell>No</TableCell>
-                <TableCell>
+                <TableCell className="w-full md:w-24">
                   <Tooltip content="Approve">
                     <Button
-                      variant="contained"
-                      color="primary"
-                      size="sm"
-                      onClick={() => handleApprove(subscriber.email, userProfile.email)}>
-                      <HiOutlineUserAdd className="h-4 w-4" />
+                      color="default" variant="light"
+                      className="p-2 min-w-2 h-auto"
+                      onPress={() => handleApprove(subscriber.email, userProfile.email)}>
+                      <HiOutlineUserAdd />
                     </Button>
                   </Tooltip>
                   <Tooltip content="Reject">
                     <Button
-                      variant="contained"
-                      color="secondary"
-                      size="sm"
-                      onClick={() => handleReject(subscriber.email)}>
-                      <HiX className="h-4 w-4" />
+                      color="default" variant="light"
+                      className="p-2 min-w-2 h-auto"
+                      onPress={() => handleReject(subscriber.email)}>
+                      <HiX />
                     </Button>
                   </Tooltip>
                 </TableCell>

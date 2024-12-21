@@ -20,7 +20,7 @@ const Logout = () => {
     };
 
     return (
-        <Button color="default" onClick={handleLogout}>
+        <Button color="default" onPress={handleLogout}>
             Logout
         </Button>
     );

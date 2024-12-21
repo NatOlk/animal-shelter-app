@@ -49,8 +49,8 @@ const Subscription = () => {
                         type="email"
                         className="max-w-xs"
                     />
-                    <Button onClick={handleSubscribe} color="default">
-                        <LuSmilePlus className="h-4 w-4" />
+                    <Button onPress={handleSubscribe} color="default">
+                        <LuSmilePlus />
                     </Button>
                 </div>
             )}

@@ -40,10 +40,10 @@ const QuickSubscribe = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <Button
-          onClick={handleSubscribe}
+          onPress={handleSubscribe}
           color="default"
           size="sm">
-           <LuSmilePlus className="h-4 w-4" />
+          <LuSmilePlus />
         </Button>
       </div>
     </div>
