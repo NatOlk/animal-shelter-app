@@ -38,8 +38,10 @@ function DeleteAnimal({ id }) {
 
     return (
         <>
-            <Button size="sm" onPress={() => setIsModalOpen(true)}>
-                 <IoTrashOutline className="h-4 w-4" />
+            <Button variant="light"
+                className="p-2 min-w-2 h-auto"
+                onPress={() => setIsModalOpen(true)}>
+                <IoTrashOutline />
             </Button>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <ModalContent>

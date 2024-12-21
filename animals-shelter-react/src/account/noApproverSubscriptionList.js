@@ -78,25 +78,20 @@ export default function NoApproverSubscriptionList({ userProfile }) {
                 <TableCell>{subscriber.approver}</TableCell>
                 <TableCell>{subscriber.topic}</TableCell>
                 <TableCell>No</TableCell>
-                <TableCell>
+                <TableCell className="w-full md:w-24">
                   <Tooltip content="Approve">
                     <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      onClick={() => handleApprove(subscriber.email)}
-                    >
+                      color="default" variant="light"
+                      className="p-2 min-w-2 h-auto"
+                      onPress={() => handleApprove(subscriber.email)}>
                       Approve
                     </Button>
                   </Tooltip>
                   <Tooltip content="Reject">
                     <Button
-                      variant="contained"
-                      color="secondary"
-                      size="small"
-                      onClick={() => handleReject(subscriber.email)}
-                      style={{ marginLeft: 8 }}
-                    >
+                      color="default" variant="light"
+                      className="p-2 min-w-2 h-auto"
+                      onPress={() => handleReject(subscriber.email)}>
                       Reject
                     </Button>
                   </Tooltip>

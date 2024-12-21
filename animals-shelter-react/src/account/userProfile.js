@@ -52,10 +52,8 @@ const UserProfile = () => {
       case 'NONE':
         return (
           <div>
-            <p className="text-small text-default-500">
-              You’re currently unsubscribed from our animal updates.
-              We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
-            </p>
+            <p>You’re currently unsubscribed from our animal updates.</p>
+            <p>We highly recommend subscribing to stay informed about all the latest happenings at the shelter!</p>
             <Spacer y={10} />
             <Subscription />
           </div>
@@ -63,7 +61,7 @@ const UserProfile = () => {
       case 'PENDING':
         return (
           <div>
-            <p className="text-small text-default-500">
+            <p>
               Your subscription is pending approval. Please wait for an approval email.
               Once you receive it, follow the instructions to complete your subscription activation.
             </p>
@@ -74,12 +72,10 @@ const UserProfile = () => {
       case 'ACTIVE':
         return (
           <div>
-            <p className="text-small text-default-500">
-              You are subscribed to notifications about animals and their vaccinations, removal of animals, and other updates.
-              This will help you stay informed about the activities of our shelter.
-              To unsubscribe from these notifications, please review the list of all subscribers, find your email in the list,
-              and click the Unsubscribe button.
-            </p>
+            <p>You are subscribed to notifications about animals and their vaccinations, removal of animals, and other updates.</p>
+            <p>This will help you stay informed about the activities of our shelter.</p>
+            <p>To unsubscribe from these notifications, please review the list of all subscribers, find your email in the list,
+              and click the Unsubscribe button.</p>
             <Spacer y={10} />
             <Tooltip data-position="bottom" content="You are subscribed!">
               <i className="small material-icons green-text text-darken-1">notifications_active</i>
@@ -101,16 +97,16 @@ const UserProfile = () => {
       <Card className="w-full">
         <CardHeader className="flex gap-3">
           <div className="flex flex-col">
-            <p className="text-md">User profile</p>
+            <h1>User profile</h1>
           </div>
         </CardHeader>
         <Divider />
         <CardBody>
           <p>Hello, {name}! How are you? Happy to see you!</p>
-          <div className="flex items-center space-x-2"><MdOutlineAlternateEmail/> {email}</div>
+          <div className="flex items-center space-x-2"><MdOutlineAlternateEmail /> {email}</div>
           <Spacer y={10} />
           <div className="flex w-full flex-col">
-            <Tabs aria-label="Options" size="lg" variant="light"
+            <Tabs aria-label="Options" size="lg" variant="bordered"
               onSelectionChange={updateSubscriptionStatus}>
               <Tab key="roles" title={
                 <div className="flex items-center space-x-2">
@@ -145,7 +141,7 @@ const UserProfile = () => {
         <Tabs aria-label="Options" size="lg" variant="bordered">
           <Tab key="pending" title={
             <div className="flex items-center space-x-2">
-              <MdGroupAdd/><p>Pending subscribers</p>
+              <MdGroupAdd /><p>Pending subscribers</p>
             </div>}>
             <Card>
               <CardBody>
@@ -157,7 +153,7 @@ const UserProfile = () => {
           </Tab>
           <Tab key="all" title={
             <div className="flex items-center space-x-2">
-              <TbUsersGroup/><p>All subscribers</p>
+              <TbUsersGroup /><p>All subscribers</p>
             </div>}>
             <Card>
               <CardBody>

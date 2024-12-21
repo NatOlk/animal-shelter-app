@@ -27,7 +27,7 @@ const NavBarContent = () => {
       <NavbarContent justify="end">
         {isAuthenticated && (
           <NavbarItem>
-            <Button color="default" variant="flat" onClick={handleClick}>
+            <Button color="default" variant="flat" onPress={handleClick}>
               <h5>Profile</h5>
             </Button>
           </NavbarItem>
