@@ -6,6 +6,8 @@ import { ANIMALS_QUERY, UPDATE_ANIMAL } from "../common/graphqlQueries.js";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate, getLocalTimeZone } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
+import { GrFormAdd } from "react-icons/gr";
+import { HiMinusSm } from "react-icons/hi";
 
 function convertToISO(dateString) {
   return dateString.replace(" ", "T").split(".")[0] + "Z";
@@ -20,7 +22,7 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
   console.log('Dat = ' + dat);
 
   const [birthDate, setBirthDate] = useState(parseDate(dat.toISOString().split('T')[0]));
-console.log('BD = ' + birthDate);
+  console.log('BD = ' + birthDate);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -35,11 +37,11 @@ console.log('BD = ' + birthDate);
 
   const [fieldValue, setFieldValue] = useState(isDate && value ? formatDate(birthDate) : value);
 
-   const formatter = new Intl.DateTimeFormat("en-US", {
-           day: "2-digit",
-           month: "2-digit",
-           year: "numeric",
-       });
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
   const [updateField] = useMutation(UPDATE_ANIMAL, {
     refetchQueries: [ANIMALS_QUERY],
@@ -63,7 +65,7 @@ console.log('BD = ' + birthDate);
             value={fieldValue}
             defaultSelectedKeys={[fieldValue]}
             isRequired
-            className="w-full md:w-28"
+            className="w-full md:w-28 editable-cell-field"
             onChange={(e) => setFieldValue(e.target.value)}>
             {values.map(v => (
               <SelectItem key={v}>{v}</SelectItem>
@@ -89,7 +91,7 @@ console.log('BD = ' + birthDate);
           </div>
         ) : (
           <Input
-           className="w-full md:w-28"
+            className="w-full md:w-28 editable-cell-field"
             value={fieldValue}
             onChange={(e) => setFieldValue(e.target.value)} />
         )
@@ -99,35 +101,39 @@ console.log('BD = ' + birthDate);
             setOldValue(fieldValue);
             setIsEditing(true);
           }} >
-              <Input
-                isDisabled
-                size="sm"
-                variant="bordered"
-                className="editable-cell-field"
-                defaultValue={fieldValue}
-                type="text"
-              />
+          <Input
+            isDisabled
+            size="sm"
+            variant="bordered"
+            className="editable-cell-field"
+            defaultValue={fieldValue}
+            type="text"
+          />
         </span>
       )}
 
       {isEditing && (
-        <>
+        <div className="flex items-center gap-0">
           <Button
-            color="success"
+            variant="contained"
+            color="secondary"
             size="sm"
-            onClick={handleSave}>
-            +
+            className="p-1 min-w-0 h-auto"
+            onPress={handleSave}>
+            <GrFormAdd className="h-4 w-4" />
           </Button>
           <Button
-            color="error"
+            variant="contained"
+            color="secondary"
             size="sm"
-            onClick={() => {
+            className="p-1 min-w-0 h-auto"
+            onPress={() => {
               setFieldValue(oldValue);
               setIsEditing(false);
             }}>
-            -
+            <HiMinusSm className="h-4 w-4" />
           </Button>
-        </>
+        </div>
       )}
     </div>
   )

@@ -17,6 +17,7 @@
 
   table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     font-size: 10px;
     padding: 2px !important;
@@ -28,14 +29,10 @@
   td {
     padding: 2px;
     text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     border: 1px solid #ddd;
     @apply p-1 border border-gray-300 text-xs;
-  }
-
-  .nextui-table-row,
-  .nextui-table-cell {
-    font-size: 0.75rem;
-    padding: 2px;
   }
 
   .highlighted-row {
@@ -56,8 +53,44 @@
 
   .compact-table th,
   .compact-table td {
-    padding: 2px !important;
-    padding-left: 2px !important;
+    padding: 8px !important;
     font-size: 0.75rem;
+  }
+
+  .quick-subscribe-btn {
+    position: fixed;
+    bottom: 45px;
+    left: 15px;
+  }
+
+  .quick-subscribe-input-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .quick-subscribe-input {
+    margin-right: 8px;
+  }
+
+  .quick-subscribe-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navbar-container {
+    margin-bottom: 1rem;
+  }
+
+  .main-container {
+    display: flex;
+    height: calc(100vh - 3rem);
+  }
+
+  .sidebar {
+    width: 250px;
+    background-color: #f4f4f4;
+    padding: 1rem;
+    border-right: 1px solid #ddd;
   }
 }

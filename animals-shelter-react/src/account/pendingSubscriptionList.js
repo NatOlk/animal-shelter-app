@@ -100,7 +100,7 @@ function PendingSubscriptionList({ userProfile }) {
                     <Button
                       variant="contained"
                       color="primary"
-                      size="small"
+                      size="sm"
                       onClick={() => handleApprove(subscriber.email, userProfile.email)}>
                       <HiOutlineUserAdd className="h-4 w-4" />
                     </Button>
@@ -109,7 +109,7 @@ function PendingSubscriptionList({ userProfile }) {
                     <Button
                       variant="contained"
                       color="secondary"
-                      size="small"
+                      size="sm"
                       onClick={() => handleReject(subscriber.email)}>
                       <HiX className="h-4 w-4" />
                     </Button>
