@@ -3,7 +3,8 @@ import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
 import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 import Pagination from '../common/pagination'
-import { Select, SelectSection, SelectItem, Spacer,
+import {
+    Select, SelectSection, SelectItem, Spacer,
     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell
 } from "@nextui-org/react";
 import { Link, Button } from "@nextui-org/react";

@@ -10,7 +10,9 @@ function DeleteVaccination({ id }) {
     });
 
     return (
-        <Button size="sm" onPress={() => deleteVaccination({ variables: { id: id } })}>
+        <Button variant="light"
+            className="p-2 min-w-2 h-auto"
+            onPress={() => deleteVaccination({ variables: { id: id } })}>
             <IoTrashOutline className="h-4 w-4" />
         </Button>
     )

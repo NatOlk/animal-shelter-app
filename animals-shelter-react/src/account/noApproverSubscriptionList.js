@@ -57,7 +57,7 @@ export default function NoApproverSubscriptionList({ userProfile }) {
   return (
     <>
       <Spacer y={10} />
-      <h2>Subscribers without an approver</h2>
+      <h1>Subscribers Without Assigned Approver</h1>
       <Spacer y={10} />
       <Table>
         <TableHeader>
