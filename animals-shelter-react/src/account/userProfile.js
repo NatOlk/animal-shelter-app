@@ -1,16 +1,14 @@
-"use client"
 import React, { useEffect, useState } from 'react';
-import Subscription from './subscription';
 import AllApproverSubscriptionList from './allApproverSubscriptionList';
 import { useQuery } from "@apollo/client";
 import PendingSubscriptionList from './pendingSubscriptionList';
 import NoApproverSubscriptionList from './noApproverSubscriptionList';
+import UserAnimalTopicSubscriptionStatus from './userAnimalTopicSubscriptionStatus';
 import { GET_CURRENT_USER_PROFILE } from '../common/graphqlQueries';
 import { apiFetch } from '../common/api';
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
-import { Progress } from "@nextui-org/progress";
-import { Tooltip, Button, Spacer } from "@nextui-org/react";
+import { Spacer } from "@nextui-org/react";
 import { Tabs, Tab } from "@nextui-org/tabs";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { MdGroupAdd } from "react-icons/md";
@@ -45,125 +43,90 @@ const UserProfile = () => {
     }
   };
 
-  const renderIconBasedOnStatus = () => {
-    if (animalNotifyStatusProfile === null) return <p>Status loading...</p>;
-
-    switch (animalNotifyStatusProfile) {
-      case 'NONE':
-        return (
-          <div>
-            <p>You’re currently unsubscribed from our animal updates.</p>
-            <p>We highly recommend subscribing to stay informed about all the latest happenings at the shelter!</p>
-            <Spacer y={10} />
-            <Subscription />
-          </div>
-        );
-      case 'PENDING':
-        return (
-          <div>
-            <p>
-              Your subscription is pending approval. Please wait for an approval email.
-              Once you receive it, follow the instructions to complete your subscription activation.
-            </p>
-            <Spacer y={10} />
-            <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
-          </div >
-        );
-      case 'ACTIVE':
-        return (
-          <div>
-            <p>You are subscribed to notifications about animals and their vaccinations, removal of animals, and other updates.</p>
-            <p>This will help you stay informed about the activities of our shelter.</p>
-            <p>To unsubscribe from these notifications, please review the list of all subscribers, find your email in the list,
-              and click the Unsubscribe button.</p>
-            <Spacer y={10} />
-            <Tooltip data-position="bottom" content="You are subscribed!">
-              <i className="small material-icons green-text text-darken-1">notifications_active</i>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return <p>Status unknown</p>;
-    }
-  };
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   const { name, email } = data.currentUserProfile;
 
   return (
-    <>
-      <Card className="w-full">
-        <CardHeader className="flex gap-3">
-          <div className="flex flex-col">
-            <h1>User profile</h1>
-          </div>
-        </CardHeader>
-        <Divider />
-        <CardBody>
-          <p>Hello, {name}! How are you? Happy to see you!</p>
-          <div className="flex items-center space-x-2"><MdOutlineAlternateEmail /> {email}</div>
-          <Spacer y={10} />
-          <div className="flex w-full flex-col">
-            <Tabs aria-label="Options" size="lg" variant="bordered"
-              onSelectionChange={updateSubscriptionStatus}>
-              <Tab key="roles" title={
-                <div className="flex items-center space-x-2">
-                  <RiAdminLine /><p>Roles</p>
-                </div>}>
-                <Card className="w-full">
-                  <CardBody>
-                    Admin, Employee
-                    <Spacer y={20} />
-                  </CardBody>
-                </Card>
-              </Tab>
-              <Tab key="subscriptions" title={
-                <div className="flex items-center space-x-2">
-                  <HiOutlineBellAlert /><p>Subscriptions</p>
-                </div>}>
-                <Card className="w-full">
-                  <CardBody>
-                    {renderIconBasedOnStatus()}
-                    <Spacer y={20} />
-                  </CardBody>
-                </Card>
-              </Tab>
-            </Tabs>
-          </div>
-        </CardBody>
-        <CardFooter>
-        </CardFooter>
-      </Card>
-      <Spacer y={20} />
-      <div className="flex w-full flex-col">
-        <Tabs aria-label="Options" size="lg" variant="bordered">
-          <Tab key="pending" title={
-            <div className="flex items-center space-x-2">
-              <MdGroupAdd /><p>Pending subscribers</p>
-            </div>}>
-            <Card>
-              <CardBody>
-                <PendingSubscriptionList userProfile={data.currentUserProfile} />
-                <Divider className="my-4" />
-                <NoApproverSubscriptionList userProfile={data.currentUserProfile} />
-              </CardBody>
-            </Card>
-          </Tab>
-          <Tab key="all" title={
-            <div className="flex items-center space-x-2">
-              <TbUsersGroup /><p>All subscribers</p>
-            </div>}>
-            <Card>
-              <CardBody>
-                <AllApproverSubscriptionList userProfile={data.currentUserProfile} />
-              </CardBody>
-            </Card>
-          </Tab>
-        </Tabs>
+    <div className="containerProfile">
+      <div className="profileCard">
+        <Card className="w-full">
+          <CardHeader className="flex gap-3">
+            <div className="flex flex-col">
+              <h1>User profile</h1>
+            </div>
+          </CardHeader>
+          <Divider />
+          <CardBody>
+            <p>Hello, {name}! How are you? Happy to see you!</p>
+            <div className="flex items-center space-x-2"><MdOutlineAlternateEmail /> {email}</div>
+            <Spacer y={10} />
+            <div className="flex w-full flex-col">
+              <Tabs aria-label="RolesSubscriptions" size="lg" variant="bordered"
+                onSelectionChange={updateSubscriptionStatus}>
+                <Tab key="roles" title={
+                  <div className="flex items-center space-x-2">
+                    <RiAdminLine /><p>Roles</p>
+                  </div>}>
+                  <div className="profileCardTabContent">
+                    <Card className="w-full">
+                      <CardBody>
+                        Admin, Employee
+                        <Spacer y={20} />
+                      </CardBody>
+                    </Card>
+                  </div>
+                </Tab>
+                <Tab key="subscriptions" title={
+                  <div className="flex items-center space-x-2">
+                    <HiOutlineBellAlert /><p>Subscriptions</p>
+                  </div>}>
+                  <div className="profileCardTabContent">
+                    <Card className="w-full">
+                      <CardBody>
+                        <UserAnimalTopicSubscriptionStatus animalNotifyStatusProfile={animalNotifyStatusProfile} />
+                        <Spacer y={20} />
+                      </CardBody>
+                    </Card>
+                  </div>
+                </Tab>
+              </Tabs>
+            </div>
+          </CardBody>
+          <CardFooter>
+          </CardFooter>
+        </Card>
       </div>
-    </>
+      <div className="subscriptionsTab">
+        <div className="flex w-full flex-col">
+          <Tabs aria-label="Subscriptions" size="lg" variant="bordered">
+            <Tab key="pending" title={
+              <div className="flex items-center space-x-2">
+                <MdGroupAdd /><p>Pending subscribers</p>
+              </div>}>
+              <Card>
+                <CardBody>
+                  <PendingSubscriptionList userProfile={data.currentUserProfile} />
+                  <Divider className="my-4" />
+                  <NoApproverSubscriptionList userProfile={data.currentUserProfile} />
+                </CardBody>
+              </Card>
+            </Tab>
+            <Tab key="all" title={
+              <div className="flex items-center space-x-2">
+                <TbUsersGroup /><p>All subscribers</p>
+              </div>}>
+              <Card>
+                <CardBody>
+                  <AllApproverSubscriptionList userProfile={data.currentUserProfile} />
+                </CardBody>
+              </Card>
+            </Tab>
+          </Tabs>
+        </div>
+      </div>
+    </div>
   );
 };
 
