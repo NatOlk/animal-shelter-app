@@ -15,8 +15,7 @@ const Subscription = () => {
         }
     }, [user.email]);
 
-    const handleSubscribe = async (e) => {
-        e.preventDefault();
+    const handleSubscribe = async () => {
         setLoading(true);
         if (!email.trim()) return;
 

@@ -16,12 +16,16 @@ import { parseDate, getLocalTimeZone } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { IoIosAddCircleOutline } from "react-icons/io"
 import { BiInjection } from "react-icons/bi";
+import { useAsyncList } from "@react-stately/data";
 
 function AnimalsList() {
-    const perPage = 10;
-    const [currentPage, setCurrentPage] = useState(0);
-    const [selectedSpecies, setSelectedSpecies] = useState("all");
+
     const [birthDate, setBirthDate] = React.useState(parseDate("2024-04-16"));
+    const [isLoading, setIsLoading] = useState(true);
+    const perPage = 8;
+    const [currentPage, setCurrentPage] = useState(0);
+
+    const config = useConfig();
 
     const formatter = new Intl.DateTimeFormat("en-US", {
         day: "2-digit",
@@ -30,7 +34,38 @@ function AnimalsList() {
     });
 
     const { loading, error, data, refetch } = useQuery(ANIMALS_QUERY);
-    const config = useConfig();
+
+    const list = useAsyncList({
+        async load() {
+            if (loading) {
+                return { items: [] };
+            }
+
+            if (error) {
+                console.error("GraphQL Error:", error.message);
+                return { items: [] };
+            }
+
+            return {
+                items: data?.allAnimals || [],
+            };
+        },
+        async sort({ items, sortDescriptor }) {
+            return {
+                items: items.sort((a, b) => {
+                    let first = a[sortDescriptor.column];
+                    let second = b[sortDescriptor.column];
+                    let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
+
+                    if (sortDescriptor.direction === "descending") {
+                        cmp *= -1;
+                    }
+
+                    return cmp;
+                }),
+            };
+        },
+    });
 
     const initialValues = {
         name: "",
@@ -43,7 +78,6 @@ function AnimalsList() {
     };
 
     const [animal, setAnimal] = useState(initialValues);
-    const [validationError, setValidationError] = useState(null);
     const [addAnimal] = useMutation(ADD_ANIMAL, {
         update(cache, { data: { addAnimal } }) {
             try {
@@ -57,6 +91,7 @@ function AnimalsList() {
             }
         }
     });
+
     useEffect(() => {
         refetch();
     }, [refetch]);
@@ -64,19 +99,6 @@ function AnimalsList() {
     if (config.config == null) return <p>Loading...</p>;
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error :(</p>;
-
-    const allAnimals = data.allAnimals;
-
-    const filteredAnimals =
-        selectedSpecies === "all"
-            ? allAnimals
-            : allAnimals.filter((animal) => animal.species === selectedSpecies);
-
-    const pageCount = Math.ceil(filteredAnimals.length / perPage);
-
-    const paginatedAnimals = filteredAnimals.slice(
-        currentPage * perPage,
-        (currentPage + 1) * perPage);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -87,27 +109,6 @@ function AnimalsList() {
     };
 
     const handleAddAnimal = () => {
-        if (!animal.name) {
-            setValidationError('name');
-            return;
-        }
-        if (!animal.species) {
-            setValidationError('species');
-            return;
-        }
-        if (!animal.implantChipId) {
-            setValidationError('implantChipId');
-            return;
-        }
-        if (!animal.primaryColor) {
-            setValidationError('primaryColor');
-            return;
-        }
-        if (!animal.gender) {
-            setValidationError('gender');
-            return;
-        }
-
         addAnimal({
             variables: {
                 name: animal.name,
@@ -130,49 +131,32 @@ function AnimalsList() {
         setAnimal(initialValues);
     };
 
+    const pageCount = Math.ceil(list.items.length / perPage);
+
+    const paginatedAnimals = list.items.slice(
+        currentPage * perPage,
+        (currentPage + 1) * perPage);
+
     return (
         <div>
             <div id="error" className="errorAlarm"></div>
-
-            <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-                <label htmlFor="speciesFilter" style={{ alignSelf: "center" }}>
-                    Filter by species:
-                </label>
-                <Select
-                    id="speciesFilter"
-                    value={selectedSpecies}
-                    onValueChange={(value) => {
-                        setSelectedSpecies(value);
-                        setCurrentPage(0);
-                    }}
-                    aria-label="Filter by species">
-                    <SelectSection title="Species">
-                        <SelectItem key="all" value="all">
-                            All
-                        </SelectItem>
-                        {config.config.animals.map(species => (
-                            <SelectItem key={species}>
-                                {species}
-                            </SelectItem>
-                        ))}
-                    </SelectSection>
-                </Select>
-            </div>
-            <Table className="compact-table">
+            <Table className="compact-table"
+                sortDescriptor={list.sortDescriptor}
+                onSortChange={list.sort}>
                 <TableHeader>
                     <TableColumn>#</TableColumn>
-                    <TableColumn>Name</TableColumn>
-                    <TableColumn>Species</TableColumn>
-                    <TableColumn>Primary color</TableColumn>
-                    <TableColumn>Breed</TableColumn>
+                    <TableColumn key="name" allowsSorting>Name</TableColumn>
+                    <TableColumn key="species" allowsSorting>Species</TableColumn>
+                    <TableColumn key="primaryColor" allowsSorting>Primary color</TableColumn>
+                    <TableColumn key="bread" allowsSorting>Breed</TableColumn>
                     <TableColumn>Implant chip id</TableColumn>
-                    <TableColumn>Gender</TableColumn>
-                    <TableColumn>Birth date</TableColumn>
-                    <TableColumn>Pattern</TableColumn>
+                    <TableColumn key="gender" allowsSorting>Gender</TableColumn>
+                    <TableColumn key="birthDate">Birth date</TableColumn>
+                    <TableColumn key="pattern" allowsSorting>Pattern</TableColumn>
                     <TableColumn>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
-                    <TableRow key="0" className="highlighted-row">
+                    <TableRow key="0" className="add-item-row highlighted-row">
                         <TableCell></TableCell>
                         <TableCell>
                             <Input
@@ -216,6 +200,7 @@ function AnimalsList() {
                             <Input
                                 name="implantChipId" value={animal.implantChipId}
                                 isRequired
+                                className="w-full md:w-36"
                                 onChange={handleInputChange} />
                         </TableCell>
                         <TableCell>

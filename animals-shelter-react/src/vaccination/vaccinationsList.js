@@ -160,7 +160,7 @@ function VaccinationsList() {
                     <TableColumn>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
-                    <TableRow className="highlighted-row">
+                    <TableRow className="add-item-row highlighted-row">
                         <TableCell></TableCell>
                         <TableCell>
                             <Select
@@ -192,8 +192,9 @@ function VaccinationsList() {
                         </TableCell>
                         <TableCell>
                             <Button onPress={handleAddVaccination}
-                                color="default" size="sm">
-                                <IoIosAddCircleOutline className="h-4 w-4" />
+                                color="default" variant="light"
+                                className="p-2 min-w-2 h-auto">
+                                <IoIosAddCircleOutline />
                             </Button>
                         </TableCell>
                     </TableRow>

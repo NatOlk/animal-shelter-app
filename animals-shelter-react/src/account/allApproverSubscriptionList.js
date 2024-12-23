@@ -51,8 +51,8 @@ export default function AllApproverSubscriptionList({ userProfile }) {
           <TableColumn>Email</TableColumn>
           <TableColumn>Approver</TableColumn>
           <TableColumn>Topic</TableColumn>
-          <TableColumn>Accepted</TableColumn>
-          <TableColumn>Actions</TableColumn>
+          <TableColumn className="w-full md:w-16">Accepted</TableColumn>
+          <TableColumn className="w-full md:w-16">Actions</TableColumn>
         </TableHeader>
         {allSubscribers.length > 0 ? (
           <TableBody>

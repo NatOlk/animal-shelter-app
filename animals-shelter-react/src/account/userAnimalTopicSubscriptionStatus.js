@@ -3,11 +3,12 @@ import Subscription from './subscription';
 import { Progress } from '@nextui-org/progress';
 import { Spacer } from '@nextui-org/react';
 import { Tooltip } from '@nextui-org/react';
+import { TbBellRinging } from "react-icons/tb";
 
-const UserAnimalTopicSubscriptionStatus = ({ animalNotifyStatusProfile }) => {
-  if (animalNotifyStatusProfile === null) return <p>Status loading...</p>;
+const UserAnimalTopicSubscriptionStatus = ({ status }) => {
+  if (status === null) return <p>Status loading...</p>;
 
-  switch (animalNotifyStatusProfile) {
+  switch (status) {
     case 'NONE':
       return (
         <div>
@@ -35,7 +36,7 @@ const UserAnimalTopicSubscriptionStatus = ({ animalNotifyStatusProfile }) => {
             and click the Unsubscribe button.</p>
           <Spacer y={10} />
           <Tooltip data-position="bottom" content="You are subscribed!">
-            <i className="small material-icons green-text text-darken-1">notifications_active</i>
+            <TbBellRinging size={32}/>
           </Tooltip>
         </div>
       );

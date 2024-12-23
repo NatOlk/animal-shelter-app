@@ -39,6 +39,12 @@
     background-color: #e0f7fa;
   }
 
+  .add-item-row input,
+  .add-item-row select,
+  .add-item-row button {
+    font-size: 10px !important;
+  }
+
   .table-row:hover {
     background-color: #f4fdfe;
   }
@@ -102,16 +108,22 @@
 
   .profileCard {
     flex: 1;
-    padding: 20px;
-    min-height: 400px;
+    padding: 0 20px;
+    min-height: 150px;
     border-top: 1px solid #ddd;
   }
 
   .profileCardTabContent {
-    min-height: 230px;
+    min-height: 150px;
   }
 
   .subscriptionsTab {
     padding: 20px;
+  }
+
+  .empty-table-body {
+    height: 20px !important;
+    text-align: center;
+    vertical-align: middle;
   }
 }
