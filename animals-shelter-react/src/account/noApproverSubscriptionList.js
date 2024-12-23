@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import { apiFetch } from '../common/api';
-import { Tooltip, Button, Spacer } from "@nextui-org/react";
+import { Tooltip, Button, Spacer, Link } from "@nextui-org/react";
+import { TfiReload } from "react-icons/tfi";
+import { HiX } from "react-icons/hi";
+import { HiOutlineUserAdd } from "react-icons/hi";
 
 export default function NoApproverSubscriptionList({ userProfile }) {
-  const [unapprovedSubscribers, setUnapprovedSubscribers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [unapprovedSubscribers, setUnapprovedSubscribers] = useState([]); // Данные таблицы
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchSubscribers = async () => {
-      try {
-        const unapprovedData = await apiFetch(`/animal-notify-pending-no-approver-subscribers`);
-        setUnapprovedSubscribers(unapprovedData);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSubscribers();
-  }, []);
+  const fetchSubscribers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const unapprovedData = await apiFetch(`/animal-notify-pending-no-approver-subscribers`);
+      setUnapprovedSubscribers(unapprovedData);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleApprove = async (email) => {
     try {
@@ -51,25 +52,29 @@ export default function NoApproverSubscriptionList({ userProfile }) {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
   return (
     <>
-      <Spacer y={10} />
-      <h1>Subscribers Without Assigned Approver</h1>
-      <Spacer y={10} />
+      <Spacer y={5} />
+      <Button color="default"
+        variant="faded"
+        onPress={fetchSubscribers}>
+        <div className="flex items-center gap-x-2">
+          <span>Load subscribes without assigned approver</span><TfiReload size={20} />
+        </div>
+      </Button>
+      <Spacer y={5} />
+      {loading && <div>Loading...</div>}
+      {error && <div style={{ color: "red" }}>Error: {error.message}</div>}
       <Table>
         <TableHeader>
           <TableColumn>#</TableColumn>
           <TableColumn>Email</TableColumn>
           <TableColumn>Approver</TableColumn>
           <TableColumn>Topic</TableColumn>
-          <TableColumn>Accepted</TableColumn>
-          <TableColumn>Actions</TableColumn>
+          <TableColumn className="w-full md:w-16">Accepted</TableColumn>
+          <TableColumn className="w-full md:w-16">Actions</TableColumn>
         </TableHeader>
         {unapprovedSubscribers.length > 0 ? (
-
           <TableBody>
             {unapprovedSubscribers.map((subscriber) => (
               <TableRow key={subscriber.id}>
@@ -83,8 +88,8 @@ export default function NoApproverSubscriptionList({ userProfile }) {
                     <Button
                       color="default" variant="light"
                       className="p-2 min-w-2 h-auto"
-                      onPress={() => handleApprove(subscriber.email)}>
-                      Approve
+                      onPress={() => handleApprove(subscriber.email, userProfile.email)}>
+                      <HiOutlineUserAdd />
                     </Button>
                   </Tooltip>
                   <Tooltip content="Reject">
@@ -92,14 +97,13 @@ export default function NoApproverSubscriptionList({ userProfile }) {
                       color="default" variant="light"
                       className="p-2 min-w-2 h-auto"
                       onPress={() => handleReject(subscriber.email)}>
-                      Reject
+                      <HiX />
                     </Button>
                   </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
-
         ) : (
           <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
         )}

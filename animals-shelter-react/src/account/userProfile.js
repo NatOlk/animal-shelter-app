@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import AllApproverSubscriptionList from './allApproverSubscriptionList';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from "@apollo/client";
+import AllApproverSubscriptionList from './allApproverSubscriptionList';
 import PendingSubscriptionList from './pendingSubscriptionList';
 import NoApproverSubscriptionList from './noApproverSubscriptionList';
 import UserAnimalTopicSubscriptionStatus from './userAnimalTopicSubscriptionStatus';
@@ -10,16 +10,16 @@ import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
 import { Spacer } from "@nextui-org/react";
 import { Tabs, Tab } from "@nextui-org/tabs";
-import { MdOutlineAlternateEmail } from "react-icons/md";
-import { MdGroupAdd } from "react-icons/md";
+import { MdOutlineAlternateEmail, MdGroupAdd } from "react-icons/md";
 import { TbUsersGroup } from "react-icons/tb";
 import { RiAdminLine } from "react-icons/ri";
 import { HiOutlineBellAlert } from "react-icons/hi2";
 
 const UserProfile = () => {
   const { loading, error, data } = useQuery(GET_CURRENT_USER_PROFILE, {
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
+
   const [isNoApproverOpen, setIsNoApproverOpen] = useState(false);
   const [isAllOpen, setIsAllOpen] = useState(false);
   const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState(null);
@@ -36,7 +36,6 @@ const UserProfile = () => {
         method: 'POST',
         body: { approver: data.currentUserProfile.email },
       });
-
       setAnimalNotifyStatusProfile(status || "NONE");
     } catch (err) {
       console.error("Error updating subscription status:", err);
@@ -54,7 +53,7 @@ const UserProfile = () => {
         <Card className="w-full">
           <CardHeader className="flex gap-3">
             <div className="flex flex-col">
-              <h1>User profile</h1>
+              <h1>User Profile</h1>
             </div>
           </CardHeader>
           <Divider />
@@ -70,12 +69,9 @@ const UserProfile = () => {
                     <RiAdminLine /><p>Roles</p>
                   </div>}>
                   <div className="profileCardTabContent">
-                    <Card className="w-full">
-                      <CardBody>
-                        Admin, Employee
-                        <Spacer y={20} />
-                      </CardBody>
-                    </Card>
+                    <Spacer y={5} />
+                    Your current roles: Admin, Employee
+                    <Spacer y={20} />
                   </div>
                 </Tab>
                 <Tab key="subscriptions" title={
@@ -83,12 +79,9 @@ const UserProfile = () => {
                     <HiOutlineBellAlert /><p>Subscriptions</p>
                   </div>}>
                   <div className="profileCardTabContent">
-                    <Card className="w-full">
-                      <CardBody>
-                        <UserAnimalTopicSubscriptionStatus animalNotifyStatusProfile={animalNotifyStatusProfile} />
-                        <Spacer y={20} />
-                      </CardBody>
-                    </Card>
+                    <Spacer y={5} />
+                    <UserAnimalTopicSubscriptionStatus status={animalNotifyStatusProfile} />
+                    <Spacer y={5} />
                   </div>
                 </Tab>
               </Tabs>
@@ -99,29 +92,21 @@ const UserProfile = () => {
         </Card>
       </div>
       <div className="subscriptionsTab">
-        <div className="flex w-full flex-col">
+        <div className="flex flex-col">
           <Tabs aria-label="Subscriptions" size="lg" variant="bordered">
             <Tab key="pending" title={
               <div className="flex items-center space-x-2">
                 <MdGroupAdd /><p>Pending subscribers</p>
               </div>}>
-              <Card>
-                <CardBody>
-                  <PendingSubscriptionList userProfile={data.currentUserProfile} />
-                  <Divider className="my-4" />
-                  <NoApproverSubscriptionList userProfile={data.currentUserProfile} />
-                </CardBody>
-              </Card>
+              <PendingSubscriptionList userProfile={data.currentUserProfile} />
+              <Divider className="my-4" />
+              <NoApproverSubscriptionList userProfile={data.currentUserProfile} />
             </Tab>
             <Tab key="all" title={
               <div className="flex items-center space-x-2">
                 <TbUsersGroup /><p>All subscribers</p>
               </div>}>
-              <Card>
-                <CardBody>
-                  <AllApproverSubscriptionList userProfile={data.currentUserProfile} />
-                </CardBody>
-              </Card>
+              <AllApproverSubscriptionList userProfile={data.currentUserProfile} />
             </Tab>
           </Tabs>
         </div>

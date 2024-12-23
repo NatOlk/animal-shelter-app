@@ -14,15 +14,15 @@ function convertToISO(dateString) {
 }
 
 const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
-  console.log('Value = ' + value);
+
   const [isEditing, setIsEditing] = useState(false);
 
   const [oldValue, setOldValue] = useState("");
   const [dat, setDat] = useState(isDate && value ? new Date(value) : new Date());
-  console.log('Dat = ' + dat);
+
 
   const [birthDate, setBirthDate] = useState(parseDate(dat.toISOString().split('T')[0]));
-  console.log('BD = ' + birthDate);
+
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -31,7 +31,7 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
       month: "2-digit",
       year: "numeric",
     });
-    console.log('String ' + dateString + ';new date ' + date + '; date ' + d)
+
     return d;
   };
 

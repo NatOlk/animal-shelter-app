@@ -68,15 +68,14 @@ function PendingSubscriptionList({ userProfile }) {
 
   return (
     <>
-      <Spacer y={10} />
       <Table>
         <TableHeader>
           <TableColumn>#</TableColumn>
           <TableColumn>Email</TableColumn>
           <TableColumn>Approver</TableColumn>
           <TableColumn>Topic</TableColumn>
-          <TableColumn>Accepted</TableColumn>
-          <TableColumn>Actions</TableColumn>
+          <TableColumn className="w-full md:w-16">Accepted</TableColumn>
+          <TableColumn className="w-full md:w-16">Actions</TableColumn>
         </TableHeader>
         {pendingSubscribers.length > 0 ? (
           <TableBody>
