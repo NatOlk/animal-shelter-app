@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
-    Select, SelectSection, SelectItem, Spacer,
+    Select, SelectItem, Spacer,
     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-    Button, Input
+    Button, Input, Pagination, Progress
 } from "@nextui-org/react";
 import { useQuery, useMutation } from "@apollo/client";
 import DeleteAnimal from './deleteAnimal';
 import EditableAnimalField from './editableAnimalField';
 import { ANIMALS_QUERY, ADD_ANIMAL } from "../common/graphqlQueries.js";
-import Pagination from "../common/pagination";
 import { useConfig } from "../common/configContext";
 import { Link } from 'react-router-dom';
 import { DatePicker } from "@nextui-org/date-picker";
@@ -21,7 +20,6 @@ import { useAsyncList } from "@react-stately/data";
 function AnimalsList() {
 
     const [birthDate, setBirthDate] = React.useState(parseDate("2024-04-16"));
-    const [isLoading, setIsLoading] = useState(true);
     const perPage = 8;
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -67,6 +65,13 @@ function AnimalsList() {
         },
     });
 
+    useEffect(() => {
+        if (!loading && !error) {
+
+            list.reload();
+        }
+    }, [loading, error, data]);
+
     const initialValues = {
         name: "",
         species: "Cat",
@@ -96,8 +101,13 @@ function AnimalsList() {
         refetch();
     }, [refetch]);
 
-    if (config.config == null) return <p>Loading...</p>;
-    if (loading) return <p>Loading...</p>;
+    if (config.config == null) return <p>Loading configs...</p>;
+    if (loading) return (
+        <div>
+            <p> Loading...</p>
+            <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
+        </div>
+    );
     if (error) return <p>Error :(</p>;
 
     const handleInputChange = (e) => {
@@ -141,6 +151,7 @@ function AnimalsList() {
         <div>
             <div id="error" className="errorAlarm"></div>
             <Table className="compact-table"
+                isLoading={list.isLoading}
                 sortDescriptor={list.sortDescriptor}
                 onSortChange={list.sort}>
                 <TableHeader>
@@ -162,6 +173,7 @@ function AnimalsList() {
                             <Input
                                 name="name" value={animal.name}
                                 className="w-full md:w-32"
+                                aria-label="Animal Name"
                                 onChange={handleInputChange}
                                 isRequired />
                         </TableCell>
@@ -172,6 +184,7 @@ function AnimalsList() {
                                 className="w-full md:w-28"
                                 variant="bordered"
                                 isRequired
+                                aria-label="Animal Species"
                                 onChange={handleInputChange}>
                                 {config.config.animals.map(animal => (
                                     <SelectItem key={animal}>{animal}</SelectItem>
@@ -184,6 +197,8 @@ function AnimalsList() {
                                 className="w-full md:w-28"
                                 defaultSelectedKeys={["White"]}
                                 isRequired
+                                aria-label="Animal Primary Color"
+                                defaultValue="White"
                                 onChange={handleInputChange}>
                                 {config.config.colors.map(color => (
                                     <SelectItem key={color}>{color}</SelectItem>
@@ -194,14 +209,16 @@ function AnimalsList() {
                             <Input
                                 name="breed" value={animal.breed}
                                 onChange={handleInputChange}
-                                className="w-full md:w-24" />
+                                className="w-full md:w-24"
+                                aria-label="Animal Breed" />
                         </TableCell>
                         <TableCell>
                             <Input
                                 name="implantChipId" value={animal.implantChipId}
                                 isRequired
                                 className="w-full md:w-36"
-                                onChange={handleInputChange} />
+                                onChange={handleInputChange}
+                                aria-label="Animal Implant Chip" />
                         </TableCell>
                         <TableCell>
                             <Select
@@ -209,6 +226,7 @@ function AnimalsList() {
                                 defaultSelectedKeys={["F"]}
                                 className="w-full md:w-16"
                                 isRequired
+                                aria-label="Animal Gender"
                                 onChange={handleInputChange}>
                                 {config.config.genders.map(gender => (
                                     <SelectItem key={gender}>{gender}</SelectItem>
@@ -219,6 +237,7 @@ function AnimalsList() {
                             <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
                                 <DatePicker isRequired className="max-w-[284px]"
                                     name="birthDate" value={birthDate}
+                                    aria-label="Animal Birthday"
                                     onChange={setBirthDate} />
                             </div>
                         </TableCell>
@@ -226,6 +245,7 @@ function AnimalsList() {
                             <Input
                                 name="pattern" value={animal.pattern}
                                 className="w-full md:w-24"
+                                aria-label="Animal Pattern"
                                 onChange={handleInputChange} />
                         </TableCell>
                         <TableCell>
@@ -290,10 +310,13 @@ function AnimalsList() {
             </Table>
             <Spacer y={1} />
             <Pagination
-                currentPage={currentPage}
-                pageCount={pageCount}
-                onPageChange={setCurrentPage}
-            />
+                total={pageCount}
+                page={currentPage + 1}
+                onChange={(page) => setCurrentPage(page - 1)}
+                showControls
+                loop
+                size="md"
+                showShadow />
         </div>
     );
 };

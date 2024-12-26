@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from "@apollo/client";
-import { useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+import { useAsyncList } from "@react-stately/data";
+import {
+    Select, SelectItem, Spinner,
+    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+    Button, Input, Pagination, Progress
+} from "@nextui-org/react";
 import DeleteVaccination from "./deleteVaccination";
 import EditableVaccinationField from './editableVaccinationField';
 import { useLocation, Link } from 'react-router-dom';
 import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries.js';
-import Pagination from '../common/pagination'
-import {
-    Select, SelectSection, SelectItem, Spacer,
-    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-    Button, Input
-} from "@nextui-org/react";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate, getLocalTimeZone } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
@@ -19,11 +18,10 @@ import { useConfig } from '../common/configContext';
 import { IoIosAddCircleOutline } from "react-icons/io"
 
 function VaccinationsList() {
-    const perPage = 10;
+    const perPage = 8;
     const [currentPage, setCurrentPage] = useState(0);
-
     const location = useLocation();
-    const { animalId, name, species } = location.state;
+    const { animalId } = location.state;
     const [birthDate, setBirthDate] = React.useState(parseDate("2024-04-16"));
 
     const formatter = new Intl.DateTimeFormat("en-US", {
@@ -31,14 +29,15 @@ function VaccinationsList() {
         month: "2-digit",
         year: "numeric",
     });
-    const [vaccination, setVaccination] = useState({
+    const initialValues = {
         vaccine: 'Rabies',
         batch: '',
         vaccinationTime: new Date().toISOString().split('T')[0],
         comments: 'Add new vaccine',
         email: ''
-    });
-    const [validationError, setError] = useState(null);
+    };
+
+    const [vaccination, setVaccination] = useState(initialValues);
     const { isAuthenticated, user } = useAuth();
 
     useEffect(() => {
@@ -63,13 +62,7 @@ function VaccinationsList() {
     });
 
     const config = useConfig();
-    if (!config) {
-        return (
-            <tr>
-                <td colSpan="5">Loading animals configs...</td>
-            </tr>
-        );
-    }
+    if (config.config == null) return <p>Loading configs...</p>;
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -80,19 +73,6 @@ function VaccinationsList() {
     };
 
     const handleAddVaccination = () => {
-        if (!vaccination.vaccine) {
-            setError('vaccine');
-            return;
-        }
-        if (!vaccination.batch) {
-            setError('batch');
-            return;
-        }
-        if (!vaccination.vaccinationTime) {
-            setError('vaccinationTime');
-            return;
-        }
-
         addVaccination({
             variables: {
                 animalId: animalId,
@@ -104,18 +84,8 @@ function VaccinationsList() {
             }
         }).catch(error => { showError({ error: error }) });
 
-        clearFields();
+        setVaccination(initialValues);
     }
-
-    const clearFields = () => {
-        setVaccination({
-            vaccine: 'Rabies',
-            batch: '',
-            vaccinationTime: new Date().toISOString().split('T')[0],
-            comments: 'Add new vaccine',
-            email: user.email
-        });
-    };
 
     if (!animalId) {
         return (
@@ -131,10 +101,50 @@ function VaccinationsList() {
         fetchPolicy: 'network-only',
     });
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error :(</p>;
+    const list = useAsyncList({
+        async load() {
+            if (loading) {
+                return { items: [] };
+            }
+            if (error) {
+                console.error("GraphQL Error:", error.message);
+                return { items: [] };
+            }
+            return {
+                items: data?.vaccinationByAnimalId || [],
+            };
+        },
+        async sort({ items, sortDescriptor }) {
+            return {
+                items: items.sort((a, b) => {
+                    let first = a[sortDescriptor.column];
+                    let second = b[sortDescriptor.column];
+                    let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
 
-    const pageCount = Math.ceil(data.vaccinationByAnimalId.length / perPage);
+                    if (sortDescriptor.direction === "descending") {
+                        cmp *= -1;
+                    }
+
+                    return cmp;
+                }),
+            };
+        },
+    });
+
+    useEffect(() => {
+        if (!loading && !error) {
+
+            list.reload();
+        }
+    }, [loading, error, data]);
+
+    if (loading) return (
+        <div>
+            <p> Loading...</p>
+            <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
+        </div>
+    );
+    if (error) return <p>Error :(</p>;
 
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -142,21 +152,26 @@ function VaccinationsList() {
         return date.toISOString().slice(0, 10);
     };
 
-    const vaccinationsList = data.vaccinationByAnimalId
+    const vaccinationsList = list.items
         .slice(currentPage * perPage, (currentPage + 1) * perPage);
+
+    const pageCount = Math.ceil(list.items.length / perPage);
 
     return (
         <div>
             <div id="error" className="errorAlarm"></div>
             <Link to="/">Back to Animals</Link>
-            <Table className="compact-table">
+            <Table className="compact-table"
+                isLoading={list.isLoading}
+                sortDescriptor={list.sortDescriptor}
+                onSortChange={list.sort}>
                 <TableHeader>
                     <TableColumn>#</TableColumn>
-                    <TableColumn>Vaccine</TableColumn>
-                    <TableColumn>Batch</TableColumn>
-                    <TableColumn>Vaccination time</TableColumn>
+                    <TableColumn key="vaccine" allowsSorting>Vaccine</TableColumn>
+                    <TableColumn key="batch" allowsSorting>Batch</TableColumn>
+                    <TableColumn key="vaccinationTime" allowsSorting>Vaccination time</TableColumn>
                     <TableColumn>Comments</TableColumn>
-                    <TableColumn>Email</TableColumn>
+                    <TableColumn key="email" allowsSorting>Email</TableColumn>
                     <TableColumn>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
@@ -166,6 +181,7 @@ function VaccinationsList() {
                             <Select
                                 name="vaccine" value={vaccination.vaccine}
                                 className="w-full md:w-32"
+                                aria-label="Vaccine"
                                 onChange={handleInputChange}>
                                 {config.config.vaccines.map(vaccine => (
                                     <SelectItem key={vaccine}>{vaccine}</SelectItem>
@@ -175,20 +191,25 @@ function VaccinationsList() {
                         <TableCell>
                             <Input name="batch"
                                 value={vaccination.batch}
-                                onChange={handleInputChange}
-                                placeholder={validationError === 'batch' ? 'batch is mandatory' : ''} />
+                                aria-label="Batch"
+                                isRequired
+                                onChange={handleInputChange} />
                         </TableCell>
                         <TableCell>
                             <DatePicker isRequired className="max-w-[284px]"
                                 name="birthDate" value={birthDate}
+                                aria-label="Vaccine admission date"
                                 onChange={setBirthDate} />
                         </TableCell>
                         <TableCell>
                             <Input name="comments" value={vaccination.comments}
-                                onChange={handleInputChange} />
+                                onChange={handleInputChange}
+                                aria-label="Comments" />
                         </TableCell>
                         <TableCell>
-                            <Input name="email" value={vaccination.email} onChange={handleInputChange} />
+                            <Input name="email" value={vaccination.email}
+                                aria-label="Email"
+                                onChange={handleInputChange} />
                         </TableCell>
                         <TableCell>
                             <Button onPress={handleAddVaccination}
@@ -235,9 +256,13 @@ function VaccinationsList() {
                 </TableBody>
             </Table>
             <Pagination
-                currentPage={currentPage}
-                pageCount={pageCount}
-                onPageChange={setCurrentPage} />
+                total={pageCount}
+                page={currentPage + 1}
+                onChange={(page) => setCurrentPage(page - 1)}
+                showControls
+                loop
+                size="md"
+                showShadow />
         </div>
     );
 }

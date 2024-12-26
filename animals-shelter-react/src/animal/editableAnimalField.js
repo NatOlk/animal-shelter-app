@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { Input, Button, Select, SelectSection, SelectItem } from "@nextui-org/react";
-import { Dropdown, DropdownMenu, DropdownItem } from "@nextui-org/dropdown";
 import { ANIMALS_QUERY, UPDATE_ANIMAL } from "../common/graphqlQueries.js";
 import { DatePicker } from "@nextui-org/date-picker";
 import { parseDate, getLocalTimeZone } from "@internationalized/date";
@@ -20,9 +19,7 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
   const [oldValue, setOldValue] = useState("");
   const [dat, setDat] = useState(isDate && value ? new Date(value) : new Date());
 
-
   const [birthDate, setBirthDate] = useState(parseDate(dat.toISOString().split('T')[0]));
-
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -65,6 +62,7 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
             value={fieldValue}
             defaultSelectedKeys={[fieldValue]}
             isRequired
+            aria-label="Editable"
             className="w-full md:w-28 editable-cell-field"
             onChange={(e) => setFieldValue(e.target.value)}>
             {values.map(v => (
