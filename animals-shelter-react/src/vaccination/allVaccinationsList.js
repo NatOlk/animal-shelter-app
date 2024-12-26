@@ -1,29 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
 import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
-import Pagination from '../common/pagination'
 import {
-    Select, SelectSection, SelectItem, Spacer,
-    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell
+    Pagination, Progress, Spinner, Table, TableHeader,
+    TableColumn, TableBody, TableRow, TableCell
 } from "@nextui-org/react";
-import { Link, Button } from "@nextui-org/react";
+import { useAsyncList } from "@react-stately/data";
 
 function AllVaccinationsList() {
     const perPage = 10;
     const [currentPage, setCurrentPage] = useState(0);
-
     const { loading, error, data } = useQuery(ALL_VACCINATIONS_QUERY);
 
-    if (loading) {
-        return <p>Loading...</p>;
-    }
+    const list = useAsyncList({
+        async load() {
+            if (loading) {
+                return { items: [] };
+            }
+            if (error) {
+                console.error("GraphQL Error:", error.message);
+                return { items: [] };
+            }
+            return {
+                items: data?.allVaccinations || [],
+            };
+        },
+        async sort({ items, sortDescriptor }) {
+            return {
+                items: items.sort((a, b) => {
+                    let first = a[sortDescriptor.column];
+                    let second = b[sortDescriptor.column];
+                    let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
+
+                    if (sortDescriptor.direction === "descending") {
+                        cmp *= -1;
+                    }
+
+                    return cmp;
+                }),
+            };
+        },
+    });
+
+    useEffect(() => {
+        if (!loading && !error) {
+
+            list.reload();
+        }
+    }, [loading, error, data]);
+
+    if (loading) return (
+        <div>
+            <p> Loading...</p>
+            <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
+        </div>
+    );
 
     if (error) {
         return <p>Error: {error.message}</p>;
     }
-
-    const pageCount = Math.ceil(data.allVaccinations.length / perPage);
 
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -31,22 +67,26 @@ function AllVaccinationsList() {
         return date.toISOString().slice(0, 10);
     };
 
-    const vaccinationsList = data.allVaccinations
+    const pageCount = Math.ceil(list.items.length / perPage);
+    const vaccinationsList = list.items
         .slice(currentPage * perPage, (currentPage + 1) * perPage);
 
     return (
         <div>
             <div id="error" className="errorAlarm"></div>
-            <Table className="highlight responsive-table">
+            <Table className="highlight responsive-table"
+                isLoading={list.isLoading}
+                sortDescriptor={list.sortDescriptor}
+                onSortChange={list.sort}>
                 <TableHeader>
                     <TableColumn>#</TableColumn>
                     <TableColumn>Name</TableColumn>
                     <TableColumn>Species</TableColumn>
-                    <TableColumn>Vaccine</TableColumn>
-                    <TableColumn>Batch</TableColumn>
-                    <TableColumn>Vaccination time</TableColumn>
+                    <TableColumn key="vaccine" allowsSorting>Vaccine</TableColumn>
+                    <TableColumn key="batch" allowsSorting>Batch</TableColumn>
+                    <TableColumn key="vaccinationTime" allowsSorting>Vaccination time</TableColumn>
                     <TableColumn>Comments</TableColumn>
-                    <TableColumn>Email</TableColumn>
+                    <TableColumn key="email" allowsSorting>Email</TableColumn>
                     <TableColumn>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
@@ -68,9 +108,13 @@ function AllVaccinationsList() {
                 </TableBody>
             </Table>
             <Pagination
-                currentPage={currentPage}
-                pageCount={pageCount}
-                onPageChange={setCurrentPage} />
+                total={pageCount}
+                page={currentPage + 1}
+                onChange={(page) => setCurrentPage(page - 1)}
+                showControls
+                loop
+                size="md"
+                showShadow />
         </div>
     );
 }

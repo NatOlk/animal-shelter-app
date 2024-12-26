@@ -54,6 +54,7 @@ function DeleteAnimal({ id }) {
                             defaultValue="Adopted"
                             isClearable
                             variant="bordered"
+                            aria-label="Reason for removal"
                             onClear={() => console.log("textarea cleared")}
                             onChange={(e) => setReason(e.target.value)}
                             isRequired
