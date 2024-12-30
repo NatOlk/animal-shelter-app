@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
-import M from 'materialize-css';
 import { VACCINATIONS_QUERY, UPDATE_VACCINATION } from '../common/graphqlQueries.js';
+import { DatePicker } from "@nextui-org/date-picker";
+import { parseDate, getLocalTimeZone, today } from "@internationalized/date";
+import { useDateFormatter } from "@react-aria/i18n";
+import { Input, Button, Select, SelectSection, SelectItem } from "@nextui-org/react";
 
 const EditableVaccineField = ({ vaccination, value, name, values, isDate }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [fieldValue, setFieldValue] = useState(value || "");
+
   const [oldValue, setOldValue] = useState("");
+  const [dat, setDat] = useState(isDate && value ? parseDate(value) : today());
+
+  const [fieldValue, setFieldValue] = useState(value);
 
   const [updateField] = useMutation(UPDATE_VACCINATION, {
     refetchQueries: [VACCINATIONS_QUERY],
     onCompleted: () => setIsEditing(false),
   });
-
-  useEffect(() => {
-    if (isDate && isEditing) {
-      const datepickerElem = document.querySelector(`#${name}-${vaccination.id}`);
-      const instance = M.Datepicker.init(datepickerElem, {
-        format: 'yyyy-mm-dd',
-        onSelect: (date) => {
-          setFieldValue(date.toISOString().slice(0, 10));
-        },
-      });
-      return () => instance && instance.destroy();
-    }
-  }, [isDate, isEditing, name, vaccination.id]);
 
   const handleSave = () => {
     const variables = {
@@ -39,35 +32,44 @@ const EditableVaccineField = ({ vaccination, value, name, values, isDate }) => {
   const combinedClassName = `${inputStyle} browser-default`;
 
   return (
-    <td>
+    <div className="flex items-center gap-3">
       {isEditing ? (
         values && values.length > 0 ? (
-          <select
+          <Select
             value={fieldValue}
-            className={combinedClassName}
+            defaultSelectedKeys={[fieldValue]}
+            isRequired
+            className="w-full md:w-28"
             onChange={(e) => setFieldValue(e.target.value)}>
             {values.map((val) => (
-              <option key={val} value={val}>
+              <SelectItem key={val}>
                 {val}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         ) : isDate ? (
-          <input
-            type="text"
-            id={`${name}-${vaccination.id}`}
-            className={`${combinedClassName} datepicker`}
-            value={fieldValue}
-            onChange={(e) => setFieldValue(e.target.value)} />
+          <div className="flex w-full flex-wrap flex-nowrap gap-4">
+            <DatePicker
+              isRequired
+              showMonthAndYearPickers
+              className="max-w-[284px]"
+              aria-label="Date Editable Field"
+              value={dat}
+              onChange={(e) => {
+                setDat(e);
+                setFieldValue(e.toString());
+              }}
+            />
+          </div>
         ) : (
-          <input
-            className={combinedClassName}
+          <Input
+            className="w-full md:w-28"
             value={fieldValue}
             onChange={(e) => setFieldValue(e.target.value)} />
         )
       ) : (
         <span
-          className="editable-field"
+          className="w-full md:w-28"
           onDoubleClick={() => {
             setOldValue(fieldValue);
             setIsEditing(true);
@@ -77,22 +79,24 @@ const EditableVaccineField = ({ vaccination, value, name, values, isDate }) => {
       )}
       {isEditing && (
         <>
-          <button
-            className="round-button-with-border"
-            onClick={handleSave}>
+          <Button
+            color="success"
+            size="sm"
+            onPress={handleSave}>
             +
-          </button>
-          <button
-            className="round-button-with-border"
-            onClick={() => {
+          </Button>
+          <Button
+            color="error"
+            size="sm"
+            onPress={() => {
               setFieldValue(oldValue);
               setIsEditing(false);
             }}>
             -
-          </button>
+          </Button>
         </>
       )}
-    </td>
+    </div>
   );
 };
 

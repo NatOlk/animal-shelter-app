@@ -1,3 +1,4 @@
+window.process = {};
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AnimalsList from "./animal/animalsList";
@@ -13,23 +14,24 @@ import ProtectedRoute from "./common/protectedRoute";
 import ErrorPage from "./errorPage";
 import { AuthProvider, useAuth } from './common/authContext';
 import QuickSubscribe from './account/quickSubscribe';
+import { Spacer } from "@nextui-org/react";
+import './styles/global.css';
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
 
   return (
     <>
-      <div className="row">
-        <div className="col s12">
-          <NavBarContent />
-        </div>
+      <div className="navbar-container">
+        <NavBarContent />
       </div>
 
-      <div className="row">
-        <div className="col s2">
+      <div className="main-container">
+        {isAuthenticated && <aside className="sidebar">
           <SideBarContent />
-        </div>
-        <div className="col s10">
+        </aside>}
+
+        <main className="content">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
@@ -55,8 +57,9 @@ const AppContent = () => {
               </ProtectedRoute>
             } />
           </Routes>
-        </div>
+        </main>
       </div>
+      <Spacer y={10}/>
       {isAuthenticated && <QuickSubscribe />}
     </>
   );

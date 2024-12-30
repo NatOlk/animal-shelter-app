@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from './common/authContext';
 import { useNavigate } from 'react-router-dom';
+import { Form, Input, Button } from '@nextui-org/react';
+import { Spacer } from "@nextui-org/react";
 
 const Login = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -10,9 +12,7 @@ const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
+    const handleSubmit = async () => {
         const params = new URLSearchParams();
         params.append('identifier', identifier);
         params.append('password', password);
@@ -30,13 +30,13 @@ const Login = () => {
             if (response.ok) {
                 const responseBody = await response.json();
                 const token = responseBody.token;
-                if (token === 'undefined' || token === null || token === '') {
+                if (!token) {
                     navigate('/login');
                     return;
                 }
                 const userData = {
                     id: responseBody.user,
-                    email: responseBody.email
+                    email: responseBody.email,
                 };
                 login(userData, token);
                 navigate('/');
@@ -49,46 +49,50 @@ const Login = () => {
     };
 
     return (
-        <div className="container">
-            <div className="valign-wrapper">
-                <h1> </h1>
+        <Form className="w-full justify-center items-center w-full space-y-4"
+            validationBehavior="native"
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+            }}
+            autoComplete="off">
+            {errorMessage && (
+                <div style={{ color: 'red', marginBottom: '1rem' }}>
+                    {errorMessage}
+                </div>
+            )}
+            <Spacer x={4} />
+            <div className="flex flex-col gap-4 max-w-md">
+                <Input
+                    label="Username or Email"
+                    placeholder="Enter your identifier"
+                    type="text"
+                    variant="bordered"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    labelPlacement="outside"
+                    isRequired
+                />
+                <Input
+                    label="Password"
+                    placeholder="Enter your password"
+                    type="password"
+                    variant="bordered"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    labelPlacement="outside"
+                    isRequired
+                />
             </div>
-            <div>
-                <form onSubmit={handleSubmit} autoComplete="off">
-                    {errorMessage && <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
-                        <h5 className="red">{errorMessage}</h5>
-                    </div>}
-                    <div className="row">
-                        <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
-                            <input
-                                type="text"
-                                id="identifier"
-                                name="identifier"
-                                className="validate"
-                                value={identifier}
-                                onChange={(e) => setIdentifier(e.target.value)}
-                                required
-                                autoComplete="off"
-                            />
-                        </div>
-                        <div className="input-field col s12 m8 l6 offset-m2 offset-l3">
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={password}
-                                className="validate"
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="col s12 m8 l6 offset-m2 offset-l3">
-                            <button className="btn waves-effect waves-orange" type="submit">Login</button>
-                        </div>
-                    </div>
-                </form>
+            <div className="flex gap-2">
+                <Button
+                    type="submit"
+                    color="default"
+                    variant="flat">
+                    Login
+                </Button>
             </div>
-        </div>
+        </Form>
     );
 };
 

@@ -1,20 +1,24 @@
 package com.ansh.uimanagement.controller.grql;
 
+import com.ansh.DateScalarConfiguration;
 import com.ansh.entity.animal.Animal;
 import com.ansh.uimanagement.service.AnimalService;
 import com.ansh.uimanagement.service.exception.AnimalCreationException;
 import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.GraphQlTester.Response;
 
 @GraphQlTest(controllers = GrAnimalController.class)
+@Import(DateScalarConfiguration.class)
 class GrAnimalControllerTest {
 
   @Autowired
@@ -84,13 +88,14 @@ class GrAnimalControllerTest {
     animal.setName("Fido");
 
     Mockito.when(
-            animalService.addAnimal("Fido", "Dog", "Brown", "Labrador", "12345", "Male", "2022-01-01",
-                "Spotted"))
+            animalService.addAnimal("Fido", "Dog", "Brown", "Labrador",
+                "12345", "Male", LocalDate.parse("2022-01-01"), "Spotted"))
         .thenReturn(animal);
 
     String query = """
             mutation {
-                addAnimal(name: "Fido", species: "Dog", primaryColor: "Brown", breed: "Labrador", implantChipId: "12345", gender: "Male", birthDate: "2022-01-01", pattern: "Spotted") {
+                addAnimal(name: "Fido", species: "Dog", primaryColor: "Brown", breed: "Labrador", implantChipId: "12345", 
+                gender: "Male", birthDate: "2022-01-01", pattern: "Spotted") {
                     id
                     name
                 }
@@ -111,7 +116,8 @@ class GrAnimalControllerTest {
     animal.setId(1L);
     animal.setName("Fido");
 
-    Mockito.when(animalService.updateAnimal(1L, "White", "Beagle", "Male", "2022-01-01", "Striped"))
+    Mockito.when(animalService.updateAnimal(1L, "White", "Beagle", "Male",
+            LocalDate.parse("2022-01-01"), "Striped"))
         .thenReturn(animal);
 
     String query = """

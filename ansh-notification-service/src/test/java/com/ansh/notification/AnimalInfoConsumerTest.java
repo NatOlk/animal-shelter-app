@@ -7,6 +7,7 @@ import com.ansh.event.AddAnimalEvent;
 import com.ansh.event.AnimalEvent;
 import com.ansh.notification.handler.AnimalEventHandlerRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,7 @@ class AnimalInfoConsumerTest {
     MockitoAnnotations.openMocks(this);
     animalInfoConsumer.setAnimalTopicId(ANIMAL_TOPIC);
     objectMapper = new ObjectMapper();
+    objectMapper.findAndRegisterModules();
   }
 
   @Test
@@ -52,11 +54,16 @@ class AnimalInfoConsumerTest {
 
     AnimalEvent capturedEvent = captor.getValue();
     assert capturedEvent instanceof AddAnimalEvent : "Captured event is not of type AddAnimalEvent";
-    assert capturedEvent.getAnimal().getName().equals(expectedEvent.getAnimal().getName()) : "Animal name doesn't match";
-    assert capturedEvent.getAnimal().getSpecies().equals(expectedEvent.getAnimal().getSpecies()) : "Animal species doesn't match";
-    assert capturedEvent.getAnimal().getImplantChipId().equals(expectedEvent.getAnimal().getImplantChipId()) : "Implant chip ID doesn't match";
-    assert capturedEvent.getAnimal().getGender() == expectedEvent.getAnimal().getGender() : "Gender doesn't match";
-    assert capturedEvent.getAnimal().getAdmissionDate().equals(expectedEvent.getAnimal().getAdmissionDate()) : "Admission date doesn't match";
+    assert capturedEvent.getAnimal().getName()
+        .equals(expectedEvent.getAnimal().getName()) : "Animal name doesn't match";
+    assert capturedEvent.getAnimal().getSpecies()
+        .equals(expectedEvent.getAnimal().getSpecies()) : "Animal species doesn't match";
+    assert capturedEvent.getAnimal().getImplantChipId()
+        .equals(expectedEvent.getAnimal().getImplantChipId()) : "Implant chip ID doesn't match";
+    assert capturedEvent.getAnimal().getGender() == expectedEvent.getAnimal()
+        .getGender() : "Gender doesn't match";
+    assert capturedEvent.getAnimal().getAdmissionDate()
+        .equals(expectedEvent.getAnimal().getAdmissionDate()) : "Admission date doesn't match";
 
   }
 }

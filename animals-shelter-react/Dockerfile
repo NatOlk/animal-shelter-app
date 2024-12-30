@@ -11,6 +11,8 @@ RUN npm install --force
 
 RUN npm run build --force
 
+RUN npx tailwindcss -c tailwind.config.js -i ./src/styles/global.css -o ./src/output.css
+
 EXPOSE 3000
 
 CMD [ "npm", "run", "start" ]

@@ -20,8 +20,9 @@ public class AnimalInfoConsumer {
 
   @KafkaListener(topics = "${animalTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> message) throws IOException {
-
-    AnimalEvent animalEvent = new ObjectMapper().readValue(message.value(), AnimalEvent.class);
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.findAndRegisterModules();
+    AnimalEvent animalEvent = objectMapper.readValue(message.value(), AnimalEvent.class);
     handlerRegistry.handleEvent(animalEvent);
   }
 

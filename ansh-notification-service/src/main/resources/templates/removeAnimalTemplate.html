@@ -11,7 +11,7 @@
     <li><strong>Name:</strong> <span th:text="${animalName}"></span></li>
     <li><strong>Species:</strong> <span th:text="${animalSpecies}"></span></li>
     <li><strong>Gender:</strong> <span th:text="${animalGender}"></span></li>
-    <li><strong>Date Removed:</strong> <span th:text="${#dates.format(dateRemoved, 'EEEE, MMMM d, yyyy')}"></span></li>
+    <li><strong>Date Removed:</strong> <span th:text="${dateRemoved}"></span></li>
 </ul>
 <p><strong>Reason for Removal:</strong> <span th:text="${reason}"></span></p>
 
