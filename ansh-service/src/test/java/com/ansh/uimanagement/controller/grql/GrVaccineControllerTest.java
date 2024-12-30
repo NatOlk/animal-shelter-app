@@ -5,12 +5,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import com.ansh.DateScalarConfiguration;
 import com.ansh.entity.animal.Vaccination;
 import com.ansh.uimanagement.service.VaccinationService;
 import com.ansh.uimanagement.service.exception.VaccinationCreationException;
 import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
 import com.ansh.uimanagement.service.exception.VaccinationUpdateException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +20,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
 @GraphQlTest(controllers = GrVaccineController.class)
+@Import(DateScalarConfiguration.class)
 public class GrVaccineControllerTest {
 
   @Autowired
@@ -30,12 +34,11 @@ public class GrVaccineControllerTest {
   private VaccinationService vaccinationService;
 
   private Vaccination vaccination;
-  private Date vaccinationDate;
+  private LocalDate vaccinationDate;
 
   @BeforeEach
   void setUp() throws Exception {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    vaccinationDate = sdf.parse("2024-11-29");
+    vaccinationDate = LocalDate.parse("2024-11-29");
 
     vaccination = new Vaccination();
     vaccination.setId(1L);
@@ -49,7 +52,7 @@ public class GrVaccineControllerTest {
   @Test
   void shouldAddVaccination() throws VaccinationCreationException {
     when(vaccinationService.addVaccination(anyLong(), anyString(), anyString(),
-        eq("2024-11-29"), anyString(), anyString()))
+        eq(LocalDate.parse("2024-11-29")), anyString(), anyString()))
         .thenReturn(vaccination);
 
     String mutation = """
@@ -70,7 +73,7 @@ public class GrVaccineControllerTest {
   @Test
   void shouldUpdateVaccination() throws VaccinationNotFoundException, VaccinationUpdateException {
     when(vaccinationService.updateVaccination(anyLong(), anyString(), anyString(),
-        eq("2024-11-29"), anyString(), anyString()))
+        eq(LocalDate.parse("2024-11-29")), anyString(), anyString()))
         .thenReturn(vaccination);
 
     String mutation = """

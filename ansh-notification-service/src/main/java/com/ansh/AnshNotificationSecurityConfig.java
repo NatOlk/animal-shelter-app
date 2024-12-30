@@ -2,6 +2,7 @@ package com.ansh;
 
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,15 +19,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class AnshNotificationSecurityConfig {
 
-  private final String animalShelterReactApp;
-  private final ApiKeyAuthFilter apiKeyAuthFilter;
+  @Value("${animalShelterReactApp}")
+  private String animalShelterReactApp;
 
-  public AnshNotificationSecurityConfig(
-      @Value("${animalShelterReactApp}") String animalShelterReactApp,
-      ApiKeyAuthFilter apiKeyAuthFilter) {
-    this.animalShelterReactApp = animalShelterReactApp;
-    this.apiKeyAuthFilter = apiKeyAuthFilter;
-  }
+  @Autowired
+  private ApiKeyAuthFilter apiKeyAuthFilter;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {

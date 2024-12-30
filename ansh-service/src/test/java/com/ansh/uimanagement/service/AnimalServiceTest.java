@@ -16,7 +16,9 @@ import com.ansh.repository.AnimalRepository;
 import com.ansh.uimanagement.service.exception.AnimalCreationException;
 import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,7 +88,7 @@ class AnimalServiceTest {
 
     var addedAnimal = animalService.addAnimal(
         "Bella", "Dog", "Brown", "Labrador",
-        "12345", "F", "2022-01-01", "Spotted");
+        "12345", "F", LocalDate.parse("2022-01-01"), "Spotted");
 
     assertNotNull(addedAnimal);
     assertEquals("Bella", addedAnimal.getName());
@@ -101,7 +103,7 @@ class AnimalServiceTest {
 
     assertThrows(AnimalCreationException.class, () -> animalService.addAnimal(
         "Bella", "Dog", "Brown", "Labrador",
-        "12345", "F", "2022-01-01", "Spotted"));
+        "12345", "F", LocalDate.parse("2022-01-01"), "Spotted"));
 
     verify(animalRepository, times(1)).save(any(Animal.class));
     verify(notificationService, never()).sendAddAnimalMessage(any(Animal.class));
@@ -116,7 +118,7 @@ class AnimalServiceTest {
     when(animalRepository.save(any(Animal.class))).thenReturn(animal);
 
     var updatedAnimal = animalService.updateAnimal(1L, "Black", null, "M",
-        "2023-01-01", null);
+        LocalDate.parse("2022-01-01"), null);
 
     assertEquals('M', updatedAnimal.getGender());
     assertEquals("Black", updatedAnimal.getPrimaryColor());
@@ -135,7 +137,7 @@ class AnimalServiceTest {
 
     assertThrows(AnimalUpdateException.class, () -> animalService
         .updateAnimal(1L, "Black", null, "M",
-            "2023-01-01", null));
+            LocalDate.parse("2023-01-01"), null));
   }
 
   @Test
