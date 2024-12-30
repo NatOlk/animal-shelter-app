@@ -36,7 +36,6 @@ function AllVaccinationsList() {
                     if (sortDescriptor.direction === "descending") {
                         cmp *= -1;
                     }
-
                     return cmp;
                 }),
             };

@@ -3,7 +3,7 @@ package com.ansh.event;
 import com.ansh.entity.animal.Animal;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +40,7 @@ public class RemoveAnimalEvent extends AnimalEvent {
 
     params.put("reason", reason);
     //TODO probably move to a property
-    params.put("dateRemoved", new Date());
+    params.put("dateRemoved", LocalDate.now());
 
     return params;
   }

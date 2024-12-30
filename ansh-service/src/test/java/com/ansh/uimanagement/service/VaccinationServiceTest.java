@@ -17,6 +17,7 @@ import com.ansh.repository.VaccinationRepository;
 import com.ansh.uimanagement.service.exception.VaccinationCreationException;
 import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -64,7 +65,7 @@ class VaccinationServiceTest {
     Long animalId = 1L;
     String vaccine = "Rabies";
     String batch = "B123";
-    String vaccinationTime = "01/11/2024";
+    LocalDate vaccinationTime = LocalDate.parse("2024-01-01");
     String comments = "First dose";
     String email = "vet@example.com";
 
@@ -84,28 +85,9 @@ class VaccinationServiceTest {
     assertEquals(comments, result.getComments());
     assertEquals(email, result.getEmail());
     assertEquals(mockAnimal, result.getAnimal());
-    assertEquals(formatter.parse(vaccinationTime), result.getVaccinationTime());
+    assertEquals(vaccinationTime, result.getVaccinationTime());
     verify(vaccinationRepository, times(1)).save(any(Vaccination.class));
     verify(notificationService, times(1)).sendAddVaccinationMessage(result);
-  }
-
-  @Test
-  void shouldThrowExceptionForInvalidVaccinationTime() throws Exception {
-    Long animalId = 1L;
-
-    Animal mockAnimal = new Animal();
-    mockAnimal.setId(animalId);
-
-    when(animalRepository.findById(animalId)).thenReturn(Optional.of(mockAnimal));
-    when(vaccinationRepository.save(any(Vaccination.class))).thenAnswer(
-        invocation -> invocation.getArgument(0));
-
-    VaccinationCreationException exception = assertThrows(VaccinationCreationException.class, () ->
-        vaccinationService.addVaccination(animalId, "Rabies", "B123", "Fake", "Comments",
-            "vet@example.com")
-    );
-    assertTrue(exception.getMessage()
-        .contains("An error occurred while adding the vaccination for animal 1"));
   }
 
   @Test
@@ -115,8 +97,8 @@ class VaccinationServiceTest {
     when(animalRepository.findById(animalId)).thenReturn(Optional.empty());
 
     VaccinationCreationException exception = assertThrows(VaccinationCreationException.class, () ->
-        vaccinationService.addVaccination(animalId, "Rabies", "B123", "2024-11-01", "Comments",
-            "vet@example.com")
+        vaccinationService.addVaccination(animalId, "Rabies", "B123",
+            LocalDate.parse("2024-11-01"), "Comments","vet@example.com")
     );
     assertTrue(exception.getMessage().contains("Animal is not found 1"));
   }

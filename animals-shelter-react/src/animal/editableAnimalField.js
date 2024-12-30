@@ -3,42 +3,18 @@ import { useMutation } from "@apollo/client";
 import { Input, Button, Select, SelectSection, SelectItem } from "@nextui-org/react";
 import { ANIMALS_QUERY, UPDATE_ANIMAL } from "../common/graphqlQueries.js";
 import { DatePicker } from "@nextui-org/date-picker";
-import { parseDate, getLocalTimeZone } from "@internationalized/date";
+import { parseDate, getLocalTimeZone, today } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { GrFormAdd } from "react-icons/gr";
 import { HiMinusSm } from "react-icons/hi";
 
-function convertToISO(dateString) {
-  return dateString.replace(" ", "T").split(".")[0] + "Z";
-}
-
 const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
 
   const [isEditing, setIsEditing] = useState(false);
-
   const [oldValue, setOldValue] = useState("");
-  const [dat, setDat] = useState(isDate && value ? new Date(value) : new Date());
+  const [dat, setDat] = useState(isDate && value ? parseDate(value) : today());
 
-  const [birthDate, setBirthDate] = useState(parseDate(dat.toISOString().split('T')[0]));
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const d = date.toLocaleDateString("en-US", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-
-    return d;
-  };
-
-  const [fieldValue, setFieldValue] = useState(isDate && value ? formatDate(birthDate) : value);
-
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  const [fieldValue, setFieldValue] = useState(value);
 
   const [updateField] = useMutation(UPDATE_ANIMAL, {
     refetchQueries: [ANIMALS_QUERY],
@@ -73,17 +49,13 @@ const EditableAnimalField = ({ animal, value, name, values, isDate }) => {
           <div className="flex w-full flex-wrap flex-nowrap gap-4">
             <DatePicker
               isRequired
-              value={birthDate}
+              showMonthAndYearPickers
+              className="max-w-[284px]"
+              aria-label="Date Editable Field"
+              value={dat}
               onChange={(e) => {
-                console.log('e = ' + e);
-                if (e) {
-                  const formattedDate = formatter.format(e.toDate(getLocalTimeZone()));
-                  console.log('Formated date = ' + formattedDate);
-                  setFieldValue(formattedDate);
-                  setBirthDate(e);
-                } else {
-                  setFieldValue("");
-                }
+                setDat(e);
+                setFieldValue(e.toString());
               }}
             />
           </div>
