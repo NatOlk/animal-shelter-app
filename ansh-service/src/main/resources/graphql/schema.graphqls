@@ -1,3 +1,8 @@
+scalar Date
+@specifiedBy(url:
+  "https://tools.ietf.org/html/rfc3339"
+ )
+
 type Query {
     allAnimals : [Animal]
     animalById(id: ID!): Animal
@@ -15,8 +20,8 @@ type Animal {
     implantChipId: String
     breed: String
     gender: String
-    admissionDate: String!
-    birthDate: String!
+    admissionDate: Date!
+    birthDate: Date!
     pattern: String
     vaccinations: [Vaccination]
     vaccinationCount: Int
@@ -26,7 +31,7 @@ type Vaccination {
     id: ID!
     vaccine: String!
     batch: String!
-    vaccinationTime: String!
+    vaccinationTime: Date!
     comments: String
     email: String!
     animal: Animal!
@@ -41,10 +46,10 @@ type UserProfile {
 }
 
 type Mutation {
-    addAnimal(name: String!, species: String!, primaryColor: String!, breed: String, implantChipId: String, gender: String!, birthDate: String, pattern: String) : Animal
+    addAnimal(name: String!, species: String!, primaryColor: String!, breed: String, implantChipId: String, gender: String!, birthDate: Date!, pattern: String) : Animal
     deleteAnimal(id: ID!, reason: String!) : Animal
-    updateAnimal(id: ID!, primaryColor: String, breed: String, gender: String, birthDate: String, pattern: String) : Animal
-    addVaccination(animalId: ID!, vaccine: String!, batch: String!, vaccinationTime: String!, comments: String, email: String!) : Vaccination
+    updateAnimal(id: ID!, primaryColor: String, breed: String, gender: String, birthDate: Date, pattern: String) : Animal
+    addVaccination(animalId: ID!, vaccine: String!, batch: String!, vaccinationTime: Date!, comments: String, email: String!) : Vaccination
     deleteVaccination(id: ID!) : Vaccination
-    updateVaccination(id: ID!, vaccine: String, batch: String, vaccinationTime: String, comments: String, email: String) : Vaccination
+    updateVaccination(id: ID!, vaccine: String, batch: String, vaccinationTime: Date, comments: String, email: String) : Vaccination
 }

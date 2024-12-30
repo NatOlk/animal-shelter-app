@@ -1,10 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { ANIMALS_QUERY, DELETE_ANIMAL } from '../common/graphqlQueries.js';
-import M from 'materialize-css';
+import { Button } from "@nextui-org/react";
+import {
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter
+} from "@nextui-org/modal";
+import { Textarea } from "@nextui-org/input";
+import { IoTrashOutline } from "react-icons/io5";
 
 function DeleteAnimal({ id }) {
     const [reason, setReason] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const [deleteAnimal, { loading, error }] = useMutation(DELETE_ANIMAL, {
         update(cache, { data: { deleteAnimal } }) {
             const existingAnimals = cache.readQuery({ query: ANIMALS_QUERY });
@@ -16,59 +27,49 @@ function DeleteAnimal({ id }) {
         }
     });
 
-    useEffect(() => {
-        const elems = document.querySelectorAll('.modal');
-        M.Modal.init(elems);
-    }, []);
-
     const handleDelete = () => {
         deleteAnimal({ variables: { id, reason } })
-            .catch((error) => {
-                console.error("Error deleting animal:", error);
-            });
+            .then(() => {
+                setIsModalOpen(false);
+                setReason("");
+            })
+            .catch((error) => console.error("Error deleting animal:", error));
     };
-
-    const handleCancel = () => {
-        const modalElem = document.querySelector('#modal1');
-        const modalInstance = M.Modal.getInstance(modalElem);
-        modalInstance.close();
-        setReason("");
-    };
-
-    if (loading) return <p>Deleting...</p>;
-    if (error) return <p>Error: {error.message}</p>;
 
     return (
         <>
-            <button data-target="modal1" className="waves-effect waves-light modal-trigger btn-small">
-                <i className="material-icons">close</i>
-            </button>
-
-            <div id="modal1" className="modal">
-                <div className="modal-content">
-                    <h5>Reason for removal</h5>
-                    <textarea value={reason}
-                        onChange={(e) => setReason(e.target.value)}
-                        className="removal materialize-textarea" />
-                </div>
-                <div className="modal-footer">
-                    <button
-                        tabIndex={0}
-                        onClick={handleDelete}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleDelete(); }}
-                        className="modal-close waves-effect waves-orange btn-flat">
-                        Confirm
-                    </button>
-                    <button
-                        tabIndex={0}
-                        onClick={handleCancel}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleCancel(); }}
-                        className="modal-close waves-effect waves-red btn-flat">
-                        Cancel
-                    </button>
-
-                </div>
-            </div >
+            <Button variant="light"
+                className="p-2 min-w-2 h-auto"
+                onPress={() => setIsModalOpen(true)}>
+                <IoTrashOutline />
+            </Button>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">
+                        Reason for removal
+                    </ModalHeader>
+                    <ModalBody>
+                        <Textarea className="max-w-xs"
+                            value={reason}
+                            defaultValue="Adopted"
+                            isClearable
+                            variant="bordered"
+                            aria-label="Reason for removal"
+                            onClear={() => console.log("textarea cleared")}
+                            onChange={(e) => setReason(e.target.value)}
+                            isRequired
+                        />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="default" variant="bordered" size="sm" onPress={() => setIsModalOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button color="default" variant="bordered" size="sm" onPress={handleDelete}>
+                            Confirm
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </>
     );
 }

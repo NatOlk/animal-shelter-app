@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.Data;
 import lombok.ToString;
 
@@ -29,7 +29,7 @@ public class Vaccination {
   @Column
   private String email;
   @Column
-  private Date vaccinationTime;
+  private LocalDate vaccinationTime;
   @Column
   private String comments;
   @JsonBackReference

@@ -9,7 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.Date;
+import jakarta.validation.constraints.Pattern;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
 
@@ -27,18 +28,19 @@ public class Animal {
   private String species;
   @Column
   private String primaryColor;
-  @Column(unique = true)
+  @Column(unique = true, nullable = true)
+  @Pattern(regexp = "\\d{8}-\\d{8}-\\d{8}", message = "Value must match the pattern 11111111-11111111-1111")
   private String implantChipId;
   @Column
   private String breed;
   @Column
   private char gender;
   @Column
-  private Date birthDate;
+  private LocalDate birthDate;
   @Column
   private String pattern;
   @Column
-  private Date admissionDate;
+  private LocalDate admissionDate;
   @JsonManagedReference
   @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Vaccination> vaccinations;

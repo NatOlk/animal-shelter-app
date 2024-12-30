@@ -8,6 +8,7 @@ import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
 import com.ansh.uimanagement.service.exception.VaccinationUpdateException;
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
+import java.time.LocalDate;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class GrVaccineController {
 
   @MutationMapping
   public Vaccination updateVaccination(@Argument Long id, @Argument String vaccine,
-      @Argument String batch, @Argument String vaccinationTime, @Argument String comments,
+      @Argument String batch, @Argument LocalDate vaccinationTime, @Argument String comments,
       @Argument String email) throws VaccinationNotFoundException, VaccinationUpdateException {
     return vaccinationService.updateVaccination(id, vaccine, batch, vaccinationTime, comments,
         email);
@@ -60,7 +61,7 @@ public class GrVaccineController {
 
   @MutationMapping
   public Vaccination addVaccination(@Argument Long animalId, @Argument String vaccine,
-      @Argument String batch, @Argument String vaccinationTime, @Argument String comments,
+      @Argument String batch, @Argument LocalDate vaccinationTime, @Argument String comments,
       @Argument String email) throws VaccinationCreationException {
     return vaccinationService.addVaccination(animalId, vaccine, batch, vaccinationTime, comments,
         email);

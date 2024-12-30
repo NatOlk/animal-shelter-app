@@ -2,10 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createRoot } from "react-dom/client";
 import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
-import 'materialize-css/dist/css/materialize.min.css';
-import 'materialize-css/dist/js/materialize.min.js';
-
+import { NextUIProvider } from "@nextui-org/react";
+import './output.css';
 import App from "./app";
+import './styles/global.css';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -40,6 +40,8 @@ const client = new ApolloClient({
 const root = createRoot(document.getElementById("root"));
 root.render(
   <ApolloProvider client={client}>
-    <App />
+    <NextUIProvider>
+      <App />
+    </NextUIProvider>
   </ApolloProvider>
 );

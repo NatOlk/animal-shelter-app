@@ -1,0 +1,135 @@
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem !important;
+  }
+
+  p,
+  span,
+  input {
+    font-size: 0.7rem !important;
+  }
+
+  table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 10px;
+    padding: 2px !important;
+    font-size: 0.75rem;
+    @apply w-full text-sm border-collapse;
+  }
+
+  th,
+  td {
+    padding: 2px;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border: 1px solid #ddd;
+    @apply p-1 border border-gray-300 text-xs;
+  }
+
+  .highlighted-row {
+    background-color: #e0f7fa;
+  }
+
+  .add-item-row input,
+  .add-item-row select,
+  .add-item-row button {
+    font-size: 10px !important;
+  }
+
+  .table-row:hover {
+    background-color: #f4fdfe;
+  }
+
+  .editable-cell-field {
+    background-color: #f0f8ff;
+    cursor: pointer;
+    padding: 2px;
+    margin: 0px;
+    font-size: 0.75rem;
+  }
+
+  .compact-table th,
+  .compact-table td {
+    padding: 8px !important;
+    font-size: 0.75rem;
+  }
+
+  .quick-subscribe-btn {
+    position: fixed;
+    bottom: 45px;
+    left: 15px;
+  }
+
+  .quick-subscribe-input-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .quick-subscribe-input {
+    margin-right: 8px;
+  }
+
+  .quick-subscribe-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navbar-container {
+    margin-bottom: 1rem;
+  }
+
+  .main-container {
+    display: flex;
+    height: calc(100vh - 3rem);
+  }
+
+  .sidebar {
+    width: 250px;
+    background-color: #f4f4f4;
+    padding: 1rem;
+    border-right: 1px solid #ddd;
+  }
+
+  .containerProfile {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .profileCard {
+    flex: 1;
+    padding: 0 20px;
+    min-height: 150px;
+    border-top: 1px solid #ddd;
+  }
+
+  .profileCardTabContent {
+    min-height: 150px;
+  }
+
+  .subscriptionsTab {
+    padding: 20px;
+  }
+
+  .empty-table-body {
+    height: 20px !important;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .content {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+}

@@ -60,7 +60,7 @@ Boot**, **Redis**, **Kafka**, and **Docker**.
 - **Frontend**:
     - React
     - Apollo Client (for GraphQL operations)
-    - Materialize CSS (for styling)
+    - NextUI (for styling)
 - **Backend**:
     - Spring Boot
     - PostgreSQL (database)

@@ -11,7 +11,7 @@
     <li><strong>Name:</strong> <span th:text="${animalName}"></span></li>
     <li><strong>Species:</strong> <span th:text="${animalSpecies}"></span></li>
     <li><strong>Vaccine Name:</strong> <span th:text="${vaccineName}"></span></li>
-    <li><strong>Date Administered:</strong> <span th:text="${#dates.format(vaccineDate, 'EEEE, MMMM d, yyyy')}"></span></li>
+    <li><strong>Date Administered:</strong> <span th:text="${vaccineDate}"></span></li>
 </ul>
 <p><strong>Reason for Removal:</strong> <span th:text="${reason}"></span></p>
 

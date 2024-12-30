@@ -1,7 +1,10 @@
 import React from "react";
 import { useAuth } from './common/authContext';
-import { Link } from "react-router-dom";
+import { Button } from "@nextui-org/react";
+import { Spacer } from "@nextui-org/react";
 import Logout from './logout';
+import { Divider } from "@nextui-org/divider";
+import { Link } from "react-router-dom";
 
 const SideBarContent = () => {
   const { isAuthenticated } = useAuth();
@@ -9,18 +12,20 @@ const SideBarContent = () => {
   return (
     <>
       {isAuthenticated && (
-        <div className="collection">
-          <Link to="/"
-            className="collection-item round-button-with-border">
-            <h6>Animals</h6>
-          </Link>
-          <Link to="/allvaccinations"
-            className="collection-item round-button-with-border">
-            <h6>Vaccinations</h6>
-          </Link>
-          <div className="collection-item">
-            <Logout />
+        <div className="max-w-md">
+          <div className="space-y-1">
+            <Link to="/" color="foreground">
+              <h4 className="text-medium font-medium">Animals</h4>
+            </Link>
           </div>
+          <Divider className="my-4" />
+          <div className="space-y-1">
+            <Link to="/allvaccinations" color="foreground">
+              <h4 className="text-medium font-medium">Vaccinations</h4>
+            </Link>
+          </div>
+          <Divider className="my-4" />
+          <Logout />
         </div>
       )}
     </>
