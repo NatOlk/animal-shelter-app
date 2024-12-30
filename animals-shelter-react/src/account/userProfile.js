@@ -1,15 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import Subscription from './subscription';
-import AllApproverSubscriptionList from './allApproverSubscriptionList';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from "@apollo/client";
+import AllApproverSubscriptionList from './allApproverSubscriptionList';
 import PendingSubscriptionList from './pendingSubscriptionList';
 import NoApproverSubscriptionList from './noApproverSubscriptionList';
+import UserAnimalTopicSubscriptionStatus from './userAnimalTopicSubscriptionStatus';
 import { GET_CURRENT_USER_PROFILE } from '../common/graphqlQueries';
 import { apiFetch } from '../common/api';
+import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
+import { Divider } from "@nextui-org/divider";
+import { Spacer } from "@nextui-org/react";
+import { Tabs, Tab } from "@nextui-org/tabs";
+import { MdOutlineAlternateEmail, MdGroupAdd } from "react-icons/md";
+import { TbUsersGroup } from "react-icons/tb";
+import { RiAdminLine } from "react-icons/ri";
+import { HiOutlineBellAlert } from "react-icons/hi2";
 
 const UserProfile = () => {
   const { loading, error, data } = useQuery(GET_CURRENT_USER_PROFILE, {
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
 
   const [isNoApproverOpen, setIsNoApproverOpen] = useState(false);
@@ -19,12 +27,6 @@ const UserProfile = () => {
   useEffect(() => {
     if (data?.currentUserProfile) {
       setAnimalNotifyStatusProfile(data.currentUserProfile.animalNotifyStatus || "NONE");
-      const elems = document.querySelectorAll('.collapsible');
-      const instances = M.Collapsible.init(elems, {});
-
-      return () => {
-        instances.forEach(instance => instance.destroy());
-      };
     }
   }, [data]);
 
@@ -34,58 +36,11 @@ const UserProfile = () => {
         method: 'POST',
         body: { approver: data.currentUserProfile.email },
       });
-
       setAnimalNotifyStatusProfile(status || "NONE");
     } catch (err) {
       console.error("Error updating subscription status:", err);
     }
   };
-
-  const renderIconBasedOnStatus = () => {
-    if (animalNotifyStatusProfile === null) return <p>Status loading...</p>;
-
-    switch (animalNotifyStatusProfile) {
-      case 'NONE':
-        return (
-          <span>
-            You’re currently unsubscribed from our animal updates.
-            We highly recommend subscribing to stay informed about all the latest happenings at the shelter!
-            <Subscription />
-          </span>
-        );
-      case 'PENDING':
-        return (
-          <span>
-            Your subscription is pending approval. Please wait for an approval email.
-            Once you receive it, follow the instructions to complete your subscription activation.
-            <div className="progress">
-              <div className="indeterminate"></div>
-            </div>
-          </span>
-        );
-      case 'ACTIVE':
-        return (
-          <span>
-            <a className="tooltipped" data-position="bottom" data-tooltip="You are subscribed!">
-              <i className="medium material-icons green-text text-darken-1">notifications_active</i>
-            </a>
-          </span>
-        );
-      default:
-        return <p>Status unknown</p>;
-    }
-  };
-
-  useEffect(() => {
-    if (animalNotifyStatusProfile) {
-      const elemsTooltips = document.querySelectorAll('.tooltipped');
-      const instancesTooltips = M.Tooltip.init(elemsTooltips, {});
-
-      return () => {
-        instancesTooltips.forEach(instance => instance.destroy());
-      };
-    }
-  }, [animalNotifyStatusProfile]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -93,70 +48,67 @@ const UserProfile = () => {
   const { name, email } = data.currentUserProfile;
 
   return (
-    <div>
-      <div className="row">
-        <div className="col s12 m12">
-          <div className="card card-color">
-            <div className="card-content">
-              <span className="card-title">User profile</span>
-              <p>Hello, {name}! How are you? Happy to see you!</p>
-              <p><i className="small material-icons">alternate_email</i> {email}</p>
+    <div className="containerProfile">
+      <div className="profileCard">
+        <Card className="w-full">
+          <CardHeader className="flex gap-3">
+            <div className="flex flex-col">
+              <h1>User Profile</h1>
             </div>
-            <div className="card-action">
-              <ul className="collapsible">
-                <li>
-                  <div className="collapsible-header">
-                    <i className="material-icons">group</i>Roles
+          </CardHeader>
+          <Divider />
+          <CardBody>
+            <p>Hello, {name}! How are you? Happy to see you!</p>
+            <div className="flex items-center space-x-2"><MdOutlineAlternateEmail /> {email}</div>
+            <Spacer y={10} />
+            <div className="flex w-full flex-col">
+              <Tabs aria-label="RolesSubscriptions" size="lg" variant="bordered"
+                onSelectionChange={updateSubscriptionStatus}>
+                <Tab key="roles" title={
+                  <div className="flex items-center space-x-2">
+                    <RiAdminLine /><p>Roles</p>
+                  </div>}>
+                  <div className="profileCardTabContent">
+                    <Spacer y={5} />
+                    Your current roles: Admin, Employee
+                    <Spacer y={20} />
                   </div>
-                  <div className="collapsible-body">
-                    <span>ADMIN, EMPLOYEE</span>
+                </Tab>
+                <Tab key="subscriptions" title={
+                  <div className="flex items-center space-x-2">
+                    <HiOutlineBellAlert /><p>Subscriptions</p>
+                  </div>}>
+                  <div className="profileCardTabContent">
+                    <Spacer y={5} />
+                    <UserAnimalTopicSubscriptionStatus status={animalNotifyStatusProfile} />
+                    <Spacer y={5} />
                   </div>
-                </li>
-                <li>
-                  <div className="collapsible-header" onClick={updateSubscriptionStatus}>
-                    <i className="material-icons">place</i>Your subscriptions
-                  </div>
-                  <div className="collapsible-body">
-                    {renderIconBasedOnStatus()}
-                  </div>
-                </li>
-              </ul>
+                </Tab>
+              </Tabs>
             </div>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col s12 m12">
-            <ul className="collapsible card-color">
-              <li className="active">
-                <div className="collapsible-header">
-                  <i className="material-icons">pending_actions</i>
-                  <span className="subscription-title">Pending Subscribers</span>
-                </div>
-                <div className="collapsible-body">
-                  <PendingSubscriptionList userProfile={data.currentUserProfile} />
-                </div>
-              </li>
-              <li>
-                <div className="collapsible-header" onClick={() => setIsNoApproverOpen(!isNoApproverOpen)}>
-                  <i className="material-icons">no_accounts</i>
-                  <span className="subscription-title">No Approver Subscribers</span>
-                </div>
-                <div className="collapsible-body">
-                  {isNoApproverOpen && <NoApproverSubscriptionList userProfile={data.currentUserProfile} />}
-                </div>
-              </li>
-              <li>
-                <div className="collapsible-header" onClick={() => setIsAllOpen(!isAllOpen)}>
-                  <i className="material-icons">how_to_reg</i>
-                  <span className="subscription-title">All Subscribers</span>
-                </div>
-                <div className="collapsible-body">
-                  {isAllOpen && <AllApproverSubscriptionList userProfile={data.currentUserProfile} />}
-                </div>
-              </li>
-            </ul>
-          </div>
+          </CardBody>
+          <CardFooter>
+          </CardFooter>
+        </Card>
+      </div>
+      <div className="subscriptionsTab">
+        <div className="flex flex-col">
+          <Tabs aria-label="Subscriptions" size="lg" variant="bordered">
+            <Tab key="pending" title={
+              <div className="flex items-center space-x-2">
+                <MdGroupAdd /><p>Pending subscribers</p>
+              </div>}>
+              <PendingSubscriptionList userProfile={data.currentUserProfile} />
+              <Divider className="my-4" />
+              <NoApproverSubscriptionList userProfile={data.currentUserProfile} />
+            </Tab>
+            <Tab key="all" title={
+              <div className="flex items-center space-x-2">
+                <TbUsersGroup /><p>All subscribers</p>
+              </div>}>
+              <AllApproverSubscriptionList userProfile={data.currentUserProfile} />
+            </Tab>
+          </Tabs>
         </div>
       </div>
     </div>

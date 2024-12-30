@@ -1,20 +1,21 @@
 package com.ansh.notification;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
 import com.ansh.event.AddAnimalEvent;
 import com.ansh.event.AddVaccinationEvent;
 import com.ansh.event.RemoveAnimalEvent;
 import com.ansh.event.RemoveVaccinationEvent;
-import java.util.Date;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class NotificationServiceTest {
 
@@ -60,7 +61,7 @@ class NotificationServiceTest {
     Vaccination vaccination = new Vaccination();
     vaccination.setAnimal(animal);
     vaccination.setVaccine("Rabies");
-    vaccination.setVaccinationTime(new Date());
+    vaccination.setVaccinationTime(LocalDate.now());
 
     notificationService.sendAddVaccinationMessage(vaccination);
 
@@ -75,7 +76,7 @@ class NotificationServiceTest {
     Vaccination vaccination = new Vaccination();
     vaccination.setAnimal(animal);
     vaccination.setVaccine("Parvovirus");
-    vaccination.setVaccinationTime(new Date());
+    vaccination.setVaccinationTime(LocalDate.now());
 
     notificationService.sendRemoveVaccinationMessage(vaccination);
 
