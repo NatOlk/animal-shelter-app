@@ -10,9 +10,7 @@ import DeleteVaccination from "./deleteVaccination";
 import EditableVaccinationField from './editableVaccinationField';
 import { useLocation, Link } from 'react-router-dom';
 import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries.js';
-import { DatePicker } from "@nextui-org/date-picker";
-import { parseDate, getLocalTimeZone } from "@internationalized/date";
-import { useDateFormatter } from "@react-aria/i18n";
+import DateField from '../common/dateField';
 import { useAuth } from '../common/authContext';
 import { useConfig } from '../common/configContext';
 import { IoIosAddCircleOutline } from "react-icons/io"
@@ -22,29 +20,27 @@ function VaccinationsList() {
     const [currentPage, setCurrentPage] = useState(0);
     const location = useLocation();
     const { animalId } = location.state;
-    const [birthDate, setBirthDate] = React.useState(parseDate("2024-04-16"));
 
-    const formatter = new Intl.DateTimeFormat("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
+    if (!animalId) {
+        return (
+            <div>
+                <Link to="/">Back to Animals</Link>
+                <p>Error: No animalId provided!</p>
+            </div>
+        );
+    }
+
+    const { isAuthenticated, user } = useAuth();
+    console.log('Is auth user ' + user + '-' + isAuthenticated);
     const initialValues = {
         vaccine: 'Rabies',
         batch: '',
-        vaccinationTime: new Date().toISOString().split('T')[0],
         comments: 'Add new vaccine',
-        email: ''
+        vaccinationTime: today().toString(),
+        email: isAuthenticated && user ? user.email : '',
     };
 
     const [vaccination, setVaccination] = useState(initialValues);
-    const { isAuthenticated, user } = useAuth();
-
-    useEffect(() => {
-        if (isAuthenticated && user) {
-            setVaccination((prev) => ({ ...prev, email: user.email }));
-        }
-    }, [isAuthenticated, user]);
 
     const [addVaccination] = useMutation(ADD_VACCINATION, {
         refetchQueries: [VACCINATIONS_QUERY],
@@ -72,28 +68,26 @@ function VaccinationsList() {
         });
     };
 
+    const handleFieldChange = (fieldName, value) => {
+        setVaccination({
+            ...vaccination,
+            [fieldName]: value,
+        });
+    };
+
     const handleAddVaccination = () => {
         addVaccination({
             variables: {
                 animalId: animalId,
                 vaccine: vaccination.vaccine,
                 batch: vaccination.batch,
-                vaccinationTime: birthDate ? formatter.format(birthDate.toDate(getLocalTimeZone())) : "01/01/2025",
+                vaccinationTime: vaccination.vaccinationTime,
                 comments: vaccination.comments,
                 email: vaccination.email
             }
         }).catch(error => { showError({ error: error }) });
 
         setVaccination(initialValues);
-    }
-
-    if (!animalId) {
-        return (
-            <div>
-                <Link to="/">Back to Animals</Link>
-                <p>Error: No animalId provided!</p>
-            </div>
-        );
     }
 
     const { loading, error, data } = useQuery(VACCINATIONS_QUERY, {
@@ -196,10 +190,8 @@ function VaccinationsList() {
                                 onChange={handleInputChange} />
                         </TableCell>
                         <TableCell>
-                            <DatePicker isRequired className="max-w-[284px]"
-                                name="birthDate" value={birthDate}
-                                aria-label="Vaccine admission date"
-                                onChange={setBirthDate} />
+                            <DateField onDateChange={(newDate) =>
+                                handleFieldChange("vaccinationTime", newDate.toString())} />
                         </TableCell>
                         <TableCell>
                             <Input name="comments" value={vaccination.comments}
@@ -208,6 +200,7 @@ function VaccinationsList() {
                         </TableCell>
                         <TableCell>
                             <Input name="email" value={vaccination.email}
+                                isRequired
                                 aria-label="Email"
                                 onChange={handleInputChange} />
                         </TableCell>

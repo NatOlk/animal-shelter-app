@@ -7,7 +7,7 @@ import com.ansh.uimanagement.service.exception.AnimalCreationException;
 import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class AnimalService {
   public Animal addAnimal(@NonNull String name, @NonNull String species,
       @NonNull String primaryColor, String breed,
       String implantChipId, @NonNull String gender,
-      String birthDate, String pattern) throws AnimalCreationException {
+      LocalDate birthDate, String pattern) throws AnimalCreationException {
     try {
       Animal animal = new Animal();
       animal.setName(name);
@@ -49,8 +49,8 @@ public class AnimalService {
       animal.setBreed(breed);
       animal.setGender(gender.charAt(0));
       animal.setPattern(pattern);
-      animal.setBirthDate(formatter.parse(birthDate));
-      animal.setAdmissionDate(new Date());
+      animal.setBirthDate(birthDate);
+      animal.setAdmissionDate(LocalDate.now());
       animal.setPrimaryColor(primaryColor);
       if (!implantChipId.equals(DEFAULT_IMPLANT_CHIP_PATTERN)) {
         animal.setImplantChipId(implantChipId);
@@ -66,7 +66,7 @@ public class AnimalService {
 
   public Animal updateAnimal(@NonNull Long id, String primaryColor,
       String breed, String gender,
-      String birthDate, String pattern)
+      LocalDate birthDate, String pattern)
       throws AnimalNotFoundException, AnimalUpdateException {
     Animal animal = animalRepository.findById(id)
         .orElseThrow(() -> new AnimalNotFoundException("Animal not found " + id));
@@ -78,8 +78,7 @@ public class AnimalService {
       LOG.info("-->" + birthDate);
 
       if (birthDate != null) {
-        LOG.info("f --> " + formatter.parse(birthDate));
-        animal.setBirthDate(formatter.parse(birthDate));
+        animal.setBirthDate(birthDate);
       }
       if (pattern != null) {
         animal.setPattern(pattern);

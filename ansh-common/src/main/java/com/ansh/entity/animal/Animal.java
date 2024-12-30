@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Pattern;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
 
@@ -36,11 +36,11 @@ public class Animal {
   @Column
   private char gender;
   @Column
-  private Date birthDate;
+  private LocalDate birthDate;
   @Column
   private String pattern;
   @Column
-  private Date admissionDate;
+  private LocalDate admissionDate;
   @JsonManagedReference
   @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Vaccination> vaccinations;

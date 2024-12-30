@@ -23,7 +23,7 @@ export const ADD_ANIMAL = gql`
         $breed: String,
         $implantChipId: String,
         $gender: String!,
-        $birthDate: String,
+        $birthDate: Date!,
         $pattern: String)
     {
         addAnimal(name: $name,
@@ -61,7 +61,7 @@ export const UPDATE_ANIMAL = gql`
                                  $primaryColor: String,
                                  $breed: String,
                                  $gender: String,
-                                 $birthDate: String,
+                                 $birthDate: Date,
                                  $pattern: String) {
                updateAnimal(id: $id,
                             primaryColor: $primaryColor,
@@ -129,7 +129,7 @@ export const ADD_VACCINATION = gql`
         $animalId: ID!,
         $vaccine: String!,
         $batch: String!,
-        $vaccinationTime: String!,
+        $vaccinationTime: Date!,
         $comments: String,
         $email: String!)
     {
@@ -155,7 +155,7 @@ export const UPDATE_VACCINATION = gql`
     mutation UpdateVaccination($id: ID!,
                               $vaccine: String,
                               $batch: String,
-                              $vaccinationTime: String,
+                              $vaccinationTime: Date,
                               $comments: String,
                               $email: String) {
         updateVaccination(id: $id,

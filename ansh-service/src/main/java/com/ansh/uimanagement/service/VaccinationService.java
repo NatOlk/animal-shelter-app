@@ -9,6 +9,7 @@ import com.ansh.uimanagement.service.exception.VaccinationCreationException;
 import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
 import com.ansh.uimanagement.service.exception.VaccinationUpdateException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class VaccinationService {
   }
 
   public Vaccination addVaccination(@NonNull Long animalId, @NonNull String vaccine,
-      @NonNull String batch, @NonNull String vaccinationTime,
+      @NonNull String batch, @NonNull LocalDate vaccinationTime,
       String comments, @NonNull String email) throws VaccinationCreationException {
 
     Animal animal = animalRepository.findById(animalId).orElse(null);
@@ -53,7 +54,7 @@ public class VaccinationService {
       Vaccination vaccination = new Vaccination();
       vaccination.setVaccine(vaccine);
       vaccination.setBatch(batch);
-      vaccination.setVaccinationTime(formatter.parse(vaccinationTime));
+      vaccination.setVaccinationTime(vaccinationTime);
       vaccination.setComments(comments);
       vaccination.setEmail(email);
       vaccination.setAnimal(animal);
@@ -62,12 +63,13 @@ public class VaccinationService {
       notificationService.sendAddVaccinationMessage(vaccination);
       return vaccination;
     } catch (Exception ex) {
-      throw new VaccinationCreationException("An error occurred while adding the vaccination for animal " + animalId);
+      throw new VaccinationCreationException(
+          "An error occurred while adding the vaccination for animal " + animalId);
     }
   }
 
   public Vaccination updateVaccination(@NonNull Long id, String vaccine,
-      String batch, String vaccinationTime,
+      String batch, LocalDate vaccinationTime,
       String comments, String email)
       throws VaccinationNotFoundException, VaccinationUpdateException {
     //TODO: fix exception
@@ -83,7 +85,7 @@ public class VaccinationService {
       }
 
       if (vaccinationTime != null) {
-        vaccination.setVaccinationTime(formatter.parse(vaccinationTime));
+        vaccination.setVaccinationTime(vaccinationTime);
       }
       if (comments != null) {
         vaccination.setComments(comments);

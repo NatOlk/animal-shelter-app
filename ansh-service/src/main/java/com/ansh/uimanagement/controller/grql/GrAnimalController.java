@@ -8,8 +8,7 @@ import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
-import java.util.Collections;
-import java.util.Comparator;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -41,7 +40,7 @@ public class GrAnimalController {
   @MutationMapping
   public Animal addAnimal(@Argument String name, @Argument String species,
       @Argument String primaryColor, @Argument String breed, @Argument String implantChipId,
-      @Argument String gender, @Argument String birthDate, @Argument String pattern)
+      @Argument String gender, @Argument LocalDate birthDate, @Argument String pattern)
       throws AnimalCreationException {
     return animalsService.addAnimal(name, species, primaryColor, breed, implantChipId, gender,
         birthDate, pattern);
@@ -49,7 +48,7 @@ public class GrAnimalController {
 
   @MutationMapping
   public Animal updateAnimal(@Argument Long id, @Argument String primaryColor,
-      @Argument String breed, @Argument String gender, @Argument String birthDate,
+      @Argument String breed, @Argument String gender, @Argument LocalDate birthDate,
       @Argument String pattern) throws AnimalNotFoundException, AnimalUpdateException {
     return animalsService.updateAnimal(id, primaryColor, breed, gender, birthDate, pattern);
   }

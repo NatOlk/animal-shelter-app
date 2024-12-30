@@ -6,30 +6,22 @@ import {
 } from "@nextui-org/react";
 import { useQuery, useMutation } from "@apollo/client";
 import DeleteAnimal from './deleteAnimal';
+import DateField from '../common/dateField';
 import EditableAnimalField from './editableAnimalField';
 import { ANIMALS_QUERY, ADD_ANIMAL } from "../common/graphqlQueries.js";
 import { useConfig } from "../common/configContext";
 import { Link } from 'react-router-dom';
-import { DatePicker } from "@nextui-org/date-picker";
-import { parseDate, getLocalTimeZone } from "@internationalized/date";
-import { useDateFormatter } from "@react-aria/i18n";
 import { IoIosAddCircleOutline } from "react-icons/io"
 import { BiInjection } from "react-icons/bi";
 import { useAsyncList } from "@react-stately/data";
+import { today } from "@internationalized/date";
 
 function AnimalsList() {
 
-    const [birthDate, setBirthDate] = React.useState(parseDate("2024-04-16"));
     const perPage = 8;
     const [currentPage, setCurrentPage] = useState(0);
 
     const config = useConfig();
-
-    const formatter = new Intl.DateTimeFormat("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
 
     const { loading, error, data, refetch } = useQuery(ANIMALS_QUERY);
 
@@ -78,6 +70,7 @@ function AnimalsList() {
         primaryColor: "White",
         gender: "F",
         breed: "",
+        birthDate: today().toString(),
         implantChipId: "00000000-00000000-0000",
         pattern: "Broken"
     };
@@ -118,6 +111,13 @@ function AnimalsList() {
         });
     };
 
+    const handleFieldChange = (fieldName, value) => {
+        setAnimal({
+            ...animal,
+            [fieldName]: value,
+        });
+    };
+
     const handleAddAnimal = () => {
         addAnimal({
             variables: {
@@ -127,17 +127,12 @@ function AnimalsList() {
                 breed: animal.breed,
                 implantChipId: animal.implantChipId,
                 gender: animal.gender,
-                birthDate: birthDate ? formatter.format(birthDate.toDate(getLocalTimeZone())) : "01/01/2025",
+                birthDate: animal.birthDate,
                 pattern: animal.pattern
             }
         }).catch((error1) => {
             console.error("Error adding animal:", error1);
         });
-
-        clearFields();
-    };
-
-    const clearFields = () => {
         setAnimal(initialValues);
     };
 
@@ -235,10 +230,8 @@ function AnimalsList() {
                         </TableCell>
                         <TableCell>
                             <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-                                <DatePicker isRequired className="max-w-[284px]"
-                                    name="birthDate" value={birthDate}
-                                    aria-label="Animal Birthday"
-                                    onChange={setBirthDate} />
+                                <DateField onDateChange={(newDate) =>
+                                    handleFieldChange("birthDate", newDate.toString())} />
                             </div>
                         </TableCell>
                         <TableCell>
