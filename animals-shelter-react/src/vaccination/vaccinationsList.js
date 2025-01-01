@@ -13,6 +13,7 @@ import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../
 import DateField from '../common/dateField';
 import { useAuth } from '../common/authContext';
 import { useConfig } from '../common/configContext';
+import { today } from "@internationalized/date";
 import { IoIosAddCircleOutline } from "react-icons/io"
 
 function VaccinationsList() {
@@ -31,7 +32,7 @@ function VaccinationsList() {
     }
 
     const { isAuthenticated, user } = useAuth();
-    console.log('Is auth user ' + user + '-' + isAuthenticated);
+    console.log('Is auth user ' + user.email + '-' + isAuthenticated);
     const initialValues = {
         vaccine: 'Rabies',
         batch: '',
