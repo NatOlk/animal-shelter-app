@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { NextUIProvider } from "@nextui-org/react";
-import './output.css';
+import './styles/output.css';
 import App from "./app";
 import './styles/global.css';
 
