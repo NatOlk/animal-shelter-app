@@ -28,7 +28,10 @@ export default function NoApproverSubscriptionList({ userProfile }) {
     try {
       await apiFetch('/animal-notify-approve-subscriber', {
         method: 'POST',
-        body: JSON.stringify({ email, approver: userProfile.email }),
+        body: {
+          email: email,
+          approver: userProfile.email
+        },
       });
       setUnapprovedSubscribers((prev) =>
         prev.filter((subscriber) => subscriber.email !== email)
@@ -42,7 +45,9 @@ export default function NoApproverSubscriptionList({ userProfile }) {
     try {
       await apiFetch('/animal-notify-reject-subscriber', {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        body: {
+          email: email
+        },
       });
       setUnapprovedSubscribers((prev) =>
         prev.filter((subscriber) => subscriber.email !== email)
