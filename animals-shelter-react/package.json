@@ -13,7 +13,10 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@apollo/client": "^3.12.2",
+    "@babel/core": "^7.0.0",
+    "@babel/helper-define-polyfill-provider": "^0.4.3",
     "@babel/plugin-transform-runtime": "^7.23.2",
+    "@babel/traverse": "^7.23.2",
     "@nextui-org/react": "^2.6.5",
     "@nextui-org/system": "^2.4.4",
     "@nextui-org/theme": "^2.4.1",
