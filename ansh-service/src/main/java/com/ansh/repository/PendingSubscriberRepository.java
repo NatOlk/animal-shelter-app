@@ -16,6 +16,6 @@ public interface PendingSubscriberRepository extends JpaRepository<PendingSubscr
 
   List<PendingSubscriber> findByApprover(String approver);
 
-  @Query("SELECT p FROM PendingSubscriber p WHERE p.approver IS NULL OR p.approver = ''")
+  @Query("select p from PendingSubscriber p where p.approver is null or p.approver = ''")
   List<PendingSubscriber> findByApproverIsNullOrEmpty();
 }
