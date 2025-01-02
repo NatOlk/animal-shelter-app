@@ -8,10 +8,8 @@ import com.ansh.repository.VaccinationRepository;
 import com.ansh.uimanagement.service.exception.VaccinationCreationException;
 import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
 import com.ansh.uimanagement.service.exception.VaccinationUpdateException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class VaccinationService {
 
-  private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
   @Autowired
   private VaccinationRepository vaccinationRepository;
 
@@ -72,7 +69,6 @@ public class VaccinationService {
       String batch, LocalDate vaccinationTime,
       String comments, String email)
       throws VaccinationNotFoundException, VaccinationUpdateException {
-    //TODO: fix exception
     Vaccination vaccination = vaccinationRepository.findById(id)
         .orElseThrow(() -> new VaccinationNotFoundException("Vaccination not found " + id));
 

@@ -23,7 +23,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
   @Modifying
   @Transactional
-  @Query("update UserProfile u set u.animalNotifyStatus = :status where u.email = :identifier OR u.name = :identifier")
+  @Query("update UserProfile u set u.animalNotifyStatus = :status where u.email = :identifier or u.name = :identifier")
   void updateAnimalNotificationSubscriptionStatus(@Param("identifier") String identifier,
       @Param("status") AnimalNotificationSubscriptionStatus status);
 }

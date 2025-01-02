@@ -16,10 +16,8 @@ import com.ansh.repository.AnimalRepository;
 import com.ansh.repository.VaccinationRepository;
 import com.ansh.uimanagement.service.exception.VaccinationCreationException;
 import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,8 +38,6 @@ class VaccinationServiceTest {
 
   @InjectMocks
   private VaccinationService vaccinationService;
-
-  private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 
   @BeforeEach
   void setUp() {

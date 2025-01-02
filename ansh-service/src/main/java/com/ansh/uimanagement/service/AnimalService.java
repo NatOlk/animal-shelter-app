@@ -6,10 +6,8 @@ import com.ansh.repository.AnimalRepository;
 import com.ansh.uimanagement.service.exception.AnimalCreationException;
 import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 public class AnimalService {
 
   private static final Logger LOG = LoggerFactory.getLogger(AnimalService.class);
-  private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
   private final String DEFAULT_IMPLANT_CHIP_PATTERN = "00000000-00000000-0000";
 
   @Autowired
@@ -75,8 +72,6 @@ public class AnimalService {
       if (gender != null) {
         animal.setGender(gender.charAt(0));
       }
-      LOG.info("-->" + birthDate);
-
       if (birthDate != null) {
         animal.setBirthDate(birthDate);
       }
