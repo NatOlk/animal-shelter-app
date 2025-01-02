@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AnimalRepository extends JpaRepository<Animal, Long> {
 
-  @Query("SELECT v.animal FROM Vaccination v WHERE v.id = :vaccinationId")
+  @Query("select v.animal from Vaccination v where v.id = :vaccinationId")
   Animal findAnimalByVaccinationId(@Param("vaccinationId") @NonNull Long vaccinationId);
   List<Animal> findAllByOrderByNameAsc();
 }

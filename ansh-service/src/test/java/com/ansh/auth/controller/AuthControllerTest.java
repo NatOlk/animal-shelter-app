@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 import com.ansh.auth.service.JwtService;
 import com.ansh.auth.service.UserProfileService;
 import com.ansh.entity.animal.UserProfile;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -39,9 +39,6 @@ class AuthControllerTest {
 
   @InjectMocks
   private AuthController authController;
-
-  @Mock
-  private HttpServletRequest request;
 
   @Mock
   private HttpSession session;
@@ -70,7 +67,7 @@ class AuthControllerTest {
     when(jwtService.generateToken(identifier)).thenReturn(token);
     when(userProfileService.findAuthenticatedUser()).thenReturn(Optional.of(userProfile));
 
-    ResponseEntity<Object> response = authController.login(identifier, password, request);
+    ResponseEntity<Object> response = authController.login(identifier, password);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
@@ -84,17 +81,35 @@ class AuthControllerTest {
   }
 
   @Test
-  void shouldReturnUnauthorizedForInvalidCredentials() {
+  void shouldReturnUnauthorized_whenInvalidCredentials() {
     String identifier = "invalidUser";
     String password = "wrongPassword";
 
     when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-        .thenThrow(new RuntimeException("Invalid credentials"));
+        .thenThrow(new BadCredentialsException("Invalid credentials"));
 
-    ResponseEntity<Object> response = authController.login(identifier, password, request);
+    ResponseEntity<Object> response = authController.login(identifier, password);
 
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     assertEquals("Invalid credentials", response.getBody());
+
+    verify(authenticationManager, times(1)).authenticate(
+        any(UsernamePasswordAuthenticationToken.class));
+    verifyNoInteractions(jwtService, userProfileService);
+  }
+
+  @Test
+  void shouldReturnInternalServerError_whenException() {
+    String identifier = "invalidUser";
+    String password = "wrongPassword";
+
+    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+        .thenThrow(new RuntimeException());
+
+    ResponseEntity<Object> response = authController.login(identifier, password);
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    assertEquals("An unexpected error occurred", response.getBody());
 
     verify(authenticationManager, times(1)).authenticate(
         any(UsernamePasswordAuthenticationToken.class));
@@ -112,7 +127,7 @@ class AuthControllerTest {
         .thenReturn(authentication);
     when(userProfileService.findAuthenticatedUser()).thenReturn(Optional.empty());
 
-    ResponseEntity<Object> response = authController.login(identifier, password, request);
+    ResponseEntity<Object> response = authController.login(identifier, password);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     assertEquals("User profile not found", response.getBody());
