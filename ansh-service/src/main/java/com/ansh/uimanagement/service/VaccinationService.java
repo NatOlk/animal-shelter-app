@@ -10,12 +10,15 @@ import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
 import com.ansh.uimanagement.service.exception.VaccinationUpdateException;
 import java.time.LocalDate;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
 public class VaccinationService {
+  private static final Logger LOG = LoggerFactory.getLogger(VaccinationService.class);
 
   @Autowired
   private VaccinationRepository vaccinationRepository;
@@ -44,7 +47,7 @@ public class VaccinationService {
 
     Animal animal = animalRepository.findById(animalId).orElse(null);
     if (animal == null) {
-      throw new VaccinationCreationException("Animal is not found " + animalId);
+      throw new VaccinationCreationException(STR."Animal is not found \{animalId}");
     }
 
     try {
@@ -57,11 +60,12 @@ public class VaccinationService {
       vaccination.setAnimal(animal);
 
       vaccinationRepository.save(vaccination);
+      LOG.debug("[vaccination] added : {}", vaccination);
       notificationService.sendAddVaccinationMessage(vaccination);
       return vaccination;
     } catch (Exception ex) {
       throw new VaccinationCreationException(
-          "An error occurred while adding the vaccination for animal " + animalId);
+          STR."An error occurred while adding the vaccination for animal \{animalId}");
     }
   }
 
@@ -70,7 +74,7 @@ public class VaccinationService {
       String comments, String email)
       throws VaccinationNotFoundException, VaccinationUpdateException {
     Vaccination vaccination = vaccinationRepository.findById(id)
-        .orElseThrow(() -> new VaccinationNotFoundException("Vaccination not found " + id));
+        .orElseThrow(() -> new VaccinationNotFoundException(STR."Vaccination not found \{id}"));
 
     try {
       if (vaccine != null) {
@@ -90,8 +94,9 @@ public class VaccinationService {
         vaccination.setEmail(email);
       }
       vaccinationRepository.save(vaccination);
+      LOG.debug("[vaccination] updated : {}", vaccination);
     } catch (Exception e) {
-      throw new VaccinationUpdateException("Could not update animal:" + e.getMessage());
+      throw new VaccinationUpdateException(STR."Could not update animal:\{e.getMessage()}");
     }
 
     return vaccination;
@@ -99,8 +104,9 @@ public class VaccinationService {
 
   public Vaccination deleteVaccination(@NonNull Long id) throws VaccinationNotFoundException {
     Vaccination vaccination = vaccinationRepository.findById(id)
-        .orElseThrow(() -> new VaccinationNotFoundException("Vaccination not found for: " + id));
+        .orElseThrow(() -> new VaccinationNotFoundException(STR."Vaccination not found for: \{id}"));
     vaccinationRepository.delete(vaccination);
+    LOG.debug("[vaccination] removed : {}", vaccination);
     notificationService.sendRemoveVaccinationMessage(vaccination);
     return vaccination;
   }

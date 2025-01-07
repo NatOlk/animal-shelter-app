@@ -2,12 +2,11 @@ package com.ansh.auth.controller;
 
 import com.ansh.auth.service.JwtService;
 import com.ansh.auth.service.UserProfileService;
+import com.ansh.utils.IdentifierMasker;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +38,15 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<Object> login(@RequestParam String identifier,
       @RequestParam String password) {
-    String sfId = generateSafeIdentifier(identifier);
+    String maskedIdentifier = IdentifierMasker.maskIdentifier(identifier);
     try {
       Authentication authentication = authenticateUser(identifier, password);
-      return processAuthenticatedUser(authentication, sfId);
+      return processAuthenticatedUser(authentication, maskedIdentifier);
     } catch (BadCredentialsException e) {
-      return createErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid credentials", sfId);
+      return createErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid credentials", maskedIdentifier);
     } catch (Exception e) {
       return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred",
-          sfId);
+          maskedIdentifier);
     }
   }
 
@@ -64,61 +63,33 @@ public class AuthController {
   }
 
   private ResponseEntity<Object> processAuthenticatedUser(Authentication authentication,
-      String sfId) {
-    LOG.debug("Authentication successful for user: {}", sfId);
+      String maskedIdentifier) {
+    LOG.debug("[auth] Authentication successful for user: {}", maskedIdentifier);
     SecurityContextHolder.getContext().setAuthentication(authentication);
     return userProfileService.findAuthenticatedUser()
-        .map(
-            userProfile -> createAuthenticationResponse(userProfile.getEmail(), authentication,
-                sfId))
-        .orElseGet(() -> createErrorResponse(HttpStatus.NOT_FOUND, "User profile not found", sfId));
+        .map(userProfile -> createAuthenticationResponse(userProfile.getEmail(), authentication,
+            maskedIdentifier))
+        .orElseGet(() -> createErrorResponse(HttpStatus.NOT_FOUND, "User profile not found",
+            maskedIdentifier));
   }
 
   private ResponseEntity<Object> createAuthenticationResponse(String email,
-      Authentication authentication,
-      String sfId) {
-    return extractMailParts(email)
-        .map(emailParts -> {
-          Map<String, Object> responseMap = new HashMap<>();
-          responseMap.put("token", jwtService.generateToken(authentication.getName()));
-          responseMap.put("email", email);
-          LOG.debug("Token generated for user: {}***@.{}", emailParts.localPart(),
-              emailParts.domain());
-          return ResponseEntity.<Object>ok(responseMap);
-        })
-        .orElseGet(() -> createErrorResponse(HttpStatus.NOT_FOUND, "Invalid email format", sfId));
-  }
-
-  private String generateSafeIdentifier(String identifier) {
-    return extractSafeIdentifier(identifier).map(group -> group + "***").orElse("Unknown");
-  }
-
-  private Optional<String> extractSafeIdentifier(String input) {
-    Matcher matcher = ValidationPatterns.IDENTIFIER_PATTERN.matcher(input);
-    return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-  }
-
-  private Optional<EmailParts> extractMailParts(String email) {
-    Matcher matcher = ValidationPatterns.EMAIL_PATTERN.matcher(email);
-    if (matcher.find()) {
-      return Optional.of(new EmailParts(matcher.group(1), matcher.group(2)));
+      Authentication authentication, String maskedIdentifier) {
+    String maskedEmail = IdentifierMasker.maskEmail(email);
+    if (!maskedEmail.isEmpty()) {
+      Map<String, Object> responseMap = new HashMap<>();
+      responseMap.put("token", jwtService.generateToken(authentication.getName()));
+      responseMap.put("email", email);
+      LOG.debug("[auth] Token generated for user: {}", maskedEmail);
+      return ResponseEntity.ok(responseMap);
+    } else {
+      return createErrorResponse(HttpStatus.NOT_FOUND, "Invalid email format", maskedIdentifier);
     }
-    return Optional.empty();
   }
 
   private ResponseEntity<Object> createErrorResponse(HttpStatus status, String message,
-      String sfId) {
-    LOG.error("{} for identifier {}", message, sfId);
+      String maskedIdentifier) {
+    LOG.error("[auth] {} for identifier {}", message, maskedIdentifier);
     return ResponseEntity.status(status).body(message);
-  }
-
-  public record EmailParts(String localPart, String domain) {
-
-  }
-
-  private static class ValidationPatterns {
-
-    public static final Pattern EMAIL_PATTERN = Pattern.compile("^([a-zA-Z]{2}).*\\.([a-z]+)$");
-    public static final Pattern IDENTIFIER_PATTERN = Pattern.compile("^([a-zA-Z0-9]{2}).*");
   }
 }

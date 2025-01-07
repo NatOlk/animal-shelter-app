@@ -2,7 +2,9 @@ package com.ansh.uimanagement.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -76,6 +78,28 @@ class SubscriptionServiceTest {
     assertEquals(topic, capturedSubscriber.getTopic());
 
     verify(userProfileService).updateAnimalNotificationSubscriptionStatus(
+        email, UserProfile.AnimalNotificationSubscriptionStatus.PENDING);
+  }
+
+  @Test
+  void shouldNotSavePendingSubscriber_whenSibscriberExist() {
+    String email = "test@example.com";
+    String approver = "approver@example.com";
+    String topic = "animalTopic";
+
+    PendingSubscriber subscriber1 = new PendingSubscriber();
+    subscriber1.setEmail(email);
+    subscriber1.setApprover(approver);
+    subscriber1.setTopic(topic);
+
+    when(pendingSubscriberRepository.findByEmailAndTopic(email, topic))
+        .thenReturn(Optional.of(subscriber1));
+
+    subscriptionService.savePendingSubscriber(email, approver, topic);
+
+    verify(pendingSubscriberRepository, times(0)).save(any());
+
+    verify(userProfileService, times(0)).updateAnimalNotificationSubscriptionStatus(
         email, UserProfile.AnimalNotificationSubscriptionStatus.PENDING);
   }
 

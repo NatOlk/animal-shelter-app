@@ -7,12 +7,14 @@ import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
+import com.ansh.utils.IdentifierMasker;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,13 +22,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class SubscriptionService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
   @Value("${animalShelterNotificationApp}")
   private String animalShelterNotificationApp;
   @Value("${notification.api.key}")
@@ -40,15 +42,12 @@ public class SubscriptionService {
 
   @Transactional
   public void savePendingSubscriber(String email, String approver, String topic) {
-    Optional<PendingSubscriber> pendingSubscriber =
-        pendingSubscriberRepository.findByEmailAndTopic(email, topic);
-    if (pendingSubscriber.isEmpty()) {
-      PendingSubscriber newSubscriber = new PendingSubscriber();
-      newSubscriber.setEmail(email);
-      newSubscriber.setApprover(approver);
-      newSubscriber.setTopic(topic);
+    if (pendingSubscriberRepository.findByEmailAndTopic(email, topic).isEmpty()) {
+      PendingSubscriber newSubscriber = new PendingSubscriber(email, approver, topic);
       pendingSubscriberRepository.save(newSubscriber);
-
+      LOG.debug("[pending subscriber] {} for topic {}",
+          IdentifierMasker.maskEmail(newSubscriber.getEmail()),
+          newSubscriber.getTopic());
       userProfileService.updateAnimalNotificationSubscriptionStatus(email, PENDING);
     }
   }
@@ -62,55 +61,40 @@ public class SubscriptionService {
   }
 
   public List<Subscription> getAllSubscriptionByApprover(String approver) {
-    String url = animalShelterNotificationApp + "/internal/animal-notify-all-approver-subscriptions";
+    String url = String.format("%s/internal/animal-notify-all-approver-subscriptions",
+        animalShelterNotificationApp);
+    HttpEntity<String> entity = createHttpEntity(Map.of("approver", approver));
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("X-API-KEY", notificationApiKey);
-    headers.setContentType(MediaType.APPLICATION_JSON);
-
-    Map<String, String> requestBody = new HashMap<>();
-    requestBody.put("approver", approver);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    String jsonBody;
-    try {
-      jsonBody = objectMapper.writeValueAsString(requestBody);
-    } catch (Exception e) {
-      throw new RuntimeException("Error during json creation ", e);
-    }
-
-    HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
-
-    ResponseEntity<List<Subscription>> response = restTemplate.exchange(url, HttpMethod.POST,
-        entity, new ParameterizedTypeReference<>() {});
-
-    return response.getBody();
+    return restTemplate.exchange(url, HttpMethod.POST, entity,
+            new ParameterizedTypeReference<List<Subscription>>() {
+            })
+        .getBody();
   }
 
   public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(String approver) {
-    String url = animalShelterNotificationApp + "/internal/animal-notify-approver-status";
+    String url = String.format("%s/internal/animal-notify-approver-status",
+        animalShelterNotificationApp);
+    HttpEntity<String> entity = createHttpEntity(Map.of("approver", approver));
 
+    return restTemplate.exchange(url, HttpMethod.POST, entity,
+            new ParameterizedTypeReference<UserProfile.AnimalNotificationSubscriptionStatus>() {
+            })
+        .getBody();
+  }
+
+  private HttpEntity<String> createHttpEntity(Map<String, String> requestBody) {
     HttpHeaders headers = new HttpHeaders();
     headers.set("X-API-KEY", notificationApiKey);
     headers.setContentType(MediaType.APPLICATION_JSON);
 
-    Map<String, String> requestBody = new HashMap<>();
-    requestBody.put("approver", approver);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    String jsonBody;
     try {
-      jsonBody = objectMapper.writeValueAsString(requestBody);
-    } catch (Exception e) {
-      throw new RuntimeException("Error during json creation ", e);
+      ObjectMapper objectMapper = new ObjectMapper();
+      String jsonBody = objectMapper.writeValueAsString(requestBody);
+      return new HttpEntity<>(jsonBody, headers);
+    } catch (JsonProcessingException e) {
+      //TODO fix it
+      throw new RuntimeException("Error during JSON creation", e);
     }
-
-    HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
-
-    ResponseEntity<UserProfile.AnimalNotificationSubscriptionStatus> response = restTemplate.exchange(url, HttpMethod.POST,
-        entity, new ParameterizedTypeReference<>() {});
-
-    return response.getBody();
   }
 
   protected void setAnimalShelterNotificationApp(String animalShelterNotificationApp) {
