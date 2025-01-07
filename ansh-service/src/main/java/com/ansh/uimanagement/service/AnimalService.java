@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class AnimalService {
 
   private static final Logger LOG = LoggerFactory.getLogger(AnimalService.class);
-  private final String DEFAULT_IMPLANT_CHIP_PATTERN = "00000000-00000000-0000";
+  private static final String DEFAULT_IMPLANT_CHIP_PATTERN = "00000000-00000000-0000";
 
   @Autowired
   private AnimalRepository animalRepository;
@@ -32,7 +32,7 @@ public class AnimalService {
 
   public Animal findById(Long id) throws AnimalNotFoundException {
     return animalRepository.findById(id)
-        .orElseThrow(() -> new AnimalNotFoundException("Animal not found " + id));
+        .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{id}"));
   }
 
   public Animal addAnimal(@NonNull String name, @NonNull String species,
@@ -53,11 +53,11 @@ public class AnimalService {
         animal.setImplantChipId(implantChipId);
       }
       animalRepository.save(animal);
-
+      LOG.debug("[animal] new : {}", animal);
       notificationService.sendAddAnimalMessage(animal);
       return animal;
     } catch (Exception e) {
-      throw new AnimalCreationException("Could not create animal: " + e.getMessage());
+      throw new AnimalCreationException(STR."Could not create animal: \{e.getMessage()}");
     }
   }
 
@@ -66,7 +66,7 @@ public class AnimalService {
       LocalDate birthDate, String pattern)
       throws AnimalNotFoundException, AnimalUpdateException {
     Animal animal = animalRepository.findById(id)
-        .orElseThrow(() -> new AnimalNotFoundException("Animal not found " + id));
+        .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{id}"));
 
     try {
       if (gender != null) {
@@ -84,9 +84,10 @@ public class AnimalService {
       if (breed != null) {
         animal.setBreed(breed);
       }
+      LOG.debug("[animal] updated : {}", animal);
       animalRepository.save(animal);
     } catch (Exception e) {
-      throw new AnimalUpdateException("Could not update animal:" + e.getMessage());
+      throw new AnimalUpdateException(STR."Could not update animal:\{e.getMessage()}");
     }
 
     return animal;
@@ -94,8 +95,9 @@ public class AnimalService {
 
   public Animal removeAnimal(@NonNull Long id, String reason) throws AnimalNotFoundException {
     Animal animal = animalRepository.findById(id)
-        .orElseThrow(() -> new AnimalNotFoundException("Animal is not found " + id));
+        .orElseThrow(() -> new AnimalNotFoundException(STR."Animal is not found \{id}"));
     animalRepository.delete(animal);
+    LOG.debug("[animal] removed : {}", animal);
     notificationService.sendRemoveAnimalMessage(animal, reason);
 
     return animal;

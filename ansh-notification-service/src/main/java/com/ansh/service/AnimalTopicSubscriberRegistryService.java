@@ -8,6 +8,7 @@ import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.SubscriberNotificationInfoProducer;
 import com.ansh.repository.SubscriptionRepository;
+import com.ansh.utils.IdentifierMasker;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
@@ -62,12 +63,12 @@ public class AnimalTopicSubscriberRegistryService {
   public void initializeCache() {
     List<Subscription> subscriptions = subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(
         animalTopicId);
-    LOG.debug("[init] Starting to fulfill cache with subscription qtx: {}", subscriptions.size());
+    LOG.debug("[subscribers cache] [init] Starting to fulfill cache with subscription qtx: {}", subscriptions.size());
 
     subscriptions.forEach(subscription -> {
       subscriptionRedisTemplate.opsForValue()
           .set(SUBSCRIPTIONS_CACHE + ":" + subscription.getToken(), subscription);
-      LOG.debug("[init] Have put subscription with key {}", subscription.getToken());
+      LOG.debug("[subscribers cache] [init] Have put subscription with key {}", IdentifierMasker.maskIdentifier(subscription.getToken()));
     });
 
     updRedisTemplate.opsForValue().set(CACHE_LAST_UPDATED, LocalDate.now().toString());
@@ -75,14 +76,14 @@ public class AnimalTopicSubscriberRegistryService {
 
   @Scheduled(cron = "0 0 20 * * ?", zone = "Europe/Berlin")
   public void reloadCache() {
-    LOG.info("[reload] Time to reload the cache: {}", LocalTime.now());
+    LOG.info("[subscribers cache] [reload] Time to reload the cache: {}", LocalTime.now());
 
     if (shouldUpdateCache()) {
       clearCache();
       initializeCache();
-      LOG.debug("[reload] Cache reloaded with updated subscriptions.");
+      LOG.debug("[subscribers cache] [reload] Cache reloaded with updated subscriptions.");
     } else {
-      LOG.info("[reload] Cache already updated today, skipping reload.");
+      LOG.info("[subscribers cache] [reload] Cache already updated today, skipping reload.");
     }
   }
 
@@ -90,7 +91,7 @@ public class AnimalTopicSubscriberRegistryService {
     String lastUpdateDate = updRedisTemplate.opsForValue().get(CACHE_LAST_UPDATED);
     String today = LocalDate.now().toString();
     if (lastUpdateDate == null || !lastUpdateDate.equals(today)) {
-      LOG.debug("Cache update needed: Last update was on [{}], today is [{}]", lastUpdateDate,
+      LOG.debug("[subscribers cache]Cache update needed: Last update was on [{}], today is [{}]", lastUpdateDate,
           today);
       return true;
     }
@@ -137,7 +138,9 @@ public class AnimalTopicSubscriberRegistryService {
   private void clearCache() {
     Set<String> keys = subscriptionRedisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
     if (keys != null) {
-      keys.forEach(subscriptionRedisTemplate::delete);
+      for(String key: keys) {
+       subscriptionRedisTemplate.delete(key);
+      }
     }
   }
 
@@ -161,13 +164,13 @@ public class AnimalTopicSubscriberRegistryService {
     }
     subscriptionRedisTemplate.opsForValue()
         .set(SUBSCRIPTIONS_CACHE + ":" + subscription.getToken(), subscription);
-    LOG.debug("[cache] Subscription added to cache with key {}", subscription.getToken());
+    LOG.debug("[subscribers cache] [add] Subscription added to cache with key {}", IdentifierMasker.maskIdentifier(subscription.getToken()));
   }
 
   private void removeSubscriptionFromCacheAndDb(String token) {
     subscriptionRepository.deleteByTokenAndTopic(token, animalTopicId);
     subscriptionRedisTemplate.delete(SUBSCRIPTIONS_CACHE + ":" + token);
-    LOG.debug("[remove] Subscription removed from cache and DB with key {}", token);
+    LOG.debug("[subscribers cache] [remove] Subscription removed from cache and DB with key {}", IdentifierMasker.maskIdentifier(token));
   }
 
   public List<Subscription> getAcceptedAndApprovedSubscribersFromCache() {
@@ -212,7 +215,6 @@ public class AnimalTopicSubscriberRegistryService {
 
   private List<Subscription> getAllSubscriptionsFromCache() {
     Set<String> keys = subscriptionRedisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
-    LOG.debug("[all] Retrieved all subscriptions from cache. Keys: {}", keys);
     List<Subscription> subscriptions = new ArrayList<>();
     if (keys != null) {
       keys.stream()

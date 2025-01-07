@@ -43,9 +43,9 @@ public class AnimalNotificationUserSubscribedProducer {
       String jsonMessage = objectMapper.writeValueAsString(event);
       kafkaTemplate.send(approveTopicId, jsonMessage);
 
-      LOG.debug("Message sent to topic {}: {}", approveTopicId, jsonMessage);
+      LOG.debug("[approve topic] sent message {}", jsonMessage);
     } catch (Exception e) {
-      LOG.error("Exception during sending message to topic {}: {}", approveTopicId, e.getMessage(), e);
+      LOG.error("[approve topic] exception during sending message {}", e.getMessage(), e);
     }
   }
 
