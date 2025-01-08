@@ -3,7 +3,7 @@ import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
 import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
 import {
-    Pagination, Progress, Spinner, Table, TableHeader,
+    Pagination, Progress, Alert, Table, TableHeader,
     TableColumn, TableBody, TableRow, TableCell
 } from "@nextui-org/react";
 import { useAsyncList } from "@react-stately/data";
@@ -12,6 +12,7 @@ function AllVaccinationsList() {
     const perPage = 10;
     const [currentPage, setCurrentPage] = useState(0);
     const { loading, error, data } = useQuery(ALL_VACCINATIONS_QUERY);
+    const [globalError, setGlobalError] = useState("");
 
     const list = useAsyncList({
         async load() {
@@ -60,10 +61,8 @@ function AllVaccinationsList() {
         return <p>Error: {error.message}</p>;
     }
 
-    const formatDate = (dateString) => {
-        if (!dateString) return "";
-        const date = new Date(dateString);
-        return date.toISOString().slice(0, 10);
+    const handleError = (error) => {
+        setGlobalError(error);
     };
 
     const pageCount = Math.ceil(list.items.length / perPage);
@@ -72,7 +71,16 @@ function AllVaccinationsList() {
 
     return (
         <div>
-            <div id="error" className="errorAlarm"></div>
+            <div className="flex flex-col gap-4 w-full">
+                {globalError && (
+                    <Alert
+                        dismissable
+                        color="danger"
+                        variant="bordered"
+                        onClose={() => setGlobalError("")}
+                        title={globalError} />
+                )}
+            </div>
             <Table className="highlight responsive-table"
                 isLoading={list.isLoading}
                 sortDescriptor={list.sortDescriptor}
@@ -96,11 +104,11 @@ function AllVaccinationsList() {
                             <TableCell>{vaccination.animal.species}</TableCell>
                             <TableCell>{vaccination.vaccine}</TableCell>
                             <TableCell>{vaccination.batch}</TableCell>
-                            <TableCell>{formatDate(vaccination.vaccinationTime)}</TableCell>
+                            <TableCell>{vaccination.vaccinationTime}</TableCell>
                             <TableCell>{vaccination.comments}</TableCell>
                             <TableCell>{vaccination.email}</TableCell>
                             <TableCell>
-                                <DeleteVaccination id={vaccination.id} />
+                                <DeleteVaccination id={vaccination.id} onError={handleError} />
                             </TableCell>
                         </TableRow>
                     ))}

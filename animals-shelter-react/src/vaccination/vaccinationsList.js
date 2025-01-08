@@ -4,7 +4,7 @@ import { useAsyncList } from "@react-stately/data";
 import {
     Select, SelectItem, Spinner,
     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-    Button, Input, Pagination, Progress
+    Button, Input, Pagination, Progress, Alert
 } from "@nextui-org/react";
 import DeleteVaccination from "./deleteVaccination";
 import EditableVaccinationField from './editableVaccinationField';
@@ -19,6 +19,7 @@ import { IoIosAddCircleOutline } from "react-icons/io"
 function VaccinationsList() {
     const perPage = 8;
     const [currentPage, setCurrentPage] = useState(0);
+    const [globalError, setGlobalError] = useState("");
     const location = useLocation();
     const { animalId } = location.state;
 
@@ -31,8 +32,10 @@ function VaccinationsList() {
         );
     }
 
+    const config = useConfig();
+    if (config == null) return <p>Loading configs...</p>;
+
     const { isAuthenticated, user } = useAuth();
-    console.log('Is auth user ' + user.email + '-' + isAuthenticated);
     const initialValues = {
         vaccine: 'Rabies',
         batch: '',
@@ -57,9 +60,6 @@ function VaccinationsList() {
             }
         }
     });
-
-    const config = useConfig();
-    if (config.config == null) return <p>Loading configs...</p>;
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -86,7 +86,10 @@ function VaccinationsList() {
                 comments: vaccination.comments,
                 email: vaccination.email
             }
-        }).catch(error => { showError({ error: error }) });
+        }).catch(error => {
+            setGlobalError("Failed to add vaccination: " + error.message);
+            setTimeout(() => setGlobalError(""), 15000);
+        });
 
         setVaccination(initialValues);
     }
@@ -141,10 +144,8 @@ function VaccinationsList() {
     );
     if (error) return <p>Error :(</p>;
 
-    const formatDate = (dateString) => {
-        if (!dateString) return "";
-        const date = new Date(dateString);
-        return date.toISOString().slice(0, 10);
+    const handleError = (error) => {
+        setGlobalError(error);
     };
 
     const vaccinationsList = list.items
@@ -154,8 +155,17 @@ function VaccinationsList() {
 
     return (
         <div>
-            <div id="error" className="errorAlarm"></div>
             <Link to="/">Back to Animals</Link>
+            <div className="flex flex-col gap-4 w-full">
+                {globalError && (
+                    <Alert
+                        dismissable
+                        color="danger"
+                        variant="bordered"
+                        onClose={() => setGlobalError("")}
+                        title={globalError} />
+                )}
+            </div>
             <Table className="compact-table"
                 isLoading={list.isLoading}
                 sortDescriptor={list.sortDescriptor}
@@ -178,7 +188,7 @@ function VaccinationsList() {
                                 className="w-full md:w-32"
                                 aria-label="Vaccine"
                                 onChange={handleInputChange}>
-                                {config.config.vaccines.map(vaccine => (
+                                {config.vaccines.map(vaccine => (
                                     <SelectItem key={vaccine}>{vaccine}</SelectItem>
                                 ))}
                             </Select>
@@ -243,7 +253,7 @@ function VaccinationsList() {
                                     name="email" />
                             </TableCell>
                             <TableCell>
-                                <DeleteVaccination id={vaccination.id} />
+                                <DeleteVaccination id={vaccination.id} onError={handleError} />
                             </TableCell>
                         </TableRow>
                     ))}

@@ -12,7 +12,7 @@ import {
 import { Textarea } from "@nextui-org/input";
 import { IoTrashOutline } from "react-icons/io5";
 
-function DeleteAnimal({ id }) {
+function DeleteAnimal({ id, onError }) {
     const [reason, setReason] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -33,7 +33,11 @@ function DeleteAnimal({ id }) {
                 setIsModalOpen(false);
                 setReason("");
             })
-            .catch((error) => console.error("Error deleting animal:", error));
+            .catch((error) => {
+                setIsModalOpen(false);
+                const errorMessage = "Failed to delete animal: " + error.message;
+                onError(errorMessage);
+            });
     };
 
     return (
