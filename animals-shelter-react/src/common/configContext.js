@@ -30,7 +30,7 @@ export const ConfigProvider = ({ children }) => {
     }, [isAuthenticated]);
 
     return (
-        <ConfigContext.Provider value={{ config, loading, error }}>
+        <ConfigContext.Provider value={{ ...config, loading, error }}>
             {children}
         </ConfigContext.Provider>
     );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
     Select, SelectItem, Spacer,
     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-    Button, Input, Pagination, Progress
+    Button, Input, Pagination, Progress, Alert
 } from "@nextui-org/react";
 import { useQuery, useMutation } from "@apollo/client";
 import DeleteAnimal from './deleteAnimal';
@@ -20,10 +20,9 @@ function AnimalsList() {
 
     const perPage = 8;
     const [currentPage, setCurrentPage] = useState(0);
-
-    const config = useConfig();
-
+    const [globalError, setGlobalError] = useState("");
     const { loading, error, data, refetch } = useQuery(ANIMALS_QUERY);
+    const config = useConfig();
 
     const list = useAsyncList({
         async load() {
@@ -50,7 +49,6 @@ function AnimalsList() {
                     if (sortDescriptor.direction === "descending") {
                         cmp *= -1;
                     }
-
                     return cmp;
                 }),
             };
@@ -94,7 +92,7 @@ function AnimalsList() {
         refetch();
     }, [refetch]);
 
-    if (config.config == null) return <p>Loading configs...</p>;
+    if (config == null) return <p>Loading configs...</p>;
     if (loading) return (
         <div>
             <p> Loading...</p>
@@ -130,12 +128,16 @@ function AnimalsList() {
                 birthDate: animal.birthDate,
                 pattern: animal.pattern
             }
-        }).catch((error1) => {
-            console.error("Error adding animal:", error1);
+        }).catch((error) => {
+            setGlobalError("Failed to add animal: " + error.message);
+            setTimeout(() => setGlobalError(""), 15000);
         });
         setAnimal(initialValues);
     };
 
+    const handleError = (error) => {
+        setGlobalError(error);
+    };
     const pageCount = Math.ceil(list.items.length / perPage);
 
     const paginatedAnimals = list.items.slice(
@@ -144,7 +146,16 @@ function AnimalsList() {
 
     return (
         <div>
-            <div id="error" className="errorAlarm"></div>
+            <div className="flex flex-col gap-4 w-full">
+                {globalError && (
+                    <Alert
+                        dismissable
+                        color="danger"
+                        variant="bordered"
+                        onClose={() => setGlobalError("")}
+                        title={globalError} />
+                )}
+            </div>
             <Table className="compact-table"
                 isLoading={list.isLoading}
                 sortDescriptor={list.sortDescriptor}
@@ -181,7 +192,7 @@ function AnimalsList() {
                                 isRequired
                                 aria-label="Animal Species"
                                 onChange={handleInputChange}>
-                                {config.config.animals.map(animal => (
+                                {config.animals.map(animal => (
                                     <SelectItem key={animal}>{animal}</SelectItem>
                                 ))}
                             </Select>
@@ -195,7 +206,7 @@ function AnimalsList() {
                                 aria-label="Animal Primary Color"
                                 defaultValue="White"
                                 onChange={handleInputChange}>
-                                {config.config.colors.map(color => (
+                                {config.colors.map(color => (
                                     <SelectItem key={color}>{color}</SelectItem>
                                 ))}
                             </Select>
@@ -223,7 +234,7 @@ function AnimalsList() {
                                 isRequired
                                 aria-label="Animal Gender"
                                 onChange={handleInputChange}>
-                                {config.config.genders.map(gender => (
+                                {config.genders.map(gender => (
                                     <SelectItem key={gender}>{gender}</SelectItem>
                                 ))}
                             </Select>
@@ -259,7 +270,7 @@ function AnimalsList() {
                                 <EditableAnimalField
                                     animal={animal} value={animal.primaryColor}
                                     name="primaryColor"
-                                    values={config.config.colors} />
+                                    values={config.colors} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
@@ -271,7 +282,7 @@ function AnimalsList() {
                                 <EditableAnimalField
                                     animal={animal} value={animal.gender}
                                     name="gender"
-                                    values={config.config.genders} />
+                                    values={config.genders} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
@@ -294,7 +305,7 @@ function AnimalsList() {
                                         <BiInjection />
                                     </Button>
                                     &nbsp;
-                                    <DeleteAnimal id={animal.id} />
+                                    <DeleteAnimal id={animal.id} onError={handleError} />
                                 </div>
                             </TableCell>
                         </TableRow>

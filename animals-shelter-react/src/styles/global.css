@@ -132,4 +132,13 @@
     padding: 1rem;
     overflow-y: auto;
   }
+
+  .error-message {
+      background-color: #ffe6e6;
+      color: #ff1a1a;
+      border: 1px solid #ff1a1a;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+  }
 }
