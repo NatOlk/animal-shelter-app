@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { createRoot } from "react-dom/client";
 import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
@@ -6,8 +6,6 @@ import { NextUIProvider } from "@nextui-org/react";
 import './styles/output.css';
 import App from "./app";
 import './styles/global.css';
-
-const apiUrl = process.env.REACT_APP_API_URL;
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
@@ -28,7 +26,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: `${apiUrl}/graphql`,
+  uri: `/ansh/api/graphql`,
   credentials: 'include',
 });
 

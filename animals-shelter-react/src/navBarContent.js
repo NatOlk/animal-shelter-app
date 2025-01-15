@@ -1,19 +1,18 @@
 import React from "react";
 import { useAuth } from './common/authContext';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button } from "@nextui-org/react";
-import { Image } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Image, Button } from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
 
 export const Logo = () => {
   return (
     <Image
-      src="img/hippologo.png"
+      src="static/img/hippologo.png"
     />
   );
 };
 
 const NavBarContent = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleClick = () => {

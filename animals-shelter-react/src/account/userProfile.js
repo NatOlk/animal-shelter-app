@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from "@apollo/client";
 import AllApproverSubscriptionList from './allApproverSubscriptionList';
 import PendingSubscriptionList from './pendingSubscriptionList';
@@ -20,8 +20,6 @@ const UserProfile = () => {
     fetchPolicy: "network-only",
   });
 
-  const [isNoApproverOpen, setIsNoApproverOpen] = useState(false);
-  const [isAllOpen, setIsAllOpen] = useState(false);
   const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState(null);
 
   useEffect(() => {

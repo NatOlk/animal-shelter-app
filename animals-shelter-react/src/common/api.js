@@ -1,4 +1,3 @@
-const apiUrl = process.env.REACT_APP_API_URL;
 
 const handleUnauthorized = () => {
   localStorage.removeItem('jwt');
@@ -11,7 +10,7 @@ export const apiFetch = async (url, options = {}) => {
   const token = localStorage.getItem('jwt');
 
   try {
-    const response = await fetch(`${apiUrl}${url}`, {
+    const response = await fetch(`/ansh/api${url}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
