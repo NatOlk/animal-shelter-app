@@ -1,7 +1,7 @@
 version: '3.8'
-services:
 
-  redis:
+services:
+  redis-ansh:
     image: redis:latest
     env_file:
       - .env
@@ -19,7 +19,7 @@ services:
     networks:
       - backend
 
-  zookeeper:
+  zookeeper-ansh:
     image: confluentinc/cp-zookeeper:7.2.2
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -29,14 +29,14 @@ services:
     networks:
       - backend
 
-  ansh-notification-kafka:
+  kafka-ansh:
     image: confluentinc/cp-kafka:7.2.2
     depends_on:
-      - zookeeper
+      - zookeeper-ansh
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://ansh-notification-kafka:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-ansh:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-ansh:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - "9092:9092"
@@ -82,29 +82,38 @@ services:
       context: ./ansh-notification-service
       dockerfile: Dockerfile
     depends_on:
-      redis:
+      redis-ansh:
         condition: service_healthy
       postgres-animal-shelter-notification:
         condition: service_healthy
     env_file:
       - .env
     ports:
-      - "8081:8081"
+      - "8444:8444"
       - "5006:5006"
+    volumes:
+      - ./ansh-notification-service:/app
+      - ./nginx/keystore.p12:/app/keystore.p12
+      - ./nginx/truststore.p12:/app/truststore.p12
     environment:
-      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
+      JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=BerlinApril2025 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-animal-shelter-notification:5432/animal_shelter_notification
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD_NOTIFICATION}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_NOTIFICATION}
       POSTGRES_DB: animal_shelter_notification
-      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_HOST: redis-ansh
       SPRING_REDIS_PORT: 6379
-      ANIMAL_SHELTER_NOTIFICATION_APP: http://localhost:8081
-      ANIMAL_SHELTER_REACT_APP: http://localhost:3000
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: ${GMAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${GMAIL_PASSWORD}
+      SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: smtp.gmail.com
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+      ANIMAL_SHELTER_NOTIFICATION_APP: https://localhost:8444
       ANIMAL_SHELTER_APP: http://localhost:8080
-    volumes:
-      - ./ansh-notification-service:/app
     networks:
       - backend
 
@@ -118,28 +127,24 @@ services:
     env_file:
       - .env
     ports:
-      - "8080:8080"
+      - "8443:8443"
       - "5005:5005"
+    volumes:
+      - ./ansh-service:/app
+      - ./nginx/keystore.p12:/app/keystore.p12
+      - ./nginx/truststore.p12:/app/truststore.p12
     environment:
-      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=BerlinApril2025 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-ansh:9092
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-animal-shelter:5432/Animal_Shelter
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: Animal_Shelter
-      SPRING_MAIL_HOST: smtp.gmail.com
-      SPRING_MAIL_PORT: 587
-      SPRING_MAIL_USERNAME: ${GMAIL_USERNAME}
-      SPRING_MAIL_PASSWORD: ${GMAIL_PASSWORD}
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
       SPRING_PROFILES_ACTIVE: init-user
-      ANIMAL_SHELTER_NOTIFICATION_APP: http://ansh-notification-service:8081
-      ANIMAL_SHELTER_REACT_APP: http://localhost:3000
+      SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD}
+      ANIMAL_SHELTER_NOTIFICATION_APP: https://nginx-proxy-ansh/ansh/notification
       ANIMAL_SHELTER_APP: http://localhost:8080
-    volumes:
-      - ./ansh-service:/app
     networks:
       - backend
 
@@ -153,13 +158,31 @@ services:
       -o ./src/output.css --watch & npm start"
     ports:
       - "3000:3000"
-    env_file:
-      - animals-shelter-react/.env
-    volumes:
-      - ./animals-shelter-react:/app
+    environment:
+      - HTTPS=true
+      - SSL_CRT_FILE=/etc/nginx/cert.crt
+      - SSL_KEY_FILE=/etc/nginx/cert.key
     networks:
       - frontend
       - backend
+
+  nginx-proxy-ansh:
+    image: nginx:1.21.6-alpine
+    volumes:
+      - ./animals-shelter-react/build:/usr/share/nginx/html
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/cert.crt:/etc/nginx/cert.crt
+      - ./nginx/cert.key:/etc/nginx/cert.key
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - ansh-service
+      - ansh-notification-service
+      - ansh-react-app
+    networks:
+      - backend
+      - frontend
 
 networks:
   backend:

@@ -11,6 +11,8 @@ shelters. It consists of a **frontend** and **two microservices** that handle an
 users, and newsletter subscribers. The project utilizes modern technologies like **React**, **Spring
 Boot**, **Redis**, **Kafka**, and **Docker**.
 
+Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projects/1/views/1
+
 ---
 
 ## **Core Features**

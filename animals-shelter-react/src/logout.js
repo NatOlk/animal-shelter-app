@@ -7,11 +7,10 @@ import { Button } from '@nextui-org/react';
 const Logout = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
-    const apiUrl = process.env.REACT_APP_API_URL;
 
     const handleLogout = async () => {
         try {
-            await axios.post(`${apiUrl}/api/auth/logout`, {}, { withCredentials: true });
+            await axios.post(`/ansh/api/auth/logout`, {}, { withCredentials: true });
             logout();
             navigate('/login');
         } catch (error) {

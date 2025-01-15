@@ -1,8 +1,7 @@
 import React from 'react';
 import Subscription from './subscription';
 import { Progress } from '@nextui-org/progress';
-import { Spacer } from '@nextui-org/react';
-import { Tooltip } from '@nextui-org/react';
+import { Spacer, Tooltip } from '@nextui-org/react';
 import { TbBellRinging } from "react-icons/tb";
 
 const UserAnimalTopicSubscriptionStatus = ({ status }) => {

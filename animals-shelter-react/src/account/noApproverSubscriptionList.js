@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+         Tooltip, Button, Spacer} from "@nextui-org/react";
 import { apiFetch } from '../common/api';
-import { Tooltip, Button, Spacer, Link } from "@nextui-org/react";
 import { TfiReload } from "react-icons/tfi";
-import { HiX } from "react-icons/hi";
-import { HiOutlineUserAdd } from "react-icons/hi";
+import { HiX, HiOutlineUserAdd} from "react-icons/hi";
 
 export default function NoApproverSubscriptionList({ userProfile }) {
   const [unapprovedSubscribers, setUnapprovedSubscribers] = useState([]); // Данные таблицы

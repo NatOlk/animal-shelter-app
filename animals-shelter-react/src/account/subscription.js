@@ -7,7 +7,6 @@ const Subscription = () => {
     const { user } = useAuth();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
-    const apiUrl = process.env.REACT_APP_NOTIFICATION_APP_API_URL;
 
     useEffect(() => {
         if (user.email) {
@@ -20,7 +19,7 @@ const Subscription = () => {
         if (!email.trim()) return;
 
         try {
-            await fetch(`${apiUrl}/external/animal-notify-subscribe`, {
+            await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

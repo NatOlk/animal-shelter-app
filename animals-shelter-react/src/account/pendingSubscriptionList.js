@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+         Tooltip, Button} from "@nextui-org/react";
 import { apiFetch } from '../common/api';
-import { Tooltip, Button, Spacer } from "@nextui-org/react";
-import { HiX } from "react-icons/hi";
-import { HiOutlineUserAdd } from "react-icons/hi";
+import { HiX, HiOutlineUserAdd } from "react-icons/hi";
 
 function PendingSubscriptionList({ userProfile }) {
   const [pendingSubscribers, setPendingSubscribers] = useState([]);

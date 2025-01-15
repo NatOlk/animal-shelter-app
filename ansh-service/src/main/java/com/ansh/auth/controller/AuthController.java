@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
 public class AuthController {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
@@ -35,7 +34,7 @@ public class AuthController {
   @Autowired
   private JwtService jwtService;
 
-  @PostMapping("/login")
+  @PostMapping("/auth/login")
   public ResponseEntity<Object> login(@RequestParam String identifier,
       @RequestParam String password) {
     String maskedIdentifier = IdentifierMasker.maskIdentifier(identifier);
@@ -50,7 +49,7 @@ public class AuthController {
     }
   }
 
-  @PostMapping("/logout")
+  @PostMapping("/auth/logout")
   public ResponseEntity<String> logout(HttpSession session) {
     session.invalidate();
     return ResponseEntity.ok("Logout successful");

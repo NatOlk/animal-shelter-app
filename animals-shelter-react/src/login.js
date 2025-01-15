@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from './common/authContext';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button } from '@nextui-org/react';
-import { Spacer } from "@nextui-org/react";
+import { Form, Input, Button, Spacer } from '@nextui-org/react';
 
 const Login = () => {
-    const apiUrl = process.env.REACT_APP_API_URL;
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -18,7 +16,7 @@ const Login = () => {
         params.append('password', password);
 
         try {
-            const response = await fetch(`${apiUrl}/api/auth/login`, {
+            const response = await fetch(`/ansh/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

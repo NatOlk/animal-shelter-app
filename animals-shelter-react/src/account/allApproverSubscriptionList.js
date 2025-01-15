@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
+import {
+     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+     Tooltip, Button, Spacer} from "@nextui-org/react";
 import { apiFetch } from '../common/api';
-import { Tooltip, Button, Spacer } from "@nextui-org/react";
 import { HiOutlineUserRemove } from "react-icons/hi";
 
 export default function AllApproverSubscriptionList({ userProfile }) {
-  const apiUrl = process.env.REACT_APP_NOTIFICATION_APP_API_URL;
   const [allSubscribers, setAllSubscribers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,7 +29,7 @@ export default function AllApproverSubscriptionList({ userProfile }) {
 
   const handleUnsubscribe = async (token) => {
     try {
-      await fetch(`${apiUrl}/external/animal-notify-unsubscribe/${token}`, {
+      await fetch(`/ansh/notification/external/animal-notify-unsubscribe/${token}`, {
         method: 'GET',
       });
       setAllSubscribers((prevSubscribers) =>

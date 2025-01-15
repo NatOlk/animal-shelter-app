@@ -53,7 +53,6 @@ public class GrVaccineController {
     return vaccinationService.findByAnimalId(animalId);
   }
 
-
   @QueryMapping
   public int vaccinationCountById(@Argument Long id) {
     return vaccinationService.vaccinationCountById(id);

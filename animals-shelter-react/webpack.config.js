@@ -1,14 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
-
-const env = Object.keys(process.env)
-    .filter(key => key.startsWith('REACT_APP_'))
-    .reduce((obj, key) => {
-        obj[`process.env.${key}`] = JSON.stringify(process.env[key]);
-        return obj;
-    }, {});
 
 module.exports = {
     entry: './src/index.js',
@@ -16,8 +10,9 @@ module.exports = {
     cache: true,
     mode: 'development',
     output: {
-        path: path.resolve(__dirname, 'built'),
+        path: path.resolve(__dirname, 'build'),
         filename: 'bundle.js',
+        publicPath: '/',
     },
     module: {
         rules: [
@@ -34,6 +29,13 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader'],
+            },
+            {
+                test: /\.(png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|otf|json)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'static/[hash][ext][query]',
+                }
             }
         ]
     },
@@ -47,13 +49,19 @@ module.exports = {
             filename: 'index.html',
             inject: 'body',
         }),
-        new webpack.DefinePlugin(env),
+        new CopyWebpackPlugin({
+                    patterns: [
+                        { from: 'public/img', to: 'static/img' }
+                    ]
+                })
     ],
     devServer: {
         port: 3000,
         static: path.join(__dirname, 'public'),
         hot: true,
         open: true,
-        historyApiFallback: true
+        historyApiFallback: true,
+        host: '0.0.0.0',
+        allowedHosts: 'all',
     }
 };
