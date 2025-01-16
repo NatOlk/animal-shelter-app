@@ -181,7 +181,7 @@ inter-service communication, and secure authentication.
 > Certificates and keystores ensure secure, encrypted communication.
 > You can generate any key for this purpose, but it should be kept confidential to maintain the security of your system.
 
-Follow the steps above to create and manage SSL certificates for your server.
+Follow the steps in the instruction to create and manage SSL certificates for your server.
 [What Are Certificates and Why Do You Need Them](#what-are-certificates-and-why-do-you-need-them)
 
 4. **Launch the application using Docker Compose:**
