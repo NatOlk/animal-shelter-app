@@ -33,7 +33,7 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
     - View user profiles.
 - **Newsletter Subscriptions**:
     - Approve or reject subscription requests, including those
-      from external applications where the subscriber does not have an explicit approver..
+      from external applications where the subscriber does not have an explicit approver.
     - Unsubscribe a subscriber
 
 ### **2. Animal Shelter Service (Spring Boot + Kafka + GraphQL)**
@@ -113,7 +113,8 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
      GMAIL_PASSWORD=your_gmail_password  
      REDIS_PASSWORD=your_redis_password  
      NOTIFICATION_API_KEY=your_api_key  
-     JWT_SECRET_KEY=your_jwt_key   
+     JWT_SECRET_KEY=your_jwt_key
+     SSL_KEY_STORE_PASSWORD=your_ssl_key_store_password   
    ```
 
 #### *POSTGRES_PASSWORD and POSTGRES_PASSWORD_NOTIFICATION*
@@ -162,7 +163,7 @@ subscribers and other data.
 
 >This is an API key used for secure communication between services for sending and receiving
 messages. 
-> You can generate any key for this purpose. You can generate any key for this purpose, but it should be kept confidential to maintain the security of your system.
+> You can generate any key for this purpose, but it should be kept confidential to maintain the security of your system.
 
 #### *JWT_SECRET_KEY*
 
@@ -174,6 +175,15 @@ By setting these environment variables correctly, your application will be prope
 database access, email notifications, Redis caching,
 inter-service communication, and secure authentication.
 
+#### *SSL_KEY_STORE_PASSWORD*
+
+> This password protects access to the keystore and truststore from unauthorized access, which contains your private keys and certificates.
+> Certificates and keystores ensure secure, encrypted communication.
+> You can generate any key for this purpose, but it should be kept confidential to maintain the security of your system.
+
+Follow the steps above to create and manage SSL certificates for your server.
+[What Are Certificates and Why Do You Need Them](#what-are-certificates-and-why-do-you-need-them)
+
 4. **Launch the application using Docker Compose:**
 
    Build and start the services using the following command:
@@ -184,7 +194,7 @@ inter-service communication, and secure authentication.
 
 5. **Open the application in your browser**
 
-   Navigate to http://localhost:3000
+   Navigate to https://localhost
    Now you will be able to log in with the user admin.
 
 ## **Future Plans**
@@ -198,3 +208,74 @@ inter-service communication, and secure authentication.
 
 - Enable management of animal adaptation
   >The system will be enhanced to allow managing the adaptation process of animals, including tracking their progress and providing necessary information and updates to potential adopters.
+  
+## **What Are Certificates and Why Do You Need Them?**
+SSL certificates ensure encrypted communication between clients and servers, protecting data from being intercepted by unauthorized parties.
+
+Key Terms:
+- Private Key (cert.key): A secret key used to decrypt data on the server.
+- Certificate Signing Request (CSR, cert.csr): A request file containing information about the entity requesting the certificate.
+- Certificate (cert.crt): A file that proves the server's authenticity.
+- Keystore (keystore.p12): A storage file containing the server's private key and certificate.
+- Truststore (truststore.p12): A storage file containing certificates that the server or client trusts.
+### 🛠 Steps to Create SSL Certificates
+To organize your project securely and efficiently, SSL certificates should be generated and stored in a dedicated folder.
+
+Follow these steps:
+
+### 🔧 Step 1: Create a Folder for Certificates
+In the root of your project, create a folder named **config**. All commands below must be executed in this folder.
+
+### 🔑 Step 2. Creates the private key (cert.key) and a CSR (cert.csr) with entity details such as domain, organization, and country.
+
+```bash
+openssl req -newkey rsa:2048 -nodes -keyout cert.key -out cert.csr -subj "/C=DE/ST=Berlin/L=Berlin/O=PetProject/OU=IT/CN=nginx-proxy-ansh" -addext "subjectAltName=DNS:nginx-proxy-ansh,DNS:localhost"
+```
+- 🔑 cert.key: The private key used for encryption.
+- 📜 cert.csr: The CSR contains details such as domain, organization, and country.
+
+###  🔒 Step 3. Generates a PKCS12 keystore (keystore.p12) containing the private key and self-signed certificate.
+
+```bash
+keytool -genkeypair -alias ansh-cert -keyalg RSA -keysize 2048 -validity 365 -dname "CN=nginx-proxy-ansh, OU=IT, O=PetProject, L=Berlin, ST=Berlin, C=DE" -ext "SAN=dns:nginx-proxy-ansh" -keystore keystore.p12 -storetype PKCS12 -storepass your_ssl_key_store_password
+```
+- 📂 keystore.p12: Stores the private key and self-signed certificate.
+- 🏷️ Alias (ansh-cert): A unique name for the certificate.
+
+###  🛡 Step 4. Creates a self-signed certificate (cert.crt) valid for 365 days.
+
+```bash
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout cert.key -out cert.crt -subj "/C=DE/ST=Berlin/L=Berlin/O=PetProject/OU=IT/CN=nginx-proxy-ansh"
+```
+- 🔑 cert.key: The private key.
+- 📜 cert.crt: A self-signed certificate valid for 365 days.
+
+###  📜 Step 5. Imports the self-signed certificate into a truststore (truststore.p12), making it trusted.
+
+```bash
+keytool -import -trustcacerts -file cert.crt -alias ansh-cert -keystore truststore.p12 -storepass your_ssl_key_store_password
+```
+
+- 🛡 truststore.p12: Stores trusted certificates.
+- 📜 cert.crt: The certificate being trusted.
+- 🏷️ Alias (ansh-cert): A unique name for the certificate in the truststore.
+###  📥 Step 6. Import an External Certificate
+To trust an external certificate, such as Google's SMTP certificate, follow these steps:
+
+In Mozilla Firefox:
+
+- Visit https://www.google.com.
+- Click the 🔒 icon in the address bar.
+- Select More Information.
+- Click View Certificate.
+- Go to the Details tab.
+- Click Export....
+- Save the file as mail-google-com.pem in PEM format.
+- Put this file to the config folder 
+- Run below command
+```bash
+keytool -import -trustcacerts -file mail-google-com.pem -alias smtp-gmail -keystore truststore.p12 -storepass your_ssl_key_store_password
+```
+- 📜 mail-google-com.pem: The external certificate.
+- 🛡 truststore.p12: Adds the external certificate to the truststore.
+- 🏷️ Alias (smtp-gmail): Identifies this certificate in the truststore.
