@@ -93,8 +93,8 @@ services:
       - "5006:5006"
     volumes:
       - ./ansh-notification-service:/app
-      - ./nginx/keystore.p12:/app/keystore.p12
-      - ./nginx/truststore.p12:/app/truststore.p12
+      - ./config/keystore.p12:/app/keystore.p12
+      - ./config/truststore.p12:/app/truststore.p12
     environment:
       JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=BerlinApril2025 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-animal-shelter-notification:5432/animal_shelter_notification
@@ -130,8 +130,8 @@ services:
       - "5005:5005"
     volumes:
       - ./ansh-service:/app
-      - ./nginx/keystore.p12:/app/keystore.p12
-      - ./nginx/truststore.p12:/app/truststore.p12
+      - ./config/keystore.p12:/app/keystore.p12
+      - ./config/truststore.p12:/app/truststore.p12
     environment:
       JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=BerlinApril2025 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-ansh:9092
@@ -169,8 +169,8 @@ services:
     volumes:
       - ./animals-shelter-react/build:/usr/share/nginx/html
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/cert.crt:/etc/nginx/cert.crt
-      - ./nginx/cert.key:/etc/nginx/cert.key
+      - ./config/cert.crt:/etc/nginx/cert.crt
+      - ./config/cert.key:/etc/nginx/cert.key
     ports:
       - "443:443"
       - "80:80"
