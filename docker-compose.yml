@@ -113,7 +113,6 @@ services:
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
       ANIMAL_SHELTER_NOTIFICATION_APP: https://localhost:8444
-      ANIMAL_SHELTER_APP: http://localhost:8080
     networks:
       - backend
 
@@ -144,7 +143,6 @@ services:
       SPRING_PROFILES_ACTIVE: init-user
       SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD}
       ANIMAL_SHELTER_NOTIFICATION_APP: https://nginx-proxy-ansh/ansh/notification
-      ANIMAL_SHELTER_APP: http://localhost:8080
     networks:
       - backend
 
