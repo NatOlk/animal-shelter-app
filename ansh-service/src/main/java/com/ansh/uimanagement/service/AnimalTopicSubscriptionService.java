@@ -40,6 +40,7 @@ public class AnimalTopicSubscriptionService {
         });
   }
 
+  @Transactional
   public void rejectSubscriber(String email) {
     pendingSubscriberRepository.findByEmailAndTopic(email, animalTopicId)
         .ifPresent(subscriber -> {
