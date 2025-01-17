@@ -16,17 +16,21 @@ import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "user_profiles", schema = "public")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserProfile {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @Column(unique = true)
+  @EqualsAndHashCode.Include
   private String email;
+  @EqualsAndHashCode.Include
   @Column(unique = true)
   private String name;
   @Column

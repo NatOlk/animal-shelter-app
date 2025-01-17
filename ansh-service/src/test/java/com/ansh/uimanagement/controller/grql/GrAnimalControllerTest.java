@@ -1,11 +1,13 @@
 package com.ansh.uimanagement.controller.grql;
 
 import com.ansh.DateScalarConfiguration;
+import com.ansh.dto.AnimalDTO;
 import com.ansh.entity.animal.Animal;
 import com.ansh.uimanagement.service.AnimalService;
 import com.ansh.uimanagement.service.exception.AnimalCreationException;
 import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
+import com.ansh.utils.AnimalMapper;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -27,17 +29,28 @@ class GrAnimalControllerTest {
   @MockBean
   private AnimalService animalService;
 
+  @MockBean
+  private AnimalMapper animalMapper;
+
   @Test
   void allAnimals_shouldReturnListOfAnimals() {
-    Animal animal1 = new Animal();
-    animal1.setId(1L);
-    animal1.setName("Fido");
+    List<Animal> animals = List.of(
+        mockAnimalToDto(1L, "Fido", "Dog"),
+        mockAnimalToDto(2L, "Bella", "Dog")
+    );
 
-    Animal animal2 = new Animal();
-    animal2.setId(2L);
-    animal2.setName("Bella");
+    List<AnimalDTO> animalDTOs = animals.stream()
+        .map(animal -> {
+          AnimalDTO dto = new AnimalDTO();
+          dto.setId(animal.getId());
+          dto.setName(animal.getName());
+          dto.setSpecies(animal.getSpecies());
+          return dto;
+        }).toList();
 
-    Mockito.when(animalService.getAllAnimals()).thenReturn(List.of(animal1, animal2));
+    Mockito.when(animalMapper.toDto(animals)).thenReturn(animalDTOs);
+
+    Mockito.when(animalService.getAllAnimals()).thenReturn(animals);
 
     String query = """
             query {
@@ -59,9 +72,7 @@ class GrAnimalControllerTest {
 
   @Test
   void animalById_shouldReturnAnimal() throws AnimalNotFoundException {
-    Animal animal = new Animal();
-    animal.setId(1L);
-    animal.setName("Fido");
+    Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
 
     Mockito.when(animalService.findById(1L)).thenReturn(animal);
 
@@ -83,9 +94,8 @@ class GrAnimalControllerTest {
 
   @Test
   void addAnimal_shouldReturnAddedAnimal() throws AnimalCreationException {
-    Animal animal = new Animal();
-    animal.setId(1L);
-    animal.setName("Fido");
+
+    Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
 
     Mockito.when(
             animalService.addAnimal("Fido", "Dog", "Brown", "Labrador",
@@ -112,9 +122,7 @@ class GrAnimalControllerTest {
   @Test
   void updateAnimal_shouldReturnUpdatedAnimal()
       throws AnimalUpdateException, AnimalNotFoundException {
-    Animal animal = new Animal();
-    animal.setId(1L);
-    animal.setName("Fido");
+    Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
 
     Mockito.when(animalService.updateAnimal(1L, "White", "Beagle", "Male",
             LocalDate.parse("2022-01-01"), "Striped"))
@@ -138,9 +146,7 @@ class GrAnimalControllerTest {
 
   @Test
   void deleteAnimal_shouldReturnDeletedAnimal() throws AnimalNotFoundException {
-    Animal animal = new Animal();
-    animal.setId(1L);
-    animal.setName("Fido");
+    Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
 
     Mockito.when(animalService.removeAnimal(1L, "Wrong information"))
         .thenReturn(animal);
@@ -159,5 +165,20 @@ class GrAnimalControllerTest {
 
     response.path("deleteAnimal.id").entity(Long.class).isEqualTo(1L);
     response.path("deleteAnimal.name").entity(String.class).isEqualTo("Fido");
+  }
+
+  private Animal mockAnimalToDto(Long id, String name, String species) {
+    Animal animal = new Animal();
+    animal.setId(id);
+    animal.setName(name);
+
+    AnimalDTO animalDTO = new AnimalDTO();
+    animalDTO.setId(id);
+    animalDTO.setName(name);
+    animalDTO.setSpecies(species);
+
+    Mockito.when(animalMapper.toDto(animal)).thenReturn(animalDTO);
+
+    return animal;
   }
 }
