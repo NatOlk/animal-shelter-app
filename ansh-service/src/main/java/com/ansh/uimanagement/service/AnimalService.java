@@ -8,9 +8,11 @@ import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
 import java.time.LocalDate;
 import java.util.List;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -56,8 +58,14 @@ public class AnimalService {
       LOG.debug("[animal] new : {}", animal);
       notificationService.sendAddAnimalMessage(animal);
       return animal;
+    } catch (DataIntegrityViolationException e) {
+      if (e.getCause() instanceof ConstraintViolationException) {
+        throw new AnimalCreationException("An animal with the same name, species, breed, and gender already exists.");
+      }
+      throw new AnimalCreationException("Could not create animal due to a database error. Please try again.");
     } catch (Exception e) {
-      throw new AnimalCreationException(STR."Could not create animal: \{e.getMessage()}");
+      LOG.error("Unexpected error: ", e);
+      throw new AnimalCreationException("An unexpected error occurred. Please contact support.");
     }
   }
 

@@ -1,11 +1,13 @@
 package com.ansh.uimanagement.controller.grql;
 
+import com.ansh.dto.AnimalDTO;
+import com.ansh.dto.VaccinationDTO;
 import com.ansh.entity.animal.Animal;
-import com.ansh.entity.animal.Vaccination;
 import com.ansh.uimanagement.service.AnimalService;
 import com.ansh.uimanagement.service.exception.AnimalCreationException;
 import com.ansh.uimanagement.service.exception.AnimalNotFoundException;
 import com.ansh.uimanagement.service.exception.AnimalUpdateException;
+import com.ansh.utils.AnimalMapper;
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
@@ -26,42 +28,47 @@ public class GrAnimalController {
   @Autowired
   private AnimalService animalsService;
 
+  @Autowired
+  private AnimalMapper animalMapper;
+
   @QueryMapping
-  public List<Animal> allAnimals() {
+  public List<AnimalDTO> allAnimals() {
     List<Animal> animals = animalsService.getAllAnimals();
-    return animals;
+      return animalMapper.toDto(animals);
   }
 
   @QueryMapping
-  public Animal animalById(@Argument Long id) throws AnimalNotFoundException {
-    return animalsService.findById(id);
+  public AnimalDTO animalById(@Argument Long id) throws AnimalNotFoundException {
+    return animalMapper.toDto(animalsService.findById(id));
   }
 
   @MutationMapping
-  public Animal addAnimal(@Argument String name, @Argument String species,
+  public AnimalDTO addAnimal(@Argument String name, @Argument String species,
       @Argument String primaryColor, @Argument String breed, @Argument String implantChipId,
       @Argument String gender, @Argument LocalDate birthDate, @Argument String pattern)
       throws AnimalCreationException {
-    return animalsService.addAnimal(name, species, primaryColor, breed, implantChipId, gender,
-        birthDate, pattern);
+    return animalMapper.toDto(
+        animalsService.addAnimal(name, species, primaryColor, breed, implantChipId, gender,
+            birthDate, pattern));
   }
 
   @MutationMapping
-  public Animal updateAnimal(@Argument Long id, @Argument String primaryColor,
+  public AnimalDTO updateAnimal(@Argument Long id, @Argument String primaryColor,
       @Argument String breed, @Argument String gender, @Argument LocalDate birthDate,
       @Argument String pattern) throws AnimalNotFoundException, AnimalUpdateException {
-    return animalsService.updateAnimal(id, primaryColor, breed, gender, birthDate, pattern);
+    return animalMapper.toDto(
+        animalsService.updateAnimal(id, primaryColor, breed, gender, birthDate, pattern));
   }
 
   @MutationMapping
-  public Animal deleteAnimal(@Argument Long id, @Argument String reason)
+  public AnimalDTO deleteAnimal(@Argument Long id, @Argument String reason)
       throws AnimalNotFoundException {
-    return animalsService.removeAnimal(id, reason);
+    return animalMapper.toDto(animalsService.removeAnimal(id, reason));
   }
 
   @SchemaMapping(typeName = "Vaccination", field = "animal")
-  public Animal getAnimalByVaccinationId(Vaccination vaccination) {
-    return animalsService.findAnimalByVaccinationId(vaccination.getId());
+  public AnimalDTO getAnimalByVaccinationId(VaccinationDTO vaccination) {
+    return animalMapper.toDto(animalsService.findAnimalByVaccinationId(vaccination.getId()));
   }
 
   @GraphQlExceptionHandler
