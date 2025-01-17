@@ -1,11 +1,12 @@
 package com.ansh.uimanagement.controller.grql;
 
-import com.ansh.entity.animal.Animal;
-import com.ansh.entity.animal.Vaccination;
+import com.ansh.dto.AnimalDTO;
+import com.ansh.dto.VaccinationDTO;
 import com.ansh.uimanagement.service.VaccinationService;
 import com.ansh.uimanagement.service.exception.VaccinationCreationException;
 import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
 import com.ansh.uimanagement.service.exception.VaccinationUpdateException;
+import com.ansh.utils.VaccinationMapper;
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
 import java.time.LocalDate;
@@ -29,28 +30,31 @@ public class GrVaccineController {
 
   @Autowired
   private VaccinationService vaccinationService;
+  @Autowired
+  private VaccinationMapper vaccinationMapper;
 
   @MutationMapping
-  public Vaccination updateVaccination(@Argument Long id, @Argument String vaccine,
+  public VaccinationDTO updateVaccination(@Argument Long id, @Argument String vaccine,
       @Argument String batch, @Argument LocalDate vaccinationTime, @Argument String comments,
       @Argument String email) throws VaccinationNotFoundException, VaccinationUpdateException {
-    return vaccinationService.updateVaccination(id, vaccine, batch, vaccinationTime, comments,
-        email);
+    return vaccinationMapper.toDto(
+        vaccinationService.updateVaccination(id, vaccine, batch, vaccinationTime, comments,
+            email));
   }
 
   @MutationMapping
-  public Vaccination deleteVaccination(@Argument Long id) throws VaccinationNotFoundException {
-    return vaccinationService.deleteVaccination(id);
+  public VaccinationDTO deleteVaccination(@Argument Long id) throws VaccinationNotFoundException {
+    return vaccinationMapper.toDto(vaccinationService.deleteVaccination(id));
   }
 
   @QueryMapping
-  public List<Vaccination> allVaccinations() {
-    return vaccinationService.getAllVaccinations();
+  public List<VaccinationDTO> allVaccinations() {
+    return vaccinationMapper.toDto(vaccinationService.getAllVaccinations());
   }
 
   @QueryMapping
-  public List<Vaccination> vaccinationByAnimalId(@Argument Long animalId) {
-    return vaccinationService.findByAnimalId(animalId);
+  public List<VaccinationDTO> vaccinationByAnimalId(@Argument Long animalId) {
+    return vaccinationMapper.toDto(vaccinationService.findByAnimalId(animalId));
   }
 
   @QueryMapping
@@ -59,20 +63,21 @@ public class GrVaccineController {
   }
 
   @MutationMapping
-  public Vaccination addVaccination(@Argument Long animalId, @Argument String vaccine,
+  public VaccinationDTO addVaccination(@Argument Long animalId, @Argument String vaccine,
       @Argument String batch, @Argument LocalDate vaccinationTime, @Argument String comments,
       @Argument String email) throws VaccinationCreationException {
-    return vaccinationService.addVaccination(animalId, vaccine, batch, vaccinationTime, comments,
-        email);
+    return vaccinationMapper.toDto(
+        vaccinationService.addVaccination(animalId, vaccine, batch, vaccinationTime, comments,
+            email));
   }
 
   @SchemaMapping(typeName = "Animal", field = "vaccinations")
-  public List<Vaccination> getVaccinations(Animal animal) {
-    return vaccinationService.findByAnimalId(animal.getId());
+  public List<VaccinationDTO> getVaccinations(AnimalDTO animal) {
+    return vaccinationMapper.toDto(vaccinationService.findByAnimalId(animal.getId()));
   }
 
-  @SchemaMapping
-  public int vaccinationCount(Animal animal) {
+  @SchemaMapping(typeName = "Animal", field = "vaccinationCount")
+  public int vaccinationCount(AnimalDTO animal) {
     return vaccinationService.vaccinationCountById(animal.getId());
   }
 

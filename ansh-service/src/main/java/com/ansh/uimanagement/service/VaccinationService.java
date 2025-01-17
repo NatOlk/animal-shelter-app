@@ -10,9 +10,11 @@ import com.ansh.uimanagement.service.exception.VaccinationNotFoundException;
 import com.ansh.uimanagement.service.exception.VaccinationUpdateException;
 import java.time.LocalDate;
 import java.util.List;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +65,13 @@ public class VaccinationService {
       LOG.debug("[vaccination] added : {}", vaccination);
       notificationService.sendAddVaccinationMessage(vaccination);
       return vaccination;
-    } catch (Exception ex) {
+    } catch (DataIntegrityViolationException e) {
+      if (e.getCause() instanceof ConstraintViolationException) {
+        throw new VaccinationCreationException("A vaccination with the same name, batch already exists.");
+      }
+      throw new VaccinationCreationException("Could not create vaccination due to a database error. Please try again.");
+    } catch (Exception e) {
+      LOG.error("Unexpected error: ", e);
       throw new VaccinationCreationException(
           STR."An error occurred while adding the vaccination for animal \{animalId}");
     }

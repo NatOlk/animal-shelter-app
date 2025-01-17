@@ -10,21 +10,30 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDate;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Entity
-@Table(name = "vaccinations", schema = "public")
+@Table(name = "vaccinations", schema = "public",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "unique_vaccination_attributes",
+            columnNames = {"vaccine", "batch"})
+    })
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Vaccination {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
   @Column
+  @EqualsAndHashCode.Include
   private String vaccine;
   @Column(unique = true)
+  @EqualsAndHashCode.Include
   private String batch;
   @Column
   private String email;
