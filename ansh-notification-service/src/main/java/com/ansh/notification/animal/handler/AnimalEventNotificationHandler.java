@@ -1,4 +1,4 @@
-package com.ansh.notification.handler;
+package com.ansh.notification.animal.handler;
 
 import com.ansh.event.AnimalEvent;
 

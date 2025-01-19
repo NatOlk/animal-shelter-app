@@ -1,4 +1,4 @@
-package com.ansh.notification;
+package com.ansh.notification.subscription;
 
 import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,18 +9,17 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SubscriberNotificationInfoProducer {
+public class SubscriberNotificationEventProducer {
 
   private static final Logger LOG = LoggerFactory.getLogger(
-      SubscriberNotificationInfoProducer.class);
+      SubscriberNotificationEventProducer.class);
 
   @Value("${subscriptionTopicId}")
   private String subscriptionTopicId;
-
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapper objectMapper;
 
-  public SubscriberNotificationInfoProducer(KafkaTemplate<String, String> kafkaTemplate,
+  public SubscriberNotificationEventProducer(KafkaTemplate<String, String> kafkaTemplate,
       ObjectMapper objectMapper) {
     this.kafkaTemplate = kafkaTemplate;
     this.objectMapper = objectMapper;
@@ -28,12 +27,12 @@ public class SubscriberNotificationInfoProducer {
 
   public void sendApproveRequest(String email, String approver, String topic) {
     try {
-      AnimalNotificationUserSubscribedEvent animalNotificationUserSubscribedEvent =
+      AnimalNotificationUserSubscribedEvent event =
           new AnimalNotificationUserSubscribedEvent();
-      animalNotificationUserSubscribedEvent.setEmail(email);
-      animalNotificationUserSubscribedEvent.setApprover(approver);
-      animalNotificationUserSubscribedEvent.setTopic(topic);
-      String jsonMessage = objectMapper.writeValueAsString(animalNotificationUserSubscribedEvent);
+      event.setEmail(email);
+      event.setApprover(approver);
+      event.setTopic(topic);
+      String jsonMessage = objectMapper.writeValueAsString(event);
 
       kafkaTemplate.send(subscriptionTopicId, jsonMessage);
     } catch (Exception e) {

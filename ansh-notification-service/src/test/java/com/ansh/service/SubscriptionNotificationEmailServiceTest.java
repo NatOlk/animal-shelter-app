@@ -3,6 +3,7 @@ package com.ansh.service;
 import static org.mockito.Mockito.*;
 
 import com.ansh.entity.subscription.Subscription;
+import com.ansh.utils.LinkGenerator;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,25 +11,31 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class SubscriptionNotificationServiceTest {
+class SubscriptionNotificationEmailServiceTest {
 
   @Mock
   private EmailService emailService;
 
   @InjectMocks
-  private SubscriptionNotificationService subscriptionNotificationService;
+  private SubscriptionNotificationEmailService subscriptionNotificationService;
+
+  @Mock
+  private LinkGenerator linkGenerator;
+
+  private final static String TEST_TOKEN = "test-token";
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    subscriptionNotificationService.setAnimalShelterNotificationApp("http://localhost:8081");
+    when(linkGenerator.generateUnsubscribeLink(TEST_TOKEN)).thenReturn("http://localhost:8081/external/animal-notify-unsubscribe/" + TEST_TOKEN);
+    when(linkGenerator.generateConfirmationLink(TEST_TOKEN)).thenReturn("http://localhost:8081/external/animal-notify-subscribe-check/" + TEST_TOKEN);
   }
 
   @Test
   void testSendNeedAcceptSubscriptionEmail() {
     Subscription subscription = new Subscription();
     subscription.setEmail("test@example.com");
-    subscription.setToken("test-token");
+    subscription.setToken(TEST_TOKEN);
 
     subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(subscription);
 
@@ -72,7 +79,7 @@ class SubscriptionNotificationServiceTest {
   void testSendRepeatConfirmationEmail() {
     Subscription subscription = new Subscription();
     subscription.setEmail("test@example.com");
-    subscription.setToken("test-token");
+    subscription.setToken(TEST_TOKEN);
 
     subscriptionNotificationService.sendRepeatConfirmationEmail(subscription);
 

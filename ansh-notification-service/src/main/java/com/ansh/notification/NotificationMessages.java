@@ -1,7 +1,7 @@
-package com.ansh.notification.handler;
+package com.ansh.notification;
 
-public final class SubscriptionMessages {
-  private SubscriptionMessages(){}
+public final class NotificationMessages {
+  private NotificationMessages(){}
 
   public static final String ADD_ANIMAL_TEMPLATE = "addAnimalTemplate";
   public static final String REMOVE_ANIMAL_TEMPLATE = "removeAnimalTemplate";

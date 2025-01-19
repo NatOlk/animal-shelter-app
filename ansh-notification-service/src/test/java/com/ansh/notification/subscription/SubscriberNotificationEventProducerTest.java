@@ -1,4 +1,4 @@
-package com.ansh.notification;
+package com.ansh.notification.subscription;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.core.KafkaTemplate;
 
-class SubscriberNotificationInfoProducerTest {
+class SubscriberNotificationEventProducerTest {
 
   private static final String SUBSCRIPTION_TOPIC = "subscriptionTopicId";
 
@@ -27,12 +27,12 @@ class SubscriberNotificationInfoProducerTest {
   private ObjectMapper objectMapper;
 
   @InjectMocks
-  private SubscriberNotificationInfoProducer subscriberNotificationInfoProducer;
+  private SubscriberNotificationEventProducer subscriberNotificationEventProducer;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    subscriberNotificationInfoProducer.setSubscriptionTopicId(SUBSCRIPTION_TOPIC);
+    subscriberNotificationEventProducer.setSubscriptionTopicId(SUBSCRIPTION_TOPIC);
   }
 
   @Test
@@ -51,7 +51,7 @@ class SubscriberNotificationInfoProducerTest {
 
     when(objectMapper.writeValueAsString(event)).thenReturn(jsonMessage);
 
-    subscriberNotificationInfoProducer.sendApproveRequest(email, approver, topic);
+    subscriberNotificationEventProducer.sendApproveRequest(email, approver, topic);
 
     verify(kafkaTemplate, times(1)).send(eq(SUBSCRIPTION_TOPIC), eq(jsonMessage));
   }
@@ -70,7 +70,7 @@ class SubscriberNotificationInfoProducerTest {
 
     when(objectMapper.writeValueAsString(event)).thenThrow(new RuntimeException("Test exception"));
 
-    subscriberNotificationInfoProducer.sendApproveRequest(email, approver, topic);
+    subscriberNotificationEventProducer.sendApproveRequest(email, approver, topic);
 
     verify(kafkaTemplate, never()).send(eq(SUBSCRIPTION_TOPIC), anyString());
   }
