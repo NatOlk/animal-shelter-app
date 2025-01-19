@@ -4,26 +4,21 @@ import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionS
 import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.NONE;
 import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.PENDING;
 
+import com.ansh.cache.SubscriptionCacheManager;
 import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.notification.SubscriberNotificationInfoProducer;
+import com.ansh.notification.subscription.SubscriberNotificationEventProducer;
 import com.ansh.repository.SubscriptionRepository;
 import com.ansh.utils.IdentifierMasker;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -33,9 +28,6 @@ public class AnimalTopicSubscriberRegistryService {
   private static final Logger LOG = LoggerFactory.getLogger(
       AnimalTopicSubscriberRegistryService.class);
 
-  private static final String SUBSCRIPTIONS_CACHE = "animal_notification_subscriptions";
-  private static final String CACHE_LAST_UPDATED = "cache_last_updated";
-
   @Value("${animalTopicId}")
   private String animalTopicId;
 
@@ -43,71 +35,64 @@ public class AnimalTopicSubscriberRegistryService {
   private SubscriptionRepository subscriptionRepository;
 
   @Autowired
-  private SubscriptionNotificationService subscriptionNotificationService;
+  private SubscriptionNotificationEmailService subscriptionNotificationEmailService;
 
   @Autowired
-  private SubscriberNotificationInfoProducer subscriberNotificationInfoProducer;
+  private SubscriberNotificationEventProducer subscriberNotificationEventProducer;
 
   @Autowired
-  private EmailService emailService;
-
-  @Autowired
-  @Qualifier("subscriptionRedisTemplate")
-  private RedisTemplate<String, Subscription> subscriptionRedisTemplate;
-
-  @Autowired
-  @Qualifier("updRedisTemplate")
-  private RedisTemplate<String, String> updRedisTemplate;
+  private SubscriptionCacheManager cacheManager;
 
   @PostConstruct
   public void initializeCache() {
-    List<Subscription> subscriptions = subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(
-        animalTopicId);
-    LOG.debug("[subscribers cache] [init] Starting to fulfill cache with subscription qtx: {}", subscriptions.size());
-
-    subscriptions.forEach(subscription -> {
-      subscriptionRedisTemplate.opsForValue()
-          .set(SUBSCRIPTIONS_CACHE + ":" + subscription.getToken(), subscription);
-      LOG.debug("[subscribers cache] [init] Have put subscription with key {}", IdentifierMasker.maskIdentifier(subscription.getToken()));
-    });
-
-    updRedisTemplate.opsForValue().set(CACHE_LAST_UPDATED, LocalDate.now().toString());
+    cacheManager.initializeCache();
   }
 
   @Scheduled(cron = "0 0 20 * * ?", zone = "Europe/Berlin")
   public void reloadCache() {
-    LOG.info("[subscribers cache] [reload] Time to reload the cache: {}", LocalTime.now());
-
-    if (shouldUpdateCache()) {
-      clearCache();
-      initializeCache();
-      LOG.debug("[subscribers cache] [reload] Cache reloaded with updated subscriptions.");
-    } else {
-      LOG.info("[subscribers cache] [reload] Cache already updated today, skipping reload.");
+    if (cacheManager.shouldUpdateCache()) {
+      cacheManager.reloadCache();
     }
-  }
-
-  private boolean shouldUpdateCache() {
-    String lastUpdateDate = updRedisTemplate.opsForValue().get(CACHE_LAST_UPDATED);
-    String today = LocalDate.now().toString();
-    if (lastUpdateDate == null || !lastUpdateDate.equals(today)) {
-      LOG.debug("[subscribers cache]Cache update needed: Last update was on [{}], today is [{}]", lastUpdateDate,
-          today);
-      return true;
-    }
-    return false;
   }
 
   @Transactional
   public void registerSubscriber(String email, String approver) {
-    findSubscriptionByEmail(email)
-        .ifPresentOrElse(this::resendExistingSubscriptionNotification,
-            () -> createAndRegisterNewSubscription(email, approver));
+    findSubscriptionByEmail(email).ifPresentOrElse(
+        this::handleExistingSubscription,
+        () -> createAndRegisterNewSubscription(email, approver)
+    );
   }
 
   @Transactional
   public void unregisterSubscriber(String token) {
     removeSubscriptionFromCacheAndDb(token);
+  }
+
+  @Transactional
+  public boolean acceptSubscription(String token) {
+    Optional<Subscription> subscriptionOpt = findSubscriptionByToken(token);
+    subscriptionOpt.ifPresent(subscription -> {
+      subscription.setAccepted(true);
+      subscriptionRepository.save(subscription);
+      cacheManager.addToCache(subscription);
+      subscriptionNotificationEmailService.sendSuccessTokenConfirmationEmail(subscription);
+    });
+    return subscriptionOpt.isEmpty();
+  }
+
+  public List<Subscription> getAcceptedAndApprovedSubscribers() {
+    return cacheManager.getAllFromCache().stream()
+        .toList();
+  }
+
+  public List<Subscription> getAllSubscriptions(String approver) {
+    return subscriptionRepository.findByApproverAndTopic(approver, animalTopicId);
+  }
+
+  public UserProfile.AnimalNotificationSubscriptionStatus getSubscriptionStatus(String approver) {
+    return findSubscriptionByEmail(approver)
+        .map(subscription -> subscription.isAccepted() ? ACTIVE : PENDING)
+        .orElse(NONE);
   }
 
   @Transactional
@@ -121,27 +106,16 @@ public class AnimalTopicSubscriberRegistryService {
     });
   }
 
-  @Transactional
-  public boolean acceptSubscription(String token) {
-    List<Subscription> subscriptions = subscriptionRepository.findByToken(token);
-
-    subscriptions.forEach(subscription -> {
-      subscription.setAccepted(true);
-      subscriptionRepository.save(subscription);
-      cacheSubscription(subscription);
-      subscriptionNotificationService.sendSuccessTokenConfirmationEmail(subscription);
-    });
-
-    return !subscriptions.isEmpty();
+  private void approveSubscription(Subscription subscription, String approver) {
+    subscription.setApprover(approver);
+    subscription.setApproved(true);
+    subscriptionRepository.save(subscription);
+    subscriptionNotificationEmailService.sendNeedAcceptSubscriptionEmail(subscription);
   }
 
-  private void clearCache() {
-    Set<String> keys = subscriptionRedisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
-    if (keys != null) {
-      for(String key: keys) {
-       subscriptionRedisTemplate.delete(key);
-      }
-    }
+  private void removeSubscriptionFromCacheAndDb(String token) {
+    subscriptionRepository.deleteByTokenAndTopic(token, animalTopicId);
+    cacheManager.removeFromCache(token);
   }
 
   private void createAndRegisterNewSubscription(String email, String approver) {
@@ -154,74 +128,27 @@ public class AnimalTopicSubscriberRegistryService {
     newSubscription.setApproved(false);
 
     subscriptionRepository.save(newSubscription);
-    subscriberNotificationInfoProducer.sendApproveRequest(email, approver, animalTopicId);
+    subscriberNotificationEventProducer.sendApproveRequest(email, approver, animalTopicId);
+    LOG.debug("Register a new subscriber {}", IdentifierMasker.maskEmail(email));
   }
 
-
-  private void cacheSubscription(Subscription subscription) {
-    if (!subscription.isApproved() || !subscription.isAccepted()) {
+  private void handleExistingSubscription(Subscription subscription) {
+    if (!subscription.isApproved()) {
       return;
     }
-    subscriptionRedisTemplate.opsForValue()
-        .set(SUBSCRIPTIONS_CACHE + ":" + subscription.getToken(), subscription);
-    LOG.debug("[subscribers cache] [add] Subscription added to cache with key {}", IdentifierMasker.maskIdentifier(subscription.getToken()));
-  }
-
-  private void removeSubscriptionFromCacheAndDb(String token) {
-    subscriptionRepository.deleteByTokenAndTopic(token, animalTopicId);
-    subscriptionRedisTemplate.delete(SUBSCRIPTIONS_CACHE + ":" + token);
-    LOG.debug("[subscribers cache] [remove] Subscription removed from cache and DB with key {}", IdentifierMasker.maskIdentifier(token));
-  }
-
-  public List<Subscription> getAcceptedAndApprovedSubscribersFromCache() {
-    return getAllSubscriptionsFromCache().stream()
-        .filter(Subscription::isAccepted)
-        .filter(Subscription::isApproved)
-        .toList();
-  }
-
-  public List<Subscription> getAllSubscriptions(String approver) {
-    return subscriptionRepository.findByApproverAndTopic(approver, animalTopicId);
-  }
-
-  public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(String approver) {
-    return findSubscriptionByEmail(approver)
-        .map(subscription -> subscription.isAccepted() ? ACTIVE : PENDING)
-        .orElse(NONE);
-  }
-
-  private void resendExistingSubscriptionNotification(Subscription sb) {
-    if (!sb.isApproved()) {
-      return;
-    }
-    if (sb.isAccepted()) {
-      subscriptionNotificationService.sendRepeatConfirmationEmail(sb);
+    if (subscription.isAccepted()) {
+      subscriptionNotificationEmailService.sendRepeatConfirmationEmail(subscription);
     } else {
-      subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(sb);
+      subscriptionNotificationEmailService.sendNeedAcceptSubscriptionEmail(subscription);
     }
   }
-
-  private void approveSubscription(Subscription subscription, String approver) {
-    subscription.setApprover(approver);
-    subscription.setApproved(true);
-    subscriptionRepository.save(subscription);
-    subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(subscription);
-  }
-
 
   private Optional<Subscription> findSubscriptionByEmail(String email) {
-    return subscriptionRepository.findByEmailAndTopic(email, animalTopicId).stream().findFirst();
+    return subscriptionRepository.findByEmailAndTopic(email, animalTopicId);
   }
 
-  private List<Subscription> getAllSubscriptionsFromCache() {
-    Set<String> keys = subscriptionRedisTemplate.keys(SUBSCRIPTIONS_CACHE + ":*");
-    List<Subscription> subscriptions = new ArrayList<>();
-    if (keys != null) {
-      keys.stream()
-          .map(key -> subscriptionRedisTemplate.opsForValue().get(key))
-          .forEach(subscriptions::add);
-    }
-    return subscriptions;
+  private Optional<Subscription> findSubscriptionByToken(String token) {
+    return subscriptionRepository.findByTokenAndTopic(token, animalTopicId);
   }
 
   protected void setAnimalTopicId(String animalTopicId) {

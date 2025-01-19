@@ -7,9 +7,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.notification.SubscriberNotificationInfoProducer;
+import com.ansh.notification.subscription.SubscriberNotificationEventProducer;
 import com.ansh.repository.SubscriptionRepository;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,10 +27,10 @@ class AnimalTopicSubscriberRegistryServiceTest {
   private SubscriptionRepository subscriptionRepository;
 
   @Mock
-  private SubscriberNotificationInfoProducer subscriberNotificationInfoProducer;
+  private SubscriberNotificationEventProducer subscriberNotificationInfoProducer;
 
   @Mock
-  private SubscriptionNotificationService subscriptionNotificationService;
+  private SubscriptionNotificationEmailService subscriptionNotificationService;
 
   @Mock
   private RedisTemplate<String, Subscription> subscriptionRedisTemplate;
@@ -52,7 +53,7 @@ class AnimalTopicSubscriberRegistryServiceTest {
     String approver = "approver@example.com";
 
     when(subscriptionRepository.findByEmailAndTopic(email, ANIMAL_TOPIC))
-        .thenReturn(List.of());
+        .thenReturn(Optional.empty());
 
     registryService.registerSubscriber(email, approver);
 
@@ -69,7 +70,7 @@ class AnimalTopicSubscriberRegistryServiceTest {
     existingSubscription.setAccepted(true);
 
     when(subscriptionRepository.findByEmailAndTopic(email, ANIMAL_TOPIC))
-        .thenReturn(List.of(existingSubscription));
+        .thenReturn(Optional.of(existingSubscription));
 
     registryService.registerSubscriber(email, "approver@example.com");
 
