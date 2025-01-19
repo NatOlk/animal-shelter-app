@@ -1,9 +1,12 @@
 package com.ansh.controller;
 
+import static java.lang.StringTemplate.STR;
+
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.service.AnimalTopicSubscriberRegistryService;
+import java.text.MessageFormat;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +31,13 @@ public class SubscriptionController {
   @GetMapping("/external/animal-notify-unsubscribe/{token}")
   public String unsubscribe(@PathVariable String token) {
     animalTopicSubscriberRegistryService.unregisterSubscriber(token);
-    return "Subscription with token " + token + " removed";
+    return STR."Subscription with token \{token} removed";
   }
 
   @GetMapping("/external/animal-notify-subscribe-check/{token}")
   public String checkSubscription(@PathVariable String token) {
     boolean isAccepted = animalTopicSubscriberRegistryService.acceptSubscription(token);
-    return "Subscription with token " + token + " is " + (isAccepted ? "valid" : "invalid");
+    return STR."Subscription with token \{token} is \{isAccepted}";
   }
 
   @PostMapping("/internal/animal-notify-all-approver-subscriptions")
@@ -45,6 +48,6 @@ public class SubscriptionController {
   @PostMapping("/internal/animal-notify-approver-status")
   public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(
       @RequestBody SubscriptionRequest request) {
-    return animalTopicSubscriberRegistryService.getStatusByApprover(request.getApprover());
+    return animalTopicSubscriberRegistryService.getSubscriptionStatus(request.getApprover());
   }
 }
