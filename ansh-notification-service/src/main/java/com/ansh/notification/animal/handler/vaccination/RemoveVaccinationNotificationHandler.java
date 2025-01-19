@@ -1,8 +1,8 @@
-package com.ansh.notification.handler.vaccination;
+package com.ansh.notification.animal.handler.vaccination;
 
 import com.ansh.event.RemoveVaccinationEvent;
-import com.ansh.notification.handler.AbstractAnimalNotificationHandler;
-import com.ansh.notification.handler.SubscriptionMessages;
+import com.ansh.notification.NotificationMessages;
+import com.ansh.notification.animal.handler.AbstractAnimalNotificationHandler;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,12 +10,12 @@ public class RemoveVaccinationNotificationHandler extends AbstractAnimalNotifica
 
   @Override
   protected String getNotificationSubject() {
-    return SubscriptionMessages.REMOVE_VACCINE_SUBJECT;
+    return NotificationMessages.REMOVE_VACCINE_SUBJECT;
   }
 
   @Override
   protected String getNotificationTemplate() {
-    return SubscriptionMessages.REMOVE_VACCINE_TEMPLATE;
+    return NotificationMessages.REMOVE_VACCINE_TEMPLATE;
   }
   @Override
   public Class getHandledEventType() {

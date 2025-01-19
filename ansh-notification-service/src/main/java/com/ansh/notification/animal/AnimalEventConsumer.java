@@ -1,7 +1,7 @@
-package com.ansh.notification;
+package com.ansh.notification.animal;
 
 import com.ansh.event.AnimalEvent;
-import com.ansh.notification.handler.AnimalEventHandlerRegistry;
+import com.ansh.notification.animal.handler.AnimalNotificationHandlerRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -11,12 +11,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AnimalInfoConsumer {
+public class AnimalEventConsumer {
   @Value("${animalTopicId}")
   private String animalTopicId;
 
   @Autowired
-  private AnimalEventHandlerRegistry handlerRegistry;
+  private AnimalNotificationHandlerRegistry handlerRegistry;
 
   @KafkaListener(topics = "${animalTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> message) throws IOException {
