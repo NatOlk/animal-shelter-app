@@ -26,13 +26,12 @@ public class AnimalNotificationUserSubscribedConsumer {
   @KafkaListener(topics = "${subscriptionTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> message) {
     try {
-      AnimalNotificationUserSubscribedEvent animalNotificationUserSubscribedEvent =
-          new ObjectMapper().readValue(message.value(), AnimalNotificationUserSubscribedEvent.class);
+      AnimalNotificationUserSubscribedEvent event =
+          new ObjectMapper().readValue(message.value(),
+              AnimalNotificationUserSubscribedEvent.class);
 
-      subscriptionService.savePendingSubscriber(
-          animalNotificationUserSubscribedEvent.getEmail(),
-          animalNotificationUserSubscribedEvent.getApprover(),
-          animalNotificationUserSubscribedEvent.getTopic()
+      subscriptionService.savePendingSubscriber(event.getEmail(), event.getApprover(),
+          event.getTopic()
       );
     } catch (IOException e) {
       LOG.error("Error of message deserialization: {}", message.value(), e);

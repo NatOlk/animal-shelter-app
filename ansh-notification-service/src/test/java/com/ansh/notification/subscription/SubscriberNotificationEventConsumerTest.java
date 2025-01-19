@@ -1,4 +1,4 @@
-package com.ansh.notification;
+package com.ansh.notification.subscription;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,13 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class SubscriberNotificationInfoConsumerTest {
+class SubscriberNotificationEventConsumerTest {
 
   @Mock
   private AnimalTopicSubscriberRegistryService topicSubscriberRegistryService;
 
   @InjectMocks
-  private SubscriberNotificationInfoConsumer subscriberNotificationInfoConsumer;
+  private SubscriberNotificationEventConsumer subscriberNotificationEventConsumer;
 
   private ObjectMapper objectMapper;
 
@@ -38,7 +38,7 @@ class SubscriberNotificationInfoConsumerTest {
     AnimalNotificationUserSubscribedEvent expectedEvent = objectMapper.readValue(json,
         AnimalNotificationUserSubscribedEvent.class);
 
-    subscriberNotificationInfoConsumer.listen(message);
+    subscriberNotificationEventConsumer.listen(message);
 
     verify(topicSubscriberRegistryService, times(1)).handleSubscriptionApproval(
         expectedEvent.getEmail(),

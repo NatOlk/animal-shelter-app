@@ -1,4 +1,4 @@
-package com.ansh.notification.handler;
+package com.ansh.notification.animal.handler;
 
 import com.ansh.event.AnimalEvent;
 import java.util.HashMap;
@@ -10,14 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AnimalEventHandlerRegistry {
+public class AnimalNotificationHandlerRegistry {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AnimalEventHandlerRegistry.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AnimalNotificationHandlerRegistry.class);
   private final Map<Class<? extends AnimalEvent>, AnimalEventNotificationHandler> handlerMap
       = new HashMap<>();
 
   @Autowired
-  public AnimalEventHandlerRegistry(List<AnimalEventNotificationHandler> handlers) {
+  public AnimalNotificationHandlerRegistry(List<AnimalEventNotificationHandler> handlers) {
     for (AnimalEventNotificationHandler handler : handlers) {
       handlerMap.put(handler.getHandledEventType(), handler);
     }

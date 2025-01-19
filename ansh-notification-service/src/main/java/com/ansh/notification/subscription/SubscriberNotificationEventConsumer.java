@@ -1,4 +1,4 @@
-package com.ansh.notification;
+package com.ansh.notification.subscription;
 
 import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
 import com.ansh.service.AnimalTopicSubscriberRegistryService;
@@ -14,10 +14,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SubscriberNotificationInfoConsumer {
+public class SubscriberNotificationEventConsumer {
 
   private static final Logger LOG = LoggerFactory.getLogger(
-      SubscriberNotificationInfoConsumer.class);
+      SubscriberNotificationEventConsumer.class);
 
   @Value("${approveTopicId}")
   private String approveTopicId;
@@ -28,12 +28,12 @@ public class SubscriberNotificationInfoConsumer {
   @KafkaListener(topics = "${approveTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> message) throws IOException {
 
-    AnimalNotificationUserSubscribedEvent animalEvent = new ObjectMapper().readValue(
+    AnimalNotificationUserSubscribedEvent event = new ObjectMapper().readValue(
         message.value(),
         AnimalNotificationUserSubscribedEvent.class);
-    String email = animalEvent.getEmail();
-    String approver = animalEvent.getApprover();
-    boolean reject = animalEvent.isReject();
+    String email = event.getEmail();
+    String approver = event.getApprover();
+    boolean reject = event.isReject();
     LOG.debug("[approve topic] subscriber {} with approver {} isReject? {}",
         IdentifierMasker.maskEmail(email),
         IdentifierMasker.maskEmail(approver), reject);

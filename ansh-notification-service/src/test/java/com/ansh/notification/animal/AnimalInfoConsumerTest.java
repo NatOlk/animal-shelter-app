@@ -1,13 +1,13 @@
-package com.ansh.notification;
+package com.ansh.notification.animal;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.ansh.event.AddAnimalEvent;
 import com.ansh.event.AnimalEvent;
-import com.ansh.notification.handler.AnimalEventHandlerRegistry;
+import com.ansh.notification.animal.AnimalEventConsumer;
+import com.ansh.notification.animal.handler.AnimalNotificationHandlerRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,17 +23,17 @@ class AnimalInfoConsumerTest {
   private static final String ANIMAL_TOPIC = "animalTopicId";
 
   @Mock
-  private AnimalEventHandlerRegistry handlerRegistry;
+  private AnimalNotificationHandlerRegistry handlerRegistry;
 
   @InjectMocks
-  private AnimalInfoConsumer animalInfoConsumer;
+  private AnimalEventConsumer animalEventConsumer;
 
   private ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    animalInfoConsumer.setAnimalTopicId(ANIMAL_TOPIC);
+    animalEventConsumer.setAnimalTopicId(ANIMAL_TOPIC);
     objectMapper = new ObjectMapper();
     objectMapper.findAndRegisterModules();
   }
@@ -47,7 +47,7 @@ class AnimalInfoConsumerTest {
 
     AnimalEvent expectedEvent = objectMapper.readValue(json, AddAnimalEvent.class);
 
-    animalInfoConsumer.listen(message);
+    animalEventConsumer.listen(message);
 
     ArgumentCaptor<AnimalEvent> captor = ArgumentCaptor.forClass(AnimalEvent.class);
     verify(handlerRegistry, times(1)).handleEvent(captor.capture());

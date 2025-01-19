@@ -1,8 +1,8 @@
-package com.ansh.notification.handler.animal;
+package com.ansh.notification.animal.handler.animal;
 
 import com.ansh.event.RemoveAnimalEvent;
-import com.ansh.notification.handler.AbstractAnimalNotificationHandler;
-import com.ansh.notification.handler.SubscriptionMessages;
+import com.ansh.notification.animal.handler.AbstractAnimalNotificationHandler;
+import com.ansh.notification.NotificationMessages;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,12 +10,12 @@ public class RemoveAnimalNotificationHandler extends AbstractAnimalNotificationH
 
   @Override
   protected String getNotificationSubject() {
-    return SubscriptionMessages.REMOVE_ANIMAL_SUBJECT;
+    return NotificationMessages.REMOVE_ANIMAL_SUBJECT;
   }
 
   @Override
   protected String getNotificationTemplate() {
-    return SubscriptionMessages.REMOVE_ANIMAL_TEMPLATE;
+    return NotificationMessages.REMOVE_ANIMAL_TEMPLATE;
   }
 
   @Override
