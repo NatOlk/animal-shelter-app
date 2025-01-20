@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -14,8 +15,9 @@ public interface PendingSubscriberRepository extends JpaRepository<PendingSubscr
 
   void deleteByEmailAndTopic(String email, String topic);
 
-  List<PendingSubscriber> findByApprover(String approver);
+  List<PendingSubscriber> findByApproverAndTopic(String approver, String topic);
 
-  @Query("select p from PendingSubscriber p where p.approver is null or p.approver = ''")
-  List<PendingSubscriber> findByApproverIsNullOrEmpty();
+  @Query("select p from PendingSubscriber p where (p.approver is null or p.approver = '') and p.topic = :topic")
+  List<PendingSubscriber> findByTopicAndApproverIsNullOrEmpty(@Param("topic") String topic);
+
 }

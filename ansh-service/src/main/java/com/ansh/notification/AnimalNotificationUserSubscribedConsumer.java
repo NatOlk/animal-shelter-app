@@ -1,7 +1,7 @@
 package com.ansh.notification;
 
 import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
-import com.ansh.management.service.SubscriptionService;
+import com.ansh.management.service.AnimalTopicPendingSubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -20,8 +20,11 @@ public class AnimalNotificationUserSubscribedConsumer {
 
   @Value("${subscriptionTopicId}")
   private String subscriptionTopicId;
+  @Value("${animalTopicId}")
+  private String animalTopicId;
+
   @Autowired
-  private SubscriptionService subscriptionService;
+  private AnimalTopicPendingSubscriptionService animalTopicPendingSubscriptionService;
 
   @KafkaListener(topics = "${subscriptionTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> message) {
@@ -29,10 +32,11 @@ public class AnimalNotificationUserSubscribedConsumer {
       AnimalNotificationUserSubscribedEvent event =
           new ObjectMapper().readValue(message.value(),
               AnimalNotificationUserSubscribedEvent.class);
-
-      subscriptionService.savePendingSubscriber(event.getEmail(), event.getApprover(),
-          event.getTopic()
-      );
+      //At the moment only animalTopic subscription is possible
+      if (animalTopicId.equals(event.getTopic())) {
+        animalTopicPendingSubscriptionService.saveSubscriber(event.getEmail(),
+            event.getApprover());
+      }
     } catch (IOException e) {
       LOG.error("Error of message deserialization: {}", message.value(), e);
     }
@@ -41,5 +45,9 @@ public class AnimalNotificationUserSubscribedConsumer {
 
   protected void setSubscriptionTopicId(String subscriptionTopicId) {
     this.subscriptionTopicId = subscriptionTopicId;
+  }
+
+  protected void setAnimalTopicId(String animalTopicId) {
+    this.animalTopicId = animalTopicId;
   }
 }
