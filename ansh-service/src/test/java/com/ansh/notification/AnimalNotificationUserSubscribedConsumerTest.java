@@ -3,7 +3,7 @@ package com.ansh.notification;
 import static org.mockito.Mockito.*;
 
 import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
-import com.ansh.uimanagement.service.SubscriptionService;
+import com.ansh.management.service.SubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;

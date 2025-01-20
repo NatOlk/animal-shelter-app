@@ -39,15 +39,17 @@ public class SubscriptionNotificationEmailService {
         REPEAT_SUBSCRIPTION_TEMPLATE, params);
   }
 
-  public Map<String, Object> createEmailParams(String email, String token, boolean includeSubscriptionLink) {
+  public Map<String, Object> createEmailParams(String email, String token,
+      boolean includeSubscriptionLink) {
     EmailParamsBuilder builder = new EmailParamsBuilder()
         .name(email)
         .unsubscribeLink(linkGenerator.generateUnsubscribeLink(token));
 
     if (includeSubscriptionLink) {
       String confirmationLink = linkGenerator.generateConfirmationLink(token);
-      builder.confirmationLink(confirmationLink);
-      builder.subscriptionLink(confirmationLink);
+      builder
+          .confirmationLink(confirmationLink)
+          .subscriptionLink(confirmationLink);
     }
 
     return builder.build();

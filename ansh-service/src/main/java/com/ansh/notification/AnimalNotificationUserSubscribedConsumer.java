@@ -1,7 +1,7 @@
 package com.ansh.notification;
 
 import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
-import com.ansh.uimanagement.service.SubscriptionService;
+import com.ansh.management.service.SubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
