@@ -36,7 +36,6 @@ public class SubscriptionCacheManager {
   public void initializeCache() {
     List<Subscription> subscriptions = subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(animalTopicId);
     LOG.debug("[Cache Init] Initializing cache with {} subscriptions.", subscriptions.size());
-    subscriptionCache.clearCache();
     subscriptions.forEach(subscriptionCache::addToCache);
     updRedisTemplate.opsForValue().set(CACHE_LAST_UPDATED, String.valueOf(System.currentTimeMillis()));
   }
