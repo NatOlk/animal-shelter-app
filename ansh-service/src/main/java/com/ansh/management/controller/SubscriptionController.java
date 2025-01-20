@@ -5,8 +5,8 @@ import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.entity.PendingSubscriber;
-import com.ansh.management.service.AnimalTopicSubscriptionService;
-import com.ansh.management.service.SubscriptionService;
+import com.ansh.management.service.AnimalTopicPendingSubscriptionService;
+import com.ansh.management.service.NotificationSubscriptionService;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,9 @@ import org.thymeleaf.util.StringUtils;
 public class SubscriptionController {
 
   @Autowired
-  private SubscriptionService subscriptionService;
+  private NotificationSubscriptionService notificationSubscriptionService;
   @Autowired
-  private AnimalTopicSubscriptionService animalTopicSubscriptionService;
+  private AnimalTopicPendingSubscriptionService animalTopicPendingSubscriptionService;
   @Autowired
   private UserProfileService userProfileService;
 
@@ -32,7 +32,7 @@ public class SubscriptionController {
         subscriptionRequest.getEmail())) {
       return;
     }
-    animalTopicSubscriptionService.approveSubscriber(subscriptionRequest.getEmail(),
+    animalTopicPendingSubscriptionService.approveSubscriber(subscriptionRequest.getEmail(),
         subscriptionRequest.getApprover());
   }
 
@@ -41,7 +41,7 @@ public class SubscriptionController {
     if (StringUtils.isEmpty(subscriptionRequest.getEmail())) {
       return;
     }
-    animalTopicSubscriptionService.rejectSubscriber(subscriptionRequest.getEmail());
+    animalTopicPendingSubscriptionService.rejectSubscriber(subscriptionRequest.getEmail());
   }
 
   @PostMapping(value = "/animal-notify-pending-subscribers")
@@ -50,18 +50,18 @@ public class SubscriptionController {
     if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {
       return Collections.emptyList();
     }
-    return subscriptionService.getPendingSubscribers(subscriptionRequest.getApprover());
+    return animalTopicPendingSubscriptionService.getSubscribersByApprover(subscriptionRequest.getApprover());
   }
 
   @GetMapping("/animal-notify-pending-no-approver-subscribers")
   public List<PendingSubscriber> getPendingNoApproverSubscribers() {
-    return subscriptionService.getPendingNoApproverSubscribers();
+    return animalTopicPendingSubscriptionService.getPendingSubscribersWithoutApprover();
   }
 
   @PostMapping("/animal-notify-all-approver-subscriptions")
   public List<Subscription> getSubscribers(@RequestBody SubscriptionRequest subscriptionRequest) {
     if (StringUtils.isEmpty(subscriptionRequest.getApprover())) return Collections.emptyList();
-    return subscriptionService.getAllSubscriptionByApprover(subscriptionRequest.getApprover());
+    return notificationSubscriptionService.getAllSubscriptionByApprover(subscriptionRequest.getApprover());
   }
 
   @PostMapping("/animal-notify-approver-status")
@@ -69,7 +69,7 @@ public class SubscriptionController {
       @RequestBody SubscriptionRequest subscriptionRequest) {
     if (StringUtils.isEmpty(subscriptionRequest.getApprover())) return null;
 
-    AnimalNotificationSubscriptionStatus status = subscriptionService.getStatusByApprover(
+    AnimalNotificationSubscriptionStatus status = notificationSubscriptionService.getStatusByApprover(
         subscriptionRequest.getApprover());
     userProfileService.updateNotificationStatusOfAuthUser(status);
     return status;

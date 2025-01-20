@@ -12,8 +12,8 @@ import com.ansh.AnshSecurityConfig;
 import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.entity.PendingSubscriber;
-import com.ansh.management.service.AnimalTopicSubscriptionService;
-import com.ansh.management.service.SubscriptionService;
+import com.ansh.management.service.AnimalTopicPendingSubscriptionService;
+import com.ansh.management.service.NotificationSubscriptionService;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -37,10 +37,10 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   private MockMvc mockMvc;
 
   @MockBean
-  private SubscriptionService subscriptionService;
+  private NotificationSubscriptionService notificationSubscriptionService;
 
   @MockBean
-  private AnimalTopicSubscriptionService animalTopicSubscriptionService;
+  private AnimalTopicPendingSubscriptionService animalTopicPendingSubscriptionService;
 
   @Test
   void shouldApproveSubscriber() throws Exception {
@@ -64,7 +64,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   void shouldReturnPendingSubscribers() throws Exception {
     PendingSubscriber mockSubscriber = new PendingSubscriber();
     mockSubscriber.setEmail(USERNAME);
-    when(subscriptionService.getPendingSubscribers(eq(APPROVER_EMAIL)))
+    when(animalTopicPendingSubscriptionService.getSubscribersByApprover(eq(APPROVER_EMAIL)))
         .thenReturn(List.of(mockSubscriber));
 
     mockMvc.perform(post("/animal-notify-pending-subscribers")
@@ -77,7 +77,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @Test
   void shouldReturnPendingNoApproverSubscribers() throws Exception {
-    when(subscriptionService.getPendingNoApproverSubscribers())
+    when(animalTopicPendingSubscriptionService.getPendingSubscribersWithoutApprover())
         .thenReturn(Collections.emptyList());
 
     mockMvc.perform(get("/animal-notify-pending-no-approver-subscribers")
@@ -90,7 +90,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   void shouldReturnSubscribers() throws Exception {
     Subscription mockSubscription = new Subscription();
     mockSubscription.setApprover(APPROVER_EMAIL);
-    when(subscriptionService.getAllSubscriptionByApprover(eq(APPROVER_EMAIL)))
+    when(notificationSubscriptionService.getAllSubscriptionByApprover(eq(APPROVER_EMAIL)))
         .thenReturn(List.of(mockSubscription));
 
     mockMvc.perform(post("/animal-notify-all-approver-subscriptions")
@@ -104,7 +104,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   void shouldReturnApproverStatus() throws Exception {
     AnimalNotificationSubscriptionStatus mockStatus =
         AnimalNotificationSubscriptionStatus.ACTIVE;
-    when(subscriptionService.getStatusByApprover(eq(APPROVER_EMAIL)))
+    when(notificationSubscriptionService.getStatusByApprover(eq(APPROVER_EMAIL)))
         .thenReturn(mockStatus);
 
     mockMvc.perform(post("/animal-notify-approver-status")
