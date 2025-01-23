@@ -192,7 +192,7 @@ function AnimalsList() {
                                 isRequired
                                 aria-label="Animal Species"
                                 onChange={handleInputChange}>
-                                {config.animals.map(animal => (
+                                {config.species.map(animal => (
                                     <SelectItem key={animal}>{animal}</SelectItem>
                                 ))}
                             </Select>
