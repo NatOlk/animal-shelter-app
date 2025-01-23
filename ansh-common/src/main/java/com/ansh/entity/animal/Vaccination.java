@@ -28,19 +28,24 @@ public class Vaccination {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
+  @EqualsAndHashCode.Include
   private Long id;
+
   @Column
-  @EqualsAndHashCode.Include
   private String vaccine;
+
   @Column(unique = true)
-  @EqualsAndHashCode.Include
   private String batch;
+
   @Column
   private String email;
+
   @Column
   private LocalDate vaccinationTime;
+
   @Column
   private String comments;
+
   @JsonBackReference
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)

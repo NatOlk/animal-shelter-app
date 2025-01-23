@@ -27,31 +27,37 @@ public class Animal {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
+  @EqualsAndHashCode.Include
   private Long id;
+
   @Column
-  @EqualsAndHashCode.Include
   private String name;
+
   @Column
-  @EqualsAndHashCode.Include
   private String species;
+
   @Column
   private String primaryColor;
+
   @Column(unique = true, nullable = true)
   @Pattern(regexp = "\\d{8}-\\d{8}-\\d{8}", message = "Value must match the pattern 11111111-11111111-1111")
   private String implantChipId;
+
   @Column
-  @EqualsAndHashCode.Include
   private String breed;
+
   @Column
-  @EqualsAndHashCode.Include
   private char gender;
+
   @Column
-  @EqualsAndHashCode.Include
   private LocalDate birthDate;
+
   @Column
   private String pattern;
+
   @Column
   private LocalDate admissionDate;
+
   @JsonManagedReference
   @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Vaccination> vaccinations;
