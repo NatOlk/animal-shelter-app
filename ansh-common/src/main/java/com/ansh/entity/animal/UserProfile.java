@@ -26,15 +26,19 @@ public class UserProfile {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @EqualsAndHashCode.Include
   private Long id;
+
   @Column(unique = true)
   @EqualsAndHashCode.Include
   private String email;
-  @EqualsAndHashCode.Include
+
   @Column(unique = true)
   private String name;
+
   @Column
   private String password;
+
   @Enumerated(EnumType.STRING)
   @Column(name = "animal_notif_status", nullable = false)
   private AnimalNotificationSubscriptionStatus animalNotifyStatus = AnimalNotificationSubscriptionStatus.NONE;
@@ -46,9 +50,6 @@ public class UserProfile {
       inverseJoinColumns = {@JoinColumn(name = "role_id")}
   )
   private Set<Role> roles = new HashSet<>();
-
-  public UserProfile() {
-  }
 
   public void addRole(Role role) {
     this.roles.add(role);
