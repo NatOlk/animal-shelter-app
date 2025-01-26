@@ -1,7 +1,9 @@
 FROM openjdk:21
 
-COPY target/ansh-service-1.0.jar /asch.jar
+WORKDIR /app
+
+COPY target/ansh-service-1.0.jar /app/asch.jar
 
 EXPOSE 8443
 
-ENTRYPOINT ["java", "--enable-preview", "-jar", "/asch.jar"]
+ENTRYPOINT ["java", "--enable-preview", "-jar", "/app/asch.jar"]

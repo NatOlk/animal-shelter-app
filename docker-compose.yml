@@ -16,6 +16,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - redis-data:/data
     networks:
       - backend
 
@@ -24,6 +26,10 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+      - zookeeper-secrets:/etc/zookeeper/secrets
     ports:
       - "2181:2181"
     networks:
@@ -33,6 +39,11 @@ services:
     image: confluentinc/cp-kafka:7.2.2
     depends_on:
       - zookeeper-ansh
+    volumes:
+      - kafka-data:/var/lib/kafka
+      - kafka-logs:/var/log/kafka
+      - kafka-secrets:/etc/kafka/secrets
+      - kafka-data-custom:/var/lib/kafka/data
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-ansh:2181
@@ -56,6 +67,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - animal-shelter-data:/var/lib/postgresql/data
     networks:
       - backend
       - db
@@ -73,6 +86,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - animal-shelter-notification-data:/var/lib/postgresql/data
     networks:
       - backend
       - db
@@ -92,7 +107,6 @@ services:
       - "8444:8444"
       - "5006:5006"
     volumes:
-      - ./ansh-notification-service:/app
       - ./config/keystore.p12:/app/keystore.p12
       - ./config/truststore.p12:/app/truststore.p12
     environment:
@@ -129,18 +143,16 @@ services:
       - "8443:8443"
       - "5005:5005"
     volumes:
-      - ./ansh-service:/app
       - ./config/keystore.p12:/app/keystore.p12
       - ./config/truststore.p12:/app/truststore.p12
+      - ansh-service-data:/app/data
+      - ansh-service-logs:/app/logs
     environment:
       JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=BerlinApril2025 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-ansh:9092
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-animal-shelter:5432/Animal_Shelter
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: Animal_Shelter
-      SPRING_PROFILES_ACTIVE: init-user
       SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD}
       ANIMAL_SHELTER_NOTIFICATION_APP: https://nginx-proxy-ansh/ansh/notification
     networks:
@@ -189,3 +201,20 @@ networks:
     driver: bridge
   frontend:
     driver: bridge
+
+volumes:
+  redis-data:
+  animal-shelter-data:
+  animal-shelter-notification-data:
+  zookeeper-data:
+  zookeeper-logs:
+  zookeeper-secrets:
+  kafka-data:
+  kafka-logs:
+  kafka-secrets:
+  kafka-data-custom:
+  nginx-html:
+  nginx-conf:
+  nginx-cert:
+  ansh-service-data:
+  ansh-service-logs:
