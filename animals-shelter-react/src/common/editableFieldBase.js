@@ -30,6 +30,7 @@ const EditableFieldBase = ({
       setError(err.message);
       setTimeout(() => setError(""), 15000);
     });
+    setIsEditing(false);
   };
 
   return (
