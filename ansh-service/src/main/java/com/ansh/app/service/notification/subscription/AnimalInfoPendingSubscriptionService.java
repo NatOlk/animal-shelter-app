@@ -43,7 +43,7 @@ public class AnimalInfoPendingSubscriptionService {
           deletePendingSubscriber(email);
           subscriptionProducer.sendApprove(subscriber.getEmail(),
               approver, subscriber.getTopic());
-          LOG.debug("[animal topic subscription3] approval is sent for {} , approver is {}.",
+          LOG.debug("[animal topic subscription] approval is sent for {} , approver is {}.",
               IdentifierMasker.maskEmail(email), IdentifierMasker.maskEmail(approver));
         });
   }
@@ -55,7 +55,7 @@ public class AnimalInfoPendingSubscriptionService {
           deletePendingSubscriber(email);
           subscriptionProducer.sendReject(subscriber.getEmail(),
               subscriber.getApprover(), subscriber.getTopic());
-          LOG.debug("[animal topic subscription3] rejection is sent for {} ",
+          LOG.debug("[animal topic subscription] rejection is sent for {} ",
               IdentifierMasker.maskEmail(email));
         });
   }
