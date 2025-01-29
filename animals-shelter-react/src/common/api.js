@@ -1,4 +1,3 @@
-
 const handleUnauthorized = () => {
   localStorage.removeItem('jwt');
   window.location.href = '/login';
@@ -10,22 +9,19 @@ export const apiFetch = async (url, options = {}) => {
   const token = localStorage.getItem('jwt');
 
   try {
+    const isFormData = body instanceof FormData;
+
     const response = await fetch(`/ansh/api${url}`, {
       method,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         Authorization: token ? `Bearer ${token}` : '',
         ...headers,
       },
-      body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
+      body: method !== 'GET' && body ? (isFormData ? body : JSON.stringify(body)) : undefined,
     });
 
-    if (response.status === 401) {
-      handleUnauthorized();
-      throw new Error('Unauthorized');
-    }
-
-    if (response.status === 403) {
+    if (response.status === 401 || response.status === 403) {
       handleUnauthorized();
       throw new Error('Unauthorized');
     }

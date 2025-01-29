@@ -58,6 +58,9 @@ public class Animal {
   @Column
   private LocalDate admissionDate;
 
+  @Column
+  private String photoImgPath;
+
   @JsonManagedReference
   @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Vaccination> vaccinations;

@@ -263,7 +263,12 @@ function AnimalsList() {
                     </TableRow>
                     {paginatedAnimals.map((animal, index) => (
                         <TableRow key={animal.id} className="table-row">
-                            <TableCell>{animal.id}</TableCell>
+                            <TableCell> <Link
+                                to={`/animals/${animal.id}`}
+                                state={{ id: animal.id }}
+                                className="text-blue-600 hover:underline">
+                                {animal.id}
+                            </Link></TableCell>
                             <TableCell>{animal.name}</TableCell>
                             <TableCell>{animal.species}</TableCell>
                             <TableCell>

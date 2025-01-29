@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Input, Button, Select, SelectItem } from "@nextui-org/react";
-import { Popover, PopoverContent } from "@nextui-org/react";
+import { Input, Button, Select, SelectItem,
+        Popover, PopoverContent } from "@nextui-org/react";
 import { DatePicker } from "@nextui-org/date-picker";
 import { GrFormAdd } from "react-icons/gr";
 import { HiMinusSm } from "react-icons/hi";

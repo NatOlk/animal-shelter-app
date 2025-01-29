@@ -16,6 +16,25 @@ export const ANIMALS_QUERY = gql`
         }}
 `;
 
+export const ANIMAL_BY_ID_QUERY = gql`
+ query animalById($id: ID!) {
+        animalById(id: $id) {
+            id
+            name
+            species
+            primaryColor
+            implantChipId
+            breed
+            gender
+            admissionDate
+            birthDate
+            pattern
+            vaccinationCount
+            photoImgPath
+        }
+    }
+`;
+
 export const ADD_ANIMAL = gql`
     mutation ($name: String!,
         $species: String!,
