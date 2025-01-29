@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AnimalsList from "./animal/animalsList";
+import AnimalDetails from "./animal/animalDetails";
 import VaccinationsList from "./vaccination/vaccinationsList";
 import SideBarContent from './sideBarContent';
 import NavBarContent from './navBarContent';
@@ -57,6 +58,7 @@ const AppContent = () => {
                   <AllVaccinationsList />
                 </ProtectedRoute>
               } />
+              <Route path="/animals/:id" element={<AnimalDetails />} />
             </Routes>
           </ErrorBoundary>
         </main>

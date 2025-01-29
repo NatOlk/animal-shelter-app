@@ -6,6 +6,7 @@ import com.ansh.repository.AnimalRepository;
 import com.ansh.app.service.exception.AnimalCreationException;
 import com.ansh.app.service.exception.AnimalNotFoundException;
 import com.ansh.app.service.exception.AnimalUpdateException;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import org.hibernate.exception.ConstraintViolationException;
@@ -113,5 +114,10 @@ public class AnimalService {
 
   public Animal findAnimalByVaccinationId(Long vaccinationId) {
     return animalRepository.findAnimalByVaccinationId(vaccinationId);
+  }
+
+  @Transactional
+  public void updatePhotoUrl(Long id, String path) {
+     animalRepository.updatePhotoPathById(id, path);
   }
 }
