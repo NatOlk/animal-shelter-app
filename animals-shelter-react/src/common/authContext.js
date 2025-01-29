@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 
 const AuthContext = createContext();
 
@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem('jwt');
 
-        if (token !== 'undefined' && token !== null && token !== '')  {
+        if (token !== 'undefined' && token !== null && token !== '') {
             setIsAuthenticated(true);
         } else {
             setIsAuthenticated(false);
@@ -31,8 +31,16 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('jwt');
     };
 
+    const contextValue = useMemo(() => ({
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        isLoading
+    }), [isAuthenticated, user, isLoading]);
+
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );

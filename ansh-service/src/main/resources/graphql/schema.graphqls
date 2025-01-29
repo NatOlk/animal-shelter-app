@@ -25,6 +25,7 @@ type Animal {
     pattern: String
     vaccinations: [Vaccination]
     vaccinationCount: Int
+    photoImgPath: String
 }
 
 type Vaccination {

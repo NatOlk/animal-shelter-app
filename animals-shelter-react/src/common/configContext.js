@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { apiFetch } from './api';
 import { useAuth } from './authContext';
 
@@ -29,8 +29,14 @@ export const ConfigProvider = ({ children }) => {
         fetchConfig();
     }, [isAuthenticated]);
 
+    const contextValue = useMemo(() => ({
+        ...config,
+        loading,
+        error,
+    }), [config, loading, error]);
+
     return (
-        <ConfigContext.Provider value={{ ...config, loading, error }}>
+        <ConfigContext.Provider value={contextValue}>
             {children}
         </ConfigContext.Provider>
     );
