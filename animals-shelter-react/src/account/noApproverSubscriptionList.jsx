@@ -6,7 +6,7 @@ import { TfiReload } from "react-icons/tfi";
 import { HiX, HiOutlineUserAdd} from "react-icons/hi";
 
 export default function NoApproverSubscriptionList({ userProfile }) {
-  const [unapprovedSubscribers, setUnapprovedSubscribers] = useState([]); // Данные таблицы
+  const [unapprovedSubscribers, setUnapprovedSubscribers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

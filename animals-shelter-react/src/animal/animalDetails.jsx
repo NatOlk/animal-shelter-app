@@ -5,8 +5,8 @@ import {
 } from "@nextui-org/react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { apiFetch } from '../common/api';
-import { ANIMAL_BY_ID_QUERY } from "../common/graphqlQueries.js";
+import { apiFetch } from '../common/api.jsx';
+import { ANIMAL_BY_ID_QUERY } from "../common/graphqlQueries.jsx";
 
 function AnimalDetails() {
     const { id } = useParams();

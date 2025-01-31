@@ -4,7 +4,7 @@ import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink, ApolloLink } fro
 import { onError } from "@apollo/client/link/error";
 import { NextUIProvider } from "@nextui-org/react";
 import './styles/output.css';
-import App from "./app";
+import App from "./app.jsx";
 import './styles/global.css';
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
