@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { ANIMALS_QUERY, DELETE_ANIMAL } from '../common/graphqlQueries.js';
+import { ANIMALS_QUERY, DELETE_ANIMAL } from '../common/graphqlQueries';
 import { Button, Progress } from "@nextui-org/react";
 import {
     Modal,

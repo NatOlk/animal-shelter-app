@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 export const Logo = () => {
   return (
     <Image
-      src="static/img/hippologo.png"
+      src="./img/hippologo.png"
     />
   );
 };
