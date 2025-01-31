@@ -8,7 +8,6 @@ const QuickSubscribe = () => {
   const [email, setEmail] = useState('');
 
   const handleSubscribe = async (e) => {
-    e.preventDefault();
     try {
       await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
         method: 'POST',

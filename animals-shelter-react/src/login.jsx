@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from './common/authContext';
+import { useAuth } from './common/authContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Spacer } from '@nextui-org/react';
 
