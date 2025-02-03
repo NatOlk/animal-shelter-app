@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from "@apollo/client";
 import DeleteVaccination from "./deleteVaccination";
-import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries.js';
+import { ALL_VACCINATIONS_QUERY } from '../common/graphqlQueries';
 import {
     Pagination, Progress, Alert, Table, TableHeader,
     TableColumn, TableBody, TableRow, TableCell
@@ -11,7 +11,9 @@ import { useAsyncList } from "@react-stately/data";
 function AllVaccinationsList() {
     const perPage = 10;
     const [currentPage, setCurrentPage] = useState(0);
-    const { loading, error, data } = useQuery(ALL_VACCINATIONS_QUERY);
+    const { loading, error, data } = useQuery(ALL_VACCINATIONS_QUERY, {
+        fetchPolicy: 'network-only',
+    });
     const [globalError, setGlobalError] = useState("");
 
     const list = useAsyncList({

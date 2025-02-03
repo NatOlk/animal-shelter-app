@@ -25,6 +25,7 @@ type Animal {
     pattern: String
     vaccinations: [Vaccination]
     vaccinationCount: Int
+    photoImgPath: String
 }
 
 type Vaccination {
@@ -48,7 +49,7 @@ type UserProfile {
 type Mutation {
     addAnimal(name: String!, species: String!, primaryColor: String!, breed: String, implantChipId: String, gender: String!, birthDate: Date!, pattern: String) : Animal
     deleteAnimal(id: ID!, reason: String!) : Animal
-    updateAnimal(id: ID!, primaryColor: String, breed: String, gender: String, birthDate: Date, pattern: String) : Animal
+    updateAnimal(id: ID!, primaryColor: String, breed: String, gender: String, birthDate: Date, pattern: String, photoImgPath: String) : Animal
     addVaccination(animalId: ID!, vaccine: String!, batch: String!, vaccinationTime: Date!, comments: String, email: String!) : Vaccination
     deleteVaccination(id: ID!) : Vaccination
     updateVaccination(id: ID!, vaccine: String, batch: String, vaccinationTime: Date, comments: String, email: String) : Vaccination

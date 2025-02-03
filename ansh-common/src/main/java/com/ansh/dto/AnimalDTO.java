@@ -21,4 +21,5 @@ public class AnimalDTO {
   private LocalDate birthDate;
   private String pattern;
   private LocalDate admissionDate;
+  private String photoImgPath;
 }

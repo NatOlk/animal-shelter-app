@@ -9,7 +9,7 @@ import {
 import DeleteVaccination from "./deleteVaccination";
 import EditableVaccinationField from './editableVaccinationField';
 import { useLocation, Link } from 'react-router-dom';
-import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries.js';
+import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries';
 import DateField from '../common/dateField';
 import { useAuth } from '../common/authContext';
 import { useConfig } from '../common/configContext';

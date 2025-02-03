@@ -19,7 +19,6 @@
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
-    font-size: 10px;
     padding: 2px !important;
     font-size: 0.75rem;
     @apply w-full text-sm border-collapse;
@@ -45,10 +44,6 @@
     font-size: 10px !important;
   }
 
-  .table-row:hover {
-    background-color: #f4fdfe;
-  }
-
   .editable-cell-field {
     background-color: #f0f8ff;
     cursor: pointer;
@@ -61,6 +56,10 @@
   .compact-table td {
     padding: 8px !important;
     font-size: 0.75rem;
+  }
+
+  .table-row:hover {
+    background-color: #f4fdfe;
   }
 
   .quick-subscribe-btn {
@@ -134,11 +133,11 @@
   }
 
   .error-message {
-      background-color: #ffe6e6;
-      color: #ff1a1a;
-      border: 1px solid #ff1a1a;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 10px;
+    background-color: #ffe6e6;
+    color: #ff1a1a;
+    border: 1px solid #ff1a1a;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
   }
 }
