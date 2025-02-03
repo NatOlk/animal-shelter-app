@@ -1,11 +1,12 @@
-const handleUnauthorized = () => {
+import { FetchOptions } from "./types";
+
+const handleUnauthorized = (): void => {
   localStorage.removeItem('jwt');
   window.location.href = '/login';
 };
 
-export const apiFetch = async (url, options = {}) => {
+export const apiFetch = async <T>(url: string, options: FetchOptions = {}): Promise<T> => {
   const { method = 'GET', body, headers = {} } = options;
-
   const token = localStorage.getItem('jwt');
 
   try {
@@ -32,10 +33,10 @@ export const apiFetch = async (url, options = {}) => {
 
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
-      return await response.json();
+      return await response.json() as T;
     }
 
-    return response;
+    return response as unknown as T;
   } catch (error) {
     console.error('Fetch error:', error);
     throw error;

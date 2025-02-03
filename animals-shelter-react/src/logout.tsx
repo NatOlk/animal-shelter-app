@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@nextui-org/react';
 
-const Logout = () => {
+const Logout: React.FC = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogout = async () => {
+    const handleLogout = async (): Promise<void> => {
         try {
             await axios.post(`/ansh/api/auth/logout`, {}, { withCredentials: true });
             logout();

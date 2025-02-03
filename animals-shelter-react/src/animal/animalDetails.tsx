@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     Input, Button, Spacer, Alert, Progress
 } from "@nextui-org/react";
@@ -8,20 +8,21 @@ import { Card, CardHeader, CardBody } from "@nextui-org/card";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
-import { apiFetch } from '../common/api.jsx';
-import { ANIMAL_BY_ID_QUERY, UPDATE_ANIMAL } from "../common/graphqlQueries.jsx";
+import { apiFetch } from '../common/api';
+import { ANIMAL_BY_ID_QUERY, UPDATE_ANIMAL } from "../common/graphqlQueries";
+import { Animal } from "../common/types";
 
-function AnimalDetails() {
-    const { id } = useParams();
-    const [file, setFile] = useState(null);
-    const [message, setMessage] = useState("");
-    const [forceUpdate, setForceUpdate] = useState(0);
+const AnimalDetails: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const [file, setFile] = useState<File | null>(null);
+    const [message, setMessage] = useState<string>("");
+    const [forceUpdate, setForceUpdate] = useState<number>(Date.now());
 
-    const { loading, error, data } = useQuery(ANIMAL_BY_ID_QUERY, {
+    const { loading, error, data } = useQuery<{ animalById: Animal }>(ANIMAL_BY_ID_QUERY, {
         variables: { id },
     });
 
-    const [photoImgPath, setPhotoImgPath] = useState(null);
+    const [photoImgPath, setPhotoImgPath] = useState<string | null>(null);
 
     const [updateAnimal] = useMutation(UPDATE_ANIMAL, {
         onCompleted: () => {
@@ -51,8 +52,10 @@ function AnimalDetails() {
 
     const animal = data?.animalById;
 
-    const handleFileChange = (event) => {
-        setFile(event.target.files[0]);
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            setFile(event.target.files[0]);
+        }
     };
 
     const handleUpload = async () => {
@@ -168,6 +171,6 @@ function AnimalDetails() {
             </div>
         </div>
     );
-}
+};
 
 export default AnimalDetails;

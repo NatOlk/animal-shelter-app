@@ -3,20 +3,20 @@ import { useAuth } from '../common/authContext';
 import { Input, Button, Progress, Spacer } from "@nextui-org/react";
 import { LuSmilePlus } from "react-icons/lu";
 
-const Subscription = () => {
+const Subscription: React.FC = () => {
     const { user } = useAuth();
-    const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        if (user.email) {
+        if (user?.email) {
             setEmail(user.email);
         }
-    }, [user.email]);
+    }, [user?.email]);
 
     const handleSubscribe = async () => {
-        setLoading(true);
         if (!email.trim()) return;
+        setLoading(true);
 
         try {
             await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
@@ -26,17 +26,19 @@ const Subscription = () => {
                 },
                 body: JSON.stringify({
                     email: email,
-                    approver: user.email,
+                    approver: user?.email,
                 }),
             });
         } catch (error) {
             console.error('Error during subscription:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <>
-            {!loading && (
+            {!loading ? (
                 <div className="flex items-center gap-3">
                     <Input
                         id="email"
@@ -51,8 +53,7 @@ const Subscription = () => {
                         <LuSmilePlus />
                     </Button>
                 </div>
-            )}
-            {loading && (
+            ) : (
                 <>
                     <Spacer y={1} />
                     <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
