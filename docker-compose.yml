@@ -147,6 +147,7 @@ services:
       - ./config/truststore.p12:/app/truststore.p12
       - ansh-service-data:/app/data
       - ansh-service-logs:/app/logs
+      - ansh-service-uploads:/uploads
     environment:
       JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=BerlinApril2025 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-ansh:9092
@@ -155,6 +156,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD}
       ANIMAL_SHELTER_NOTIFICATION_APP: https://nginx-proxy-ansh/ansh/notification
+      FILE_UPLOAD_DIR: /uploads
     networks:
       - backend
 
@@ -162,16 +164,15 @@ services:
     build:
       context: ./animals-shelter-react
       dockerfile: Dockerfile
+    volumes:
+      - ./animals-shelter-react/src:/app/src
+      - ./animals-shelter-react/public:/app/public
     command: >
-      sh -c "npx tailwindcss -c tailwind.config.js 
+      sh -c "npm install && npx tailwindcss -c tailwind.config.js 
       -i ./src/styles/global.css 
-      -o ./src/output.css --watch & npm start"
+      -o ./src/styles/output.css --watch & npm run dev -- --port=5173 --host 0.0.0.0 --debug"
     ports:
-      - "3000:3000"
-    environment:
-      - HTTPS=true
-      - SSL_CRT_FILE=/etc/nginx/cert.crt
-      - SSL_KEY_FILE=/etc/nginx/cert.key
+      - "5173:5173"
     networks:
       - frontend
       - backend
@@ -179,7 +180,6 @@ services:
   nginx-proxy-ansh:
     image: nginx:1.21.6-alpine
     volumes:
-      - ./animals-shelter-react/build:/usr/share/nginx/html
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./config/cert.crt:/etc/nginx/cert.crt
       - ./config/cert.key:/etc/nginx/cert.key
@@ -218,3 +218,4 @@ volumes:
   nginx-cert:
   ansh-service-data:
   ansh-service-logs:
+  ansh-service-uploads:

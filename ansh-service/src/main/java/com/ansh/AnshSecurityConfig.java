@@ -33,6 +33,7 @@ public class AnshSecurityConfig {
             .requestMatchers("/auth/login").permitAll()
             .requestMatchers("/auth/logout").permitAll()
             .requestMatchers("/resources/**").permitAll()
+            .requestMatchers("/uploads/**").permitAll()
             .requestMatchers("/graphql").authenticated()
             .requestMatchers("/**").authenticated()
         )
@@ -76,4 +77,5 @@ public class AnshSecurityConfig {
     provider.setUserDetailsService(userDetailsService());
     return provider;
   }
+
 }

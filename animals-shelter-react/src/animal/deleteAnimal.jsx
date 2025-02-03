@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { ANIMALS_QUERY, DELETE_ANIMAL } from '../common/graphqlQueries.js';
-import { Button } from "@nextui-org/react";
+import { ANIMALS_QUERY, DELETE_ANIMAL } from '../common/graphqlQueries';
+import { Button, Progress } from "@nextui-org/react";
 import {
     Modal,
     ModalContent,
@@ -26,6 +26,24 @@ function DeleteAnimal({ id, onError }) {
             });
         }
     });
+
+    useEffect(() => {
+        if (error && onError) {
+            onError(`Failed to delete animal: ${error.message}`);
+        }
+    }, [error, onError]);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <Progress
+                    isIndeterminate
+                    aria-label="Deleting animal"
+                    size="lg"
+                />
+            </div>
+        );
+    }
 
     const handleDelete = () => {
         deleteAnimal({ variables: { id, reason } })

@@ -1,20 +1,21 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AnimalsList from "./animal/animalsList";
-import VaccinationsList from "./vaccination/vaccinationsList";
-import SideBarContent from './sideBarContent';
-import NavBarContent from './navBarContent';
-import AllVaccinationsList from "./vaccination/allVaccinationsList";
-import UserProfile from './account/userProfile';
-import { ConfigProvider } from './common/configContext';
-import Login from "./login";
-import Logout from "./logout";
-import ProtectedRoute from "./common/protectedRoute";
-import ErrorPage from "./errorPage";
-import { AuthProvider, useAuth } from './common/authContext';
-import QuickSubscribe from './account/quickSubscribe';
+import AnimalsList from "./animal/animalsList.jsx";
+import AnimalDetails from "./animal/animalDetails.jsx";
+import VaccinationsList from "./vaccination/vaccinationsList.jsx";
+import SideBarContent from './sideBarContent.jsx';
+import NavBarContent from './navBarContent.jsx';
+import AllVaccinationsList from "./vaccination/allVaccinationsList.jsx";
+import UserProfile from './account/userProfile.jsx';
+import { ConfigProvider } from './common/configContext.jsx';
+import Login from "./login.jsx";
+import Logout from "./logout.jsx";
+import ProtectedRoute from "./common/protectedRoute.jsx";
+import ErrorPage from "./errorPage.jsx";
+import { AuthProvider, useAuth } from './common/authContext.jsx';
+import QuickSubscribe from './account/quickSubscribe.jsx';
 import { Spacer } from "@nextui-org/react";
-import ErrorBoundary from './common/errorBoundary';
+import ErrorBoundary from './common/errorBoundary.jsx';
 import './styles/global.css';
 
 const AppContent = () => {
@@ -57,6 +58,7 @@ const AppContent = () => {
                   <AllVaccinationsList />
                 </ProtectedRoute>
               } />
+              <Route path="/animals/:id" element={<AnimalDetails />} />
             </Routes>
           </ErrorBoundary>
         </main>

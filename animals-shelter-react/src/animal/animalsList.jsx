@@ -5,11 +5,11 @@ import {
     Button, Input, Pagination, Progress, Alert
 } from "@nextui-org/react";
 import { useQuery, useMutation } from "@apollo/client";
-import DeleteAnimal from './deleteAnimal';
-import DateField from '../common/dateField';
-import EditableAnimalField from './editableAnimalField';
-import { ANIMALS_QUERY, ADD_ANIMAL } from "../common/graphqlQueries.js";
-import { useConfig } from "../common/configContext";
+import DeleteAnimal from './deleteAnimal.jsx';
+import DateField from '../common/dateField.jsx';
+import EditableAnimalField from './editableAnimalField.jsx';
+import { ANIMALS_QUERY, ADD_ANIMAL } from "../common/graphqlQueries.jsx";
+import { useConfig } from "../common/configContext.jsx";
 import { Link } from 'react-router-dom';
 import { IoIosAddCircleOutline } from "react-icons/io"
 import { BiInjection } from "react-icons/bi";
@@ -263,7 +263,12 @@ function AnimalsList() {
                     </TableRow>
                     {paginatedAnimals.map((animal, index) => (
                         <TableRow key={animal.id} className="table-row">
-                            <TableCell>{animal.id}</TableCell>
+                            <TableCell> <Link
+                                to={`/animals/${animal.id}`}
+                                state={{ id: animal.id }}
+                                className="text-blue-600 hover:underline">
+                                {animal.id}
+                            </Link></TableCell>
                             <TableCell>{animal.name}</TableCell>
                             <TableCell>{animal.species}</TableCell>
                             <TableCell>
