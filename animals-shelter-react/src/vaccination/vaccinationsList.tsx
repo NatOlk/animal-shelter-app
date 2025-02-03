@@ -15,13 +15,15 @@ import { useAuth } from '../common/authContext';
 import { useConfig } from '../common/configContext';
 import { today } from "@internationalized/date";
 import { IoIosAddCircleOutline } from "react-icons/io"
+import { Vaccination, Config } from "../common/types";
 
-function VaccinationsList() {
+const VaccinationsList: React.FC = () => {
+
     const perPage = 8;
-    const [currentPage, setCurrentPage] = useState(0);
-    const [globalError, setGlobalError] = useState("");
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [globalError, setGlobalError] = useState<string>("");
     const location = useLocation();
-    const { animalId } = location.state;
+    const { animalId } = location.state as { animalId: string };
 
     if (!animalId) {
         return (
@@ -32,7 +34,7 @@ function VaccinationsList() {
         );
     }
 
-    const config = useConfig();
+    const config: Config | null = useConfig();
     if (config == null) return <p>Loading configs...</p>;
 
     const { isAuthenticated, user } = useAuth();
@@ -44,13 +46,15 @@ function VaccinationsList() {
         email: isAuthenticated && user ? user.email : '',
     };
 
-    const [vaccination, setVaccination] = useState(initialValues);
+    const [vaccination, setVaccination] = useState<Vaccination>(initialValues);
 
     const [addVaccination] = useMutation(ADD_VACCINATION, {
         refetchQueries: [VACCINATIONS_QUERY],
         update(cache, { data: { addVaccination } }) {
             try {
-                const { allVaccinations } = cache.readQuery({ query: ALL_VACCINATIONS_QUERY });
+                const { allVaccinations } = cache.readQuery<{ allVaccinations: Vaccination[] }>({
+                    query: ALL_VACCINATIONS_QUERY
+                }) || { allVaccinations: [] };
                 cache.writeQuery({
                     query: ALL_VACCINATIONS_QUERY,
                     data: { allVaccinations: [...allVaccinations, addVaccination] },
@@ -94,12 +98,12 @@ function VaccinationsList() {
         setVaccination(initialValues);
     }
 
-    const { loading, error, data } = useQuery(VACCINATIONS_QUERY, {
-        variables: { animalId: animalId },
+    const { loading, error, data } = useQuery<{ vaccinationByAnimalId: Vaccination[] }>(VACCINATIONS_QUERY, {
+        variables: { animalId },
         fetchPolicy: 'network-only',
     });
 
-    const list = useAsyncList({
+    const list = useAsyncList<Vaccination>({
         async load() {
             if (loading) {
                 return { items: [] };

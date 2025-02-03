@@ -3,23 +3,22 @@ import { useAuth } from './common/authContext';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Image, Button } from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
 
-export const Logo = () => {
+export const Logo: React.FC = () => {
   return (
-    <Image
-      src="./img/hippologo.png"
-    />
+    <Image src="./img/hippologo.png" alt="Logo" />
   );
 };
 
-const NavBarContent = () => {
+const NavBarContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const handleClick = () => {
-      navigate('/profile');
-    };
+  const handleClick = (): void => {
+    navigate('/profile');
+  };
+
   return (
-    <Navbar height="90px" isBordered="true">
+    <Navbar height="90px" isBordered>
       <NavbarBrand>
         <Logo />
       </NavbarBrand>
@@ -34,6 +33,6 @@ const NavBarContent = () => {
       </NavbarContent>
     </Navbar>
   );
-}
+};
 
 export default NavBarContent;

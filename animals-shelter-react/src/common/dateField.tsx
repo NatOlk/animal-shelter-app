@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { DatePicker } from "@nextui-org/date-picker";
-import { parseDate, getLocalTimeZone, today } from "@internationalized/date";
-import { useDateFormatter } from "@react-aria/i18n";
+import { getLocalTimeZone, today } from "@internationalized/date";
+import { DateFieldProps } from "./types";
 
-const DateField = ({ onDateChange }) => {
-    let [date, setDate] =  React.useState(today(getLocalTimeZone()));
+const DateField: React.FC<DateFieldProps> = ({ onDateChange }) => {
+    const [date, setDate] = useState(today(getLocalTimeZone()));
 
-    const handleChange = (newDate) => {
+    const handleChange = (newDate: any) => {
         setDate(newDate);
         if (onDateChange) {
             onDateChange(newDate);
         }
     };
+
     return (
         <DatePicker
             isRequired

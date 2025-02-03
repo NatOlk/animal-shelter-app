@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import {
-     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-     Tooltip, Button, Spacer} from "@nextui-org/react";
+  Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+  Tooltip, Button, Spacer
+} from "@nextui-org/react";
 import { apiFetch } from '../common/api';
 import { HiOutlineUserRemove } from "react-icons/hi";
+import { Subscriber, SubscriptionListProps} from "../common/types";
 
-export default function AllApproverSubscriptionList({ userProfile }) {
-  const [allSubscribers, setAllSubscribers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile }) => {
+  const [allSubscribers, setAllSubscribers] = useState<Subscriber[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchSubscribers = async () => {
       try {
-        const subscriberData = await apiFetch(`/animal-notify-all-approver-subscriptions`, {
+        const subscriberData = await apiFetch<Subscriber[]>(`/animal-notify-all-approver-subscriptions`, {
           method: 'POST',
           body: { approver: userProfile.email },
         });
         setAllSubscribers(subscriberData);
       } catch (error) {
-        setError(error);
+        setError(error as Error);
       } finally {
         setLoading(false);
       }
@@ -27,7 +29,7 @@ export default function AllApproverSubscriptionList({ userProfile }) {
     fetchSubscribers();
   }, [userProfile.email]);
 
-  const handleUnsubscribe = async (token) => {
+  const handleUnsubscribe = async (token: string) => {
     try {
       await fetch(`/ansh/notification/external/animal-notify-unsubscribe/${token}`, {
         method: 'GET',
@@ -86,10 +88,11 @@ export default function AllApproverSubscriptionList({ userProfile }) {
           </TableBody>
         ) : (
           <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
-        )
-        }
+        )}
       </Table>
       <Spacer y={10} />
     </>
   );
-}
+};
+
+export default AllApproverSubscriptionList;

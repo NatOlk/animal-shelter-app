@@ -7,16 +7,17 @@ import {
     TableColumn, TableBody, TableRow, TableCell
 } from "@nextui-org/react";
 import { useAsyncList } from "@react-stately/data";
+import { Vaccination } from "../common/types";
 
-function AllVaccinationsList() {
+const AllVaccinationsList: React.FC = () => {
     const perPage = 10;
-    const [currentPage, setCurrentPage] = useState(0);
-    const { loading, error, data } = useQuery(ALL_VACCINATIONS_QUERY, {
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const { loading, error, data } = useQuery<{ allVaccinations: Vaccination[] }>(ALL_VACCINATIONS_QUERY, {
         fetchPolicy: 'network-only',
     });
-    const [globalError, setGlobalError] = useState("");
+    const [globalError, setGlobalError] = useState<string>("");
 
-    const list = useAsyncList({
+    const list = useAsyncList<Vaccination>({
         async load() {
             if (loading) {
                 return { items: [] };
@@ -32,9 +33,9 @@ function AllVaccinationsList() {
         async sort({ items, sortDescriptor }) {
             return {
                 items: items.sort((a, b) => {
-                    let first = a[sortDescriptor.column];
-                    let second = b[sortDescriptor.column];
-                    let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
+                    let first = a[sortDescriptor.column as keyof Vaccination];
+                    let second = b[sortDescriptor.column as keyof Vaccination];
+                    let cmp = (parseInt(first as string) || first) < (parseInt(second as string) || second) ? -1 : 1;
 
                     if (sortDescriptor.direction === "descending") {
                         cmp *= -1;
@@ -63,7 +64,7 @@ function AllVaccinationsList() {
         return <p>Error: {error.message}</p>;
     }
 
-    const handleError = (error) => {
+    const handleError = (error: string) => {
         setGlobalError(error);
     };
 

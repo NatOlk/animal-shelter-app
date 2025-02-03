@@ -14,13 +14,14 @@ import { MdOutlineAlternateEmail, MdGroupAdd } from "react-icons/md";
 import { TbUsersGroup } from "react-icons/tb";
 import { RiAdminLine } from "react-icons/ri";
 import { HiOutlineBellAlert } from "react-icons/hi2";
+import { UserProfileData } from "../common/types";
 
-const UserProfile = () => {
-  const { loading, error, data } = useQuery(GET_CURRENT_USER_PROFILE, {
+const UserProfile: React.FC = () => {
+  const { loading, error, data } = useQuery<UserProfileData>(GET_CURRENT_USER_PROFILE, {
     fetchPolicy: "network-only",
   });
 
-  const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState(null);
+  const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState<'NONE' | 'PENDING' | 'ACTIVE' | null>(null);
 
   useEffect(() => {
     if (data?.currentUserProfile) {
@@ -29,8 +30,9 @@ const UserProfile = () => {
   }, [data]);
 
   const updateSubscriptionStatus = async () => {
+    if (!data?.currentUserProfile.email) return;
     try {
-      const status = await apiFetch(`/animal-notify-approver-status`, {
+      const status = await apiFetch<'NONE' | 'PENDING' | 'ACTIVE'>(`/animal-notify-approver-status`, {
         method: 'POST',
         body: { approver: data.currentUserProfile.email },
       });
