@@ -1,9 +1,11 @@
 package com.ansh;
 
+import com.ansh.utils.IdentifierMasker;
 import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
@@ -17,6 +19,9 @@ public class DataInitializer implements CommandLineRunner {
 
   private static final Logger LOG = LoggerFactory.getLogger(DataInitializer.class);
 
+  @Value("${app.admin.email}")
+  private String defaultEmail;
+
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
@@ -25,8 +30,9 @@ public class DataInitializer implements CommandLineRunner {
     ClassPathResource resource = new ClassPathResource("init.sql");
     String sql = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
 
-    jdbcTemplate.execute(sql);
+    sql = sql.replace(":defaultEmail", defaultEmail);
 
-    LOG.info("SQL script executed: init.sql");
+    jdbcTemplate.execute(sql);
+    LOG.debug("init SQL script executed with default email: {}", IdentifierMasker.maskEmail(defaultEmail));
   }
 }
