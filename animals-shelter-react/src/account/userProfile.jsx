@@ -51,7 +51,7 @@ const UserProfile = () => {
         <Card className="w-full">
           <CardHeader className="flex gap-3">
             <div className="flex flex-col">
-              <h1>User Profile</h1>
+              <h1>User </h1>
             </div>
           </CardHeader>
           <Divider />
