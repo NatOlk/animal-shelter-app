@@ -1,11 +1,11 @@
 package com.ansh.app.service;
 
-import com.ansh.entity.animal.Animal;
-import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
-import com.ansh.repository.AnimalRepository;
 import com.ansh.app.service.exception.AnimalCreationException;
 import com.ansh.app.service.exception.AnimalNotFoundException;
 import com.ansh.app.service.exception.AnimalUpdateException;
+import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
+import com.ansh.entity.animal.Animal;
+import com.ansh.repository.AnimalRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
@@ -61,9 +61,11 @@ public class AnimalService {
       return animal;
     } catch (DataIntegrityViolationException e) {
       if (e.getCause() instanceof ConstraintViolationException) {
-        throw new AnimalCreationException("An animal with the same name, species, breed, and gender already exists.");
+        throw new AnimalCreationException(
+            "An animal with the same name, species, breed, and gender already exists.");
       }
-      throw new AnimalCreationException("Could not create animal due to a database error. Please try again.");
+      throw new AnimalCreationException(
+          "Could not create animal due to a database error. Please try again.");
     } catch (Exception e) {
       LOG.error("Unexpected error: ", e);
       throw new AnimalCreationException("An unexpected error occurred. Please contact support.");
@@ -72,27 +74,20 @@ public class AnimalService {
 
   public Animal updateAnimal(@NonNull Long id, String primaryColor,
       String breed, String gender,
-      LocalDate birthDate, String pattern)
+      LocalDate birthDate, String pattern, String photoImgPath)
       throws AnimalNotFoundException, AnimalUpdateException {
     Animal animal = animalRepository.findById(id)
         .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{id}"));
 
     try {
-      if (gender != null) {
+      if (gender != null && !gender.isEmpty()) {
         animal.setGender(gender.charAt(0));
       }
-      if (birthDate != null) {
-        animal.setBirthDate(birthDate);
-      }
-      if (pattern != null) {
-        animal.setPattern(pattern);
-      }
-      if (primaryColor != null) {
-        animal.setPrimaryColor(primaryColor);
-      }
-      if (breed != null) {
-        animal.setBreed(breed);
-      }
+      animal.setBirthDate(birthDate);
+      animal.setPattern(pattern);
+      animal.setPrimaryColor(primaryColor);
+      animal.setBreed(breed);
+      animal.setPhotoImgPath(photoImgPath);
       LOG.debug("[animal] updated : {}", animal);
       animalRepository.save(animal);
     } catch (Exception e) {
@@ -118,6 +113,6 @@ public class AnimalService {
 
   @Transactional
   public void updatePhotoUrl(Long id, String path) {
-     animalRepository.updatePhotoPathById(id, path);
+    animalRepository.updatePhotoPathById(id, path);
   }
 }

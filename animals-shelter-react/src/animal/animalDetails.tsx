@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Input, Button, Spacer, Alert, Progress
 } from "@nextui-org/react";
@@ -20,9 +20,16 @@ const AnimalDetails: React.FC = () => {
 
     const { loading, error, data } = useQuery<{ animalById: Animal }>(ANIMAL_BY_ID_QUERY, {
         variables: { id },
+        fetchPolicy: "network-only",
     });
 
     const [photoImgPath, setPhotoImgPath] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (data?.animalById?.photoImgPath) {
+            setPhotoImgPath(data.animalById.photoImgPath);
+        }
+    }, [data]);
 
     const [updateAnimal] = useMutation(UPDATE_ANIMAL, {
         onCompleted: () => {
@@ -97,7 +104,7 @@ const AnimalDetails: React.FC = () => {
 
             await updateAnimal({
                 variables: {
-                    id: id,
+                    ...animal,
                     photoImgPath: null
                 }
             });

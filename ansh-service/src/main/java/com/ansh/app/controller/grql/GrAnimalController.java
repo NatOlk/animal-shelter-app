@@ -55,9 +55,9 @@ public class GrAnimalController {
   @MutationMapping
   public AnimalDTO updateAnimal(@Argument Long id, @Argument String primaryColor,
       @Argument String breed, @Argument String gender, @Argument LocalDate birthDate,
-      @Argument String pattern) throws AnimalNotFoundException, AnimalUpdateException {
+      @Argument String pattern, @Argument String photoImgPath) throws AnimalNotFoundException, AnimalUpdateException {
     return animalMapper.toDto(
-        animalsService.updateAnimal(id, primaryColor, breed, gender, birthDate, pattern));
+        animalsService.updateAnimal(id, primaryColor, breed, gender, birthDate, pattern, photoImgPath));
   }
 
   @MutationMapping
