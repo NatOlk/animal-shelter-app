@@ -3,8 +3,9 @@ import Subscription from './subscription';
 import { Progress } from '@nextui-org/progress';
 import { Spacer, Tooltip } from '@nextui-org/react';
 import { TbBellRinging } from "react-icons/tb";
+import { SubscriptionStatusProps } from "../common/types";
 
-const UserAnimalTopicSubscriptionStatus = ({ status }) => {
+const UserAnimalTopicSubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ status }) => {
   if (status === null) return <p>Status loading...</p>;
 
   switch (status) {

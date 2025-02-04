@@ -4,8 +4,8 @@ import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink, ApolloLink } fro
 import { onError } from "@apollo/client/link/error";
 import { NextUIProvider } from "@nextui-org/react";
 import './styles/output.css';
-import App from "./app.jsx";
 import './styles/global.css';
+import App from "./app";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
@@ -35,11 +35,19 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const root = createRoot(document.getElementById("root"));
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
+
+const root = createRoot(rootElement);
 root.render(
-  <ApolloProvider client={client}>
-    <NextUIProvider>
-      <App />
-    </NextUIProvider>
-  </ApolloProvider>
+  <React.StrictMode>
+    <ApolloProvider client={client}>
+      <NextUIProvider>
+        <App />
+      </NextUIProvider>
+    </ApolloProvider>
+  </React.StrictMode>
 );

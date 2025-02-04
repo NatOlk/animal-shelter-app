@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useAuth } from './common/authContext.jsx';
+import { useAuth } from './common/authContext';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Spacer } from '@nextui-org/react';
 
-const Login = () => {
-    const [identifier, setIdentifier] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+const Login: React.FC = () => {
+    const [identifier, setIdentifier] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -26,7 +26,7 @@ const Login = () => {
             });
 
             if (response.ok) {
-                const responseBody = await response.json();
+                const responseBody: { token: string; user: string; email: string } = await response.json();
                 const token = responseBody.token;
                 if (!token) {
                     navigate('/login');
@@ -47,13 +47,15 @@ const Login = () => {
     };
 
     return (
-        <Form className="w-full justify-center items-center w-full space-y-4"
+        <Form
+            className="w-full justify-center items-center space-y-4"
             validationBehavior="native"
-            onSubmit={(e) => {
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
                 handleSubmit();
             }}
-            autoComplete="off">
+            autoComplete="off"
+        >
             {errorMessage && (
                 <div style={{ color: 'red', marginBottom: '1rem' }}>
                     {errorMessage}
@@ -67,7 +69,7 @@ const Login = () => {
                     type="text"
                     variant="bordered"
                     value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
                     labelPlacement="outside"
                     isRequired
                 />
@@ -77,16 +79,13 @@ const Login = () => {
                     type="password"
                     variant="bordered"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                     labelPlacement="outside"
                     isRequired
                 />
             </div>
             <div className="flex gap-2">
-                <Button
-                    type="submit"
-                    color="default"
-                    variant="flat">
+                <Button type="submit" color="default" variant="flat">
                     Login
                 </Button>
             </div>

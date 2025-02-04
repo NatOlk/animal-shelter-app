@@ -1,12 +1,10 @@
 import React from "react";
 import { useAuth } from './common/authContext';
-import { Button } from "@nextui-org/react";
-import { Spacer } from "@nextui-org/react";
-import Logout from './logout';
 import { Divider } from "@nextui-org/divider";
 import { Link } from "react-router-dom";
+import Logout from './logout';
 
-const SideBarContent = () => {
+const SideBarContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (

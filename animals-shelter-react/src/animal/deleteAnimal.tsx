@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { ANIMALS_QUERY, DELETE_ANIMAL } from '../common/graphqlQueries';
-import { Button, Progress } from "@nextui-org/react";
+import { ANIMALS_QUERY, DELETE_ANIMAL } from "../common/graphqlQueries";
+import { Button, Progress, Textarea } from "@nextui-org/react";
+import { IoTrashOutline } from "react-icons/io5";
 import {
     Modal,
     ModalContent,
@@ -9,26 +10,36 @@ import {
     ModalBody,
     ModalFooter
 } from "@nextui-org/modal";
-import { Textarea } from "@nextui-org/input";
-import { IoTrashOutline } from "react-icons/io5";
+import { DeleteProps } from "../common/types";
 
-function DeleteAnimal({ id, onError }) {
-    const [reason, setReason] = useState("");
-    const [isModalOpen, setIsModalOpen] = useState(false);
+const DeleteAnimal: React.FC<DeleteProps> = ({ id, onError }) => {
+    const [reason, setReason] = useState<string>("Adopted");
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     const [deleteAnimal, { loading, error }] = useMutation(DELETE_ANIMAL, {
-        update(cache, { data: { deleteAnimal } }) {
-            const existingAnimals = cache.readQuery({ query: ANIMALS_QUERY });
-            const newAnimals = existingAnimals.allAnimals.filter(animal => animal.id !== deleteAnimal.id);
-            cache.writeQuery({
-                query: ANIMALS_QUERY,
-                data: { allAnimals: newAnimals },
-            });
+        update(cache, { data }) {
+            if (!data?.deleteAnimal) return;
+
+            try {
+                const existingAnimals: any = cache.readQuery({ query: ANIMALS_QUERY });
+                if (!existingAnimals?.allAnimals) return;
+
+                const newAnimals = existingAnimals.allAnimals.filter(
+                    (animal: { id: string }) => animal.id !== data.deleteAnimal.id
+                );
+
+                cache.writeQuery({
+                    query: ANIMALS_QUERY,
+                    data: { allAnimals: newAnimals },
+                });
+            } catch (cacheError) {
+                console.error("Cache update error:", cacheError);
+            }
         }
     });
 
     useEffect(() => {
-        if (error && onError) {
+        if (error) {
             onError(`Failed to delete animal: ${error.message}`);
         }
     }, [error, onError]);
@@ -36,33 +47,29 @@ function DeleteAnimal({ id, onError }) {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-full">
-                <Progress
-                    isIndeterminate
-                    aria-label="Deleting animal"
-                    size="lg"
-                />
+                <Progress isIndeterminate aria-label="Deleting animal" size="lg" />
             </div>
         );
     }
 
-    const handleDelete = () => {
-        deleteAnimal({ variables: { id, reason } })
-            .then(() => {
-                setIsModalOpen(false);
-                setReason("");
-            })
-            .catch((error) => {
-                setIsModalOpen(false);
-                const errorMessage = "Failed to delete animal: " + error.message;
-                onError(errorMessage);
-            });
+    const handleDelete = async () => {
+        try {
+            await deleteAnimal({ variables: { id, reason } });
+            setIsModalOpen(false);
+            setReason("Adopted");
+        } catch (error) {
+            setIsModalOpen(false);
+            onError("Failed to delete animal: " + (error as Error).message);
+        }
     };
 
     return (
         <>
-            <Button variant="light"
+            <Button
+                variant="light"
                 className="p-2 min-w-2 h-auto"
-                onPress={() => setIsModalOpen(true)}>
+                onPress={() => setIsModalOpen(true)}
+            >
                 <IoTrashOutline />
             </Button>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -71,13 +78,13 @@ function DeleteAnimal({ id, onError }) {
                         Reason for removal
                     </ModalHeader>
                     <ModalBody>
-                        <Textarea className="max-w-xs"
+                        <Textarea
+                            className="max-w-xs"
                             value={reason}
-                            defaultValue="Adopted"
                             isClearable
                             variant="bordered"
                             aria-label="Reason for removal"
-                            onClear={() => console.log("textarea cleared")}
+                            onClear={() => setReason("")}
                             onChange={(e) => setReason(e.target.value)}
                             isRequired
                         />
@@ -94,6 +101,6 @@ function DeleteAnimal({ id, onError }) {
             </Modal>
         </>
     );
-}
+};
 
 export default DeleteAnimal;

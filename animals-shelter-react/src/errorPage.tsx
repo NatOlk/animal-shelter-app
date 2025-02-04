@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ErrorPage = () => {
+const ErrorPage: React.FC = () => {
     return (
         <div>
             <h1>Oops! Something went wrong.</h1>
