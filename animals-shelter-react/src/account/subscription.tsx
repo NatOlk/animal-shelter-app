@@ -31,8 +31,6 @@ const Subscription: React.FC = () => {
             });
         } catch (error) {
             console.error('Error during subscription:', error);
-        } finally {
-            setLoading(false);
         }
     };
 
