@@ -1,0 +1,21 @@
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+
+WORKDIR /app
+
+COPY . .
+
+WORKDIR /app/ansh-common
+RUN mvn clean install
+
+WORKDIR /app/ansh-service
+RUN mvn clean package
+
+FROM eclipse-temurin:21-jdk-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/ansh-service/target/ansh-service-1.0.jar /app/asch.jar
+
+EXPOSE 8443
+
+ENTRYPOINT ["java", "--enable-preview", "-jar", "/app/asch.jar"]

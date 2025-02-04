@@ -17,45 +17,41 @@ public class SubscriptionCache {
 
   private static final String SUBSCRIPTIONS_CACHE = "animal_notification_subscriptions";
 
-  private final RedisTemplate<String, Subscription> subscriptionRedisTemplate;
-
-  public SubscriptionCache(
-      @Qualifier("subscriptionRedisTemplate") RedisTemplate<String, Subscription> subscriptionRedisTemplate) {
-    this.subscriptionRedisTemplate = subscriptionRedisTemplate;
-  }
+  @Qualifier("subscriptionRedisTemplate")
+  private RedisTemplate<String, Subscription> redisTemplate;
 
   public void addToCache(Subscription subscription) {
     String key = getCacheKey(subscription.getToken());
     LOG.debug("[subscribers cache] [add] Add key for token {}", IdentifierMasker.maskIdentifier(subscription.getToken()));
-    subscriptionRedisTemplate.opsForValue().set(key, subscription);
+    redisTemplate.opsForValue().set(key, subscription);
   }
 
 
   public void removeFromCache(String token) {
     String key = getCacheKey(token);
-    subscriptionRedisTemplate.delete(key);
+    redisTemplate.delete(key);
     LOG.debug("[subscribers cache] [remove] Subscription removed from cache and DB with key {}",
         IdentifierMasker.maskIdentifier(token));
   }
 
   public void clearCache() {
-    Optional.ofNullable(subscriptionRedisTemplate.keys(STR."\{SUBSCRIPTIONS_CACHE}:*"))
-        .ifPresent(keys -> keys.forEach(subscriptionRedisTemplate::delete));
+    Optional.ofNullable(redisTemplate.keys(STR."\{SUBSCRIPTIONS_CACHE}:*"))
+        .ifPresent(keys -> keys.forEach(redisTemplate::delete));
   }
 
   public Subscription getFromCache(String token) {
     String key = getCacheKey(token);
-    return subscriptionRedisTemplate.opsForValue().get(key);
+    return redisTemplate.opsForValue().get(key);
   }
 
 
   public List<Subscription> getAllFromCache() {
-    Set<String> keys = subscriptionRedisTemplate.keys(STR."\{SUBSCRIPTIONS_CACHE}:*");
+    Set<String> keys = redisTemplate.keys(STR."\{SUBSCRIPTIONS_CACHE}:*");
     if (keys == null || keys.isEmpty()) {
       return List.of();
     }
     return keys.stream()
-        .map(key -> subscriptionRedisTemplate.opsForValue().get(key))
+        .map(key -> redisTemplate.opsForValue().get(key))
         .toList();
   }
 

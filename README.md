@@ -175,17 +175,7 @@ Follow the steps in the instruction to create and manage SSL certificates for yo
 [What Are Certificates and Why Do You Need Them](#what-are-certificates-and-why-do-you-need-them)
 
 
-3. **Build the Project**
-
-   Before running the application, navigate to the project root directory and build the project using Maven:
-
-   ```bash
-   mvn clean install
-   ```
-
-   This will compile the source code, run tests, and package the application. Ensure you have Maven installed before proceeding.
-
-4. **Launch the application using Docker Compose:**
+3. **Launch the application using Docker Compose:**
 
    Build and start the services using the following command:
 
@@ -193,7 +183,7 @@ Follow the steps in the instruction to create and manage SSL certificates for yo
     docker-compose up --build
  ```
 
-5. **Open the application in your browser**
+4. **Open the application in your browser**
 
    Navigate to https://localhost
    Now you will be able to log in with the user admin.

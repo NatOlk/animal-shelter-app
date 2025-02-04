@@ -17,26 +17,8 @@ const DeleteAnimal: React.FC<DeleteProps> = ({ id, onError }) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     const [deleteAnimal, { loading, error }] = useMutation(DELETE_ANIMAL, {
-        update(cache, { data }) {
-            if (!data?.deleteAnimal) return;
-
-            try {
-                const existingAnimals: any = cache.readQuery({ query: ANIMALS_QUERY });
-                if (!existingAnimals?.allAnimals) return;
-
-                const newAnimals = existingAnimals.allAnimals.filter(
-                    (animal: { id: string }) => animal.id !== data.deleteAnimal.id
-                );
-
-                cache.writeQuery({
-                    query: ANIMALS_QUERY,
-                    data: { allAnimals: newAnimals },
-                });
-            } catch (cacheError) {
-                console.error("Cache update error:", cacheError);
-            }
-        }
-    });
+            refetchQueries: [{ query: ANIMALS_QUERY }],
+        });
 
     useEffect(() => {
         if (error) {

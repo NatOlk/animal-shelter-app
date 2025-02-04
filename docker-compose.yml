@@ -94,8 +94,8 @@ services:
 
   ansh-notification-service:
     build:
-      context: ./ansh-notification-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile_notification
     depends_on:
       redis-ansh:
         condition: service_healthy
@@ -132,8 +132,8 @@ services:
 
   ansh-service:
     build:
-      context: ./ansh-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile_service
     depends_on:
       postgres-animal-shelter:
         condition: service_healthy

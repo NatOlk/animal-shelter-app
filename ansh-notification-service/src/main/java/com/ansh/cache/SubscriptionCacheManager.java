@@ -10,34 +10,28 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
 @Component
 public class SubscriptionCacheManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(SubscriptionCacheManager.class);
   private static final String CACHE_LAST_UPDATED = "cache_last_updated";
-
-  private final SubscriptionCache subscriptionCache;
-  private final SubscriptionRepository subscriptionRepository;
-  private final RedisTemplate<String, String> updRedisTemplate;
-  private final String animalTopicId;
-
   @Autowired
-  public SubscriptionCacheManager(
-      SubscriptionCache subscriptionCache,
-      SubscriptionRepository subscriptionRepository,
-      @Qualifier("updRedisTemplate") RedisTemplate<String, String> updRedisTemplate,
-      @Value("${animalTopicId}") String animalTopicId) {
-    this.subscriptionCache = subscriptionCache;
-    this.subscriptionRepository = subscriptionRepository;
-    this.updRedisTemplate = updRedisTemplate;
-    this.animalTopicId = animalTopicId;
-  }
+  private SubscriptionCache subscriptionCache;
+  @Autowired
+  private SubscriptionRepository subscriptionRepository;
+  @Qualifier("updRedisTemplate")
+  private RedisTemplate<String, String> updRedisTemplate;
+  @Value("${animalTopicId}")
+  private String animalTopicId;
 
   public void initializeCache() {
-    List<Subscription> subscriptions = subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(animalTopicId);
+    List<Subscription> subscriptions = subscriptionRepository.findApprovedAndAcceptedSubscriptionsByTopic(
+        animalTopicId);
     LOG.debug("[Cache Init] Initializing cache with {} subscriptions.", subscriptions.size());
     subscriptions.forEach(subscriptionCache::addToCache);
-    updRedisTemplate.opsForValue().set(CACHE_LAST_UPDATED, String.valueOf(System.currentTimeMillis()));
+    updRedisTemplate.opsForValue()
+        .set(CACHE_LAST_UPDATED, String.valueOf(System.currentTimeMillis()));
   }
 
   public void reloadCache() {
@@ -48,7 +42,9 @@ public class SubscriptionCacheManager {
 
   public boolean shouldUpdateCache() {
     String lastUpdated = updRedisTemplate.opsForValue().get(CACHE_LAST_UPDATED);
-    if (lastUpdated == null) return true;
+    if (lastUpdated == null) {
+      return true;
+    }
 
     long lastUpdatedTime = Long.parseLong(lastUpdated);
     long currentTime = System.currentTimeMillis();
