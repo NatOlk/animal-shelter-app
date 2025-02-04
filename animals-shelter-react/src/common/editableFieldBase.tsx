@@ -25,7 +25,7 @@ const EditableFieldBase: React.FC<EditableFieldBaseProps> = ({
 
     const handleSave = () => {
         const variables = {
-            id: entity.id,
+            ...entity,
             [name]: fieldValue,
         };
 

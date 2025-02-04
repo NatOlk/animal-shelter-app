@@ -125,7 +125,7 @@ class GrAnimalControllerTest {
     Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
 
     Mockito.when(animalService.updateAnimal(1L, "White", "Beagle", "Male",
-            LocalDate.parse("2022-01-01"), "Striped"))
+            LocalDate.parse("2022-01-01"), "Striped", null))
         .thenReturn(animal);
 
     String query = """

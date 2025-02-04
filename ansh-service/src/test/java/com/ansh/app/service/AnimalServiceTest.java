@@ -117,10 +117,27 @@ class AnimalServiceTest {
     when(animalRepository.save(any(Animal.class))).thenReturn(animal);
 
     var updatedAnimal = animalService.updateAnimal(1L, "Black", null, "M",
-        LocalDate.parse("2022-01-01"), null);
+        LocalDate.parse("2022-01-01"), null, null);
 
     assertEquals('M', updatedAnimal.getGender());
     assertEquals("Black", updatedAnimal.getPrimaryColor());
+    verify(animalRepository, times(1)).findById(1L);
+    verify(animalRepository, times(1)).save(any(Animal.class));
+  }
+
+  void shouldUpdateAnimalImageSuccessfully() throws Exception {
+    Animal animal = new Animal();
+    animal.setId(1L);
+
+    when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
+    when(animalRepository.save(any(Animal.class))).thenReturn(animal);
+
+    var updatedAnimal = animalService.updateAnimal(1L, "Black", null, "M",
+        LocalDate.parse("2022-01-01"), null, "newPath");
+
+    assertEquals('M', updatedAnimal.getGender());
+    assertEquals("Black", updatedAnimal.getPrimaryColor());
+    assertEquals("newPath", updatedAnimal.getPhotoImgPath());
     verify(animalRepository, times(1)).findById(1L);
     verify(animalRepository, times(1)).save(any(Animal.class));
   }
@@ -136,7 +153,7 @@ class AnimalServiceTest {
 
     assertThrows(AnimalUpdateException.class, () -> animalService
         .updateAnimal(1L, "Black", null, "M",
-            LocalDate.parse("2023-01-01"), null));
+            LocalDate.parse("2023-01-01"), null, null));
   }
 
   @Test
