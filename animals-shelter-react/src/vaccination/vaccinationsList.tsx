@@ -25,17 +25,8 @@ const VaccinationsList: React.FC = () => {
     const location = useLocation();
     const { animalId } = location.state as { animalId: string };
 
-    if (!animalId) {
-        return (
-            <div>
-                <Link to="/">Back to Animals</Link>
-                <p>Error: No animalId provided!</p>
-            </div>
-        );
-    }
 
     const config: Config | null = useConfig();
-    if (config == null) return <p>Loading configs...</p>;
 
     const { isAuthenticated, user } = useAuth();
     const initialValues = {
@@ -64,6 +55,16 @@ const VaccinationsList: React.FC = () => {
             }
         }
     });
+
+    if (config == null) return <p>Loading configs...</p>;
+    if (!animalId) {
+        return (
+            <div>
+                <Link to="/">Back to Animals</Link>
+                <p>Error: No animalId provided!</p>
+            </div>
+        );
+    }
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -233,26 +234,26 @@ const VaccinationsList: React.FC = () => {
                             <TableCell>{vaccination.vaccine}</TableCell>
                             <TableCell>
                                 <EditableVaccinationField
-                                    vaccination={vaccination}
+                                    entity={vaccination}
                                     value={vaccination.batch}
                                     name="email" />
                             </TableCell>
                             <TableCell>
                                 <EditableVaccinationField
-                                    vaccination={vaccination}
+                                    entity={vaccination}
                                     value={vaccination.vaccinationTime}
                                     name="vaccinationTime"
                                     isDate={true} />
                             </TableCell>
                             <TableCell>
                                 <EditableVaccinationField
-                                    vaccination={vaccination}
+                                    entity={vaccination}
                                     value={vaccination.comments}
                                     name="comments" />
                             </TableCell>
                             <TableCell>
                                 <EditableVaccinationField
-                                    vaccination={vaccination}
+                                    entity={vaccination}
                                     value={vaccination.email}
                                     name="email" />
                             </TableCell>

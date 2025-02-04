@@ -1,4 +1,4 @@
-import React, {ReactNode } from "react";
+import React, { ReactNode } from "react";
 
 export interface Animal {
   id: string;
@@ -13,17 +13,14 @@ export interface Animal {
   vaccinationCount?: number;
 }
 
-interface Vaccination {
+export interface Vaccination {
   id: string;
   vaccine: string;
   batch: string;
   vaccinationTime: string;
   comments?: string;
   email: string;
-  animal: {
-    name: string;
-    species: string;
-  };
+  animal: Pick<Animal, 'name' | 'species'>;
 }
 
 export interface Config {
@@ -38,35 +35,21 @@ export interface ConfigContextType extends Config {
   error: Error | null;
 }
 
-
 export interface DeleteProps {
   id: string;
   onError: (error: string) => void;
 }
 
-export interface EditableAnimalFieldProps {
-  animal: Animal;
+export interface EditableFieldProps {
+  entity: { id: string };
   name: string;
   value: string | number;
   values?: string[];
   isDate?: boolean;
+  updateField?: (variables: { variables: Record<string, any> }) => Promise<void>;
 }
 
-interface EditableVaccineFieldProps {
-    vaccination: Vaccination;
-    [key: string]: any;
-}
-
-interface EditableFieldBaseProps {
-    entity: { id: string };
-    value: string;
-    name: string;
-    values?: string[];
-    isDate?: boolean;
-    updateField: (variables: { variables: Record<string, any> }) => Promise<void>;
-}
-
-interface Subscriber {
+export interface Subscriber {
   id: string;
   email: string;
   approver: string;
@@ -76,24 +59,24 @@ interface Subscriber {
   token: string;
 }
 
-interface User {
-    id: string | null;
-    email: string | null;
+export interface User {
+  id: string | null;
+  email: string | null;
 }
 
-interface AuthContextType {
-    isAuthenticated: boolean;
-    user: User;
-    login: (userData: User, token: string) => void;
-    logout: () => void;
-    isLoading: boolean;
+export interface AuthContextType {
+  isAuthenticated: boolean;
+  user: User;
+  login: (userData: User, token: string) => void;
+  logout: () => void;
+  isLoading: boolean;
 }
 
-interface SubscriptionStatusProps {
+export interface SubscriptionStatusProps {
   status: 'NONE' | 'PENDING' | 'ACTIVE' | null;
 }
 
-interface UserProfileData {
+export interface UserProfileData {
   currentUserProfile: {
     name: string;
     email: string;
@@ -101,18 +84,18 @@ interface UserProfileData {
   };
 }
 
-interface DateFieldProps {
-    onDateChange?: (date: any) => void;
+export interface DateFieldProps {
+  onDateChange?: (date: any) => void;
 }
 
-interface ChildrenProps {
-    children: ReactNode;
+export interface ChildrenProps {
+  children: ReactNode;
 }
 
-interface SubscriptionListProps {
-  userProfile: UserProfile;
+export interface SubscriptionListProps {
+  userProfile: UserProfileData;
 }
 
-interface FetchOptions extends RequestInit {
+export interface FetchOptions extends RequestInit {
   body?: any;
 }
