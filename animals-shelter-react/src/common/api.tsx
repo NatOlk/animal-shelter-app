@@ -5,7 +5,7 @@ const handleUnauthorized = (): void => {
   window.location.href = '/login';
 };
 
-export const apiFetch = async <T>(url: string, options: FetchOptions = {}): Promise<T> => {
+export async function apiFetch<T>(url: string, options: FetchOptions = {}): Promise<T> {
   const { method = 'GET', body, headers = {} } = options;
   const token = localStorage.getItem('jwt');
 
@@ -16,7 +16,7 @@ export const apiFetch = async <T>(url: string, options: FetchOptions = {}): Prom
       method,
       headers: {
         ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-        Authorization: token ? `Bearer ${token}` : '',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
       body: method !== 'GET' && body ? (isFormData ? body : JSON.stringify(body)) : undefined,
@@ -28,11 +28,11 @@ export const apiFetch = async <T>(url: string, options: FetchOptions = {}): Prom
     }
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Network response was not ok: ${response.status}`);
     }
 
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
       return await response.json() as T;
     }
 
@@ -41,4 +41,4 @@ export const apiFetch = async <T>(url: string, options: FetchOptions = {}): Prom
     console.error('Fetch error:', error);
     throw error;
   }
-};
+}

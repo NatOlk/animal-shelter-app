@@ -2,14 +2,14 @@ import React from "react";
 import { useMutation } from "@apollo/client";
 import EditableFieldBase from "../common/editableFieldBase";
 import { VACCINATIONS_QUERY, UPDATE_VACCINATION } from "../common/graphqlQueries";
-import { EditableVaccineFieldProps } from "../common/types";
+import { EditableFieldProps } from "../common/types";
 
-const EditableVaccineField: React.FC<EditableVaccineFieldProps> = ({ vaccination, ...props }) => {
+const EditableVaccineField: React.FC<EditableFieldProps> = ({ entity, ...props }) => {
     const [updateField] = useMutation(UPDATE_VACCINATION, {
         refetchQueries: [VACCINATIONS_QUERY],
     });
 
-    return <EditableFieldBase {...props} entity={vaccination} updateField={updateField} />;
+    return <EditableFieldBase {...props} entity={entity} updateField={updateField} />;
 };
 
 export default EditableVaccineField;

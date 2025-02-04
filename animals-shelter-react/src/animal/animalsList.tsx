@@ -270,31 +270,31 @@ const AnimalsList: React.FC = () => {
                             <TableCell>{animal.species}</TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.primaryColor}
+                                    entity={animal} value={animal.primaryColor}
                                     name="primaryColor"
                                     values={config.colors} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.breed}
+                                    entity={animal} value={animal.breed}
                                     name="breed" />
                             </TableCell>
                             <TableCell>{animal.implantChipId}</TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.gender}
+                                    entity={animal} value={animal.gender}
                                     name="gender"
                                     values={config.genders} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.birthDate}
+                                    entity={animal} value={animal.birthDate}
                                     name="birthDate"
                                     isDate={true} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.pattern}
+                                    entity={animal} value={animal.pattern}
                                     name="pattern" />
                             </TableCell>
                             <TableCell>
