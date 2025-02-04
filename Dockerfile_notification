@@ -1,0 +1,21 @@
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+
+WORKDIR /app
+
+COPY . .
+
+WORKDIR /app/ansh-common
+RUN mvn clean install
+
+WORKDIR /app/ansh-notification-service
+RUN mvn clean package
+
+FROM eclipse-temurin:21-jdk-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/ansh-notification-service/target/ansh-notification-service-1.0.jar /app/ansh-notification-service.jar
+
+EXPOSE 8444
+
+ENTRYPOINT ["java", "--enable-preview", "-jar", "/app/ansh-notification-service.jar"]

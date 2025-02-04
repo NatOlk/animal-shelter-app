@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from "@apollo/client";
 import { useAsyncList } from "@react-stately/data";
 import {
-    Select, SelectItem, Spinner,
+    Select, SelectItem,
     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
     Button, Input, Pagination, Progress, Alert
 } from "@nextui-org/react";
 import DeleteVaccination from "./deleteVaccination";
 import EditableVaccinationField from './editableVaccinationField';
 import { useLocation, Link } from 'react-router-dom';
-import { VACCINATIONS_QUERY, ALL_VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries';
+import { VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries';
 import DateField from '../common/dateField';
 import { useAuth } from '../common/authContext';
 import { useConfig } from '../common/configContext';
@@ -40,20 +40,7 @@ const VaccinationsList: React.FC = () => {
     const [vaccination, setVaccination] = useState<Vaccination>(initialValues);
 
     const [addVaccination] = useMutation(ADD_VACCINATION, {
-        refetchQueries: [VACCINATIONS_QUERY],
-        update(cache, { data: { addVaccination } }) {
-            try {
-                const { allVaccinations } = cache.readQuery<{ allVaccinations: Vaccination[] }>({
-                    query: ALL_VACCINATIONS_QUERY
-                }) || { allVaccinations: [] };
-                cache.writeQuery({
-                    query: ALL_VACCINATIONS_QUERY,
-                    data: { allVaccinations: [...allVaccinations, addVaccination] },
-                });
-            } catch (error) {
-                console.error("Error updating cache:", error);
-            }
-        }
+        refetchQueries: [{ query: VACCINATIONS_QUERY, variables: { animalId } }],
     });
 
     if (config == null) return <p>Loading configs...</p>;
@@ -99,10 +86,13 @@ const VaccinationsList: React.FC = () => {
         setVaccination(initialValues);
     }
 
-    const { loading, error, data } = useQuery<{ vaccinationByAnimalId: Vaccination[] }>(VACCINATIONS_QUERY, {
+    const { loading, error, data } = useQuery<{ vaccinationByAnimalId: Vaccination[] }>(
+        VACCINATIONS_QUERY, {
         variables: { animalId },
-        fetchPolicy: 'network-only',
-    });
+        fetchPolicy: "cache-and-network",
+        pollInterval: 60000,
+    }
+    );
 
     const list = useAsyncList<Vaccination>({
         async load() {

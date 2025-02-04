@@ -22,7 +22,10 @@ const AnimalsList: React.FC = () => {
     const perPage = 8;
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [globalError, setGlobalError] = useState<string>("");
-    const { loading, error, data, refetch } = useQuery(ANIMALS_QUERY);
+    const { loading, error, data } = useQuery(ANIMALS_QUERY, {
+        fetchPolicy: "cache-and-network",
+        pollInterval: 60000,
+    });
     const config: Config | null = useConfig();
 
     const list = useAsyncList<Animal>({
@@ -72,22 +75,8 @@ const AnimalsList: React.FC = () => {
 
     const [animal, setAnimal] = useState<Animal>(initialValues);
     const [addAnimal] = useMutation(ADD_ANIMAL, {
-        update(cache, { data: { addAnimal } }) {
-            try {
-                const { allAnimals } = cache.readQuery<{ allAnimals: Animal[] }>({ query: ANIMALS_QUERY }) || { allAnimals: [] };
-                cache.writeQuery({
-                    query: ANIMALS_QUERY,
-                    data: { allAnimals: [...allAnimals, addAnimal] },
-                });
-            } catch (error) {
-                console.error("Error updating cache:", error);
-            }
-        }
+        refetchQueries: [{ query: ANIMALS_QUERY }],
     });
-
-    useEffect(() => {
-        refetch();
-    }, [refetch]);
 
     if (config == null) return <p>Loading configs...</p>;
     if (loading) return (
