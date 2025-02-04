@@ -4,7 +4,6 @@
     "module": "ESNext",
     "strict": true,
     "moduleResolution": "Node",
-    "allowJs": true,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
