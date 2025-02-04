@@ -15,16 +15,17 @@ import { IoIosAddCircleOutline } from "react-icons/io"
 import { BiInjection } from "react-icons/bi";
 import { useAsyncList } from "@react-stately/data";
 import { today } from "@internationalized/date";
+import { Animal, Config } from "../common/types";
 
-function AnimalsList() {
+const AnimalsList: React.FC = () => {
 
     const perPage = 8;
-    const [currentPage, setCurrentPage] = useState(0);
-    const [globalError, setGlobalError] = useState("");
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [globalError, setGlobalError] = useState<string>("");
     const { loading, error, data, refetch } = useQuery(ANIMALS_QUERY);
-    const config = useConfig();
+    const config: Config | null = useConfig();
 
-    const list = useAsyncList({
+    const list = useAsyncList<Animal>({
         async load() {
             if (loading) {
                 return { items: [] };
@@ -42,14 +43,10 @@ function AnimalsList() {
         async sort({ items, sortDescriptor }) {
             return {
                 items: items.sort((a, b) => {
-                    let first = a[sortDescriptor.column];
-                    let second = b[sortDescriptor.column];
-                    let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
-
-                    if (sortDescriptor.direction === "descending") {
-                        cmp *= -1;
-                    }
-                    return cmp;
+                    let first = a[sortDescriptor.column as keyof Animal];
+                    let second = b[sortDescriptor.column as keyof Animal];
+                    let cmp = (parseInt(first as string) || first) < (parseInt(second as string) || second) ? -1 : 1;
+                    return sortDescriptor.direction === "descending" ? -cmp : cmp;
                 }),
             };
         },
@@ -57,12 +54,12 @@ function AnimalsList() {
 
     useEffect(() => {
         if (!loading && !error) {
-
             list.reload();
         }
     }, [loading, error, data]);
 
-    const initialValues = {
+    const initialValues: Animal = {
+        id: "",
         name: "",
         species: "Cat",
         primaryColor: "White",
@@ -70,14 +67,14 @@ function AnimalsList() {
         breed: "",
         birthDate: today().toString(),
         implantChipId: "00000000-00000000-0000",
-        pattern: "Broken"
+        pattern: "Broken",
     };
 
-    const [animal, setAnimal] = useState(initialValues);
+    const [animal, setAnimal] = useState<Animal>(initialValues);
     const [addAnimal] = useMutation(ADD_ANIMAL, {
         update(cache, { data: { addAnimal } }) {
             try {
-                const { allAnimals } = cache.readQuery({ query: ANIMALS_QUERY });
+                const { allAnimals } = cache.readQuery<{ allAnimals: Animal[] }>({ query: ANIMALS_QUERY }) || { allAnimals: [] };
                 cache.writeQuery({
                     query: ANIMALS_QUERY,
                     data: { allAnimals: [...allAnimals, addAnimal] },
@@ -273,31 +270,31 @@ function AnimalsList() {
                             <TableCell>{animal.species}</TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.primaryColor}
+                                    entity={animal} value={animal.primaryColor}
                                     name="primaryColor"
                                     values={config.colors} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.breed}
+                                    entity={animal} value={animal.breed}
                                     name="breed" />
                             </TableCell>
                             <TableCell>{animal.implantChipId}</TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.gender}
+                                    entity={animal} value={animal.gender}
                                     name="gender"
                                     values={config.genders} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.birthDate}
+                                    entity={animal} value={animal.birthDate}
                                     name="birthDate"
                                     isDate={true} />
                             </TableCell>
                             <TableCell>
                                 <EditableAnimalField
-                                    animal={animal} value={animal.pattern}
+                                    entity={animal} value={animal.pattern}
                                     name="pattern" />
                             </TableCell>
                             <TableCell>

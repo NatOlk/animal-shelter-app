@@ -1,56 +1,48 @@
 import React, { useState } from 'react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-         Tooltip, Button, Spacer} from "@nextui-org/react";
+         Tooltip, Button, Spacer } from "@nextui-org/react";
 import { apiFetch } from '../common/api';
 import { TfiReload } from "react-icons/tfi";
-import { HiX, HiOutlineUserAdd} from "react-icons/hi";
+import { HiX, HiOutlineUserAdd } from "react-icons/hi";
+import { Subscriber, SubscriptionListProps } from "../common/types";
 
-export default function NoApproverSubscriptionList({ userProfile }) {
-  const [unapprovedSubscribers, setUnapprovedSubscribers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile }) => {
+  const [unapprovedSubscribers, setUnapprovedSubscribers] = useState<Subscriber[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchSubscribers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const unapprovedData = await apiFetch(`/animal-notify-pending-no-approver-subscribers`);
+      const unapprovedData = await apiFetch<Subscriber[]>(`/animal-notify-pending-no-approver-subscribers`);
       setUnapprovedSubscribers(unapprovedData);
     } catch (error) {
-      setError(error);
+      setError(error as Error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApprove = async (email) => {
+  const handleApprove = async (email: string) => {
     try {
       await apiFetch('/animal-notify-approve-subscriber', {
         method: 'POST',
-        body: {
-          email: email,
-          approver: userProfile.email
-        },
+        body: { email, approver: userProfile.email },
       });
-      setUnapprovedSubscribers((prev) =>
-        prev.filter((subscriber) => subscriber.email !== email)
-      );
+      setUnapprovedSubscribers((prev) => prev.filter((subscriber) => subscriber.email !== email));
     } catch (err) {
       console.error('Error approving subscriber:', err);
     }
   };
 
-  const handleReject = async (email) => {
+  const handleReject = async (email: string) => {
     try {
       await apiFetch('/animal-notify-reject-subscriber', {
         method: 'POST',
-        body: {
-          email: email
-        },
+        body: { email },
       });
-      setUnapprovedSubscribers((prev) =>
-        prev.filter((subscriber) => subscriber.email !== email)
-      );
+      setUnapprovedSubscribers((prev) => prev.filter((subscriber) => subscriber.email !== email));
     } catch (err) {
       console.error('Error rejecting subscriber:', err);
     }
@@ -59,9 +51,7 @@ export default function NoApproverSubscriptionList({ userProfile }) {
   return (
     <>
       <Spacer y={5} />
-      <Button color="default"
-        variant="faded"
-        onPress={fetchSubscribers}>
+      <Button color="default" variant="faded" onPress={fetchSubscribers}>
         <div className="flex items-center gap-x-2">
           <span>Load subscribes without assigned approver</span><TfiReload size={20} />
         </div>
@@ -84,7 +74,7 @@ export default function NoApproverSubscriptionList({ userProfile }) {
               <TableRow key={subscriber.id}>
                 <TableCell>{subscriber.id}</TableCell>
                 <TableCell>{subscriber.email}</TableCell>
-                <TableCell>{subscriber.approver}</TableCell>
+                <TableCell>{subscriber.approver || "N/A"}</TableCell>
                 <TableCell>{subscriber.topic}</TableCell>
                 <TableCell>No</TableCell>
                 <TableCell className="w-full md:w-24">
@@ -92,7 +82,7 @@ export default function NoApproverSubscriptionList({ userProfile }) {
                     <Button
                       color="default" variant="light"
                       className="p-2 min-w-2 h-auto"
-                      onPress={() => handleApprove(subscriber.email, userProfile.email)}>
+                      onPress={() => handleApprove(subscriber.email)}>
                       <HiOutlineUserAdd />
                     </Button>
                   </Tooltip>
@@ -114,4 +104,6 @@ export default function NoApproverSubscriptionList({ userProfile }) {
       </Table>
     </>
   );
-}
+};
+
+export default NoApproverSubscriptionList;

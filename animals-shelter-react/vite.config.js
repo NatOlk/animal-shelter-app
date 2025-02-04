@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react({
-     include: "**/*.jsx",
+     include: "**/*.tsx",
    })],
   host: true,
   server: {
@@ -12,7 +12,7 @@ export default defineConfig({
     allowedHosts: ['localhost', 'ansh-react-app', '0.0.0.0'],
     watch: {
       usePolling: true,
-      include: '**/*.jsx'
+      include: '**/*.tsx'
     },
   },
 });

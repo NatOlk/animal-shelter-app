@@ -1,11 +1,12 @@
-const handleUnauthorized = () => {
+import { FetchOptions } from "./types";
+
+const handleUnauthorized = (): void => {
   localStorage.removeItem('jwt');
   window.location.href = '/login';
 };
 
-export const apiFetch = async (url, options = {}) => {
+export async function apiFetch<T>(url: string, options: FetchOptions = {}): Promise<T> {
   const { method = 'GET', body, headers = {} } = options;
-
   const token = localStorage.getItem('jwt');
 
   try {
@@ -15,7 +16,7 @@ export const apiFetch = async (url, options = {}) => {
       method,
       headers: {
         ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-        Authorization: token ? `Bearer ${token}` : '',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
       body: method !== 'GET' && body ? (isFormData ? body : JSON.stringify(body)) : undefined,
@@ -27,17 +28,17 @@ export const apiFetch = async (url, options = {}) => {
     }
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Network response was not ok: ${response.status}`);
     }
 
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-      return await response.json();
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return await response.json() as T;
     }
 
-    return response;
+    return response as unknown as T;
   } catch (error) {
     console.error('Fetch error:', error);
     throw error;
   }
-};
+}

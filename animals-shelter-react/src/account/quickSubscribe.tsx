@@ -3,11 +3,11 @@ import { useAuth } from '../common/authContext';
 import { Button, Input } from '@nextui-org/react';
 import { LuSmilePlus } from "react-icons/lu";
 
-const QuickSubscribe = () => {
+const QuickSubscribe: React.FC = () => {
   const { user } = useAuth();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState<string>('');
 
-  const handleSubscribe = async (e) => {
+  const handleSubscribe = async () => {
     try {
       await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
         method: 'POST',
@@ -15,8 +15,8 @@ const QuickSubscribe = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email || user.email,
-          approver: user.email,
+          email: email || user?.email,
+          approver: user?.email,
         }),
       });
       setEmail('');
@@ -37,10 +37,7 @@ const QuickSubscribe = () => {
           type="email"
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Button
-          onPress={handleSubscribe}
-          color="default"
-          size="sm">
+        <Button onPress={handleSubscribe} color="default" size="sm">
           <LuSmilePlus />
         </Button>
       </div>
