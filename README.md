@@ -17,7 +17,7 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
 
 ## **Core Features**
 
-### **1. Frontend (React)**
+### **1. Frontend (React + TypeScript + Vite)**
 
 - **Animal and Vaccination Management**:
     - Add new animals;
@@ -61,8 +61,9 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
 
 - **Frontend**:
     - React
+    - Vite
     - Apollo Client (for GraphQL operations)
-    - NextUI (for styling)
+    - NextUI (for styling) Renamed to HeroUI
 - **Backend**:
     - Spring Boot
     - PostgreSQL (database)
@@ -78,7 +79,7 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
 ### **Prerequisites**
 
 - Docker and Docker Compose installed on your machine.
-- Node.js and npm for frontend development.
+- maven to build applications and npm for frontend development.
 
 ### **Steps to Run**
 
@@ -87,21 +88,8 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
    git clone https://github.com/NatOlk/animal-shelter-app.git
    cd animal-shelter-app
    ```
-2. **Insert your email to init data script**
-   
-   Navigate to the *ansh-service\src\main\resources* folder and open the init.sql file.
-   Insert your Google email address.
-   This email address will be used specifically for sending notifications to subscribers. 
-   For now, a Google account is required because of its simplicity in development environments. 
-   The reasons for this choice and additional configuration details are explained below.
-   A user with the username **admin** and password **admin** will be created. This user can be used to log in to the system.
-```bash
-   INSERT INTO user_profiles (email, name, password, animal_notif_status)
-   VALUES ('your_email_box_address@gmail.com', 'admin', '$2b$12$rAbcG66.Jawjm31LImq3GOjA.oGlYhlWiNaQPL2SEzBcg9SGBvw26', 'NONE');
-   ```
-   Additionally, this initialization file contains several lines for adding animals along with their vaccination records.
 
-3.**Configure the environment variables file:**
+2.**Configure the environment variables file:**
    
    An .env file will be created in the appropriate directory, where you need to update the following
    details:
@@ -143,6 +131,8 @@ solution for development purposes. For production environments, it is recommende
 secure and reliable email service provider instead of a personal Gmail account, such as a dedicated
 email server or a third-party email service like SendGrid, Amazon SES, or Mailgun.
 >
+>**Important!** Additionally, this email will be used for the test admin account and will appear on the website as the employee's contact email.
+> 
 >How to configure:
 > 
 >Use your Gmail email address and password to configure these variables.
@@ -183,6 +173,17 @@ inter-service communication, and secure authentication.
 
 Follow the steps in the instruction to create and manage SSL certificates for your server.
 [What Are Certificates and Why Do You Need Them](#what-are-certificates-and-why-do-you-need-them)
+
+
+3. **Build the Project**
+
+   Before running the application, navigate to the project root directory and build the project using Maven:
+
+   ```bash
+   mvn clean install
+   ```
+
+   This will compile the source code, run tests, and package the application. Ensure you have Maven installed before proceeding.
 
 4. **Launch the application using Docker Compose:**
 
