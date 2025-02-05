@@ -1,20 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation } from "@apollo/client";
+import React, { useState, useEffect, useRef } from 'react';
+import { useQuery } from "@apollo/client";
 import { useAsyncList } from "@react-stately/data";
 import {
-    Select, SelectItem,
-    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-    Button, Input, Pagination, Progress, Alert
+    Table, TableHeader, TableColumn, TableBody,
+    Pagination, Progress, Alert
 } from "@nextui-org/react";
-import DeleteVaccination from "./deleteVaccination";
-import EditableVaccinationField from './editableVaccinationField';
 import { useLocation, Link } from 'react-router-dom';
-import { VACCINATIONS_QUERY, ADD_VACCINATION } from '../common/graphqlQueries';
-import DateField from '../common/dateField';
-import { useAuth } from '../common/authContext';
+import { VACCINATIONS_QUERY } from '../common/graphqlQueries';
+import VaccinationRow from './vaccinationRow';
+import AddVaccination from './addVaccination';
 import { useConfig } from '../common/configContext';
-import { today } from "@internationalized/date";
-import { IoIosAddCircleOutline } from "react-icons/io"
 import { Vaccination, Config } from "../common/types";
 
 const VaccinationsList: React.FC = () => {
@@ -23,74 +18,13 @@ const VaccinationsList: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [globalError, setGlobalError] = useState<string>("");
     const location = useLocation();
-    const { animalId } = location.state as { animalId: string };
-
+    const animalIdRef = useRef<string | null>(location.state?.animalId || null);
 
     const config: Config | null = useConfig();
 
-    const { isAuthenticated, user } = useAuth();
-    const initialValues = {
-        vaccine: 'Rabies',
-        batch: '',
-        comments: 'Add new vaccine',
-        vaccinationTime: today().toString(),
-        email: isAuthenticated && user ? user.email : '',
-    };
-
-    const [vaccination, setVaccination] = useState<Vaccination>(initialValues);
-
-    const [addVaccination] = useMutation(ADD_VACCINATION, {
-        refetchQueries: [{ query: VACCINATIONS_QUERY, variables: { animalId } }],
-    });
-
-    if (config == null) return <p>Loading configs...</p>;
-    if (!animalId) {
-        return (
-            <div>
-                <Link to="/">Back to Animals</Link>
-                <p>Error: No animalId provided!</p>
-            </div>
-        );
-    }
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setVaccination({
-            ...vaccination,
-            [name]: value,
-        });
-    };
-
-    const handleFieldChange = (fieldName, value) => {
-        setVaccination({
-            ...vaccination,
-            [fieldName]: value,
-        });
-    };
-
-    const handleAddVaccination = () => {
-        addVaccination({
-            variables: {
-                animalId: animalId,
-                vaccine: vaccination.vaccine,
-                batch: vaccination.batch,
-                vaccinationTime: vaccination.vaccinationTime,
-                comments: vaccination.comments,
-                email: vaccination.email
-            }
-        }).catch(error => {
-            setGlobalError("Failed to add vaccination: " + error.message);
-            setTimeout(() => setGlobalError(""), 15000);
-        });
-
-        setVaccination(initialValues);
-    }
-
     const { loading, error, data } = useQuery<{ vaccinationByAnimalId: Vaccination[] }>(
         VACCINATIONS_QUERY, {
-        variables: { animalId },
-        fetchPolicy: "cache-and-network",
-        pollInterval: 60000,
+        variables: { animalId: animalIdRef.current  }
     }
     );
 
@@ -131,13 +65,16 @@ const VaccinationsList: React.FC = () => {
         }
     }, [loading, error, data]);
 
-    if (loading) return (
-        <div>
-            <p> Loading...</p>
-            <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
-        </div>
-    );
-    if (error) return <p>Error :(</p>;
+    if (config == null) return <p>Loading configs...</p>;
+
+    if (!animalIdRef.current) {
+        return (
+            <div>
+                <Link to="/">Back to Animals</Link>
+                <p>Error: No animalId provided!</p>
+            </div>
+        );
+    }
 
     const handleError = (error) => {
         setGlobalError(error);
@@ -149,9 +86,17 @@ const VaccinationsList: React.FC = () => {
     const pageCount = Math.ceil(list.items.length / perPage);
 
     return (
-        <div>
-            <Link to="/">Back to Animals</Link>
-            <div className="flex flex-col gap-4 w-full">
+        <>
+            <div>
+                {loading && (
+                    <div>
+                        <p> Loading...</p>
+                        <Progress isIndeterminate aria-label="Loading..." className="max-w-md" size="sm" />
+                    </div>
+                )}
+                {error && <p>Error :(</p>}
+            </div>
+            <div>
                 {globalError && (
                     <Alert
                         dismissable
@@ -160,110 +105,38 @@ const VaccinationsList: React.FC = () => {
                         onClose={() => setGlobalError("")}
                         title={globalError} />
                 )}
+                 <Link to="/">Back to Animals</Link>
+                <Table className="compact-table"
+                    isLoading={list.isLoading}
+                    sortDescriptor={list.sortDescriptor}
+                    onSortChange={list.sort}>
+                    <TableHeader>
+                        <TableColumn>#</TableColumn>
+                        <TableColumn key="vaccine" allowsSorting>Vaccine</TableColumn>
+                        <TableColumn key="batch" allowsSorting>Batch</TableColumn>
+                        <TableColumn key="vaccinationTime" allowsSorting>Vaccination time</TableColumn>
+                        <TableColumn>Comments</TableColumn>
+                        <TableColumn key="email" allowsSorting>Email</TableColumn>
+                        <TableColumn>Actions</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                        {[
+                            AddVaccination({ config, animalId: animalIdRef.current, onError: handleError }),
+                            ...vaccinationsList.map((vaccination) => VaccinationRow({ vaccination, onError: handleError }))
+                        ]}
+                    </TableBody>
+                </Table>
+                <Pagination
+                    total={pageCount}
+                    page={currentPage + 1}
+                    onChange={(page) => setCurrentPage(page - 1)}
+                    showControls
+                    loop
+                    size="md"
+                    showShadow />
             </div>
-            <Table className="compact-table"
-                isLoading={list.isLoading}
-                sortDescriptor={list.sortDescriptor}
-                onSortChange={list.sort}>
-                <TableHeader>
-                    <TableColumn>#</TableColumn>
-                    <TableColumn key="vaccine" allowsSorting>Vaccine</TableColumn>
-                    <TableColumn key="batch" allowsSorting>Batch</TableColumn>
-                    <TableColumn key="vaccinationTime" allowsSorting>Vaccination time</TableColumn>
-                    <TableColumn>Comments</TableColumn>
-                    <TableColumn key="email" allowsSorting>Email</TableColumn>
-                    <TableColumn>Actions</TableColumn>
-                </TableHeader>
-                <TableBody>
-                    <TableRow className="add-item-row highlighted-row">
-                        <TableCell></TableCell>
-                        <TableCell>
-                            <Select
-                                name="vaccine" value={vaccination.vaccine}
-                                className="w-full md:w-32"
-                                aria-label="Vaccine"
-                                onChange={handleInputChange}>
-                                {config.vaccines.map(vaccine => (
-                                    <SelectItem key={vaccine}>{vaccine}</SelectItem>
-                                ))}
-                            </Select>
-                        </TableCell>
-                        <TableCell>
-                            <Input name="batch"
-                                value={vaccination.batch}
-                                aria-label="Batch"
-                                isRequired
-                                onChange={handleInputChange} />
-                        </TableCell>
-                        <TableCell>
-                            <DateField onDateChange={(newDate) =>
-                                handleFieldChange("vaccinationTime", newDate.toString())} />
-                        </TableCell>
-                        <TableCell>
-                            <Input name="comments" value={vaccination.comments}
-                                onChange={handleInputChange}
-                                aria-label="Comments" />
-                        </TableCell>
-                        <TableCell>
-                            <Input name="email" value={vaccination.email}
-                                isRequired
-                                aria-label="Email"
-                                onChange={handleInputChange} />
-                        </TableCell>
-                        <TableCell>
-                            <Button onPress={handleAddVaccination}
-                                color="default" variant="light"
-                                className="p-2 min-w-2 h-auto">
-                                <IoIosAddCircleOutline />
-                            </Button>
-                        </TableCell>
-                    </TableRow>
-                    {vaccinationsList.map((vaccination, index) => (
-                        <TableRow key={vaccination.id}>
-                            <TableCell>{vaccination.id}</TableCell>
-                            <TableCell>{vaccination.vaccine}</TableCell>
-                            <TableCell>
-                                <EditableVaccinationField
-                                    entity={vaccination}
-                                    value={vaccination.batch}
-                                    name="email" />
-                            </TableCell>
-                            <TableCell>
-                                <EditableVaccinationField
-                                    entity={vaccination}
-                                    value={vaccination.vaccinationTime}
-                                    name="vaccinationTime"
-                                    isDate={true} />
-                            </TableCell>
-                            <TableCell>
-                                <EditableVaccinationField
-                                    entity={vaccination}
-                                    value={vaccination.comments}
-                                    name="comments" />
-                            </TableCell>
-                            <TableCell>
-                                <EditableVaccinationField
-                                    entity={vaccination}
-                                    value={vaccination.email}
-                                    name="email" />
-                            </TableCell>
-                            <TableCell>
-                                <DeleteVaccination id={vaccination.id} onError={handleError} />
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            <Pagination
-                total={pageCount}
-                page={currentPage + 1}
-                onChange={(page) => setCurrentPage(page - 1)}
-                showControls
-                loop
-                size="md"
-                showShadow />
-        </div>
+        </>
     );
-}
+};
 
 export default VaccinationsList;

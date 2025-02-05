@@ -99,3 +99,26 @@ export interface SubscriptionListProps {
 export interface FetchOptions extends RequestInit {
   body?: any;
 }
+
+export interface AddAnimalProps {
+  config: Config;
+  onError: (error: string) => void;
+}
+
+export interface AnimalRowProps {
+  animal: Animal;
+  config: Config;
+  onError: (error: string) => void;
+}
+
+export interface VaccinationRowProps {
+  vaccination: Vaccination;
+  onError: (error: string) => void;
+}
+
+export interface AddVaccinationProps {
+  config: Config;
+  animalId: string;
+  onError: (error: string) => void;
+}
+
