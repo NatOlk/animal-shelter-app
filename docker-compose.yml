@@ -93,6 +93,7 @@ services:
       - db
 
   ansh-notification-service:
+    container_name: ansh-notification-service
     build:
       context: .
       dockerfile: Dockerfile_notification
@@ -131,6 +132,7 @@ services:
       - backend
 
   ansh-service:
+    container_name: ansh-service
     build:
       context: .
       dockerfile: Dockerfile_service
@@ -162,6 +164,7 @@ services:
       - backend
 
   ansh-react-app:
+    container_name: ansh-react-app
     build:
       context: ./animals-shelter-react
       dockerfile: Dockerfile
@@ -180,6 +183,7 @@ services:
 
   nginx-proxy-ansh:
     image: nginx:1.21.6-alpine
+    container_name: nginx-proxy-ansh
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./config/cert.crt:/etc/nginx/cert.crt
