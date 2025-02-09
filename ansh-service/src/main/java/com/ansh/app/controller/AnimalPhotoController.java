@@ -40,9 +40,13 @@ public class AnimalPhotoController {
           .body("File is empty");
     }
 
-    String fileName =
-        STR."\{id}_\{name}_\{species}_\{breed}_\{birthDate}_1.\{getFileExtension(
-            file.getOriginalFilename())}";
+    String extension = getFileExtension(file.getOriginalFilename());
+    if (extension.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("Invalid file: missing extension");
+    }
+    String fileName = STR."\{id}_\{safeName(name)}_\{safeName(species)}_\{safeName(
+        breed)}_\{birthDate}_1.\{extension}";
 
     File uploadPath = new File(uploadDir);
     if (!uploadPath.exists() && !uploadPath.mkdirs()) {
@@ -68,10 +72,15 @@ public class AnimalPhotoController {
   }
 
   private String getFileExtension(String fileName) {
-    if (fileName == null) {
-      return ".jpeg";
-    }
     int lastIndex = fileName.lastIndexOf('.');
     return lastIndex == -1 ? "" : fileName.substring(lastIndex + 1);
+  }
+
+  private String safeName(String name) {
+    return name.replaceAll("[^a-zA-Z0-9]", "_");
+  }
+
+  protected void setUploadDir(String uploadDir) {
+    this.uploadDir = uploadDir;
   }
 }
