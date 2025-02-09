@@ -30,5 +30,6 @@ public class ConfigController {
     private List<String> colors;
     private List<String> vaccines;
     private String animalShelterNotificationApp;
+    private String animalShelterApp;
   }
 }
