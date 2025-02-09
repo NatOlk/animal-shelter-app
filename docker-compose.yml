@@ -199,12 +199,11 @@ services:
       - backend
       - frontend
     healthcheck:
-      test: [ "CMD", "curl", "-k", "-f", "https://localhost" ]
+      test: [ "CMD", "wget", "--no-check-certificate", "--spider", "-q", "https://localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 15s
-
+      start_period: 20s
 
 networks:
   backend:
