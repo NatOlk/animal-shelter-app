@@ -26,6 +26,12 @@ jobs:
       - name: 📜 Show all running containers
         run: docker ps -a
 
+      - name: 🔍 Check if nginx is responding inside container
+        run: docker exec nginx-proxy-ansh curl -k https://localhost || echo "nginx is not responding"
+
+      - name: 🛠️ Debug Check nginx config
+        run: docker exec nginx-proxy-ansh cat /etc/nginx/nginx.conf || echo "nginx.conf not found"
+
       - name: ⏳ Wait until nginx is ready
         run: |
             while [ "$(docker inspect -f '{{.State.Health.Status}}' gr-nginx-proxy-ansh 2>/dev/null)" != "healthy" ]; do
