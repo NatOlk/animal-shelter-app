@@ -35,11 +35,14 @@ jobs:
       - name: 🔍 Check if ansh-service is actually listening inside container
         run: docker exec ansh-service netstat -tulnp || echo "No open ports found inside ansh-service"
 
-      - name: 🔍 Test HTTP on ansh-notification-service (should work)
-        run: curl -k --retry 5 --retry-delay 5 http://localhost:8444 || echo "ansh-notification-service is not responding"
+      - name: 🔍 Check if ansh-notification-service is actually listening inside container
+        run: docker exec ansh-notification-service netstat -tulnp || echo "No open ports found inside ansh-notification-service"
 
       - name: 🔍 Check if 8444 is accessible from outside
         run: nc -zv localhost 8444 || echo "Port 8444 is not open"
+
+      - name: 🔍 Check if 8443 is accessible from outside
+        run: nc -zv localhost 8443 || echo "Port 8444 is not open"
 
       - name: 🛑 Stop containers
         run: docker-compose down
