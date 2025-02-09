@@ -157,6 +157,7 @@ services:
       SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD}
       ANIMAL_SHELTER_NOTIFICATION_APP: https://nginx-proxy-ansh/ansh/notification
       FILE_UPLOAD_DIR: /uploads
+      ANIMAL_SHELTER_APP: https://localhost
     networks:
       - backend
 

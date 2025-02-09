@@ -20,6 +20,7 @@ public class SubscriptionCacheManager {
   private SubscriptionCache subscriptionCache;
   @Autowired
   private SubscriptionRepository subscriptionRepository;
+  @Autowired
   @Qualifier("updRedisTemplate")
   private RedisTemplate<String, String> updRedisTemplate;
   @Value("${animalTopicId}")
@@ -61,5 +62,9 @@ public class SubscriptionCacheManager {
 
   public void addToCache(Subscription subscription) {
     subscriptionCache.addToCache(subscription);
+  }
+
+  protected void setAnimalTopicId(String animalTopicId) {
+    this.animalTopicId = animalTopicId;
   }
 }
