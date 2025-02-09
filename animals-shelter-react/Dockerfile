@@ -8,9 +8,9 @@ COPY . .
 
 RUN npm install --force
 
-RUN npm run build
-
 RUN npx tailwindcss -c tailwind.config.js -i ./src/styles/global.css -o ./src/styles/output.css
+
+RUN npm run build
 
 EXPOSE 5173
 
