@@ -12,7 +12,8 @@ const AnimalRow = ({ animal, config, onError }: AnimalRowProps) => (
             <Link
                 to={`/animals/${animal.id}`}
                 state={{ id: animal.id }}
-                className="text-blue-600 hover:underline">
+                color="primary"
+                className="animal-details-link">
                 {animal.id}
             </Link>
         </TableCell>
