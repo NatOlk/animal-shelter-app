@@ -23,6 +23,15 @@ jobs:
       - name: 🐳 Start Docker Compose
         run: docker-compose up -d
 
+      - name: 📜 Show nginx container status
+        run: docker ps -a | grep nginx || echo "Nginx container not found"
+
+      - name: 📜 Show nginx healthcheck status
+        run: docker inspect -f '{{.State.Health.Status}}' nginx-proxy-ansh || echo "No healthcheck found"
+
+      - name: 📜 Show nginx logs
+        run: docker logs nginx-proxy-ansh || echo "No logs found"
+
       - name: ⏳ Wait until nginx is ready
         run: |
             while [ "$(docker inspect -f '{{.State.Health.Status}}' nginx-proxy-ansh 2>/dev/null)" != "healthy" ]; do
