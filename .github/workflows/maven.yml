@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Animal Shelter Java CI with Maven
 
 on:
   push:

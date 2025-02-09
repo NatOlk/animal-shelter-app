@@ -3,6 +3,7 @@ version: '3.8'
 services:
   redis-ansh:
     image: redis:latest
+    container_name: redis-ansh
     env_file:
       - .env
     hostname: localhost
@@ -23,6 +24,7 @@ services:
 
   zookeeper-ansh:
     image: confluentinc/cp-zookeeper:7.2.2
+    container_name: zookeeper-ansh
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -37,6 +39,7 @@ services:
 
   kafka-ansh:
     image: confluentinc/cp-kafka:7.2.2
+    container_name: kafka-ansh
     depends_on:
       - zookeeper-ansh
     volumes:
@@ -56,6 +59,7 @@ services:
 
   postgres-animal-shelter:
     image: postgres:13
+    container_name: postgres-animal-shelter
     environment:
       POSTGRES_DB: Animal_Shelter
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -75,6 +79,7 @@ services:
 
   postgres-animal-shelter-notification:
     image: postgres:13
+    container_name: postgres-animal-shelter-notification
     environment:
       POSTGRES_DB: animal_shelter_notification
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_NOTIFICATION}
@@ -198,12 +203,6 @@ services:
     networks:
       - backend
       - frontend
-    healthcheck:
-      test: [ "CMD", "wget", "--no-check-certificate", "--spider", "-q", "https://localhost" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
 
 networks:
   backend:
