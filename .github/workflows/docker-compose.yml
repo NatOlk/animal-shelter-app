@@ -29,21 +29,6 @@ jobs:
       - name: 🔍 Check exposed ports
         run: docker ps --format "{{.Names}} - {{.Ports}}"
 
-      - name: 🏗 Wait for database and cache
-        run: |
-          while ! docker exec postgres-animal-shelter pg_isready -U postgres; do
-            echo "Waiting for postgres-animal-shelter..."
-            sleep 5
-          done
-          while ! docker exec postgres-animal-shelter-notification pg_isready -U postgres; do
-            echo "Waiting for postgres-animal-shelter-notification..."
-            sleep 5
-          done
-          while ! docker exec redis-ansh redis-cli ping | grep PONG; do
-            echo "Waiting for redis-ansh..."
-            sleep 5
-          done
-
       - name: 🛠 Diagnose ansh-service binding issues
         run: |
           docker exec ansh-service netstat -tulnp || echo "No open ports found"
