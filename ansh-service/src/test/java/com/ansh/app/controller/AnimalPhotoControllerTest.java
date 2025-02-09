@@ -36,7 +36,8 @@ class AnimalPhotoControllerTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    controller.setUploadDir("/upload");
+    controller.setUploadDir("/tmp/uploads");
+
   }
 
   @Test
@@ -50,7 +51,7 @@ class AnimalPhotoControllerTest {
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
-    assertTrue(response.getBody().contains("/upload"));
+    assertTrue(response.getBody().contains("/uploads"));
 
     ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
     verify(animalService).updatePhotoUrl(eq(1L), captor.capture());
