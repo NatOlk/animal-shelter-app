@@ -8,15 +8,17 @@ import { Card, CardHeader, CardBody } from "@nextui-org/card";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
+import { useConfig } from "../common/configContext";
 import { apiFetch } from '../common/api';
 import { ANIMAL_BY_ID_QUERY, UPDATE_ANIMAL } from "../common/graphqlQueries";
-import { Animal } from "../common/types";
+import { Animal, Config } from "../common/types";
 
 const AnimalDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState<string>("");
     const [forceUpdate, setForceUpdate] = useState<number>(Date.now());
+    const config: Config | null = useConfig();
 
     const { loading, error, data } = useQuery<{ animalById: Animal }>(ANIMAL_BY_ID_QUERY, {
         variables: { id },
@@ -138,13 +140,12 @@ const AnimalDetails: React.FC = () => {
                                 <p><strong>Implant Chip ID:</strong> {animal.implantChipId}</p>
                             </div>
                             <Spacer y={10} />
-
                             {photoImgPath && (
                                 <div className="flex items-center gap-4">
                                     <Image
                                         isZoomed
                                         alt="Animal Image"
-                                        src={`https://localhost${photoImgPath}?timestamp=${forceUpdate}`}
+                                        src={`${config.animalShelterApp}/${photoImgPath}?timestamp=${forceUpdate}`}
                                         width={350}
                                         height={350}
                                         radius="md"
@@ -154,7 +155,6 @@ const AnimalDetails: React.FC = () => {
                                     </Button>
                                 </div>
                             )}
-
                             <Spacer y={10} />
                             <div className="flex items-center gap-3">
                                 <h3>Upload a new image (will replace the current one)</h3>
@@ -170,7 +170,6 @@ const AnimalDetails: React.FC = () => {
                                     Upload
                                 </Button>
                             </div>
-
                             {message && <p style={{ color: "red" }}>{message}</p>}
                         </CardBody>
                     </Card>

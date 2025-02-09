@@ -15,6 +15,7 @@ import com.ansh.repository.SubscriptionRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,6 +26,7 @@ class SubscriptionCacheManagerTest {
   private static final String ANIMAL_TOPIC_ID = "test-topic";
   private static final String CACHE_LAST_UPDATED = "cache_last_updated";
 
+  @InjectMocks
   private SubscriptionCacheManager subscriptionCacheManager;
 
   @Mock
@@ -43,12 +45,7 @@ class SubscriptionCacheManagerTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
     when(updRedisTemplate.opsForValue()).thenReturn(valueOperations);
-    subscriptionCacheManager = new SubscriptionCacheManager(
-        subscriptionCache,
-        subscriptionRepository,
-        updRedisTemplate,
-        ANIMAL_TOPIC_ID
-    );
+    subscriptionCacheManager.setAnimalTopicId(ANIMAL_TOPIC_ID);
   }
 
   @Test
@@ -56,7 +53,7 @@ class SubscriptionCacheManagerTest {
     Subscription subscription = new Subscription();
     List<Subscription> subscriptions = List.of(subscription);
 
-    when(subscriptionRepository.findByTopicAndAcceptedTrueAndApprovedTrue(ANIMAL_TOPIC_ID))
+    when(subscriptionRepository.findApprovedAndAcceptedSubscriptionsByTopic(ANIMAL_TOPIC_ID))
         .thenReturn(subscriptions);
 
     subscriptionCacheManager.initializeCache();
@@ -74,7 +71,7 @@ class SubscriptionCacheManagerTest {
 
     verify(subscriptionCache, times(1)).clearCache();
     verify(subscriptionRepository, times(1))
-        .findByTopicAndAcceptedTrueAndApprovedTrue(eq(ANIMAL_TOPIC_ID));
+        .findApprovedAndAcceptedSubscriptionsByTopic(eq(ANIMAL_TOPIC_ID));
   }
 
   @Test

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,6 +23,7 @@ public class SubscriptionCacheTest {
   private static final String TOKEN = "mock-token";
   private static final String CACHE_KEY = STR."\{SUBSCRIPTIONS_CACHE}:\{TOKEN}";
 
+  @InjectMocks
   private SubscriptionCache subscriptionCache;
 
   @Mock
@@ -34,7 +36,6 @@ public class SubscriptionCacheTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
     when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-    subscriptionCache = new SubscriptionCache(redisTemplate);
   }
 
   @Test
