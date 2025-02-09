@@ -29,22 +29,23 @@ jobs:
       - name: 🔍 Check exposed ports
         run: docker ps --format "{{.Names}} - {{.Ports}}"
 
-      - name: 🛠 Diagnose ansh-service binding issues
-        run: |
-          docker exec ansh-service netstat -tulnp || echo "No open ports found"
-          docker exec ansh-service cat /app/resources/application.properties || echo "No application.properties found"
-          docker exec ansh-service ls -lah /app/keystore.p12 || echo "SSL certificate not found"
+      - name: 📜 Show logs from ansh-service
+        run: docker logs ansh-service --tail 50 || echo "No logs found"
 
-      - name: ⏳ Wait for ansh-service
-        run: |
-          while ! docker exec ansh-service nc -z 127.0.0.1 8443; do
-            echo "Waiting for ansh-service..."
-            sleep 5
-          done
+      - name: 🔍 Check if ansh-service is actually listening inside container
+        run: docker exec ansh-service netstat -tulnp || echo "No open ports found inside ansh-service"
+
+      - name: 🔍 Test HTTPS with curl
+        run: curl -k --retry 5 --retry-delay 5 https://localhost:8443 || echo "ansh-service is not responding on HTTPS"
+
+      - name: 🔍 Check if 8443 is accessible from outside
+        run: nc -zv localhost 8443 || echo "Port 8443 is not open"
+
+      - name: 🐳 Test port 8443 inside ansh-service
+        run: docker exec ansh-service nc -zv 127.0.0.1 8443 || echo "Port 8443 is not open inside ansh-service"
 
       - name: 🚀 Check if services are running
         run: |
-          curl -v --retry 5 --retry-delay 5 http://localhost:8443 || (echo "ansh-service is not responding on HTTP" && exit 1)
           curl -k --retry 5 --retry-delay 5 https://localhost:8443 || (echo "ansh-service is not responding on HTTPS" && exit 1)
           curl -k --retry 5 --retry-delay 5 http://localhost:8444 || (echo "ansh-notification-service is not running" && exit 1)
 
