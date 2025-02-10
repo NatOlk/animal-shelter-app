@@ -42,7 +42,7 @@ jobs:
         run: nc -zv localhost 8444 || echo "Port 8444 is not open"
 
       - name: 🔍 Check if 8443 is accessible from outside
-        run: nc -zv localhost 8443 || echo "Port 8444 is not open"
+        run: nc -zv localhost 8443 || echo "Port 8443 is not open"
 
       - name: 🛑 Stop containers
         run: docker-compose down
