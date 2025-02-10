@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-         Tooltip, Button, Spacer } from "@nextui-org/react";
+import React, { useEffect, useState, useRef } from 'react';
+import {
+  Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+  Tooltip, Button, Spacer
+} from "@nextui-org/react";
 import { apiFetch } from '../common/api';
 import { TfiReload } from "react-icons/tfi";
 import { HiX, HiOutlineUserAdd } from "react-icons/hi";
@@ -8,21 +10,27 @@ import { Subscriber, SubscriptionListProps } from "../common/types";
 
 const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile }) => {
   const [unapprovedSubscribers, setUnapprovedSubscribers] = useState<Subscriber[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
+  const hasFetched = useRef(false);
 
-  const fetchSubscribers = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const unapprovedData = await apiFetch<Subscriber[]>(`/animal-notify-pending-no-approver-subscribers`);
-      setUnapprovedSubscribers(unapprovedData);
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    const fetchSubscribers = async () => {
+      try {
+        const unapprovedData = await apiFetch<Subscriber[]>(`/animal-notify-pending-no-approver-subscribers`);
+        setUnapprovedSubscribers(unapprovedData);
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubscribers();
+  }, []);
 
   const handleApprove = async (email: string) => {
     try {
@@ -51,9 +59,9 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
   return (
     <>
       <Spacer y={5} />
-      <Button color="default" variant="faded" onPress={fetchSubscribers}>
+      <Button color="default" variant="faded" onPress={() => hasFetched.current = false}>
         <div className="flex items-center gap-x-2">
-          <span>Load subscribes without assigned approver</span><TfiReload size={20} />
+          <span>Reload subscribers</span><TfiReload size={20} />
         </div>
       </Button>
       <Spacer y={5} />
@@ -77,19 +85,15 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
                 <TableCell>{subscriber.approver || "N/A"}</TableCell>
                 <TableCell>{subscriber.topic}</TableCell>
                 <TableCell>No</TableCell>
-                <TableCell className="w-full md:w-24">
+                <TableCell className="w-full md:w-24 flex space-x-2">
                   <Tooltip content="Approve">
-                    <Button
-                      color="default" variant="light"
-                      className="p-2 min-w-2 h-auto"
+                    <Button color="default" variant="light" className="p-2 min-w-2 h-auto"
                       onPress={() => handleApprove(subscriber.email)}>
                       <HiOutlineUserAdd />
                     </Button>
                   </Tooltip>
                   <Tooltip content="Reject">
                     <Button
-                      color="default" variant="light"
-                      className="p-2 min-w-2 h-auto"
                       onPress={() => handleReject(subscriber.email)}>
                       <HiX />
                     </Button>

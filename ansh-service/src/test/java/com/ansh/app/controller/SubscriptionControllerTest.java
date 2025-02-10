@@ -1,12 +1,8 @@
 package com.ansh.app.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 import com.ansh.auth.service.UserProfileService;
 import com.ansh.dto.SubscriptionRequest;
@@ -16,11 +12,16 @@ import com.ansh.app.service.notification.subscription.AnimalInfoPendingSubscript
 import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.context.request.async.DeferredResult;
+import reactor.core.publisher.Mono;
 
 class SubscriptionControllerTest {
 
@@ -97,29 +98,42 @@ class SubscriptionControllerTest {
   }
 
   @Test
-  void shouldReturnSubscribers() {
+  void shouldReturnSubscribers() throws InterruptedException {
     Subscription subscription = new Subscription();
     List<Subscription> subscriptions = List.of(subscription);
-    when(notificationSubscriptionService.getAllSubscriptionByApprover(anyString())).thenReturn(subscriptions);
+    when(notificationSubscriptionService.getAllSubscriptionByApprover(anyString()))
+        .thenReturn(Mono.just(subscriptions));
 
-    List<Subscription> result = subscriptionController.getSubscribers(subscriptionRequest);
+    DeferredResult<List<Subscription>> deferredResult =
+        subscriptionController.getSubscribers(subscriptionRequest);
 
-    assertNotNull(result);
-    assertEquals(1, result.size());
+    CountDownLatch latch = new CountDownLatch(1);
+    deferredResult.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertNotNull(deferredResult.getResult());
+    assertEquals(subscriptions, deferredResult.getResult());
+
     verify(notificationSubscriptionService, times(1)).getAllSubscriptionByApprover(
         subscriptionRequest.getApprover());
   }
 
   @Test
-  void shouldReturnApproverStatus() {
+  void shouldReturnApproverStatus() throws InterruptedException {
     AnimalNotificationSubscriptionStatus status = AnimalNotificationSubscriptionStatus.ACTIVE;
-    when(notificationSubscriptionService.getStatusByApprover(anyString())).thenReturn(status);
+    when(notificationSubscriptionService.getStatusByApprover(anyString())).thenReturn(Mono.just(status));
     doNothing().when(userProfileService).updateNotificationStatusOfAuthUser(status);
 
-    AnimalNotificationSubscriptionStatus result = subscriptionController.getApproverStatus(
-        subscriptionRequest);
+    DeferredResult<AnimalNotificationSubscriptionStatus> deferredResult =
+        subscriptionController.getApproverStatus(subscriptionRequest);
 
-    assertEquals(status, result);
+    CountDownLatch latch = new CountDownLatch(1);
+    deferredResult.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertNotNull(deferredResult.getResult());
+    assertEquals(status, deferredResult.getResult());
+
     verify(notificationSubscriptionService, times(1)).getStatusByApprover(subscriptionRequest.getApprover());
     verify(userProfileService, times(1)).updateNotificationStatusOfAuthUser(status);
   }
