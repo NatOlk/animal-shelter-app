@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
+import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.external.ExternalNotificationServiceClient;
 import java.util.List;
@@ -16,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.ParameterizedTypeReference;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 class NotificationSubscriptionServiceTest {
 
@@ -52,45 +55,47 @@ class NotificationSubscriptionServiceTest {
     when(externalNotificationServiceClient.post(
         eq(allByApproverEndpoint),
         eq(Map.of("approver", approver)),
-        eq(List.class)
-    )).thenReturn(mockSubscriptions);
+        eq(new ParameterizedTypeReference<List<Subscription>>() {})
+    )).thenReturn(Mono.just(mockSubscriptions));
 
-    List<Subscription> result = notificationSubscriptionService.getAllSubscriptionByApprover(
-        approver);
-
-    assertNotNull(result);
-    assertEquals(2, result.size());
-    assertEquals("topic1", result.get(0).getTopic());
-    assertEquals("topic2", result.get(1).getTopic());
+    StepVerifier.create(notificationSubscriptionService.getAllSubscriptionByApprover(approver))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(2, result.size());
+          assertEquals("topic1", result.get(0).getTopic());
+          assertEquals("topic2", result.get(1).getTopic());
+        })
+        .verifyComplete();
 
     verify(externalNotificationServiceClient).post(
         eq(allByApproverEndpoint),
         eq(Map.of("approver", approver)),
-        eq(List.class)
+        eq(new ParameterizedTypeReference<List<Subscription>>() {})
     );
   }
 
   @Test
   void shouldReturnStatusByApprover() {
     String approver = "approver@example.com";
-    AnimalNotificationSubscriptionStatus expectedStatus = AnimalNotificationSubscriptionStatus.ACTIVE;
+    UserProfile.AnimalNotificationSubscriptionStatus expectedStatus = UserProfile.AnimalNotificationSubscriptionStatus.ACTIVE;
 
     when(externalNotificationServiceClient.post(
         eq(statusByApproverEndpoint),
         eq(Map.of("approver", approver)),
-        eq(AnimalNotificationSubscriptionStatus.class)
-    )).thenReturn(expectedStatus);
+        eq(new ParameterizedTypeReference<UserProfile.AnimalNotificationSubscriptionStatus>() {})
+    )).thenReturn(Mono.just(expectedStatus));
 
-    AnimalNotificationSubscriptionStatus result = notificationSubscriptionService.getStatusByApprover(
-        approver);
-
-    assertNotNull(result);
-    assertEquals(expectedStatus, result);
+    StepVerifier.create(notificationSubscriptionService.getStatusByApprover(approver))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(expectedStatus, result);
+        })
+        .verifyComplete();
 
     verify(externalNotificationServiceClient).post(
         eq(statusByApproverEndpoint),
         eq(Map.of("approver", approver)),
-        eq(AnimalNotificationSubscriptionStatus.class)
+        eq(new ParameterizedTypeReference<UserProfile.AnimalNotificationSubscriptionStatus>() {})
     );
   }
 }

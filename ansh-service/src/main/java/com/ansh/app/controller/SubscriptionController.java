@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.thymeleaf.util.StringUtils;
 
 @RestController
@@ -61,19 +62,41 @@ public class SubscriptionController {
   }
 
   @PostMapping("/animal-notify-all-approver-subscriptions")
-  public List<Subscription> getSubscribers(@RequestBody SubscriptionRequest subscriptionRequest) {
-    if (StringUtils.isEmpty(subscriptionRequest.getApprover())) return Collections.emptyList();
-    return notificationService.getAllSubscriptionByApprover(subscriptionRequest.getApprover());
+  public DeferredResult<List<Subscription>> getSubscribers(@RequestBody SubscriptionRequest subscriptionRequest) {
+    DeferredResult<List<Subscription>> output = new DeferredResult<>();
+
+    if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {
+      output.setResult(Collections.emptyList());
+      return output;
+    }
+
+    notificationService.getAllSubscriptionByApprover(subscriptionRequest.getApprover())
+        .subscribe(
+            output::setResult
+        );
+
+    return output;
   }
 
   @PostMapping("/animal-notify-approver-status")
-  public AnimalNotificationSubscriptionStatus getApproverStatus(
+  public DeferredResult<AnimalNotificationSubscriptionStatus> getApproverStatus(
       @RequestBody SubscriptionRequest subscriptionRequest) {
-    if (StringUtils.isEmpty(subscriptionRequest.getApprover())) return null;
 
-    AnimalNotificationSubscriptionStatus status = notificationService.getStatusByApprover(
-        subscriptionRequest.getApprover());
-    userProfileService.updateNotificationStatusOfAuthUser(status);
-    return status;
+    DeferredResult<AnimalNotificationSubscriptionStatus> output = new DeferredResult<>();
+
+    if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {
+      output.setResult(AnimalNotificationSubscriptionStatus.NONE);
+      return output;
+    }
+
+    notificationService.getStatusByApprover(subscriptionRequest.getApprover())
+        .subscribe(
+            status -> {
+              userProfileService.updateNotificationStatusOfAuthUser(status);
+              output.setResult(status);
+            }
+        );
+
+    return output;
   }
 }

@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
   Tooltip, Button, Spacer
 } from "@nextui-org/react";
 import { apiFetch } from '../common/api';
 import { HiOutlineUserRemove } from "react-icons/hi";
-import { Subscriber, SubscriptionListProps} from "../common/types";
+import { Subscriber, SubscriptionListProps } from "../common/types";
 
 const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile }) => {
   const [allSubscribers, setAllSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (!userProfile.email || hasFetched.current) return;
+    hasFetched.current = true;
+
     const fetchSubscribers = async () => {
       try {
+        setLoading(true);
         const subscriberData = await apiFetch<Subscriber[]>(`/animal-notify-all-approver-subscriptions`, {
           method: 'POST',
           body: { approver: userProfile.email },
@@ -26,6 +31,7 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
         setLoading(false);
       }
     };
+
     fetchSubscribers();
   }, [userProfile.email]);
 

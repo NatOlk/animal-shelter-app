@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 public class NotificationSubscriptionService {
@@ -25,19 +27,19 @@ public class NotificationSubscriptionService {
   @Value("${notification.subscription.endpoint.statusByApprover}")
   private String statusByApproverEndpoint;
 
-  public List<Subscription> getAllSubscriptionByApprover(String approver) {
+  public Mono<List<Subscription>> getAllSubscriptionByApprover(String approver) {
     return externalNotificationServiceClient.post(
         allByApproverEndpoint,
         Map.of("approver", approver),
-        List.class
+        new ParameterizedTypeReference<>() {}
     );
   }
 
-  public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(String approver) {
+  public Mono<UserProfile.AnimalNotificationSubscriptionStatus> getStatusByApprover(String approver) {
     return externalNotificationServiceClient.post(
         statusByApproverEndpoint,
         Map.of("approver", approver),
-        UserProfile.AnimalNotificationSubscriptionStatus.class
+        new ParameterizedTypeReference<>() {}
     );
   }
 
