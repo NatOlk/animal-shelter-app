@@ -7,7 +7,9 @@ import java.util.regex.Pattern;
 public class IdentifierMasker {
 
   private static final Pattern EMAIL_PATTERN = Pattern.compile(
-      "^([a-zA-Z]{2,4}).*@(.*)\\.([a-z]+)$");
+      "^([a-zA-Z]{2,4})[a-zA-Z0-9._%+-]*@([a-zA-Z0-9.-]+)\\.([a-z]{2,})$"
+  );
+
   private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("^([a-zA-Z0-9]{2,4}).*");
 
   public static String maskIdentifier(String identifier) {
