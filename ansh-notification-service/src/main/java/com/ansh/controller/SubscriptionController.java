@@ -6,7 +6,6 @@ import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.animal.UserProfile;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.service.AnimalTopicSubscriberRegistryService;
-import java.text.MessageFormat;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

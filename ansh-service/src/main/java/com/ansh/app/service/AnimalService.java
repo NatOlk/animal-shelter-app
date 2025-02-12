@@ -1,8 +1,8 @@
 package com.ansh.app.service;
 
-import com.ansh.app.service.exception.AnimalCreationException;
-import com.ansh.app.service.exception.AnimalNotFoundException;
-import com.ansh.app.service.exception.AnimalUpdateException;
+import com.ansh.app.service.exception.animal.AnimalCreationException;
+import com.ansh.app.service.exception.animal.AnimalNotFoundException;
+import com.ansh.app.service.exception.animal.AnimalUpdateException;
 import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
 import com.ansh.entity.animal.Animal;
 import com.ansh.repository.AnimalRepository;

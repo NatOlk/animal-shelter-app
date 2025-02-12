@@ -28,7 +28,8 @@ export async function apiFetch<T>(url: string, options: FetchOptions = {}): Prom
     }
 
     if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.status}`);
+      const errorMessage = await response.text();
+      throw new Error(errorMessage || `Network response was not ok: ${response.status}`);
     }
 
     const contentType = response.headers.get('content-type') || '';

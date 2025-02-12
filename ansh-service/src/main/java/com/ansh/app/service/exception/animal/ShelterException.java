@@ -1,4 +1,4 @@
-package com.ansh.app.service.exception;
+package com.ansh.app.service.exception.animal;
 
 import lombok.Getter;
 
