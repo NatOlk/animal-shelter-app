@@ -1,4 +1,4 @@
-package com.ansh.app.service.exception;
+package com.ansh.app.service.exception.animal;
 
 
 public class VaccinationCreationException extends ShelterException {

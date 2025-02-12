@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-  Tooltip, Button, Spacer
+  Tooltip, Button, Spacer, Alert
 } from "@nextui-org/react";
 import { apiFetch } from '../common/api';
 import { TfiReload } from "react-icons/tfi";
@@ -39,8 +39,8 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
         body: { email, approver: userProfile.email },
       });
       setUnapprovedSubscribers((prev) => prev.filter((subscriber) => subscriber.email !== email));
-    } catch (err) {
-      console.error('Error approving subscriber:', err);
+    } catch (error) {
+      setError(error);
     }
   };
 
@@ -51,8 +51,8 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
         body: { email },
       });
       setUnapprovedSubscribers((prev) => prev.filter((subscriber) => subscriber.email !== email));
-    } catch (err) {
-      console.error('Error rejecting subscriber:', err);
+    } catch (error) {
+      setError(error);
     }
   };
 
@@ -66,7 +66,15 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
       </Button>
       <Spacer y={5} />
       {loading && <div>Loading...</div>}
-      {error && <div style={{ color: "red" }}>Error: {error.message}</div>}
+      {error && (
+        <Alert
+          dismissable
+          color="danger"
+          variant="bordered"
+          onClose={() => setError(null)}
+          title={String(error)}
+        />
+      )}
       <Table>
         <TableHeader>
           <TableColumn>#</TableColumn>

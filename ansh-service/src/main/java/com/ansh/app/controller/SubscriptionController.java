@@ -1,11 +1,12 @@
 package com.ansh.app.controller;
 
+import com.ansh.app.service.exception.user.UnauthorizedActionException;
+import com.ansh.app.service.notification.subscription.AnimalInfoPendingSubscriptionService;
+import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
 import com.ansh.auth.service.UserProfileService;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.app.service.notification.subscription.AnimalInfoPendingSubscriptionService;
-import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.thymeleaf.util.StringUtils;
 
 @RestController
 public class SubscriptionController {
+
   @Autowired
   @Qualifier("notificationSubscriptionService")
   private NotificationSubscriptionService notificationService;
@@ -30,21 +32,23 @@ public class SubscriptionController {
   private UserProfileService userProfileService;
 
   @PostMapping("/animal-notify-approve-subscriber")
-  public void approve(@RequestBody SubscriptionRequest subscriptionRequest) {
-    if (StringUtils.isEmpty(subscriptionRequest.getApprover()) || StringUtils.isEmpty(
-        subscriptionRequest.getEmail())) {
+  public void approve(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {
+    if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(
+        req.getEmail())) {
       return;
     }
-    pendingSubscriptionService.approveSubscriber(subscriptionRequest.getEmail(),
-        subscriptionRequest.getApprover());
+    pendingSubscriptionService.approveSubscriber(req.getEmail(),
+        req.getApprover());
   }
 
   @PostMapping("/animal-notify-reject-subscriber")
-  public void reject(@RequestBody SubscriptionRequest subscriptionRequest) {
-    if (StringUtils.isEmpty(subscriptionRequest.getEmail())) {
+  public void reject(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {
+    if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(
+        req.getEmail())) {
       return;
     }
-    pendingSubscriptionService.rejectSubscriber(subscriptionRequest.getEmail());
+    pendingSubscriptionService.rejectSubscriber(req.getEmail(),
+        req.getApprover());
   }
 
   @PostMapping(value = "/animal-notify-pending-subscribers")
@@ -62,7 +66,8 @@ public class SubscriptionController {
   }
 
   @PostMapping("/animal-notify-all-approver-subscriptions")
-  public DeferredResult<List<Subscription>> getSubscribers(@RequestBody SubscriptionRequest subscriptionRequest) {
+  public DeferredResult<List<Subscription>> getSubscribers(
+      @RequestBody SubscriptionRequest subscriptionRequest) {
     DeferredResult<List<Subscription>> output = new DeferredResult<>();
 
     if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {

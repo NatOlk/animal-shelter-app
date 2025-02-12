@@ -2,6 +2,8 @@ package com.ansh.app.service.notification.subscription;
 
 import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.PENDING;
 
+import com.ansh.app.service.exception.user.UnauthorizedActionException;
+import com.ansh.app.service.user.UserAuthorityService;
 import com.ansh.auth.service.UserProfileService;
 import com.ansh.notification.subscription.AnimalNotificationUserSubscribedProducer;
 import com.ansh.repository.PendingSubscriberRepository;
@@ -36,8 +38,12 @@ public class AnimalInfoPendingSubscriptionService {
   @Autowired
   private UserProfileService userProfileService;
 
+  @Autowired
+  private UserAuthorityService userAuthorityService;
+
   @Transactional
-  public void approveSubscriber(String email, String approver) {
+  public void approveSubscriber(String email, String approver) throws UnauthorizedActionException {
+    userAuthorityService.checkAuthorityToApprove(approver);
     findPendingSubscriber(email)
         .ifPresent(subscriber -> {
           deletePendingSubscriber(email);
@@ -49,7 +55,8 @@ public class AnimalInfoPendingSubscriptionService {
   }
 
   @Transactional
-  public void rejectSubscriber(String email) {
+  public void rejectSubscriber(String email, String approver) throws UnauthorizedActionException {
+    userAuthorityService.checkAuthorityToReject(approver);
     findPendingSubscriber(email)
         .ifPresent(subscriber -> {
           deletePendingSubscriber(email);

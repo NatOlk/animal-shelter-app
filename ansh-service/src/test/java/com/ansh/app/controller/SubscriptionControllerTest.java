@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.auth.service.UserProfileService;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 import reactor.core.publisher.Mono;
 
@@ -48,7 +48,7 @@ class SubscriptionControllerTest {
   }
 
   @Test
-  void shouldApproveSubscriber() {
+  void shouldApproveSubscriber() throws UnauthorizedActionException {
     doNothing().when(animalInfoPendingSubscriptionService).approveSubscriber(anyString(), anyString());
 
     subscriptionController.approve(subscriptionRequest);
@@ -58,13 +58,13 @@ class SubscriptionControllerTest {
   }
 
   @Test
-  void shouldRejectSubscriber() {
-    doNothing().when(animalInfoPendingSubscriptionService).rejectSubscriber(anyString());
+  void shouldRejectSubscriber() throws UnauthorizedActionException {
+    doNothing().when(animalInfoPendingSubscriptionService).rejectSubscriber(anyString(), anyString());
 
     subscriptionController.reject(subscriptionRequest);
 
     verify(animalInfoPendingSubscriptionService, times(1)).rejectSubscriber(
-        subscriptionRequest.getEmail());
+        subscriptionRequest.getEmail(), subscriptionRequest.getApprover());
   }
 
   @Test

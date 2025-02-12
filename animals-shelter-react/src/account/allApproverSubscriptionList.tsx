@@ -44,15 +44,22 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
         prevSubscribers.filter((subscriber) => subscriber.token !== token)
       );
     } catch (error) {
-      console.error('Error during unsubscription:', error);
+      setError(error);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
   return (
     <>
+      {loading && <div>Loading...</div>}
+      {error && (
+        <Alert
+          dismissable
+          color="danger"
+          variant="bordered"
+          onClose={() => setError(null)}
+          title={String(error)}
+        />
+      )}
       <Table>
         <TableHeader>
           <TableColumn>#</TableColumn>
@@ -70,8 +77,7 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
                 style={{
                   backgroundColor:
                     subscriber.email === userProfile.email ? '#f0f8ff' : 'inherit',
-                }}
-              >
+                }}>
                 <TableCell>{subscriber.id}</TableCell>
                 <TableCell>{subscriber.email}</TableCell>
                 <TableCell>{subscriber.approver}</TableCell>
