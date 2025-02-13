@@ -1,53 +1,42 @@
 package com.ansh.app.service.notification.subscription;
 
-import com.ansh.entity.animal.UserProfile;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.notification.external.ExternalNotificationServiceClient;
 import java.util.List;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@Service
-public class NotificationSubscriptionService {
+/**
+ * Service for managing notification subscriptions.
+ * <p>
+ * This service uses Project Reactor's {@link Mono} to handle asynchronous,
+ * non-blocking operations.
+ * </p>
+ */
+public interface NotificationSubscriptionService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(NotificationSubscriptionService.class);
+  /**
+   * Retrieves all subscriptions approved by a specific approver.
+   * <p>
+   * The result is wrapped in a {@link Mono}, meaning it will be processed asynchronously
+   * and will emit either the list of {@link Subscription} objects or an empty list if
+   * no subscriptions are found.
+   * </p>
+   *
+   * @param approver the identifier of the approver
+   * @return a {@link Mono} emitting a list of {@link Subscription} objects
+   */
+  Mono<List<Subscription>> getAllSubscriptionByApprover(String approver);
 
-  @Autowired
-  private ExternalNotificationServiceClient externalNotificationServiceClient;
-
-  @Value("${notification.subscription.endpoint.allByApprover}")
-  private String allByApproverEndpoint;
-
-  @Value("${notification.subscription.endpoint.statusByApprover}")
-  private String statusByApproverEndpoint;
-
-  public Mono<List<Subscription>> getAllSubscriptionByApprover(String approver) {
-    return externalNotificationServiceClient.post(
-        allByApproverEndpoint,
-        Map.of("approver", approver),
-        new ParameterizedTypeReference<>() {}
-    );
-  }
-
-  public Mono<UserProfile.AnimalNotificationSubscriptionStatus> getStatusByApprover(String approver) {
-    return externalNotificationServiceClient.post(
-        statusByApproverEndpoint,
-        Map.of("approver", approver),
-        new ParameterizedTypeReference<>() {}
-    );
-  }
-
-  protected void setAllByApproverEndpoint(String allByApproverEndpoint) {
-    this.allByApproverEndpoint = allByApproverEndpoint;
-  }
-
-  protected void setStatusByApproverEndpoint(String statusByApproverEndpoint) {
-    this.statusByApproverEndpoint = statusByApproverEndpoint;
-  }
+  /**
+   * Retrieves the notification subscription status for a given approver.
+   * <p>
+   * The method returns a {@link Mono}, which emits either the current
+   * {@link AnimalNotifStatus} or an empty signal if
+   * no status is found.
+   * </p>
+   *
+   * @param approver the identifier of the approver
+   * @return a {@link Mono} emitting the {@link AnimalNotifStatus}
+   */
+  Mono<AnimalNotifStatus> getStatusByApprover(String approver);
 }

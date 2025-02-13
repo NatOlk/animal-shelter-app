@@ -1,6 +1,6 @@
 package com.ansh.app.controller;
 
-import com.ansh.app.service.AnimalService;
+import com.ansh.app.service.animal.impl.AnimalServiceImpl;
 import java.io.File;
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class AnimalPhotoController {
   private String uploadDir;
 
   @Autowired
-  private AnimalService animalService;
+  private AnimalServiceImpl animalService;
 
   @PostMapping("/{id}/upload-photo")
   public ResponseEntity<String> uploadPhoto(

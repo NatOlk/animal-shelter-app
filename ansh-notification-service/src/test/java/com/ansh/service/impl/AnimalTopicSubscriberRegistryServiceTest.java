@@ -1,4 +1,4 @@
-package com.ansh.service;
+package com.ansh.service.impl;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.subscription.SubscriberNotificationEventProducer;
 import com.ansh.repository.SubscriptionRepository;
-import java.util.List;
+import com.ansh.service.SubscriptionNotificationEmailService;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class AnimalTopicSubscriberRegistryServiceTest {
   private RedisTemplate<String, String> updRedisTemplate;
 
   @InjectMocks
-  private AnimalTopicSubscriberRegistryService registryService;
+  private AnimalTopicSubscriberRegistryServiceImpl registryService;
 
   @BeforeEach
   void setUp() {

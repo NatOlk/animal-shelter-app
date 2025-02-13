@@ -1,12 +1,11 @@
 package com.ansh.auth.controller;
 
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.service.JwtService;
-import com.ansh.auth.service.UserProfileService;
 import com.ansh.utils.IdentifierMasker;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,7 +63,8 @@ public class AuthController {
       String maskedIdentifier) {
     LOG.debug("[auth] Authentication successful for user: {}", maskedIdentifier);
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    return userProfileService.findAuthenticatedUser()
+    //TODO why we need to get auth user?
+    return userProfileService.getAuthUser()
         .map(userProfile -> createAuthenticationResponse(userProfile.getEmail(), authentication,
             maskedIdentifier))
         .orElseGet(() -> createErrorResponse(HttpStatus.NOT_FOUND, "User profile not found",

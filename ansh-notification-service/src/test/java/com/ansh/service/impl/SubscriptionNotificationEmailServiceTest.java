@@ -1,8 +1,11 @@
-package com.ansh.service;
+package com.ansh.service.impl;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.ansh.entity.subscription.Subscription;
+import com.ansh.service.EmailService;
 import com.ansh.utils.LinkGenerator;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +20,7 @@ class SubscriptionNotificationEmailServiceTest {
   private EmailService emailService;
 
   @InjectMocks
-  private SubscriptionNotificationEmailService subscriptionNotificationService;
+  private SubscriptionNotificationEmailServiceImpl subscriptionNotificationService;
 
   @Mock
   private LinkGenerator linkGenerator;
@@ -46,7 +49,7 @@ class SubscriptionNotificationEmailServiceTest {
         "subscriptionLink", "http://localhost:8081/external/animal-notify-subscribe-check/test-token"
     );
 
-    verify(emailService).sendSimpleMessage(
+    verify(emailService).sendEmail(
         eq("test@example.com"),
         eq("[animal-shelter-app] Please accept subscription for Animal Shelter app"),
         eq("acceptSubscription"),
@@ -67,7 +70,7 @@ class SubscriptionNotificationEmailServiceTest {
         "unsubscribeLink", "http://localhost:8081/external/animal-notify-unsubscribe/test-token"
     );
 
-    verify(emailService).sendSimpleMessage(
+    verify(emailService).sendEmail(
         eq("test@example.com"),
         eq("[animal-shelter-app] Subscription for Animal Shelter app"),
         eq("successSubscription"),
@@ -88,7 +91,7 @@ class SubscriptionNotificationEmailServiceTest {
         "unsubscribeLink", "http://localhost:8081/external/animal-notify-unsubscribe/test-token"
     );
 
-    verify(emailService).sendSimpleMessage(
+    verify(emailService).sendEmail(
         eq("test@example.com"),
         eq("[animal-shelter-app] Subscription for Animal Shelter app"),
         eq("repeatSubscription"),

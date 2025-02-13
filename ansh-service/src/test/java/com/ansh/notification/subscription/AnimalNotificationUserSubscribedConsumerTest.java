@@ -3,7 +3,7 @@ package com.ansh.notification.subscription;
 import static org.mockito.Mockito.*;
 
 import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
-import com.ansh.app.service.notification.subscription.AnimalInfoPendingSubscriptionService;
+import com.ansh.app.service.notification.subscription.impl.AnimalInfoPendingSubscriptionServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ class AnimalNotificationUserSubscribedConsumerTest {
   private static final String ANIMAL_TOPIC = "animalTopic";
 
   @Mock
-  private AnimalInfoPendingSubscriptionService animalInfoPendingSubscriptionService;
+  private AnimalInfoPendingSubscriptionServiceImpl animalInfoPendingSubscriptionService;
 
   @InjectMocks
   private AnimalNotificationUserSubscribedConsumer consumer;

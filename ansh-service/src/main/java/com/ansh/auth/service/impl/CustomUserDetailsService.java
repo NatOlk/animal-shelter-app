@@ -1,5 +1,6 @@
-package com.ansh.auth.service;
+package com.ansh.auth.service.impl;
 
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.entity.animal.UserProfile;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
   @Autowired
-  private UserProfileService userService;
+  private UserProfileServiceImpl userService;
 
   @Override
   public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {

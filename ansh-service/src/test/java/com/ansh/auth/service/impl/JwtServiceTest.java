@@ -1,4 +1,4 @@
-package com.ansh.auth.service;
+package com.ansh.auth.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import com.ansh.auth.service.impl.JwtServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
@@ -20,7 +21,7 @@ class JwtServiceTest {
 
   private static final String SECRET_KEY = "abcdefghijklmnopqrstuvwxyz123456";
 
-  private JwtService jwtService;
+  private JwtServiceImpl jwtService;
 
   @Mock
   private UserDetails userDetails;
@@ -30,7 +31,7 @@ class JwtServiceTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    jwtService = new JwtService();
+    jwtService = new JwtServiceImpl();
     jwtService.setJwtSecretKey(SECRET_KEY);
 
     token = jwtService.generateToken(username);

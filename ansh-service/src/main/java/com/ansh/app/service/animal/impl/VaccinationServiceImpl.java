@@ -1,8 +1,9 @@
-package com.ansh.app.service;
+package com.ansh.app.service.animal.impl;
 
+import com.ansh.app.service.animal.VaccinationService;
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
-import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
+import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
 import com.ansh.repository.AnimalRepository;
 import com.ansh.repository.VaccinationRepository;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
@@ -19,8 +20,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VaccinationService {
-  private static final Logger LOG = LoggerFactory.getLogger(VaccinationService.class);
+public class VaccinationServiceImpl implements VaccinationService {
+  private static final Logger LOG = LoggerFactory.getLogger(VaccinationServiceImpl.class);
 
   @Autowired
   private VaccinationRepository vaccinationRepository;
@@ -29,20 +30,24 @@ public class VaccinationService {
   private AnimalRepository animalRepository;
 
   @Autowired
-  private AnimalInfoNotificationService animalInfoNotificationService;
+  private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
 
+  @Override
   public List<Vaccination> getAllVaccinations() {
     return vaccinationRepository.findAll();
   }
 
+  @Override
   public List<Vaccination> findByAnimalId(Long animalId) {
     return vaccinationRepository.findByAnimalId(animalId);
   }
 
+  @Override
   public int vaccinationCountById(Long id) {
     return vaccinationRepository.findVaccinationCountByAnimalId(id);
   }
 
+  @Override
   public Vaccination addVaccination(@NonNull Long animalId, @NonNull String vaccine,
       @NonNull String batch, @NonNull LocalDate vaccinationTime,
       String comments, @NonNull String email) throws VaccinationCreationException {
@@ -77,6 +82,7 @@ public class VaccinationService {
     }
   }
 
+  @Override
   public Vaccination updateVaccination(@NonNull Long id, String vaccine,
       String batch, LocalDate vaccinationTime,
       String comments, String email)
@@ -110,6 +116,7 @@ public class VaccinationService {
     return vaccination;
   }
 
+  @Override
   public Vaccination deleteVaccination(@NonNull Long id) throws VaccinationNotFoundException {
     Vaccination vaccination = vaccinationRepository.findById(id)
         .orElseThrow(() -> new VaccinationNotFoundException(STR."Vaccination not found for: \{id}"));

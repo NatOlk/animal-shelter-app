@@ -1,7 +1,7 @@
 package com.ansh.app.controller.grql;
 
 import com.ansh.DateScalarConfiguration;
-import com.ansh.auth.service.UserProfileService;
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.entity.animal.UserProfile;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class GrAccountControllerTest {
   private GraphQlTester graphQlTester;
 
   @MockBean
-  private UserProfileService userProfileService;
+  private UserProfileServiceImpl userProfileService;
 
   @Test
   void currentUserProfile_shouldReturnUserProfile() {
@@ -30,7 +30,7 @@ class GrAccountControllerTest {
     mockProfile.setName("John Doe");
     mockProfile.setEmail("john.doe@example.com");
 
-    Mockito.when(userProfileService.findAuthenticatedUser())
+    Mockito.when(userProfileService.getAuthUser())
         .thenReturn(Optional.of(mockProfile));
 
     String query = """

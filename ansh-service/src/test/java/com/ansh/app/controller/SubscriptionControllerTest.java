@@ -5,12 +5,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
-import com.ansh.auth.service.UserProfileService;
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.app.service.notification.subscription.AnimalInfoPendingSubscriptionService;
-import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
+import com.ansh.app.service.notification.subscription.impl.AnimalInfoPendingSubscriptionServiceImpl;
+import com.ansh.app.service.notification.subscription.impl.NotificationSubscriptionServiceImpl;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -26,13 +26,13 @@ import reactor.core.publisher.Mono;
 class SubscriptionControllerTest {
 
   @Mock
-  private NotificationSubscriptionService notificationSubscriptionService;
+  private NotificationSubscriptionServiceImpl notificationSubscriptionService;
 
   @Mock
-  private AnimalInfoPendingSubscriptionService animalInfoPendingSubscriptionService;
+  private AnimalInfoPendingSubscriptionServiceImpl animalInfoPendingSubscriptionService;
 
   @Mock
-  private UserProfileService userProfileService;
+  private UserProfileServiceImpl userProfileService;
 
   @InjectMocks
   private SubscriptionController subscriptionController;
@@ -120,11 +120,11 @@ class SubscriptionControllerTest {
 
   @Test
   void shouldReturnApproverStatus() throws InterruptedException {
-    AnimalNotificationSubscriptionStatus status = AnimalNotificationSubscriptionStatus.ACTIVE;
+    AnimalNotifStatus status = AnimalNotifStatus.ACTIVE;
     when(notificationSubscriptionService.getStatusByApprover(anyString())).thenReturn(Mono.just(status));
     doNothing().when(userProfileService).updateNotificationStatusOfAuthUser(status);
 
-    DeferredResult<AnimalNotificationSubscriptionStatus> deferredResult =
+    DeferredResult<AnimalNotifStatus> deferredResult =
         subscriptionController.getApproverStatus(subscriptionRequest);
 
     CountDownLatch latch = new CountDownLatch(1);

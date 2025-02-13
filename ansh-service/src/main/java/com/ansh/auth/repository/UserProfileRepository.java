@@ -1,7 +1,7 @@
 package com.ansh.auth.repository;
 
 import com.ansh.entity.animal.UserProfile;
-import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,5 +25,5 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
   @Transactional
   @Query("update UserProfile u set u.animalNotifyStatus = :status where u.email = :identifier or u.name = :identifier")
   void updateAnimalNotificationSubscriptionStatus(@Param("identifier") String identifier,
-      @Param("status") AnimalNotificationSubscriptionStatus status);
+      @Param("status") AnimalNotifStatus status);
 }

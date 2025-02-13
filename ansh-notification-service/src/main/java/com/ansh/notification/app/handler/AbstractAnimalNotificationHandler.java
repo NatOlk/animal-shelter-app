@@ -1,8 +1,8 @@
 package com.ansh.notification.app.handler;
 
 import com.ansh.event.AnimalEvent;
-import com.ansh.service.AnimalTopicSubscriberRegistryService;
-import com.ansh.service.EmailService;
+import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
+import com.ansh.service.impl.EmailServiceImpl;
 import com.ansh.utils.EmailParamsBuilder;
 import com.ansh.utils.IdentifierMasker;
 import com.ansh.utils.LinkGenerator;
@@ -17,9 +17,9 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   private static final Logger LOG = LoggerFactory.getLogger(
       AbstractAnimalNotificationHandler.class);
   @Autowired
-  private EmailService emailService;
+  private EmailServiceImpl emailService;
   @Autowired
-  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryServiceImpl animalTopicSubscriberRegistryService;
   @Autowired
   private Executor emailNotificationExecutor;
   @Autowired
@@ -51,7 +51,7 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
           emailNotificationExecutor.execute(() -> {
                 LOG.debug("Thread: {} is sending email to {}", Thread.currentThread().getName(),
                     IdentifierMasker.maskEmail(subscription.getEmail()));
-                emailService.sendSimpleMessage(subscription.getEmail(), subject, templateName, params);
+                emailService.sendEmail(subscription.getEmail(), subject, templateName, params);
               }
           );
         });

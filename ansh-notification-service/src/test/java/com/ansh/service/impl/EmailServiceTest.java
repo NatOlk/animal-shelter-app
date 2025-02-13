@@ -1,4 +1,4 @@
-package com.ansh.service;
+package com.ansh.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,7 +33,7 @@ class EmailServiceTest {
   private ITemplateEngine templateEngine;
 
   @InjectMocks
-  private EmailService emailService;
+  private EmailServiceImpl emailService;
 
   @Mock
   private MimeMessage mimeMessage;
@@ -62,7 +62,7 @@ class EmailServiceTest {
     String htmlContent = "<html><body><h1>Hello, Test User!</h1></body></html>";
     when(templateEngine.process(eq(template), any(Context.class))).thenReturn(htmlContent);
 
-    emailService.sendSimpleMessage(email, subject, template, templateModel);
+    emailService.sendEmail(email, subject, template, templateModel);
 
     ArgumentCaptor<MimeMessage> messageCaptor = ArgumentCaptor.forClass(MimeMessage.class);
     verify(emailSender, times(1)).send(messageCaptor.capture());
@@ -90,7 +90,7 @@ class EmailServiceTest {
     String htmlContent = "<html><body><h1>Hello, Test User!</h1></body></html>";
     when(templateEngine.process(eq(template), any(Context.class))).thenReturn(htmlContent);
 
-    emailService.sendSimpleMessage(invalidEmail, subject, template, templateModel);
+    emailService.sendEmail(invalidEmail, subject, template, templateModel);
 
     verify(emailSender, never()).send(any(MimeMessage.class));
   }
