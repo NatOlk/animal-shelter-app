@@ -1,4 +1,4 @@
-package com.ansh.app.service;
+package com.ansh.app.service.animal.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
-import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
+import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
 import com.ansh.repository.AnimalRepository;
 import com.ansh.repository.VaccinationRepository;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
@@ -34,10 +34,10 @@ class VaccinationServiceTest {
   private AnimalRepository animalRepository;
 
   @Mock
-  private AnimalInfoNotificationService animalInfoNotificationService;
+  private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
 
   @InjectMocks
-  private VaccinationService vaccinationService;
+  private VaccinationServiceImpl vaccinationService;
 
   @BeforeEach
   void setUp() {

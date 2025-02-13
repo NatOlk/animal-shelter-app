@@ -1,5 +1,7 @@
-package com.ansh.auth.service;
+package com.ansh.auth.service.impl;
 
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
+import com.ansh.auth.service.impl.CustomUserDetailsService;
 import com.ansh.entity.animal.UserProfile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,7 @@ import static org.mockito.Mockito.*;
 class CustomUserDetailsServiceTest {
 
   @Mock
-  private UserProfileService userService;
+  private UserProfileServiceImpl userService;
 
   @InjectMocks
   private CustomUserDetailsService customUserDetailsService;

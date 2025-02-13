@@ -1,4 +1,4 @@
-package com.ansh.app.service.notification.subscription;
+package com.ansh.app.service.notification.subscription.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.user.UserAuthorityService;
-import com.ansh.auth.service.UserProfileService;
-import com.ansh.entity.animal.UserProfile;
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import com.ansh.notification.subscription.AnimalNotificationUserSubscribedProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
@@ -39,13 +39,13 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
   private PendingSubscriberRepository pendingSubscriberRepository;
 
   @Mock
-  private UserProfileService userProfileService;
+  private UserProfileServiceImpl userProfileService;
 
   @Mock
   private UserAuthorityService userAuthorityService;
 
   @InjectMocks
-  private AnimalInfoPendingSubscriptionService service;
+  private AnimalInfoPendingSubscriptionServiceImpl service;
 
   @Captor
   private ArgumentCaptor<PendingSubscriber> subscriberCaptor;
@@ -168,7 +168,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
     assertEquals(ANIMAL_TOPIC, capturedSubscriber.getTopic());
 
     verify(userProfileService).updateAnimalNotificationSubscriptionStatus(
-        SUBSCRIBER_EMAIL, UserProfile.AnimalNotificationSubscriptionStatus.PENDING);
+        SUBSCRIBER_EMAIL, AnimalNotifStatus.PENDING);
   }
 
   @Test
@@ -190,7 +190,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
     verify(pendingSubscriberRepository, times(0)).save(any());
 
     verify(userProfileService, times(0)).updateAnimalNotificationSubscriptionStatus(
-        email, UserProfile.AnimalNotificationSubscriptionStatus.PENDING);
+        email, AnimalNotifStatus.PENDING);
   }
 
   @Test

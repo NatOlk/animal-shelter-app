@@ -1,4 +1,4 @@
-package com.ansh.app.service.notification.subscription;
+package com.ansh.app.service.notification.subscription.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.entity.animal.UserProfile;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.external.ExternalNotificationServiceClient;
 import java.util.List;
@@ -23,7 +23,7 @@ import reactor.test.StepVerifier;
 class NotificationSubscriptionServiceTest {
 
   @InjectMocks
-  private NotificationSubscriptionService notificationSubscriptionService;
+  private NotificationSubscriptionServiceImpl notificationSubscriptionService;
 
   @Mock
   private ExternalNotificationServiceClient externalNotificationServiceClient;
@@ -77,12 +77,12 @@ class NotificationSubscriptionServiceTest {
   @Test
   void shouldReturnStatusByApprover() {
     String approver = "approver@example.com";
-    UserProfile.AnimalNotificationSubscriptionStatus expectedStatus = UserProfile.AnimalNotificationSubscriptionStatus.ACTIVE;
+    AnimalNotifStatus expectedStatus = AnimalNotifStatus.ACTIVE;
 
     when(externalNotificationServiceClient.post(
         eq(statusByApproverEndpoint),
         eq(Map.of("approver", approver)),
-        eq(new ParameterizedTypeReference<UserProfile.AnimalNotificationSubscriptionStatus>() {})
+        eq(new ParameterizedTypeReference<AnimalNotifStatus>() {})
     )).thenReturn(Mono.just(expectedStatus));
 
     StepVerifier.create(notificationSubscriptionService.getStatusByApprover(approver))
@@ -95,7 +95,7 @@ class NotificationSubscriptionServiceTest {
     verify(externalNotificationServiceClient).post(
         eq(statusByApproverEndpoint),
         eq(Map.of("approver", approver)),
-        eq(new ParameterizedTypeReference<UserProfile.AnimalNotificationSubscriptionStatus>() {})
+        eq(new ParameterizedTypeReference<AnimalNotifStatus>() {})
     );
   }
 }

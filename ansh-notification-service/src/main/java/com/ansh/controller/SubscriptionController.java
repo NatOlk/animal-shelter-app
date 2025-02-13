@@ -3,9 +3,9 @@ package com.ansh.controller;
 import static java.lang.StringTemplate.STR;
 
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.animal.UserProfile;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.service.AnimalTopicSubscriberRegistryService;
+import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubscriptionController {
 
   @Autowired
-  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryServiceImpl animalTopicSubscriberRegistryService;
 
   @PostMapping("/external/animal-notify-subscribe")
   public void subscribe(@RequestBody SubscriptionRequest request) {
@@ -45,7 +45,7 @@ public class SubscriptionController {
   }
 
   @PostMapping("/internal/animal-notify-approver-status")
-  public UserProfile.AnimalNotificationSubscriptionStatus getStatusByApprover(
+  public AnimalNotifStatus getStatusByApprover(
       @RequestBody SubscriptionRequest request) {
     return animalTopicSubscriberRegistryService.getSubscriptionStatus(request.getApprover());
   }

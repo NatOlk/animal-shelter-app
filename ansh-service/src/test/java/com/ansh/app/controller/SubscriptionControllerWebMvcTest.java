@@ -9,9 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ansh.AnshSecurityConfig;
-import com.ansh.app.service.notification.subscription.AnimalInfoPendingSubscriptionService;
-import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
-import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
+import com.ansh.app.service.notification.subscription.impl.AnimalInfoPendingSubscriptionServiceImpl;
+import com.ansh.app.service.notification.subscription.impl.NotificationSubscriptionServiceImpl;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.Collections;
@@ -43,11 +43,11 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @MockBean
   @Qualifier("notificationSubscriptionService")
-  private NotificationSubscriptionService notificationService;
+  private NotificationSubscriptionServiceImpl notificationService;
 
   @MockBean
   @Qualifier("animalInfoPendingSubscriptionService")
-  private AnimalInfoPendingSubscriptionService pendingSubscriptionService;
+  private AnimalInfoPendingSubscriptionServiceImpl pendingSubscriptionService;
 
   @Test
   void shouldApproveSubscriber() throws Exception {
@@ -115,9 +115,9 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @Test
   void shouldReturnApproverStatus() throws Exception {
-    AnimalNotificationSubscriptionStatus mockStatus = AnimalNotificationSubscriptionStatus.ACTIVE;
+    AnimalNotifStatus mockStatus = AnimalNotifStatus.ACTIVE;
 
-    DeferredResult<ResponseEntity<AnimalNotificationSubscriptionStatus>> deferredResult = new DeferredResult<>();
+    DeferredResult<ResponseEntity<AnimalNotifStatus>> deferredResult = new DeferredResult<>();
     deferredResult.setResult(ResponseEntity.ok(mockStatus));
 
     when(notificationService.getStatusByApprover(eq(APPROVER_EMAIL)))
@@ -138,6 +138,6 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{}"))
         .andReturn();
-    assertEquals(mvcResult.getAsyncResult(), AnimalNotificationSubscriptionStatus.NONE);
+    assertEquals(mvcResult.getAsyncResult(), AnimalNotifStatus.NONE);
   }
 }

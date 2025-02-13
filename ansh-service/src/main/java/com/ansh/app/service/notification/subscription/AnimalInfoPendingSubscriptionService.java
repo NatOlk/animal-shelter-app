@@ -1,100 +1,52 @@
 package com.ansh.app.service.notification.subscription;
 
-import static com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus.PENDING;
-
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
-import com.ansh.app.service.user.UserAuthorityService;
-import com.ansh.auth.service.UserProfileService;
-import com.ansh.notification.subscription.AnimalNotificationUserSubscribedProducer;
-import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
-import com.ansh.utils.IdentifierMasker;
-import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-@Service
-public class AnimalInfoPendingSubscriptionService {
+/**
+ * Service for managing pending subscriptions to animal notifications.
+ */
+public interface AnimalInfoPendingSubscriptionService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(
-      AnimalInfoPendingSubscriptionService.class);
+  /**
+   * Approves a pending subscriber, granting them access to notifications.
+   *
+   * @param email the email of the subscriber to approve
+   * @param approver the email or identifier of the approver
+   * @throws UnauthorizedActionException if the approver is not authorized to approve the subscription
+   */
+  void approveSubscriber(String email, String approver) throws UnauthorizedActionException;
 
-  @Value("${animalTopicId}")
-  private String animalTopicId;
+  /**
+   * Rejects a pending subscriber, denying them access to notifications.
+   *
+   * @param email the email of the subscriber to reject
+   * @param approver the email or identifier of the approver
+   * @throws UnauthorizedActionException if the approver is not authorized to reject the subscription
+   */
+  void rejectSubscriber(String email, String approver) throws UnauthorizedActionException;
 
-  @Autowired
-  @Qualifier("animalNotificationUserSubscribedProducer")
-  private AnimalNotificationUserSubscribedProducer subscriptionProducer;
+  /**
+   * Saves a new pending subscriber request.
+   *
+   * @param email the email of the subscriber requesting approval
+   * @param approver the email or identifier of the person responsible for approving the request
+   */
+  void saveSubscriber(String email, String approver);
 
-  @Autowired
-  private PendingSubscriberRepository pendingSubscriberRepository;
+  /**
+   * Retrieves a list of pending subscribers that require approval from a specific approver.
+   *
+   * @param approver the email or identifier of the approver
+   * @return a list of {@link PendingSubscriber} objects awaiting approval from the specified approver
+   */
+  List<PendingSubscriber> getSubscribersByApprover(String approver);
 
-  @Autowired
-  private UserProfileService userProfileService;
-
-  @Autowired
-  private UserAuthorityService userAuthorityService;
-
-  @Transactional
-  public void approveSubscriber(String email, String approver) throws UnauthorizedActionException {
-    userAuthorityService.checkAuthorityToApprove(approver);
-    findPendingSubscriber(email)
-        .ifPresent(subscriber -> {
-          deletePendingSubscriber(email);
-          subscriptionProducer.sendApprove(subscriber.getEmail(),
-              approver, subscriber.getTopic());
-          LOG.debug("[animal topic subscription] approval is sent for {} , approver is {}.",
-              IdentifierMasker.maskEmail(email), IdentifierMasker.maskEmail(approver));
-        });
-  }
-
-  @Transactional
-  public void rejectSubscriber(String email, String approver) throws UnauthorizedActionException {
-    userAuthorityService.checkAuthorityToReject(approver);
-    findPendingSubscriber(email)
-        .ifPresent(subscriber -> {
-          deletePendingSubscriber(email);
-          subscriptionProducer.sendReject(subscriber.getEmail(),
-              subscriber.getApprover(), subscriber.getTopic());
-          LOG.debug("[animal topic subscription] rejection is sent for {} ",
-              IdentifierMasker.maskEmail(email));
-        });
-  }
-
-  @Transactional
-  public void saveSubscriber(String email, String approver) {
-    if (findPendingSubscriber(email).isEmpty()) {
-      PendingSubscriber newSubscriber = new PendingSubscriber(email, approver, animalTopicId);
-      pendingSubscriberRepository.save(newSubscriber);
-      LOG.debug("[pending subscriber] {} ",
-          IdentifierMasker.maskEmail(newSubscriber.getEmail()));
-      userProfileService.updateAnimalNotificationSubscriptionStatus(email, PENDING);
-    }
-  }
-
-  public List<PendingSubscriber> getSubscribersByApprover(String approver) {
-    return pendingSubscriberRepository.findByApproverAndTopic(approver, animalTopicId);
-  }
-
-  public List<PendingSubscriber> getPendingSubscribersWithoutApprover() {
-    return pendingSubscriberRepository.findByTopicAndApproverIsNullOrEmpty(animalTopicId);
-  }
-
-  private Optional<PendingSubscriber> findPendingSubscriber(String email) {
-    return pendingSubscriberRepository.findByEmailAndTopic(email, animalTopicId);
-  }
-
-  private void deletePendingSubscriber(String email) {
-    pendingSubscriberRepository.deleteByEmailAndTopic(email, animalTopicId);
-  }
-
-  protected void setAnimalTopicId(String animalTopicId) {
-    this.animalTopicId = animalTopicId;
-  }
+  /**
+   * Retrieves a list of pending subscribers who do not have an assigned approver.
+   *
+   * @return a list of {@link PendingSubscriber} objects awaiting an approver
+   */
+  List<PendingSubscriber> getPendingSubscribersWithoutApprover();
 }

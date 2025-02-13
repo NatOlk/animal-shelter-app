@@ -1,9 +1,9 @@
 package com.ansh.app.controller;
 
 import com.ansh.AnshSecurityConfig;
-import com.ansh.auth.service.CustomUserDetailsService;
-import com.ansh.auth.service.JwtService;
-import com.ansh.auth.service.UserProfileService;
+import com.ansh.auth.service.impl.CustomUserDetailsService;
+import com.ansh.auth.service.impl.JwtServiceImpl;
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -30,10 +30,10 @@ public abstract class AbstractControllerWebMvcTest {
   protected MockMvc mockMvc;
 
   @MockBean
-  protected UserProfileService userProfileService;
+  protected UserProfileServiceImpl userProfileService;
 
   @MockBean
-  protected JwtService jwtService;
+  protected JwtServiceImpl jwtService;
 
   @MockBean
   protected CustomUserDetailsService customUserDetailsService;

@@ -1,5 +1,6 @@
-package com.ansh.app.service;
+package com.ansh.app.service.animal.impl;
 
+import com.ansh.app.service.animal.AnimalService;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
@@ -18,9 +19,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AnimalService {
+public class AnimalServiceImpl implements AnimalService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AnimalService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AnimalServiceImpl.class);
   private static final String DEFAULT_IMPLANT_CHIP_PATTERN = "00000000-00000000-0000";
 
   @Autowired
@@ -29,15 +30,18 @@ public class AnimalService {
   @Autowired
   private AnimalInfoNotificationService animalInfoNotificationService;
 
+  @Override
   public List<Animal> getAllAnimals() {
     return animalRepository.findAllByOrderByNameAsc();
   }
 
+  @Override
   public Animal findById(Long id) throws AnimalNotFoundException {
     return animalRepository.findById(id)
         .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{id}"));
   }
 
+  @Override
   public Animal addAnimal(@NonNull String name, @NonNull String species,
       @NonNull String primaryColor, String breed,
       String implantChipId, @NonNull String gender,
@@ -72,6 +76,7 @@ public class AnimalService {
     }
   }
 
+  @Override
   public Animal updateAnimal(@NonNull Long id, String primaryColor,
       String breed, String gender,
       LocalDate birthDate, String pattern, String photoImgPath)
@@ -97,6 +102,7 @@ public class AnimalService {
     return animal;
   }
 
+  @Override
   public Animal removeAnimal(@NonNull Long id, String reason) throws AnimalNotFoundException {
     Animal animal = animalRepository.findById(id)
         .orElseThrow(() -> new AnimalNotFoundException(STR."Animal is not found \{id}"));
@@ -107,10 +113,12 @@ public class AnimalService {
     return animal;
   }
 
+  @Override
   public Animal findAnimalByVaccinationId(Long vaccinationId) {
     return animalRepository.findAnimalByVaccinationId(vaccinationId);
   }
 
+  @Override
   @Transactional
   public void updatePhotoUrl(Long id, String path) {
     animalRepository.updatePhotoPathById(id, path);

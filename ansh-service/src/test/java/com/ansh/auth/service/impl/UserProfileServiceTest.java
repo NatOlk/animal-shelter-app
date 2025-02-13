@@ -1,12 +1,13 @@
-package com.ansh.auth.service;
+package com.ansh.auth.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.auth.repository.UserProfileRepository;
 import com.ansh.entity.animal.UserProfile;
-import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class UserProfileServiceTest {
   private UserDetails userDetails;
 
   @InjectMocks
-  private UserProfileService userProfileService;
+  private UserProfileServiceImpl userProfileService;
 
   @BeforeEach
   void setUp() {
@@ -55,7 +56,7 @@ class UserProfileServiceTest {
   @Test
   void shouldUpdateAnimalNotificationSubscriptionStatus() {
     String identifier = "test_user";
-    AnimalNotificationSubscriptionStatus status = AnimalNotificationSubscriptionStatus.PENDING;
+    AnimalNotifStatus status = AnimalNotifStatus.PENDING;
 
     userProfileService.updateAnimalNotificationSubscriptionStatus(identifier, status);
 
@@ -71,14 +72,14 @@ class UserProfileServiceTest {
     when(userRepository.findByIdentifier("test_user")).thenReturn(Optional.of(new UserProfile()));
 
     SecurityContextHolder.setContext(securityContext);
-    Optional<UserProfile> result = userProfileService.findAuthenticatedUser();
+    Optional<UserProfile> result = userProfileService.getAuthUser();
 
     assertTrue(result.isPresent());
   }
 
   @Test
   void shouldUpdateNotificationStatusOfAuthUser() {
-    AnimalNotificationSubscriptionStatus status = AnimalNotificationSubscriptionStatus.ACTIVE;
+    AnimalNotifStatus status = AnimalNotifStatus.ACTIVE;
     UserProfile userProfile = new UserProfile();
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.isAuthenticated()).thenReturn(true);

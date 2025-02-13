@@ -1,4 +1,4 @@
-package com.ansh.app.service;
+package com.ansh.app.service.animal.impl;
 
 import static graphql.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ansh.entity.animal.Animal;
-import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
+import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
 import com.ansh.repository.AnimalRepository;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
@@ -31,10 +31,10 @@ class AnimalServiceTest {
   private AnimalRepository animalRepository;
 
   @Mock
-  private AnimalInfoNotificationService animalInfoNotificationService;
+  private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
 
   @InjectMocks
-  private AnimalService animalService;
+  private AnimalServiceImpl animalService;
 
   @BeforeEach
   void setUp() {

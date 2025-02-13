@@ -8,8 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.ansh.auth.service.JwtService;
-import com.ansh.auth.service.UserProfileService;
+import com.ansh.auth.service.impl.JwtServiceImpl;
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.entity.animal.UserProfile;
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
@@ -32,10 +32,10 @@ class AuthControllerTest {
   private AuthenticationManager authenticationManager;
 
   @Mock
-  private UserProfileService userProfileService;
+  private UserProfileServiceImpl userProfileService;
 
   @Mock
-  private JwtService jwtService;
+  private JwtServiceImpl jwtService;
 
   @InjectMocks
   private AuthController authController;
@@ -65,7 +65,7 @@ class AuthControllerTest {
     when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
         .thenReturn(authentication);
     when(jwtService.generateToken(identifier)).thenReturn(token);
-    when(userProfileService.findAuthenticatedUser()).thenReturn(Optional.of(userProfile));
+    when(userProfileService.getAuthUser()).thenReturn(Optional.of(userProfile));
 
     ResponseEntity<Object> response = authController.login(identifier, password);
 
@@ -77,7 +77,7 @@ class AuthControllerTest {
     verify(authenticationManager, times(1)).authenticate(
         any(UsernamePasswordAuthenticationToken.class));
     verify(jwtService, times(1)).generateToken(identifier);
-    verify(userProfileService, times(1)).findAuthenticatedUser();
+    verify(userProfileService, times(1)).getAuthUser();
   }
 
   @Test
@@ -125,7 +125,7 @@ class AuthControllerTest {
 
     when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
         .thenReturn(authentication);
-    when(userProfileService.findAuthenticatedUser()).thenReturn(Optional.empty());
+    when(userProfileService.getAuthUser()).thenReturn(Optional.empty());
 
     ResponseEntity<Object> response = authController.login(identifier, password);
 
@@ -134,7 +134,7 @@ class AuthControllerTest {
 
     verify(authenticationManager, times(1)).authenticate(
         any(UsernamePasswordAuthenticationToken.class));
-    verify(userProfileService, times(1)).findAuthenticatedUser();
+    verify(userProfileService, times(1)).getAuthUser();
   }
 
   @Test

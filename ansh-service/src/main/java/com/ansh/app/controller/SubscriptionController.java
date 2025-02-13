@@ -3,9 +3,9 @@ package com.ansh.app.controller;
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.notification.subscription.AnimalInfoPendingSubscriptionService;
 import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
-import com.ansh.auth.service.UserProfileService;
+import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.animal.UserProfile.AnimalNotificationSubscriptionStatus;
+import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.Collections;
@@ -29,7 +29,7 @@ public class SubscriptionController {
   @Qualifier("animalInfoPendingSubscriptionService")
   private AnimalInfoPendingSubscriptionService pendingSubscriptionService;
   @Autowired
-  private UserProfileService userProfileService;
+  private UserProfileServiceImpl userProfileService;
 
   @PostMapping("/animal-notify-approve-subscriber")
   public void approve(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {
@@ -84,13 +84,13 @@ public class SubscriptionController {
   }
 
   @PostMapping("/animal-notify-approver-status")
-  public DeferredResult<AnimalNotificationSubscriptionStatus> getApproverStatus(
+  public DeferredResult<AnimalNotifStatus> getApproverStatus(
       @RequestBody SubscriptionRequest subscriptionRequest) {
 
-    DeferredResult<AnimalNotificationSubscriptionStatus> output = new DeferredResult<>();
+    DeferredResult<AnimalNotifStatus> output = new DeferredResult<>();
 
     if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {
-      output.setResult(AnimalNotificationSubscriptionStatus.NONE);
+      output.setResult(AnimalNotifStatus.NONE);
       return output;
     }
 

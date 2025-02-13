@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import com.ansh.DateScalarConfiguration;
 import com.ansh.dto.VaccinationDTO;
 import com.ansh.entity.animal.Vaccination;
-import com.ansh.app.service.VaccinationService;
+import com.ansh.app.service.animal.impl.VaccinationServiceImpl;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
 import com.ansh.app.service.exception.animal.VaccinationUpdateException;
@@ -32,7 +32,7 @@ class GrVaccineControllerTest {
   private GraphQlTester graphQlTester;
 
   @MockBean
-  private VaccinationService vaccinationService;
+  private VaccinationServiceImpl vaccinationService;
 
   @MockBean
   private VaccinationMapper vaccinationMapper;

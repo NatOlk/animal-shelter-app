@@ -3,7 +3,7 @@ package com.ansh.app.controller.grql;
 import com.ansh.DateScalarConfiguration;
 import com.ansh.dto.AnimalDTO;
 import com.ansh.entity.animal.Animal;
-import com.ansh.app.service.AnimalService;
+import com.ansh.app.service.animal.impl.AnimalServiceImpl;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
@@ -27,7 +27,7 @@ class GrAnimalControllerTest {
   private GraphQlTester graphQlTester;
 
   @MockBean
-  private AnimalService animalService;
+  private AnimalServiceImpl animalService;
 
   @MockBean
   private AnimalMapper animalMapper;

@@ -9,7 +9,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.app.service.AnimalService;
+import com.ansh.app.service.animal.impl.AnimalServiceImpl;
 import java.io.File;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class AnimalPhotoControllerTest {
   private AnimalPhotoController controller;
 
   @Mock
-  private AnimalService animalService;
+  private AnimalServiceImpl animalService;
 
   @Mock
   private MultipartFile file;

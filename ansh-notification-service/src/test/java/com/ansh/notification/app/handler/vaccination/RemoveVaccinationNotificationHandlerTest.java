@@ -14,8 +14,8 @@ import com.ansh.entity.subscription.Subscription;
 import com.ansh.event.AddAnimalEvent;
 import com.ansh.event.AnimalEvent;
 import com.ansh.event.RemoveVaccinationEvent;
-import com.ansh.service.AnimalTopicSubscriberRegistryService;
-import com.ansh.service.EmailService;
+import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
+import com.ansh.service.impl.EmailServiceImpl;
 import com.ansh.utils.LinkGenerator;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +40,10 @@ class RemoveVaccinationNotificationHandlerTest {
   private RemoveVaccinationNotificationHandler handler;
 
   @Mock
-  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryServiceImpl animalTopicSubscriberRegistryService;
 
   @Mock
-  private EmailService emailService;
+  private EmailServiceImpl emailService;
 
   @Mock
   private LinkGenerator linkGenerator;
@@ -82,7 +82,7 @@ class RemoveVaccinationNotificationHandlerTest {
 
     ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
 
-    verify(emailService, times(1)).sendSimpleMessage(
+    verify(emailService, times(1)).sendEmail(
         eq(TEST_EMAIL),
         eq(REMOVE_VAX_SUBJECT),
         eq(REMOVE_VAX_TEMPLATE),
