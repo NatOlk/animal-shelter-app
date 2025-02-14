@@ -47,12 +47,12 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
   private SubscriptionCacheManager cacheManager;
 
   @PostConstruct
-  private void initializeCache() {
+  protected void initializeCache() {
     cacheManager.initializeCache();
   }
 
   @Scheduled(cron = "0 0 20 * * ?", zone = "Europe/Berlin")
-  private void reloadCache() {
+  protected void reloadCache() {
     if (cacheManager.shouldUpdateCache()) {
       cacheManager.reloadCache();
     }

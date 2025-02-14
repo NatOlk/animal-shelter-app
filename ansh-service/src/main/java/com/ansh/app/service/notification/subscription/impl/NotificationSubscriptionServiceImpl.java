@@ -14,7 +14,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@Service
+@Service("notificationSubscriptionService")
 public class NotificationSubscriptionServiceImpl implements NotificationSubscriptionService {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationSubscriptionServiceImpl.class);
