@@ -18,20 +18,16 @@ const Subscription: React.FC = () => {
         if (!email.trim()) return;
         setLoading(true);
 
-        try {
-            await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: email,
-                    approver: user?.email,
-                }),
-            });
-        } catch (error) {
-            console.error('Error during subscription:', error);
-        }
+        await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                approver: user?.email,
+            }),
+        });
     };
 
     return (

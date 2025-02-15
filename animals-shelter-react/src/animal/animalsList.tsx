@@ -25,7 +25,6 @@ const AnimalsList: React.FC = () => {
             }
 
             if (error) {
-                console.error("GraphQL Error:", error.message);
                 return { items: [] };
             }
 

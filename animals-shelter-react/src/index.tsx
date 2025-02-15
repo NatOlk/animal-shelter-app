@@ -10,9 +10,6 @@ import App from "./app";
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
-      console.error(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
       if (message === 'Unauthorized') {
         window.location.href = '/login';
       }
@@ -20,7 +17,6 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 
   if (networkError) {
-    console.error(`[Network error]: ${networkError}`);
     window.location.href = '/login';
   }
 });
