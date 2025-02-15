@@ -13,8 +13,11 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "animals", schema = "public", uniqueConstraints = {
@@ -23,6 +26,9 @@ import lombok.EqualsAndHashCode;
 })
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class Animal {
 
   @Id

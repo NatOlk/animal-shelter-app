@@ -1,17 +1,17 @@
 package com.ansh.app.controller.grql;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import com.ansh.DateScalarConfiguration;
-import com.ansh.dto.VaccinationDTO;
-import com.ansh.entity.animal.Vaccination;
 import com.ansh.app.service.animal.impl.VaccinationServiceImpl;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
 import com.ansh.app.service.exception.animal.VaccinationUpdateException;
+import com.ansh.dto.UpdateVaccinationInput;
+import com.ansh.dto.VaccinationDTO;
+import com.ansh.dto.VaccinationInput;
+import com.ansh.entity.animal.Vaccination;
 import com.ansh.utils.VaccinationMapper;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -67,20 +67,27 @@ class GrVaccineControllerTest {
 
   @Test
   void addVaccination_shouldReturnAddedVaccination() throws VaccinationCreationException {
-    when(vaccinationService.addVaccination(
-        anyLong(), anyString(), anyString(),
-        eq(LocalDate.parse("2024-11-29")), anyString(), anyString()
-    )).thenReturn(vaccination);
+
+    VaccinationInput vaccinationInput = new VaccinationInput(1L, "Rabies", "A123",
+        "test@example.com", LocalDate.parse("2024-11-29"), "First dose");
+    when(vaccinationService.addVaccination(vaccinationInput)).thenReturn(vaccination);
 
     String mutation = """
-            mutation {
-              addVaccination(animalId: 1, vaccine: "Rabies", batch: "A123", vaccinationTime: "2024-11-29", comments: "First dose", email: "test@example.com") {
-                id
-                vaccine
-                batch
-              }
-            }
-            """;
+        mutation {
+          addVaccination(vaccination: { 
+            animalId: 1, 
+            vaccine: "Rabies", 
+            batch: "A123", 
+            vaccinationTime: "2024-11-29", 
+            comments: "First dose", 
+            email: "test@example.com" 
+          }) {  
+            id
+            vaccine
+            batch
+          }
+        }
+        """;
 
     graphQlTester.document(mutation)
         .execute()
@@ -90,23 +97,30 @@ class GrVaccineControllerTest {
   }
 
   @Test
-  void updateVaccination_shouldUpdateVaccine() throws VaccinationNotFoundException, VaccinationUpdateException {
-    when(vaccinationService.updateVaccination(
-        anyLong(), anyString(), anyString(),
-        eq(LocalDate.parse("2024-11-29")), anyString(), anyString()
-    )).thenReturn(vaccination);
+  void updateVaccination_shouldUpdateVaccine()
+      throws VaccinationNotFoundException, VaccinationUpdateException {
+    UpdateVaccinationInput vaccinationInput = new UpdateVaccinationInput(1L,"Rabies",
+        "A123","test@example.com", LocalDate.parse("2024-11-29"), "First dose");
+
+    when(vaccinationService.updateVaccination(vaccinationInput)).thenReturn(vaccination);
 
     String mutation = """
-            mutation {
-              updateVaccination(id: 1, vaccine: "Rabies", batch: "A123", vaccinationTime: "2024-11-29",
-               comments: "Updated comment", email: "test@example.com") {
-                id
-                vaccine
-                batch
-                comments
-              }
-            }
-            """;
+        mutation {
+          updateVaccination(vaccination: { 
+            id: 1, 
+            vaccine: "Rabies", 
+            batch: "A123", 
+            vaccinationTime: "2024-11-29", 
+            comments: "First dose", 
+            email: "test@example.com" 
+          }) {
+            id
+            vaccine
+            batch
+            comments
+          }
+        }
+        """;
 
     graphQlTester.document(mutation)
         .execute()
@@ -121,12 +135,12 @@ class GrVaccineControllerTest {
     when(vaccinationService.deleteVaccination(anyLong())).thenReturn(vaccination);
 
     String mutation = """
-            mutation {
-              deleteVaccination(id: 1) {
-                id
-              }
-            }
-            """;
+        mutation {
+          deleteVaccination(id: 1) {
+            id
+          }
+        }
+        """;
 
     graphQlTester.document(mutation)
         .execute()
@@ -135,17 +149,18 @@ class GrVaccineControllerTest {
 
   @Test
   void allVaccinations_shouldReturnList() {
-     when(vaccinationService.getAllVaccinations()).thenReturn(Collections.singletonList(vaccination));
+    when(vaccinationService.getAllVaccinations()).thenReturn(
+        Collections.singletonList(vaccination));
 
     String query = """
-            query {
-              allVaccinations {
-                id
-                vaccine
-                batch
-              }
-            }
-            """;
+        query {
+          allVaccinations {
+            id
+            vaccine
+            batch
+          }
+        }
+        """;
 
     graphQlTester.document(query)
         .execute()
@@ -159,10 +174,10 @@ class GrVaccineControllerTest {
     when(vaccinationService.vaccinationCountById(anyLong())).thenReturn(5);
 
     String query = """
-            query {
-              vaccinationCountById(id: 1)
-            }
-            """;
+        query {
+          vaccinationCountById(id: 1)
+        }
+        """;
 
     graphQlTester.document(query)
         .execute()

@@ -8,16 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnimalDTO {
+public class UpdateAnimalInput {
   private Long id;
-  private String name;
-  private String species;
   private String primaryColor;
-  private String implantChipId;
   private String breed;
-  private char gender;
+  private String gender;
   private LocalDate birthDate;
   private String pattern;
-  private LocalDate admissionDate;
   private String photoImgPath;
 }

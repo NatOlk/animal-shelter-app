@@ -24,18 +24,20 @@ const EditableFieldBase: React.FC<EditableFieldBaseProps> = ({
     const [error, setError] = useState<string>("");
 
     const handleSave = () => {
-        const variables = {
-            ...entity,
-            [name]: fieldValue,
-        };
 
-        updateField({ variables }).catch((err) => {
-            setError(err.message);
-            setTimeout(() => setError(""), 15000);
-        });
-        setIsEditing(false);
+        if (!updateField) {
+            return;
+        }
+
+        updateField({ [name]: fieldValue })
+            .then(() => {
+                setIsEditing(false);
+            })
+            .catch((err) => {
+                setError(err.message);
+                setTimeout(() => setError(""), 15000);
+            });
     };
-
     return (
         <div className="flex items-center gap-3">
             {isEditing ? (

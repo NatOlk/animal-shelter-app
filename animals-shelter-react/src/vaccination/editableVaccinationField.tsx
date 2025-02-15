@@ -5,11 +5,28 @@ import { VACCINATIONS_QUERY, UPDATE_VACCINATION } from "../common/graphqlQueries
 import { EditableFieldProps } from "../common/types";
 
 const EditableVaccineField: React.FC<EditableFieldProps> = ({ entity, ...props }) => {
-    const [updateField] = useMutation(UPDATE_VACCINATION, {
-        refetchQueries: [VACCINATIONS_QUERY],
-    });
+  const [updateField] = useMutation(UPDATE_VACCINATION, {
+    refetchQueries: [{ query: VACCINATIONS_QUERY }],
+  });
 
-    return <EditableFieldBase {...props} entity={entity} updateField={updateField} />;
+  const handleUpdate = async (updatedField: Record<string, any>) => {
+    if (!entity || !entity.id) {
+      return;
+    }
+
+    const updatedData = {
+      vaccination: {
+        id: entity.id,
+        ...updatedField
+      }
+    };
+
+    await updateField({
+      variables: updatedData
+    });
+  };
+
+  return <EditableFieldBase entity={entity} updateField={handleUpdate} {...props} />;
 };
 
 export default EditableVaccineField;

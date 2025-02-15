@@ -1,12 +1,14 @@
 package com.ansh.app.controller.grql;
 
 import com.ansh.DateScalarConfiguration;
-import com.ansh.dto.AnimalDTO;
-import com.ansh.entity.animal.Animal;
 import com.ansh.app.service.animal.impl.AnimalServiceImpl;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
+import com.ansh.dto.AnimalDTO;
+import com.ansh.dto.AnimalInput;
+import com.ansh.dto.UpdateAnimalInput;
+import com.ansh.entity.animal.Animal;
 import com.ansh.utils.AnimalMapper;
 import java.time.LocalDate;
 import java.util.List;
@@ -96,16 +98,24 @@ class GrAnimalControllerTest {
   void addAnimal_shouldReturnAddedAnimal() throws AnimalCreationException {
 
     Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
+    AnimalInput animalInput = new AnimalInput("Fido", "Dog", "Brown",
+        "Labrador","12345", "Male", LocalDate.parse("2022-01-01"),
+        "Spotted");
 
-    Mockito.when(
-            animalService.addAnimal("Fido", "Dog", "Brown", "Labrador",
-                "12345", "Male", LocalDate.parse("2022-01-01"), "Spotted"))
-        .thenReturn(animal);
+    Mockito.when(animalService.addAnimal(animalInput)).thenReturn(animal);
 
     String query = """
             mutation {
-                addAnimal(name: "Fido", species: "Dog", primaryColor: "Brown", breed: "Labrador", implantChipId: "12345", 
-                gender: "Male", birthDate: "2022-01-01", pattern: "Spotted") {
+                addAnimal(animal: {
+                    name: "Fido",
+                    species: "Dog",
+                    primaryColor: "Brown",
+                    breed: "Labrador",
+                    implantChipId: "12345",
+                    gender: "Male",
+                    birthDate: "2022-01-01",
+                    pattern: "Spotted"
+                }) {
                     id
                     name
                 }
@@ -119,22 +129,31 @@ class GrAnimalControllerTest {
     response.path("addAnimal.name").entity(String.class).isEqualTo("Fido");
   }
 
+
   @Test
   void updateAnimal_shouldReturnUpdatedAnimal()
       throws AnimalUpdateException, AnimalNotFoundException {
     Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
-
-    Mockito.when(animalService.updateAnimal(1L, "White", "Beagle", "Male",
-            LocalDate.parse("2022-01-01"), "Striped", null))
+    UpdateAnimalInput updateAnimalInput = new UpdateAnimalInput(1L, "White", "Beagle",
+        "Male", LocalDate.parse("2022-01-01"), "Striped", null);
+    Mockito.when(animalService.updateAnimal(updateAnimalInput))
         .thenReturn(animal);
 
     String query = """
-            mutation {
-                updateAnimal(id: 1, primaryColor: "White", breed: "Beagle", gender: "Male", birthDate: "2022-01-01", pattern: "Striped") {
-                    id
-                    name
-                }
+        mutation {
+            updateAnimal(animal: {
+                id: 1, 
+                primaryColor: "White", 
+                breed: "Beagle", 
+                gender: "Male", 
+                birthDate: "2022-01-01", 
+                pattern: "Striped" 
+                }) 
+                {
+                  id
+                  name
             }
+        }
         """;
 
     Response response = graphQlTester.document(query)

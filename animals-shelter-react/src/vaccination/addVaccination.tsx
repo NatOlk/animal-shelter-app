@@ -6,12 +6,11 @@ import { ADD_VACCINATION, VACCINATIONS_QUERY, ANIMALS_QUERY } from "../common/gr
 import DateField from "../common/dateField";
 import { today } from "@internationalized/date";
 import { useAuth } from '../common/authContext';
-
 import { Vaccination, AddVaccinationProps } from "../common/types";
 
 const AddVaccination = ({ config, animalId, onError }: AddVaccinationProps) => {
-
     const { isAuthenticated, user } = useAuth();
+
     const initialValues: Vaccination = {
         id: "",
         vaccine: "Rabies",
@@ -23,10 +22,12 @@ const AddVaccination = ({ config, animalId, onError }: AddVaccinationProps) => {
     };
 
     const [vaccination, setVaccination] = useState<Vaccination>(initialValues);
+
     const [addVaccination] = useMutation(ADD_VACCINATION, {
         refetchQueries: [
-         { query: VACCINATIONS_QUERY, variables: { animalId } },
-         { query: ANIMALS_QUERY}],
+            { query: VACCINATIONS_QUERY, variables: { animalId } },
+            { query: ANIMALS_QUERY }
+        ],
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -41,12 +42,14 @@ const AddVaccination = ({ config, animalId, onError }: AddVaccinationProps) => {
     const handleAddVaccination = () => {
         addVaccination({
             variables: {
-                animalId,
-                vaccine: vaccination.vaccine,
-                batch: vaccination.batch,
-                vaccinationTime: vaccination.vaccinationTime,
-                comments: vaccination.comments,
-                email: vaccination.email,
+                vaccination: {
+                    animalId,
+                    vaccine: vaccination.vaccine,
+                    batch: vaccination.batch,
+                    vaccinationTime: vaccination.vaccinationTime,
+                    comments: vaccination.comments,
+                    email: vaccination.email
+                }
             },
         }).catch((error) => {
             onError("Failed to add vaccination: " + error.message);
@@ -81,7 +84,7 @@ const AddVaccination = ({ config, animalId, onError }: AddVaccinationProps) => {
             </TableCell>
             <TableCell>
                 <DateField
-                onDateChange={(newDate) => handleFieldChange("vaccinationTime", newDate.toString())} />
+                    onDateChange={(newDate) => handleFieldChange("vaccinationTime", newDate.toString())} />
             </TableCell>
             <TableCell>
                 <Input name="comments"
@@ -99,7 +102,7 @@ const AddVaccination = ({ config, animalId, onError }: AddVaccinationProps) => {
             </TableCell>
             <TableCell>
                 <Button onPress={handleAddVaccination} color="default"
-                variant="light" className="p-2 min-w-2 h-auto">
+                    variant="light" className="p-2 min-w-2 h-auto">
                     <IoIosAddCircleOutline />
                 </Button>
             </TableCell>

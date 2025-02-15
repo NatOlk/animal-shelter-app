@@ -10,12 +10,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.entity.animal.Animal;
-import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
-import com.ansh.repository.AnimalRepository;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
+import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
+import com.ansh.dto.AnimalInput;
+import com.ansh.dto.UpdateAnimalInput;
+import com.ansh.entity.animal.Animal;
+import com.ansh.repository.AnimalRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
@@ -84,10 +86,11 @@ class AnimalServiceTest {
     animal.setSpecies("Dog");
 
     when(animalRepository.save(any(Animal.class))).thenReturn(animal);
-
-    var addedAnimal = animalService.addAnimal(
+    AnimalInput animalInput = new AnimalInput(
         "Bella", "Dog", "Brown", "Labrador",
-        "12345", "F", LocalDate.parse("2022-01-01"), "Spotted");
+        "12345", "Female", LocalDate.parse("2022-01-01"), "Spotted");
+
+    var addedAnimal = animalService.addAnimal(animalInput);
 
     assertNotNull(addedAnimal);
     assertEquals("Bella", addedAnimal.getName());
@@ -99,10 +102,10 @@ class AnimalServiceTest {
   void shouldThrowException_whenAddAnimalFails() {
     when(animalRepository.save(any(Animal.class))).thenThrow(
         new RuntimeException("Database error"));
-
-    assertThrows(AnimalCreationException.class, () -> animalService.addAnimal(
+    AnimalInput animalInput = new AnimalInput(
         "Bella", "Dog", "Brown", "Labrador",
-        "12345", "F", LocalDate.parse("2022-01-01"), "Spotted"));
+        "12345", "Female", LocalDate.parse("2022-01-01"), "Spotted");
+    assertThrows(AnimalCreationException.class, () -> animalService.addAnimal(animalInput));
 
     verify(animalRepository, times(1)).save(any(Animal.class));
     verify(animalInfoNotificationService, never()).sendAddAnimalMessage(any(Animal.class));
@@ -116,8 +119,9 @@ class AnimalServiceTest {
     when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
     when(animalRepository.save(any(Animal.class))).thenReturn(animal);
 
-    var updatedAnimal = animalService.updateAnimal(1L, "Black", null, "M",
-        LocalDate.parse("2022-01-01"), null, null);
+    UpdateAnimalInput updateAnimalInput = new UpdateAnimalInput(1L, "Black",
+        null, "Male", LocalDate.parse("2022-01-01"), null, null);
+    var updatedAnimal = animalService.updateAnimal(updateAnimalInput);
 
     assertEquals('M', updatedAnimal.getGender());
     assertEquals("Black", updatedAnimal.getPrimaryColor());
@@ -131,9 +135,9 @@ class AnimalServiceTest {
 
     when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
     when(animalRepository.save(any(Animal.class))).thenReturn(animal);
-
-    var updatedAnimal = animalService.updateAnimal(1L, "Black", null, "M",
-        LocalDate.parse("2022-01-01"), null, "newPath");
+    UpdateAnimalInput updateAnimalInput = new UpdateAnimalInput(1L, "Black",
+        null, "Male", LocalDate.parse("2022-01-01"), null, "newPath");
+    var updatedAnimal = animalService.updateAnimal(updateAnimalInput);
 
     assertEquals('M', updatedAnimal.getGender());
     assertEquals("Black", updatedAnimal.getPrimaryColor());
@@ -143,7 +147,7 @@ class AnimalServiceTest {
   }
 
   @Test
-  void shouldThrowException_whenUpdateAnimalFails() throws Exception {
+  void shouldThrowException_whenUpdateAnimalFails() {
     Animal animal = new Animal();
     animal.setId(1L);
 
@@ -151,9 +155,10 @@ class AnimalServiceTest {
     when(animalRepository.save(any(Animal.class))).thenThrow(
         new RuntimeException("Database error"));
 
+    UpdateAnimalInput updateAnimalInput = new UpdateAnimalInput(1L, "Black",
+        null, "Male", LocalDate.parse("2023-01-01"), null, null);
     assertThrows(AnimalUpdateException.class, () -> animalService
-        .updateAnimal(1L, "Black", null, "M",
-            LocalDate.parse("2023-01-01"), null, null));
+        .updateAnimal(updateAnimalInput));
   }
 
   @Test

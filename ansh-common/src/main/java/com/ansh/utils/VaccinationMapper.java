@@ -7,10 +7,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface VaccinationMapper {
-
   VaccinationDTO toDto(Vaccination animal);
-
   Vaccination toEntity(VaccinationDTO dto);
-
   List<VaccinationDTO> toDto(List<Vaccination> animals);
 }
