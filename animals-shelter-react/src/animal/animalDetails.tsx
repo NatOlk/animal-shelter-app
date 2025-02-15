@@ -106,10 +106,15 @@ const AnimalDetails: React.FC = () => {
 
             await updateAnimal({
                 variables: {
-                    ...animal,
-                    photoImgPath: null
+                    animal: {
+                        id: animal.id,
+                        photoImgPath: ""
+                    }
                 }
             });
+
+            setPhotoImgPath(null);
+            setMessage("Image deleted successfully!");
 
         } catch (error) {
             console.error("GraphQL Mutation Error:", error);

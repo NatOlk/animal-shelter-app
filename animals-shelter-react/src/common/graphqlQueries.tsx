@@ -13,7 +13,8 @@ export const ANIMALS_QUERY = gql`
             birthDate
             pattern
             vaccinationCount
-        }}
+        }
+    }
 `;
 
 export const ANIMAL_BY_ID_QUERY = gql`
@@ -36,24 +37,8 @@ export const ANIMAL_BY_ID_QUERY = gql`
 `;
 
 export const ADD_ANIMAL = gql`
-    mutation ($name: String!,
-        $species: String!,
-        $primaryColor: String!,
-        $breed: String,
-        $implantChipId: String,
-        $gender: String!,
-        $birthDate: Date!,
-        $pattern: String)
-    {
-        addAnimal(name: $name,
-            species: $species,
-            primaryColor:  $primaryColor,
-            breed: $breed,
-            implantChipId: $implantChipId,
-            gender: $gender,
-            birthDate: $birthDate,
-            pattern: $pattern)
-        {
+    mutation AddAnimal($animal: AnimalInput!) {
+        addAnimal(animal: $animal) {
             id
             name
             species
@@ -68,37 +53,27 @@ export const ADD_ANIMAL = gql`
 `;
 
 export const DELETE_ANIMAL = gql`
-           mutation ($id: ID!, $reason: String!) {
-               deleteAnimal(id: $id, reason: $reason)
-               {
-                 id
-               }
-           }
-       `;
+    mutation DeleteAnimal($id: ID!, $reason: String!) {
+        deleteAnimal(id: $id, reason: $reason) {
+            id
+        }
+    }
+`;
+
 export const UPDATE_ANIMAL = gql`
-           mutation UpdateAnimal($id: ID!,
-                                 $primaryColor: String,
-                                 $breed: String,
-                                 $gender: String,
-                                 $birthDate: Date,
-                                 $pattern: String) {
-               updateAnimal(id: $id,
-                            primaryColor: $primaryColor,
-                            breed: $breed,
-                            gender: $gender,
-                            birthDate: $birthDate,
-                            pattern: $pattern) {
-                                 id
-                                 name
-                                 species
-                                 primaryColor
-                                 breed
-                                 gender
-                                 birthDate
-                                 pattern
-               }
-           }
-       `;
+    mutation UpdateAnimal($animal: UpdateAnimalInput!) {
+        updateAnimal(animal: $animal) {
+            id
+            name
+            species
+            primaryColor
+            breed
+            gender
+            birthDate
+            pattern
+        }
+    }
+`;
 
 export const VACCINATIONS_QUERY = gql`
     query vaccinationByAnimalId($animalId: ID!) {
@@ -132,10 +107,8 @@ export const ALL_VACCINATIONS_QUERY = gql`
 `;
 
 export const DELETE_VACCINATION = gql`
-    mutation ($id: ID!)
-    {
-        deleteVaccination(id: $id)
-        {
+    mutation DeleteVaccination($id: ID!) {
+        deleteVaccination(id: $id) {
             id
             vaccine
             batch
@@ -144,22 +117,8 @@ export const DELETE_VACCINATION = gql`
 `;
 
 export const ADD_VACCINATION = gql`
-    mutation (
-        $animalId: ID!,
-        $vaccine: String!,
-        $batch: String!,
-        $vaccinationTime: Date!,
-        $comments: String,
-        $email: String!)
-    {
-        addVaccination(
-            animalId: $animalId,
-            vaccine:  $vaccine,
-            batch: $batch,
-            vaccinationTime: $vaccinationTime,
-            comments: $comments,
-            email:  $email)
-        {
+    mutation AddVaccination($vaccination: VaccinationInput!) {
+        addVaccination(vaccination: $vaccination) {
             id
             vaccine
             batch
@@ -171,18 +130,8 @@ export const ADD_VACCINATION = gql`
 `;
 
 export const UPDATE_VACCINATION = gql`
-    mutation UpdateVaccination($id: ID!,
-                              $vaccine: String,
-                              $batch: String,
-                              $vaccinationTime: Date,
-                              $comments: String,
-                              $email: String) {
-        updateVaccination(id: $id,
-                           vaccine: $vaccine,
-                           batch: $batch,
-                           vaccinationTime: $vaccinationTime,
-                           comments: $comments,
-                           email: $email) {
+    mutation UpdateVaccination($vaccination: UpdateVaccinationInput!) {
+        updateVaccination(vaccination: $vaccination) {
             id
             vaccine
             batch

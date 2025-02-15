@@ -28,30 +28,32 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setAnimal({
-            ...animal,
+        setAnimal((prevAnimal) => ({
+            ...prevAnimal,
             [name]: value,
-        });
+        }));
     };
 
     const handleFieldChange = (fieldName, value) => {
-        setAnimal({
-            ...animal,
+        setAnimal((prevAnimal) => ({
+            ...prevAnimal,
             [fieldName]: value,
-        });
+        }));
     };
 
     const handleAddAnimal = () => {
         addAnimal({
             variables: {
-                name: animal.name,
-                species: animal.species,
-                primaryColor: animal.primaryColor,
-                breed: animal.breed,
-                implantChipId: animal.implantChipId,
-                gender: animal.gender,
-                birthDate: animal.birthDate,
-                pattern: animal.pattern
+                animal: {
+                    name: animal.name,
+                    species: animal.species,
+                    primaryColor: animal.primaryColor,
+                    breed: animal.breed,
+                    implantChipId: animal.implantChipId,
+                    gender: animal.gender,
+                    birthDate: animal.birthDate,
+                    pattern: animal.pattern
+                }
             }
         }).catch((error) => {
             setGlobalError("Failed to add animal: " + error.message);

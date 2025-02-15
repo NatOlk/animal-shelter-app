@@ -9,6 +9,5 @@ import org.mapstruct.Mapper;
 public interface AnimalMapper {
   AnimalDTO toDto(Animal animal);
   Animal toEntity(AnimalDTO dto);
-
   List<AnimalDTO> toDto(List<Animal> animals);
 }

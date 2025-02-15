@@ -3,6 +3,8 @@ package com.ansh.app.service.animal;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
+import com.ansh.dto.AnimalInput;
+import com.ansh.dto.UpdateAnimalInput;
 import com.ansh.entity.animal.Animal;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,43 +30,24 @@ public interface AnimalService {
    * @throws AnimalNotFoundException if the animal is not found
    */
   Animal findById(Long id) throws AnimalNotFoundException;
-
   /**
    * Adds a new animal to the system.
    *
-   * @param name the name of the animal (required)
-   * @param species the species of the animal (required)
-   * @param primaryColor the primary color of the animal (required)
-   * @param breed the breed of the animal (optional)
-   * @param implantChipId the implant chip ID (optional)
-   * @param gender the gender of the animal (required)
-   * @param birthDate the birth date of the animal (optional)
-   * @param pattern the fur pattern of the animal (optional)
-   * @return the newly created {@link Animal} object
-   * @throws AnimalCreationException if the animal cannot be created due to validation errors or system issues
+   * @param animalInput an {@link AnimalInput} object containing the details of the new animal
+   * @return the created {@link Animal} object with generated ID and admission date
+   * @throws AnimalCreationException if there is an error during animal creation
    */
-  Animal addAnimal(@NonNull String name, @NonNull String species,
-      @NonNull String primaryColor, String breed,
-      String implantChipId, @NonNull String gender,
-      LocalDate birthDate, String pattern) throws AnimalCreationException;
+  Animal addAnimal(@NonNull AnimalInput animalInput) throws AnimalCreationException;
 
   /**
    * Updates an existing animal's information.
    *
-   * @param id the unique ID of the animal to update (required)
-   * @param primaryColor the updated primary color (optional)
-   * @param breed the updated breed (optional)
-   * @param gender the updated gender (optional)
-   * @param birthDate the updated birth date (optional)
-   * @param pattern the updated fur pattern (optional)
-   * @param photoImgPath the updated photo image path (optional)
+   * @param updateAnimalInput an {@link UpdateAnimalInput} object containing updated details
    * @return the updated {@link Animal} object
-   * @throws AnimalNotFoundException if the animal is not found
-   * @throws AnimalUpdateException if the update fails due to validation errors or system issues
+   * @throws AnimalNotFoundException if the animal with the given ID is not found
+   * @throws AnimalUpdateException if there is an error during the update process
    */
-  Animal updateAnimal(@NonNull Long id, String primaryColor,
-      String breed, String gender,
-      LocalDate birthDate, String pattern, String photoImgPath)
+  Animal updateAnimal(@NonNull UpdateAnimalInput updateAnimalInput)
       throws AnimalNotFoundException, AnimalUpdateException;
 
   /**

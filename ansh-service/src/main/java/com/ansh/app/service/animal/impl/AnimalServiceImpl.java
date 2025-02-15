@@ -5,6 +5,8 @@ import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
 import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
+import com.ansh.dto.AnimalInput;
+import com.ansh.dto.UpdateAnimalInput;
 import com.ansh.entity.animal.Animal;
 import com.ansh.repository.AnimalRepository;
 import jakarta.transaction.Transactional;
@@ -42,27 +44,24 @@ public class AnimalServiceImpl implements AnimalService {
   }
 
   @Override
-  public Animal addAnimal(@NonNull String name, @NonNull String species,
-      @NonNull String primaryColor, String breed,
-      String implantChipId, @NonNull String gender,
-      LocalDate birthDate, String pattern) throws AnimalCreationException {
+  public Animal addAnimal(@NonNull AnimalInput animal) throws AnimalCreationException {
     try {
-      Animal animal = new Animal();
-      animal.setName(name);
-      animal.setSpecies(species);
-      animal.setBreed(breed);
-      animal.setGender(gender.charAt(0));
-      animal.setPattern(pattern);
-      animal.setBirthDate(birthDate);
-      animal.setAdmissionDate(LocalDate.now());
-      animal.setPrimaryColor(primaryColor);
-      if (!implantChipId.equals(DEFAULT_IMPLANT_CHIP_PATTERN)) {
-        animal.setImplantChipId(implantChipId);
+      Animal entity = Animal.builder()
+          .name(animal.getName())
+          .species(animal.getSpecies())
+          .breed(animal.getBreed())
+          .gender(animal.getGender().charAt(0))
+          .pattern(animal.getPattern())
+          .birthDate(animal.getBirthDate())
+          .admissionDate(LocalDate.now())
+          .primaryColor(animal.getPrimaryColor()).build();
+      if (!DEFAULT_IMPLANT_CHIP_PATTERN.equals(animal.getImplantChipId())) {
+        entity.setImplantChipId(animal.getImplantChipId());
       }
-      animalRepository.save(animal);
-      LOG.debug("[animal] new : {}", animal);
-      animalInfoNotificationService.sendAddAnimalMessage(animal);
-      return animal;
+      animalRepository.save(entity);
+      LOG.debug("[animal] new : {}", entity);
+      animalInfoNotificationService.sendAddAnimalMessage(entity);
+      return entity;
     } catch (DataIntegrityViolationException e) {
       if (e.getCause() instanceof ConstraintViolationException) {
         throw new AnimalCreationException(
@@ -77,29 +76,37 @@ public class AnimalServiceImpl implements AnimalService {
   }
 
   @Override
-  public Animal updateAnimal(@NonNull Long id, String primaryColor,
-      String breed, String gender,
-      LocalDate birthDate, String pattern, String photoImgPath)
+  public Animal updateAnimal(@NonNull UpdateAnimalInput animal)
       throws AnimalNotFoundException, AnimalUpdateException {
-    Animal animal = animalRepository.findById(id)
-        .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{id}"));
+    Animal entity = animalRepository.findById(animal.getId())
+        .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{animal.getId()}"));
 
     try {
-      if (gender != null && !gender.isEmpty()) {
-        animal.setGender(gender.charAt(0));
+      if (animal.getGender() != null && !animal.getGender().isEmpty()) {
+        entity.setGender(animal.getGender().charAt(0));
       }
-      animal.setBirthDate(birthDate);
-      animal.setPattern(pattern);
-      animal.setPrimaryColor(primaryColor);
-      animal.setBreed(breed);
-      animal.setPhotoImgPath(photoImgPath);
+      if (animal.getBirthDate() != null) {
+        entity.setBirthDate(animal.getBirthDate());
+      }
+      if (animal.getPattern() != null) {
+        entity.setPattern(animal.getPattern());
+      }
+      if (animal.getPrimaryColor() != null) {
+        entity.setPrimaryColor(animal.getPrimaryColor());
+      }
+      if (animal.getBreed() != null) {
+        entity.setBreed(animal.getBreed());
+      }
+      if (animal.getPhotoImgPath() != null) {
+        entity.setPhotoImgPath(animal.getPhotoImgPath());
+      }
       LOG.debug("[animal] updated : {}", animal);
-      animalRepository.save(animal);
+      animalRepository.save(entity);
     } catch (Exception e) {
       throw new AnimalUpdateException(STR."Could not update animal:\{e.getMessage()}");
     }
 
-    return animal;
+    return entity;
   }
 
   @Override

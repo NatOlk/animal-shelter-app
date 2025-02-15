@@ -1,15 +1,16 @@
 package com.ansh.app.controller.grql;
 
-import com.ansh.dto.AnimalDTO;
-import com.ansh.dto.VaccinationDTO;
 import com.ansh.app.service.animal.impl.VaccinationServiceImpl;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
 import com.ansh.app.service.exception.animal.VaccinationUpdateException;
+import com.ansh.dto.AnimalDTO;
+import com.ansh.dto.UpdateVaccinationInput;
+import com.ansh.dto.VaccinationDTO;
+import com.ansh.dto.VaccinationInput;
 import com.ansh.utils.VaccinationMapper;
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
-import java.time.LocalDate;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,20 +34,6 @@ public class GrVaccineController {
   @Autowired
   private VaccinationMapper vaccinationMapper;
 
-  @MutationMapping
-  public VaccinationDTO updateVaccination(@Argument Long id, @Argument String vaccine,
-      @Argument String batch, @Argument LocalDate vaccinationTime, @Argument String comments,
-      @Argument String email) throws VaccinationNotFoundException, VaccinationUpdateException {
-    return vaccinationMapper.toDto(
-        vaccinationService.updateVaccination(id, vaccine, batch, vaccinationTime, comments,
-            email));
-  }
-
-  @MutationMapping
-  public VaccinationDTO deleteVaccination(@Argument Long id) throws VaccinationNotFoundException {
-    return vaccinationMapper.toDto(vaccinationService.deleteVaccination(id));
-  }
-
   @QueryMapping
   public List<VaccinationDTO> allVaccinations() {
     return vaccinationMapper.toDto(vaccinationService.getAllVaccinations());
@@ -63,27 +50,37 @@ public class GrVaccineController {
   }
 
   @MutationMapping
-  public VaccinationDTO addVaccination(@Argument Long animalId, @Argument String vaccine,
-      @Argument String batch, @Argument LocalDate vaccinationTime, @Argument String comments,
-      @Argument String email) throws VaccinationCreationException {
-    return vaccinationMapper.toDto(
-        vaccinationService.addVaccination(animalId, vaccine, batch, vaccinationTime, comments,
-            email));
+  public VaccinationDTO updateVaccination(@Argument UpdateVaccinationInput vaccination)
+      throws VaccinationNotFoundException, VaccinationUpdateException {
+    return vaccinationMapper.toDto(vaccinationService.updateVaccination(vaccination));
   }
 
-  @SchemaMapping(typeName = "Animal", field = "vaccinations")
+  @MutationMapping
+  public VaccinationDTO deleteVaccination(@Argument Long id) throws VaccinationNotFoundException {
+    return vaccinationMapper.toDto(vaccinationService.deleteVaccination(id));
+  }
+
+  @MutationMapping
+  public VaccinationDTO addVaccination(@Argument VaccinationInput vaccination)
+      throws VaccinationCreationException {
+    return vaccinationMapper.toDto(vaccinationService.addVaccination(vaccination));
+  }
+
+  @SchemaMapping(typeName = "AnimalDTO", field = "vaccinations")
   public List<VaccinationDTO> getVaccinations(AnimalDTO animal) {
     return vaccinationMapper.toDto(vaccinationService.findByAnimalId(animal.getId()));
   }
 
-  @SchemaMapping(typeName = "Animal", field = "vaccinationCount")
+  @SchemaMapping(typeName = "AnimalDTO", field = "vaccinationCount")
   public int vaccinationCount(AnimalDTO animal) {
     return vaccinationService.vaccinationCountById(animal.getId());
   }
 
   @GraphQlExceptionHandler
   public GraphQLError handle(@NonNull Throwable ex, @NonNull DataFetchingEnvironment environment) {
-    return GraphQLError.newError().errorType(ErrorType.BAD_REQUEST).message(ex.getMessage())
+    return GraphQLError.newError()
+        .errorType(ErrorType.BAD_REQUEST)
+        .message(ex.getMessage())
         .path(environment.getExecutionStepInfo().getPath())
         .location(environment.getField().getSourceLocation()).build();
   }

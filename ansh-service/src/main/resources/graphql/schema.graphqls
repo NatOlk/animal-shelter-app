@@ -4,15 +4,15 @@ scalar Date
  )
 
 type Query {
-    allAnimals : [Animal]
-    animalById(id: ID!): Animal
-    allVaccinations : [Vaccination]
-    vaccinationByAnimalId(animalId: ID!): [Vaccination]
+    allAnimals : [AnimalDTO]
+    animalById(id: ID!): AnimalDTO
+    allVaccinations : [VaccinationDTO]
+    vaccinationByAnimalId(animalId: ID!): [VaccinationDTO]
     vaccinationCountById(id: ID!): Int!
     currentUserProfile: UserProfile
 }
 
-type Animal {
+type AnimalDTO {
     id: ID!
     name: String!
     species: String!
@@ -23,19 +23,19 @@ type Animal {
     admissionDate: Date!
     birthDate: Date!
     pattern: String
-    vaccinations: [Vaccination]
+    vaccinations: [VaccinationDTO]
     vaccinationCount: Int
     photoImgPath: String
 }
 
-type Vaccination {
+type VaccinationDTO {
     id: ID!
     vaccine: String!
     batch: String!
     vaccinationTime: Date!
     comments: String
     email: String!
-    animal: Animal!
+    animal: AnimalDTO!
 }
 
 type UserProfile {
@@ -46,11 +46,50 @@ type UserProfile {
     animalNotifyStatus: String!
 }
 
+input AnimalInput {
+    name: String!
+    species: String!
+    primaryColor: String!
+    breed: String
+    implantChipId: String
+    gender: String!
+    birthDate: Date!
+    pattern: String
+}
+
+input UpdateAnimalInput {
+    id: ID!
+    primaryColor: String
+    breed: String
+    gender: String
+    birthDate: Date
+    pattern: String
+    photoImgPath: String
+}
+
+input VaccinationInput {
+    animalId: ID!
+    vaccine: String!
+    batch: String!
+    vaccinationTime: Date!
+    comments: String
+    email: String!
+}
+
+input UpdateVaccinationInput {
+    id: ID!
+    vaccine: String
+    batch: String
+    vaccinationTime: Date
+    comments: String
+    email: String
+}
+
 type Mutation {
-    addAnimal(name: String!, species: String!, primaryColor: String!, breed: String, implantChipId: String, gender: String!, birthDate: Date!, pattern: String) : Animal
-    deleteAnimal(id: ID!, reason: String!) : Animal
-    updateAnimal(id: ID!, primaryColor: String, breed: String, gender: String, birthDate: Date, pattern: String, photoImgPath: String) : Animal
-    addVaccination(animalId: ID!, vaccine: String!, batch: String!, vaccinationTime: Date!, comments: String, email: String!) : Vaccination
-    deleteVaccination(id: ID!) : Vaccination
-    updateVaccination(id: ID!, vaccine: String, batch: String, vaccinationTime: Date, comments: String, email: String) : Vaccination
+    addAnimal(animal: AnimalInput!) : AnimalDTO
+    deleteAnimal(id: ID!, reason: String!) : AnimalDTO
+    updateAnimal(animal: UpdateAnimalInput!) : AnimalDTO
+    addVaccination(vaccination: VaccinationInput!) : VaccinationDTO
+    deleteVaccination(id: ID!) : VaccinationDTO
+    updateVaccination(vaccination: UpdateVaccinationInput!) : VaccinationDTO
 }

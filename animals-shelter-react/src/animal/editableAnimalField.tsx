@@ -6,10 +6,26 @@ import { EditableFieldProps } from "../common/types";
 
 const EditableAnimalField: React.FC<EditableFieldProps> = ({ entity, ...props }) => {
   const [updateField] = useMutation(UPDATE_ANIMAL, {
-    refetchQueries: [ANIMALS_QUERY],
+    refetchQueries: [{ query: ANIMALS_QUERY }],
   });
 
-  return <EditableFieldBase {...props} entity={entity} updateField={updateField} />;
+  const handleUpdate = async (updatedField: Record<string, any>) => {
+    if (!entity || !entity.id) {
+      return;
+    }
+
+    const updatedData = {
+      animal: {
+        id: entity.id,
+        ...updatedField
+      }
+    };
+
+    await updateField({
+        variables: updatedData
+      });
+  };
+  return <EditableFieldBase {...props} entity={entity} updateField={handleUpdate} />;
 };
 
 export default EditableAnimalField;

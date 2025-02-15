@@ -46,7 +46,7 @@ export interface EditableFieldProps {
   value: string | number;
   values?: string[];
   isDate?: boolean;
-  updateField?: (variables: { variables: Record<string, any> }) => Promise<void>;
+  updateField: (variables: { variables: Record<string, any> }) => Promise<void>;
 }
 
 export interface Subscriber {

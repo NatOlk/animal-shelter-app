@@ -9,13 +9,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.entity.animal.Animal;
-import com.ansh.entity.animal.Vaccination;
-import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
-import com.ansh.repository.AnimalRepository;
-import com.ansh.repository.VaccinationRepository;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
+import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
+import com.ansh.dto.VaccinationInput;
+import com.ansh.entity.animal.Animal;
+import com.ansh.entity.animal.Vaccination;
+import com.ansh.repository.AnimalRepository;
+import com.ansh.repository.VaccinationRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -72,8 +73,9 @@ class VaccinationServiceTest {
     when(vaccinationRepository.save(any(Vaccination.class))).thenAnswer(
         invocation -> invocation.getArgument(0));
 
-    Vaccination result = vaccinationService.addVaccination(animalId, vaccine, batch,
-        vaccinationTime, comments, email);
+    VaccinationInput vaccinationInput = new VaccinationInput(animalId, vaccine, batch, email,
+        vaccinationTime, comments);
+    Vaccination result = vaccinationService.addVaccination(vaccinationInput);
 
     assertNotNull(result);
     assertEquals(vaccine, result.getVaccine());
@@ -92,10 +94,10 @@ class VaccinationServiceTest {
 
     when(animalRepository.findById(animalId)).thenReturn(Optional.empty());
 
+    VaccinationInput vaccinationInput = new VaccinationInput(animalId, "Rabies", "B123",
+        "vet@example.com", LocalDate.parse("2024-11-01"), "Comments");
     VaccinationCreationException exception = assertThrows(VaccinationCreationException.class, () ->
-        vaccinationService.addVaccination(animalId, "Rabies", "B123",
-            LocalDate.parse("2024-11-01"), "Comments","vet@example.com")
-    );
+        vaccinationService.addVaccination(vaccinationInput));
     assertTrue(exception.getMessage().contains("Animal is not found 1"));
   }
 

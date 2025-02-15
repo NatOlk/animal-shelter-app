@@ -3,6 +3,8 @@ package com.ansh.app.service.animal;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
 import com.ansh.app.service.exception.animal.VaccinationUpdateException;
+import com.ansh.dto.UpdateVaccinationInput;
+import com.ansh.dto.VaccinationInput;
 import com.ansh.entity.animal.Vaccination;
 import java.time.LocalDate;
 import java.util.List;
@@ -37,37 +39,23 @@ public interface VaccinationService {
   int vaccinationCountById(Long id);
 
   /**
-   * Adds a new vaccination record.
+   * Adds a new vaccination record for an animal.
    *
-   * @param animalId the unique ID of the animal receiving the vaccination (required)
-   * @param vaccine the name of the vaccine (required)
-   * @param batch the batch number of the vaccine (required)
-   * @param vaccinationTime the date of the vaccination (required)
-   * @param comments additional comments regarding the vaccination (optional)
-   * @param email the email of the responsible person or veterinarian (required)
-   * @return the newly created {@link Vaccination} object
-   * @throws VaccinationCreationException if the vaccination record cannot be created due to validation errors or system issues
+   * @param vaccination an {@link VaccinationInput} object containing vaccination details
+   * @return the created {@link Vaccination} object with a generated ID
+   * @throws VaccinationCreationException if there is an error during the vaccination creation process
    */
-  Vaccination addVaccination(@NonNull Long animalId, @NonNull String vaccine,
-      @NonNull String batch, @NonNull LocalDate vaccinationTime,
-      String comments, @NonNull String email) throws VaccinationCreationException;
+  Vaccination addVaccination(@NonNull VaccinationInput vaccination) throws VaccinationCreationException;
 
   /**
    * Updates an existing vaccination record.
    *
-   * @param id the unique ID of the vaccination to update (required)
-   * @param vaccine the updated vaccine name (optional)
-   * @param batch the updated batch number (optional)
-   * @param vaccinationTime the updated vaccination date (optional)
-   * @param comments updated comments (optional)
-   * @param email the updated email of the responsible person (optional)
+   * @param vaccination an {@link UpdateVaccinationInput} object containing updated vaccination details
    * @return the updated {@link Vaccination} object
-   * @throws VaccinationNotFoundException if the vaccination record is not found
-   * @throws VaccinationUpdateException if the update fails due to validation errors or system issues
+   * @throws VaccinationNotFoundException if the vaccination record with the given ID is not found
+   * @throws VaccinationUpdateException if there is an error during the update process
    */
-  Vaccination updateVaccination(@NonNull Long id, String vaccine,
-      String batch, LocalDate vaccinationTime,
-      String comments, String email)
+  Vaccination updateVaccination(@NonNull UpdateVaccinationInput vaccination)
       throws VaccinationNotFoundException, VaccinationUpdateException;
 
   /**
