@@ -8,21 +8,17 @@ const QuickSubscribe: React.FC = () => {
   const [email, setEmail] = useState<string>('');
 
   const handleSubscribe = async () => {
-    try {
-      await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email || user?.email,
-          approver: user?.email,
-        }),
-      });
-      setEmail('');
-    } catch (error) {
-      console.error('Error during subscription:', error);
-    }
+    await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email || user?.email,
+        approver: user?.email,
+      }),
+    });
+    setEmail('');
   };
 
   return (

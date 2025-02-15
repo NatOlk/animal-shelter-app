@@ -34,7 +34,6 @@ const VaccinationsList: React.FC = () => {
                 return { items: [] };
             }
             if (error) {
-                console.error("GraphQL Error:", error.message);
                 return { items: [] };
             }
             return {

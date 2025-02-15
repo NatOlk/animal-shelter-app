@@ -31,15 +31,11 @@ const UserProfile: React.FC = () => {
 
   const updateSubscriptionStatus = async () => {
     if (!data?.currentUserProfile.email) return;
-    try {
-      const status = await apiFetch<'NONE' | 'PENDING' | 'ACTIVE'>(`/animal-notify-approver-status`, {
-        method: 'POST',
-        body: { approver: data.currentUserProfile.email },
-      });
-      setAnimalNotifyStatusProfile(status || "NONE");
-    } catch (err) {
-      console.error("Error updating subscription status:", err);
-    }
+    const status = await apiFetch<'NONE' | 'PENDING' | 'ACTIVE'>(`/animal-notify-approver-status`, {
+      method: 'POST',
+      body: { approver: data.currentUserProfile.email },
+    });
+    setAnimalNotifyStatusProfile(status || "NONE");
   };
 
   if (loading) return <div>Loading...</div>;

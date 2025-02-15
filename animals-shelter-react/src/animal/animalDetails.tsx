@@ -39,7 +39,6 @@ const AnimalDetails: React.FC = () => {
             setMessage("Image deleted successfully!");
         },
         onError: (error) => {
-            console.error("Error deleting image:", error);
             setMessage("Error deleting image.");
         }
     });
@@ -95,15 +94,12 @@ const AnimalDetails: React.FC = () => {
                 setMessage("Error uploading file.");
             }
         } catch (error) {
-            console.error("Error uploading file:", error);
-            setMessage("Error uploading file.");
+           setMessage("Error uploading file.");
         }
     };
 
     const handleDeletePhoto = async () => {
         try {
-            console.log("Deleting photo for animal ID:", id);
-
             await updateAnimal({
                 variables: {
                     animal: {
@@ -117,7 +113,6 @@ const AnimalDetails: React.FC = () => {
             setMessage("Image deleted successfully!");
 
         } catch (error) {
-            console.error("GraphQL Mutation Error:", error);
             setMessage("Failed to delete image.");
         }
     };

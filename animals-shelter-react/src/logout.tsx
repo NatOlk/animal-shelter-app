@@ -9,13 +9,9 @@ const Logout: React.FC = () => {
     const navigate = useNavigate();
 
     const handleLogout = async (): Promise<void> => {
-        try {
-            await axios.post(`/ansh/api/auth/logout`, {}, { withCredentials: true });
-            logout();
-            navigate('/login');
-        } catch (error) {
-            console.error('Error logging out:', error);
-        }
+        await axios.post(`/ansh/api/auth/logout`, {}, { withCredentials: true });
+        logout();
+        navigate('/login');
     };
 
     return (
