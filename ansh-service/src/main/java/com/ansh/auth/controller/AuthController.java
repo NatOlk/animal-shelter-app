@@ -32,7 +32,7 @@ public class AuthController {
   @Autowired
   private JwtService jwtService;
 
-  @PostMapping("/auth/login")
+  @PostMapping("/public/auth/login")
   public ResponseEntity<Object> login(@RequestParam String identifier,
       @RequestParam String password) {
     String maskedIdentifier = IdentifierMasker.maskIdentifier(identifier);
@@ -47,7 +47,7 @@ public class AuthController {
     }
   }
 
-  @PostMapping("/auth/logout")
+  @PostMapping("/public/auth/logout")
   public ResponseEntity<String> logout(HttpSession session) {
     session.invalidate();
     return ResponseEntity.ok("Logout successful");

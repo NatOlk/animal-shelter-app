@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,13 +30,14 @@ public class AnshSecurityConfig {
     http
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/login").permitAll()
-            .requestMatchers("/auth/logout").permitAll()
+            .requestMatchers("/public/auth/login").permitAll()
+            .requestMatchers("/public/auth/logout").permitAll()
             .requestMatchers("/resources/**").permitAll()
             .requestMatchers("/uploads/**").permitAll()
             .requestMatchers("/graphql").authenticated()
             .requestMatchers("/**").authenticated()
         )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .securityContext((securityContext) -> securityContext.requireExplicitSave(false))
         .logout(logout -> logout

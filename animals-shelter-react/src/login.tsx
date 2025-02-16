@@ -16,7 +16,7 @@ const Login: React.FC = () => {
         params.append('password', password);
 
         try {
-            const response = await fetch(`/ansh/api/auth/login`, {
+            const response = await fetch(`/ansh/api/public/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
