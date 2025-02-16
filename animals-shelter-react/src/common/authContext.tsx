@@ -11,7 +11,7 @@ export const AuthProvider: React.FC<ChildrenProps> = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem('jwt');
 
-        setIsAuthenticated(!!(token && token !== 'undefined' && token !== ''));
+        setIsAuthenticated(!!token);
         setIsLoading(false);
     }, []);
 
