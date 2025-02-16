@@ -24,7 +24,6 @@ const EditableFieldBase: React.FC<EditableFieldBaseProps> = ({
     const [error, setError] = useState<string>("");
 
     const handleSave = () => {
-
         if (!updateField) {
             return;
         }
@@ -38,42 +37,58 @@ const EditableFieldBase: React.FC<EditableFieldBaseProps> = ({
                 setTimeout(() => setError(""), 15000);
             });
     };
+
+    const renderInputField = () => {
+        if (values && values.length > 0) {
+            return (
+                <Select
+                    value={fieldValue}
+                    defaultSelectedKeys={[fieldValue]}
+                    isRequired
+                    aria-label="Editable"
+                    className="w-full md:w-28 editable-cell-field"
+                    onChange={(e) => setFieldValue(e.target.value)}>
+                    {values.map((v) => (
+                        <SelectItem key={v}>{v}</SelectItem>
+                    ))}
+                </Select>
+            );
+        }
+
+        if (isDate) {
+            return (
+                <div className="flex w-full flex-wrap flex-nowrap gap-4">
+                    <DatePicker
+                        isRequired
+                        showMonthAndYearPickers
+                        className="max-w-[284px]"
+                        aria-label="Date Editable Field"
+                        value={dat}
+                        onChange={(e) => {
+                            setDat(e);
+                            setFieldValue(e.toString());
+                        }}/>
+                </div>
+            );
+        }
+
+        return (
+            <Input
+                className="w-full md:w-28 editable-cell-field"
+                value={fieldValue}
+                onChange={(e) => setFieldValue(e.target.value)}
+            />
+        );
+    };
+
     return (
         <div className="flex items-center gap-3">
             {isEditing ? (
-                values && values.length > 0 ? (
-                    <Select
-                        value={fieldValue}
-                        defaultSelectedKeys={[fieldValue]}
-                        isRequired
-                        aria-label="Editable"
-                        className="w-full md:w-28 editable-cell-field"
-                        onChange={(e) => setFieldValue(e.target.value)}>
-                        {values.map((v) => (
-                            <SelectItem key={v}>{v}</SelectItem>
-                        ))}
-                    </Select>
-                ) : isDate ? (
-                    <div className="flex w-full flex-wrap flex-nowrap gap-4">
-                        <DatePicker
-                            isRequired
-                            showMonthAndYearPickers
-                            className="max-w-[284px]"
-                            aria-label="Date Editable Field"
-                            value={dat}
-                            onChange={(e) => {
-                                setDat(e);
-                                setFieldValue(e.toString());
-                            }} />
-                    </div>
-                ) : (
-                    <Input
-                        className="w-full md:w-28 editable-cell-field"
-                        value={fieldValue}
-                        onChange={(e) => setFieldValue(e.target.value)} />
-                )
+                renderInputField()
             ) : (
-                <span
+                <button
+                    type="button"
+                    className="editable-span-button"
                     onDoubleClick={() => {
                         setOldValue(fieldValue);
                         setIsEditing(true);
@@ -84,8 +99,8 @@ const EditableFieldBase: React.FC<EditableFieldBaseProps> = ({
                         variant="bordered"
                         className="editable-cell-field"
                         defaultValue={fieldValue}
-                        type="text" />
-                </span>
+                        type="text"/>
+                </button>
             )}
 
             {isEditing && (
