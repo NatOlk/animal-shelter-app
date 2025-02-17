@@ -27,28 +27,39 @@ public class PendingSubscriptionConsumer {
 
   @Autowired
   private PendingSubscriptionServiceStrategy serviceStrategy;
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @KafkaListener(topics = "${subscriptionTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> message) {
     try {
-      SubscriptionDecisionEvent event = new ObjectMapper().readValue(message.value(), SubscriptionDecisionEvent.class);
-
-      Optional<PendingSubscriptionService> service = serviceStrategy.getServiceByTopic(event.getTopic());
-
-      if (service.isPresent()) {
-        service.get().saveSubscriber(event.getEmail(), event.getApprover());
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("[{} subscription] Successfully processed subscription for {} by {}",
-              event.getTopic(), IdentifierMasker.maskEmail(event.getEmail()),
-              IdentifierMasker.maskEmail(event.getApprover()));
-
-        }
-      } else {
-        LOG.warn("[subscription consumer] No registered service for topic: {}", event.getTopic());
-      }
+      SubscriptionDecisionEvent event = deserializeMessage(message.value());
+      processEvent(event);
     } catch (IOException e) {
       LOG.error("Error of message deserialization: {}", message.value(), e);
     }
+  }
+
+  private SubscriptionDecisionEvent deserializeMessage(String message) throws IOException {
+    return objectMapper.readValue(message, SubscriptionDecisionEvent.class);
+  }
+
+  private void processEvent(SubscriptionDecisionEvent event) {
+    Optional<PendingSubscriptionService> service = serviceStrategy.getServiceByTopic(
+        event.getTopic());
+
+    service.ifPresentOrElse(
+        s -> {
+          s.saveSubscriber(event.getEmail(), event.getApprover());
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("[{} subscription] Successfully processed subscription for {} by {}",
+                event.getTopic(), IdentifierMasker.maskEmail(event.getEmail()),
+                IdentifierMasker.maskEmail(event.getApprover()));
+          }
+        },
+        () -> LOG.warn("[subscription consumer] No registered service for topic: {}",
+            event.getTopic())
+    );
   }
 
   protected void setSubscriptionTopicId(String subscriptionTopicId) {

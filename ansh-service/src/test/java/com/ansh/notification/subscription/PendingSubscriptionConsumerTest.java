@@ -1,17 +1,25 @@
 package com.ansh.notification.subscription;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
 import com.ansh.notification.strategy.PendingSubscriptionServiceStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Optional;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-
-import java.util.Optional;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 class PendingSubscriptionConsumerTest {
 
@@ -25,56 +33,77 @@ class PendingSubscriptionConsumerTest {
   @Mock
   private PendingSubscriptionService animalSubscriptionService;
 
+  @Mock
+  private ObjectMapper objectMapper;
+
   @InjectMocks
   private PendingSubscriptionConsumer consumer;
-
-  private ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
     consumer.setSubscriptionTopicId(SUBSCRIPTION_TOPIC);
     consumer.setAnimalTopicId(ANIMAL_TOPIC);
-    objectMapper = new ObjectMapper();
   }
 
   @Test
   void listen_validMessage_shouldCallSaveSubscriber() throws Exception {
     String json = "{\"email\":\"test@example.com\", \"approver\":\"admin\", \"topic\":\"animalTopic\"}";
-    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key", json);
+    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
+        json);
 
-    SubscriptionDecisionEvent event = objectMapper.readValue(json, SubscriptionDecisionEvent.class);
+    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
+    event.setEmail("test@example.com");
+    event.setApprover("admin");
+    event.setTopic(ANIMAL_TOPIC);
 
-    when(serviceStrategy.getServiceByTopic(ANIMAL_TOPIC)).thenReturn(Optional.of(animalSubscriptionService));
+    when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
+    when(serviceStrategy.getServiceByTopic(ANIMAL_TOPIC)).thenReturn(
+        Optional.of(animalSubscriptionService));
 
     consumer.listen(message);
 
+    verify(objectMapper, times(1)).readValue(json, SubscriptionDecisionEvent.class);
     verify(serviceStrategy, times(1)).getServiceByTopic(ANIMAL_TOPIC);
-    verify(animalSubscriptionService, times(1)).saveSubscriber(event.getEmail(), event.getApprover());
+    verify(animalSubscriptionService, times(1)).saveSubscriber(event.getEmail(),
+        event.getApprover());
   }
 
   @Test
-  void listen_invalidMessage_shouldNotCallSaveSubscriber() {
+  void listen_invalidMessage_shouldNotCallSaveSubscriber() throws Exception {
     String invalidJson = "{\"invalidField\":\"value\"}";
-    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key", invalidJson);
+    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
+        invalidJson);
+
+    doAnswer(invocation -> {
+      throw new IOException("Invalid JSON");
+    }).when(objectMapper).readValue(anyString(), eq(SubscriptionDecisionEvent.class));
 
     consumer.listen(message);
 
+    verify(objectMapper, times(1)).readValue(anyString(), eq(SubscriptionDecisionEvent.class));
     verify(serviceStrategy, never()).getServiceByTopic(anyString());
     verify(animalSubscriptionService, never()).saveSubscriber(anyString(), anyString());
   }
 
+
   @Test
   void listen_unknownTopic_shouldNotCallSaveSubscriber() throws Exception {
     String json = "{\"email\":\"test@example.com\", \"approver\":\"admin\", \"topic\":\"unknownTopic\"}";
-    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key", json);
+    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
+        json);
 
-    SubscriptionDecisionEvent event = objectMapper.readValue(json, SubscriptionDecisionEvent.class);
+    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
+    event.setEmail("test@example.com");
+    event.setApprover("admin");
+    event.setTopic(UNKNOWN_TOPIC);
 
+    when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
     when(serviceStrategy.getServiceByTopic(UNKNOWN_TOPIC)).thenReturn(Optional.empty());
 
     consumer.listen(message);
 
+    verify(objectMapper, times(1)).readValue(json, SubscriptionDecisionEvent.class);
     verify(serviceStrategy, times(1)).getServiceByTopic(UNKNOWN_TOPIC);
     verify(animalSubscriptionService, never()).saveSubscriber(anyString(), anyString());
   }
