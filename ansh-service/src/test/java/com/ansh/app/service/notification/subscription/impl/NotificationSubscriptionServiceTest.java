@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.external.ExternalNotificationServiceClient;
 import java.util.List;
@@ -77,15 +77,15 @@ class NotificationSubscriptionServiceTest {
   @Test
   void shouldReturnStatusByApprover() {
     String approver = "approver@example.com";
-    AnimalNotifStatus expectedStatus = AnimalNotifStatus.ACTIVE;
+    AnimalInfoNotifStatus expectedStatus = AnimalInfoNotifStatus.ACTIVE;
 
     when(externalNotificationServiceClient.post(
         eq(statusByApproverEndpoint),
         eq(Map.of("approver", approver)),
-        eq(new ParameterizedTypeReference<AnimalNotifStatus>() {})
+        eq(new ParameterizedTypeReference<AnimalInfoNotifStatus>() {})
     )).thenReturn(Mono.just(expectedStatus));
 
-    StepVerifier.create(notificationSubscriptionService.getStatusByApprover(approver))
+    StepVerifier.create(notificationSubscriptionService.getAnimalInfoStatusByApprover(approver))
         .assertNext(result -> {
           assertNotNull(result);
           assertEquals(expectedStatus, result);
@@ -95,7 +95,7 @@ class NotificationSubscriptionServiceTest {
     verify(externalNotificationServiceClient).post(
         eq(statusByApproverEndpoint),
         eq(Map.of("approver", approver)),
-        eq(new ParameterizedTypeReference<AnimalNotifStatus>() {})
+        eq(new ParameterizedTypeReference<AnimalInfoNotifStatus>() {})
     );
   }
 }

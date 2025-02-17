@@ -7,7 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
+import com.ansh.event.subscription.SubscriptionDecisionEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class SubscriberNotificationEventProducerTest {
     String approver = "admin";
     String topic = "animal_notifications";
 
-    AnimalNotificationUserSubscribedEvent event = new AnimalNotificationUserSubscribedEvent();
+    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
     event.setEmail(email);
     event.setApprover(approver);
     event.setTopic(topic);
@@ -51,7 +51,7 @@ class SubscriberNotificationEventProducerTest {
 
     when(objectMapper.writeValueAsString(event)).thenReturn(jsonMessage);
 
-    subscriberNotificationEventProducer.sendApproveRequest(email, approver, topic);
+    subscriberNotificationEventProducer.sendPendingApproveRequest(email, approver, topic);
 
     verify(kafkaTemplate, times(1)).send(eq(SUBSCRIPTION_TOPIC), eq(jsonMessage));
   }
@@ -63,14 +63,14 @@ class SubscriberNotificationEventProducerTest {
     String approver = "admin";
     String topic = "animal_notifications";
 
-    AnimalNotificationUserSubscribedEvent event = new AnimalNotificationUserSubscribedEvent();
+    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
     event.setEmail(email);
     event.setApprover(approver);
     event.setTopic(topic);
 
     when(objectMapper.writeValueAsString(event)).thenThrow(new RuntimeException("Test exception"));
 
-    subscriberNotificationEventProducer.sendApproveRequest(email, approver, topic);
+    subscriberNotificationEventProducer.sendPendingApproveRequest(email, approver, topic);
 
     verify(kafkaTemplate, never()).send(eq(SUBSCRIPTION_TOPIC), anyString());
   }

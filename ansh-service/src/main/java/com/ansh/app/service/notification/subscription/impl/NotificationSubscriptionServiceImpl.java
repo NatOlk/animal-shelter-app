@@ -1,7 +1,7 @@
 package com.ansh.app.service.notification.subscription.impl;
 
 import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.external.ExternalNotificationServiceClient;
 import java.util.List;
@@ -38,7 +38,7 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
   }
 
   @Override
-  public Mono<AnimalNotifStatus> getStatusByApprover(String approver) {
+  public Mono<AnimalInfoNotifStatus> getAnimalInfoStatusByApprover(String approver) {
     return externalNotificationServiceClient.post(
         statusByApproverEndpoint,
         Map.of("approver", approver),

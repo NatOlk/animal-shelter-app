@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.auth.repository.UserProfileRepository;
 import com.ansh.entity.animal.UserProfile;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class UserProfileServiceTest {
   @Test
   void shouldUpdateAnimalNotificationSubscriptionStatus() {
     String identifier = "test_user";
-    AnimalNotifStatus status = AnimalNotifStatus.PENDING;
+    AnimalInfoNotifStatus status = AnimalInfoNotifStatus.PENDING;
 
     userProfileService.updateAnimalNotificationSubscriptionStatus(identifier, status);
 
@@ -79,7 +79,7 @@ class UserProfileServiceTest {
 
   @Test
   void shouldUpdateNotificationStatusOfAuthUser() {
-    AnimalNotifStatus status = AnimalNotifStatus.ACTIVE;
+    AnimalInfoNotifStatus status = AnimalInfoNotifStatus.ACTIVE;
     UserProfile userProfile = new UserProfile();
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.isAuthenticated()).thenReturn(true);

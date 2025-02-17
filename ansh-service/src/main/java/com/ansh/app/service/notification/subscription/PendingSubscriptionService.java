@@ -5,9 +5,16 @@ import com.ansh.repository.entity.PendingSubscriber;
 import java.util.List;
 
 /**
- * Service for managing pending subscriptions to animal notifications.
+ * Service for managing pending subscriptions.
  */
-public interface AnimalInfoPendingSubscriptionService {
+public interface PendingSubscriptionService {
+  /**
+   * Saves a new pending subscriber request.
+   *
+   * @param email the email of the subscriber requesting approval
+   * @param approver the email or identifier of the person responsible for approving the request
+   */
+  void saveSubscriber(String email, String approver);
 
   /**
    * Approves a pending subscriber, granting them access to notifications.
@@ -28,14 +35,6 @@ public interface AnimalInfoPendingSubscriptionService {
   void rejectSubscriber(String email, String approver) throws UnauthorizedActionException;
 
   /**
-   * Saves a new pending subscriber request.
-   *
-   * @param email the email of the subscriber requesting approval
-   * @param approver the email or identifier of the person responsible for approving the request
-   */
-  void saveSubscriber(String email, String approver);
-
-  /**
    * Retrieves a list of pending subscribers that require approval from a specific approver.
    *
    * @param approver the email or identifier of the approver
@@ -49,4 +48,16 @@ public interface AnimalInfoPendingSubscriptionService {
    * @return a list of {@link PendingSubscriber} objects awaiting an approver
    */
   List<PendingSubscriber> getPendingSubscribersWithoutApprover();
+
+  /**
+   * Returns the unique identifier of the topic associated with this subscription service.
+   * <p>
+   * This identifier is used to determine which Kafka topic the subscription service
+   * is responsible for handling. It allows dynamic selection of the appropriate service
+   * based on the topic name when processing subscription-related events.
+   * </p>
+   *
+   * @return the topic ID associated with this service
+   */
+  String getTopicId();
 }

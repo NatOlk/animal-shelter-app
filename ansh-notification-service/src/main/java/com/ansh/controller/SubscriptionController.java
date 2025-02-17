@@ -3,7 +3,7 @@ package com.ansh.controller;
 import static java.lang.StringTemplate.STR;
 
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
 import java.util.List;
@@ -45,7 +45,7 @@ public class SubscriptionController {
   }
 
   @PostMapping("/internal/animal-notify-approver-status")
-  public AnimalNotifStatus getStatusByApprover(
+  public AnimalInfoNotifStatus getStatusByApprover(
       @RequestBody SubscriptionRequest request) {
     return animalTopicSubscriberRegistryService.getSubscriptionStatus(request.getApprover());
   }

@@ -9,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -24,8 +22,6 @@ import org.slf4j.LoggerFactory;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AnimalEvent {
-
-  private static final Logger LOG = LoggerFactory.getLogger(AnimalEvent.class);
 
   private Animal animal;
 

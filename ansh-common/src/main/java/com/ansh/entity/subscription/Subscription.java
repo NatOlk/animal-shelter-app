@@ -7,7 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "subscribers", schema = "public",
@@ -16,6 +19,9 @@ import lombok.Data;
         @Index(name = "idx_topic", columnList = "topic")
     })
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Subscription {
 
   @Id
@@ -33,7 +39,4 @@ public class Subscription {
   private boolean approved;
   @Column
   private String token;
-
-  public Subscription() {
-  }
 }

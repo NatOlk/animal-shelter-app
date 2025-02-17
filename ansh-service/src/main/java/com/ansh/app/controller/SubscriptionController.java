@@ -1,11 +1,11 @@
 package com.ansh.app.controller;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
-import com.ansh.app.service.notification.subscription.AnimalInfoPendingSubscriptionService;
+import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.Collections;
@@ -27,7 +27,7 @@ public class SubscriptionController {
   private NotificationSubscriptionService notificationService;
   @Autowired
   @Qualifier("animalInfoPendingSubscriptionService")
-  private AnimalInfoPendingSubscriptionService pendingSubscriptionService;
+  private PendingSubscriptionService pendingSubscriptionService;
   @Autowired
   private UserProfileServiceImpl userProfileService;
 
@@ -37,8 +37,7 @@ public class SubscriptionController {
         req.getEmail())) {
       return;
     }
-    pendingSubscriptionService.approveSubscriber(req.getEmail(),
-        req.getApprover());
+    pendingSubscriptionService.approveSubscriber(req.getEmail(), req.getApprover());
   }
 
   @PostMapping("/animal-notify-reject-subscriber")
@@ -47,8 +46,7 @@ public class SubscriptionController {
         req.getEmail())) {
       return;
     }
-    pendingSubscriptionService.rejectSubscriber(req.getEmail(),
-        req.getApprover());
+    pendingSubscriptionService.rejectSubscriber(req.getEmail(), req.getApprover());
   }
 
   @PostMapping(value = "/animal-notify-pending-subscribers")
@@ -84,17 +82,17 @@ public class SubscriptionController {
   }
 
   @PostMapping("/animal-notify-approver-status")
-  public DeferredResult<AnimalNotifStatus> getApproverStatus(
+  public DeferredResult<AnimalInfoNotifStatus> getApproverStatus(
       @RequestBody SubscriptionRequest subscriptionRequest) {
 
-    DeferredResult<AnimalNotifStatus> output = new DeferredResult<>();
+    DeferredResult<AnimalInfoNotifStatus> output = new DeferredResult<>();
 
     if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {
-      output.setResult(AnimalNotifStatus.NONE);
+      output.setResult(AnimalInfoNotifStatus.NONE);
       return output;
     }
 
-    notificationService.getStatusByApprover(subscriptionRequest.getApprover())
+    notificationService.getAnimalInfoStatusByApprover(subscriptionRequest.getApprover())
         .subscribe(
             status -> {
               userProfileService.updateNotificationStatusOfAuthUser(status);

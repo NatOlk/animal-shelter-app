@@ -16,30 +16,34 @@ import org.springframework.stereotype.Service;
 public class AnimalInfoNotificationServiceImpl implements AnimalInfoNotificationService {
 
   @Autowired
-  private AnimalInfoNotificationProducer animalInfoProducer;
+  private AnimalInfoNotificationProducer animalInfoNotificationProducer;
 
   @Override
   public void sendAddAnimalMessage(Animal animal) {
     AnimalEvent addAnimalEvent = new AddAnimalEvent(animal);
-    animalInfoProducer.sendNotification(addAnimalEvent);
+    sendNotification(addAnimalEvent);
   }
 
   @Override
   public void sendRemoveAnimalMessage(Animal animal, String reason) {
     AnimalEvent removeAnimalEvent = new RemoveAnimalEvent(animal, reason);
-    animalInfoProducer.sendNotification(removeAnimalEvent);
+    sendNotification(removeAnimalEvent);
   }
 
   @Override
   public void sendAddVaccinationMessage(Vaccination vaccination) {
     AnimalEvent addVaccinationEvent = new AddVaccinationEvent(vaccination.getAnimal(), vaccination);
-    animalInfoProducer.sendNotification(addVaccinationEvent);
+    sendNotification(addVaccinationEvent);
   }
 
   @Override
   public void sendRemoveVaccinationMessage(Vaccination vaccination) {
     AnimalEvent addVaccinationEvent = new RemoveVaccinationEvent(vaccination.getAnimal(),
         vaccination);
-    animalInfoProducer.sendNotification(addVaccinationEvent);
+    sendNotification(addVaccinationEvent);
+  }
+
+  private void sendNotification(AnimalEvent event) {
+    animalInfoNotificationProducer.sendNotification(event);
   }
 }

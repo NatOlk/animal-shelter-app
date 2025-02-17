@@ -1,11 +1,11 @@
 package com.ansh.service.impl;
 
-import static com.ansh.entity.animal.UserProfile.AnimalNotifStatus.ACTIVE;
-import static com.ansh.entity.animal.UserProfile.AnimalNotifStatus.NONE;
-import static com.ansh.entity.animal.UserProfile.AnimalNotifStatus.PENDING;
+import static com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus.ACTIVE;
+import static com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus.NONE;
+import static com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus.PENDING;
 
 import com.ansh.cache.SubscriptionCacheManager;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.subscription.SubscriberNotificationEventProducer;
 import com.ansh.repository.SubscriptionRepository;
@@ -83,7 +83,7 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
       cacheManager.addToCache(subscription);
       subscriptionNotificationEmailService.sendSuccessTokenConfirmationEmail(subscription);
     });
-    return subscriptionOpt.isEmpty();
+    return subscriptionOpt.isPresent();
   }
 
   @Override
@@ -98,7 +98,7 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
   }
 
   @Override
-  public AnimalNotifStatus getSubscriptionStatus(String approver) {
+  public AnimalInfoNotifStatus getSubscriptionStatus(String approver) {
     return findSubscriptionByEmail(approver)
         .map(subscription -> subscription.isAccepted() ? ACTIVE : PENDING)
         .orElse(NONE);
@@ -129,16 +129,16 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
   }
 
   private void createAndRegisterNewSubscription(String email, String approver) {
-    Subscription newSubscription = new Subscription();
-    newSubscription.setTopic(animalTopicId);
-    newSubscription.setEmail(email);
-    newSubscription.setApprover(approver);
-    newSubscription.setToken(UUID.randomUUID().toString());
-    newSubscription.setAccepted(false);
-    newSubscription.setApproved(false);
-
+    Subscription newSubscription = Subscription.builder()
+        .topic(animalTopicId)
+        .email(email)
+        .approver(approver)
+        .token(UUID.randomUUID().toString())
+        .accepted(false)
+        .approved(false)
+        .build();
     subscriptionRepository.save(newSubscription);
-    subscriberNotificationEventProducer.sendApproveRequest(email, approver, animalTopicId);
+    subscriberNotificationEventProducer.sendPendingApproveRequest(email, approver, animalTopicId);
     LOG.debug("Register a new subscriber {}", IdentifierMasker.maskEmail(email));
   }
 

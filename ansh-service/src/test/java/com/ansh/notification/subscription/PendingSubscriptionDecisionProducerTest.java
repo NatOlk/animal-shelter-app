@@ -7,8 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
-import com.ansh.notification.subscription.AnimalNotificationUserSubscribedProducer;
+import com.ansh.event.subscription.SubscriptionDecisionEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.core.KafkaTemplate;
 
-class AnimalNotificationUserSubscribedProducerTest {
+class PendingSubscriptionDecisionProducerTest {
 
   private static final String TEST_TOPIC = "testApproveTopic";
 
@@ -29,12 +28,12 @@ class AnimalNotificationUserSubscribedProducerTest {
   private ObjectMapper objectMapper;
 
   @InjectMocks
-  private AnimalNotificationUserSubscribedProducer producer;
+  private PendingSubscriptionDecisionProducer producer;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    producer = new AnimalNotificationUserSubscribedProducer(kafkaTemplate, objectMapper);
+    producer = new PendingSubscriptionDecisionProducer(kafkaTemplate, objectMapper);
     producer.setApproveTopicId(TEST_TOPIC);
   }
 
@@ -43,7 +42,7 @@ class AnimalNotificationUserSubscribedProducerTest {
     String email = "user@example.com";
     String approver = "approverUser";
     String topic = "animal-topic";
-    AnimalNotificationUserSubscribedEvent event = new AnimalNotificationUserSubscribedEvent();
+    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
     event.setEmail(email);
     event.setApprover(approver);
     event.setTopic(topic);
@@ -63,7 +62,7 @@ class AnimalNotificationUserSubscribedProducerTest {
     String email = "user@example.com";
     String approver = "approverUser";
     String topic = "animal-topic";
-    AnimalNotificationUserSubscribedEvent event = new AnimalNotificationUserSubscribedEvent();
+    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
     event.setEmail(email);
     event.setApprover(approver);
     event.setTopic(topic);
@@ -85,7 +84,7 @@ class AnimalNotificationUserSubscribedProducerTest {
     String topic = "animal-topic";
 
     when(objectMapper.writeValueAsString(
-        any(AnimalNotificationUserSubscribedEvent.class))).thenThrow(
+        any(SubscriptionDecisionEvent.class))).thenThrow(
         new JsonProcessingException("Error serializing object") {
         });
 
@@ -93,6 +92,6 @@ class AnimalNotificationUserSubscribedProducerTest {
 
     verify(kafkaTemplate, never()).send(anyString(), anyString());
     verify(objectMapper, times(1)).writeValueAsString(
-        any(AnimalNotificationUserSubscribedEvent.class));
+        any(SubscriptionDecisionEvent.class));
   }
 }

@@ -1,11 +1,11 @@
 package com.ansh.app.service.user.impl;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
-import com.ansh.app.service.user.UserAuthorityService;
+import com.ansh.app.service.user.UserSubscriptionAuthorityService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserAuthorityServiceImpl implements UserAuthorityService {
+public class UserSubscriptionAuthorityServiceImpl implements UserSubscriptionAuthorityService {
 
   @Override
   public void checkAuthorityToApprove(String approver) throws UnauthorizedActionException {
