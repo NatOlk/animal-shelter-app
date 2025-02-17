@@ -63,7 +63,6 @@ public class AuthController {
       String maskedIdentifier) {
     LOG.debug("[auth] Authentication successful for user: {}", maskedIdentifier);
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    //TODO why we need to get auth user?
     return userProfileService.getAuthUser()
         .map(userProfile -> createAuthenticationResponse(userProfile.getEmail(), authentication,
             maskedIdentifier))

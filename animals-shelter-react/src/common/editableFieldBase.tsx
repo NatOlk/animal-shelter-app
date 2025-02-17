@@ -128,7 +128,7 @@ const EditableFieldBase: React.FC<EditableFieldBaseProps> = ({
             )}
 
             {error && (
-                <Popover isOpen onOpenChange={() => setError("")}>\n
+                <Popover isOpen onOpenChange={() => setError("")}>
                     <PopoverContent>
                         <p>{error}</p>
                     </PopoverContent>
