@@ -165,6 +165,7 @@ services:
       ANIMAL_SHELTER_NOTIFICATION_APP: https://nginx-proxy-ansh/ansh/notification
       FILE_UPLOAD_DIR: /uploads
       ANIMAL_SHELTER_APP: https://localhost
+      ANIMAL_SHELTER_REACT_APP: http://localhost:5173
     networks:
       - backend
 
@@ -193,6 +194,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./config/cert.crt:/etc/nginx/cert.crt
       - ./config/cert.key:/etc/nginx/cert.key
+      - ansh-service-uploads:/uploads
     ports:
       - "443:443"
       - "80:80"
