@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.app.service.notification.subscription.impl.AnimalInfoPendingSubscriptionServiceImpl;
 import com.ansh.app.service.notification.subscription.impl.NotificationSubscriptionServiceImpl;
@@ -120,11 +120,11 @@ class SubscriptionControllerTest {
 
   @Test
   void shouldReturnApproverStatus() throws InterruptedException {
-    AnimalNotifStatus status = AnimalNotifStatus.ACTIVE;
-    when(notificationSubscriptionService.getStatusByApprover(anyString())).thenReturn(Mono.just(status));
+    AnimalInfoNotifStatus status = AnimalInfoNotifStatus.ACTIVE;
+    when(notificationSubscriptionService.getAnimalInfoStatusByApprover(anyString())).thenReturn(Mono.just(status));
     doNothing().when(userProfileService).updateNotificationStatusOfAuthUser(status);
 
-    DeferredResult<AnimalNotifStatus> deferredResult =
+    DeferredResult<AnimalInfoNotifStatus> deferredResult =
         subscriptionController.getApproverStatus(subscriptionRequest);
 
     CountDownLatch latch = new CountDownLatch(1);
@@ -134,7 +134,7 @@ class SubscriptionControllerTest {
     assertNotNull(deferredResult.getResult());
     assertEquals(status, deferredResult.getResult());
 
-    verify(notificationSubscriptionService, times(1)).getStatusByApprover(subscriptionRequest.getApprover());
+    verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(subscriptionRequest.getApprover());
     verify(userProfileService, times(1)).updateNotificationStatusOfAuthUser(status);
   }
 }

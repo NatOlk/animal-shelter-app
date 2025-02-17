@@ -1,6 +1,6 @@
 package com.ansh.notification.subscription;
 
-import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
+import com.ansh.event.subscription.SubscriptionDecisionEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +25,10 @@ public class SubscriberNotificationEventProducer {
     this.objectMapper = objectMapper;
   }
 
-  public void sendApproveRequest(String email, String approver, String topic) {
+  public void sendPendingApproveRequest(String email, String approver, String topic) {
     try {
-      AnimalNotificationUserSubscribedEvent event =
-          new AnimalNotificationUserSubscribedEvent();
+      SubscriptionDecisionEvent event =
+          new SubscriptionDecisionEvent();
       event.setEmail(email);
       event.setApprover(approver);
       event.setTopic(topic);

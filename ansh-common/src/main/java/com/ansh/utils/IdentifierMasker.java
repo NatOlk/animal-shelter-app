@@ -38,7 +38,6 @@ public class IdentifierMasker {
   }
 
   public record EmailParts(String localPart, String domain) {
-
   }
 }
 

@@ -3,7 +3,7 @@ package com.ansh.notification.subscription;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
+import com.ansh.event.subscription.SubscriptionDecisionEvent;
 import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -35,8 +35,8 @@ class SubscriberNotificationEventConsumerTest {
     ConsumerRecord<String, String> message = new ConsumerRecord<>("approveTopicId", 0, 0L, "key",
         json);
 
-    AnimalNotificationUserSubscribedEvent expectedEvent = objectMapper.readValue(json,
-        AnimalNotificationUserSubscribedEvent.class);
+    SubscriptionDecisionEvent expectedEvent = objectMapper.readValue(json,
+        SubscriptionDecisionEvent.class);
 
     subscriberNotificationEventConsumer.listen(message);
 

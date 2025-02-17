@@ -11,10 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
-import com.ansh.app.service.user.UserAuthorityService;
+import com.ansh.app.service.user.UserSubscriptionAuthorityService;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
-import com.ansh.notification.subscription.AnimalNotificationUserSubscribedProducer;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.List;
@@ -27,13 +27,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class AnimalInfoPendingNotificationSubscriptionServiceTest {
+class AnimalInfoPendingSubscriptionServiceTest {
 
   private static final String ANIMAL_TOPIC = "animalTopicId";
   private static final String SUBSCRIBER_EMAIL = "subscriber@email.com";
   private static final String APPROVER_EMAIL = "approver@mail.com";
   @Mock
-  private AnimalNotificationUserSubscribedProducer animalNotificationUserSubscribedProducer;
+  private PendingSubscriptionDecisionProducer animalNotificationUserSubscribedProducer;
 
   @Mock
   private PendingSubscriberRepository pendingSubscriberRepository;
@@ -42,7 +42,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
   private UserProfileServiceImpl userProfileService;
 
   @Mock
-  private UserAuthorityService userAuthorityService;
+  private UserSubscriptionAuthorityService userSubscriptionAuthorityService;
 
   @InjectMocks
   private AnimalInfoPendingSubscriptionServiceImpl service;
@@ -55,16 +55,25 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+
     pendingSubscriber = new PendingSubscriber();
     pendingSubscriber.setEmail(SUBSCRIBER_EMAIL);
     pendingSubscriber.setTopic(ANIMAL_TOPIC);
     pendingSubscriber.setApprover(APPROVER_EMAIL);
-    service.setAnimalTopicId(ANIMAL_TOPIC);
+
+
+    service = new AnimalInfoPendingSubscriptionServiceImpl(
+        ANIMAL_TOPIC,
+        pendingSubscriberRepository,
+        userSubscriptionAuthorityService,
+        animalNotificationUserSubscribedProducer,
+        userProfileService
+    );
   }
 
   @Test
   void shouldApproveSubscriber_whenExists() throws UnauthorizedActionException {
-    doNothing().when(userAuthorityService).checkAuthorityToApprove(APPROVER_EMAIL);
+    doNothing().when(userSubscriptionAuthorityService).checkAuthorityToApprove(APPROVER_EMAIL);
     when(pendingSubscriberRepository.findByEmailAndTopic(SUBSCRIBER_EMAIL, ANIMAL_TOPIC))
         .thenReturn(Optional.of(pendingSubscriber));
 
@@ -84,7 +93,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
   @Test
   void shouldNotApproveSubscriber_whenHasNoAuthority() throws UnauthorizedActionException {
     doThrow(new UnauthorizedActionException("You do not have permission to approve requests."))
-        .when(userAuthorityService)
+        .when(userSubscriptionAuthorityService)
         .checkAuthorityToApprove(APPROVER_EMAIL);
 
     assertThrows(UnauthorizedActionException.class, () -> {
@@ -94,8 +103,8 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
 
   @Test
   void shouldNotApproveSubscriber_whenNotFound() throws UnauthorizedActionException {
-    doNothing().when(userAuthorityService).checkAuthorityToApprove(APPROVER_EMAIL);
-    doNothing().when(userAuthorityService).checkAuthorityToReject(APPROVER_EMAIL);
+    doNothing().when(userSubscriptionAuthorityService).checkAuthorityToApprove(APPROVER_EMAIL);
+    doNothing().when(userSubscriptionAuthorityService).checkAuthorityToReject(APPROVER_EMAIL);
     when(pendingSubscriberRepository.findByEmailAndTopic(SUBSCRIBER_EMAIL, ANIMAL_TOPIC))
         .thenReturn(Optional.empty());
 
@@ -110,7 +119,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
 
   @Test
   void shouldRejectSubscriber_whenExists() throws UnauthorizedActionException {
-    doNothing().when(userAuthorityService).checkAuthorityToReject(APPROVER_EMAIL);
+    doNothing().when(userSubscriptionAuthorityService).checkAuthorityToReject(APPROVER_EMAIL);
     when(pendingSubscriberRepository.findByEmailAndTopic(SUBSCRIBER_EMAIL, ANIMAL_TOPIC))
         .thenReturn(Optional.of(pendingSubscriber));
 
@@ -130,7 +139,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
   @Test
   void shouldNotRejectSubscriber_whenHasNoAutority() throws UnauthorizedActionException {
     doThrow(new UnauthorizedActionException("You do not have permission to reject requests."))
-        .when(userAuthorityService)
+        .when(userSubscriptionAuthorityService)
         .checkAuthorityToReject(APPROVER_EMAIL);
 
     assertThrows(UnauthorizedActionException.class, () -> {
@@ -140,7 +149,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
 
   @Test
   void shouldNotRejectSubscriber_whenNotFound() throws UnauthorizedActionException {
-    doNothing().when(userAuthorityService).checkAuthorityToReject(APPROVER_EMAIL);
+    doNothing().when(userSubscriptionAuthorityService).checkAuthorityToReject(APPROVER_EMAIL);
     when(pendingSubscriberRepository.findByEmailAndTopic(SUBSCRIBER_EMAIL, ANIMAL_TOPIC))
         .thenReturn(Optional.empty());
 
@@ -168,7 +177,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
     assertEquals(ANIMAL_TOPIC, capturedSubscriber.getTopic());
 
     verify(userProfileService).updateAnimalNotificationSubscriptionStatus(
-        SUBSCRIBER_EMAIL, AnimalNotifStatus.PENDING);
+        SUBSCRIBER_EMAIL, AnimalInfoNotifStatus.PENDING);
   }
 
   @Test
@@ -190,7 +199,7 @@ class AnimalInfoPendingNotificationSubscriptionServiceTest {
     verify(pendingSubscriberRepository, times(0)).save(any());
 
     verify(userProfileService, times(0)).updateAnimalNotificationSubscriptionStatus(
-        email, AnimalNotifStatus.PENDING);
+        email, AnimalInfoNotifStatus.PENDING);
   }
 
   @Test

@@ -1,6 +1,6 @@
 package com.ansh.app.service.notification.subscription;
 
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import java.util.List;
 import reactor.core.publisher.Mono;
@@ -28,15 +28,15 @@ public interface NotificationSubscriptionService {
   Mono<List<Subscription>> getAllSubscriptionByApprover(String approver);
 
   /**
-   * Retrieves the notification subscription status for a given approver.
+   * Retrieves the animal info subscription status for a given approver.
    * <p>
    * The method returns a {@link Mono}, which emits either the current
-   * {@link AnimalNotifStatus} or an empty signal if
+   * {@link AnimalInfoNotifStatus} or an empty signal if
    * no status is found.
    * </p>
    *
    * @param approver the identifier of the approver
-   * @return a {@link Mono} emitting the {@link AnimalNotifStatus}
+   * @return a {@link Mono} emitting the {@link AnimalInfoNotifStatus}
    */
-  Mono<AnimalNotifStatus> getStatusByApprover(String approver);
+  Mono<AnimalInfoNotifStatus> getAnimalInfoStatusByApprover(String approver);
 }

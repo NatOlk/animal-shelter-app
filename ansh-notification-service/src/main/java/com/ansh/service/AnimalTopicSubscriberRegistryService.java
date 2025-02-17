@@ -1,6 +1,6 @@
 package com.ansh.service;
 
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import java.util.List;
 
@@ -53,7 +53,7 @@ public interface AnimalTopicSubscriberRegistryService {
    * @param approver the email or identifier of the approver
    * @return the subscription status for the given approver
    */
-  AnimalNotifStatus getSubscriptionStatus(String approver);
+  AnimalInfoNotifStatus getSubscriptionStatus(String approver);
 
   /**
    * Handles the approval or rejection of a subscription request.

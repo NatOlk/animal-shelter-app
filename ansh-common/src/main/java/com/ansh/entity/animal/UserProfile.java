@@ -41,7 +41,7 @@ public class UserProfile {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "animal_notif_status", nullable = false)
-  private AnimalNotifStatus animalNotifyStatus = AnimalNotifStatus.NONE;
+  private AnimalInfoNotifStatus animalNotifyStatus = AnimalInfoNotifStatus.NONE;
 
   @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
   @JoinTable(
@@ -56,7 +56,7 @@ public class UserProfile {
     role.getUsers().add(this);
   }
 
-  public enum AnimalNotifStatus {
+  public enum AnimalInfoNotifStatus {
     NONE,
     PENDING,
     ACTIVE

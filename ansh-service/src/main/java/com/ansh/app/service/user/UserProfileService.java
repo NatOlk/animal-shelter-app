@@ -1,7 +1,7 @@
 package com.ansh.app.service.user;
 
 import com.ansh.entity.animal.UserProfile;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import java.util.Optional;
 
 /**
@@ -24,7 +24,7 @@ public interface UserProfileService {
    * @param identifier the unique user identifier
    * @param status     the new subscription status
    */
-  void updateAnimalNotificationSubscriptionStatus(String identifier, AnimalNotifStatus status);
+  void updateAnimalNotificationSubscriptionStatus(String identifier, AnimalInfoNotifStatus status);
 
   /**
    * Retrieves the profile of the currently authenticated user.
@@ -39,5 +39,5 @@ public interface UserProfileService {
    *
    * @param status the new subscription status
    */
-  void updateNotificationStatusOfAuthUser(AnimalNotifStatus status);
+  void updateNotificationStatusOfAuthUser(AnimalInfoNotifStatus status);
 }

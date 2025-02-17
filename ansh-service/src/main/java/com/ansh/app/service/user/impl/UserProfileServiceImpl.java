@@ -4,7 +4,7 @@ import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.repository.RoleRepository;
 import com.ansh.auth.repository.UserProfileRepository;
 import com.ansh.entity.animal.UserProfile;
-import com.ansh.entity.animal.UserProfile.AnimalNotifStatus;
+import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
   @Override
   public void updateAnimalNotificationSubscriptionStatus(String identifier,
-      AnimalNotifStatus status) {
+      AnimalInfoNotifStatus status) {
     userRepository.updateAnimalNotificationSubscriptionStatus(identifier, status);
   }
 
@@ -49,7 +49,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
   @Override
   @Transactional
-  public void updateNotificationStatusOfAuthUser(AnimalNotifStatus status) {
+  public void updateNotificationStatusOfAuthUser(AnimalInfoNotifStatus status) {
     Optional<UserProfile> userProfile = getAuthUser();
     if (userProfile.isPresent()) {
       userProfile.get().setAnimalNotifyStatus(status);

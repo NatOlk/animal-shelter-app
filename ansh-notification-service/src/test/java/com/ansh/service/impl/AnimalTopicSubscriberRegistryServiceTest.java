@@ -59,7 +59,7 @@ class AnimalTopicSubscriberRegistryServiceTest {
 
     verify(subscriptionRepository, times(1)).save(any(Subscription.class));
     verify(subscriberNotificationInfoProducer, times(1))
-        .sendApproveRequest(email, approver, ANIMAL_TOPIC);
+        .sendPendingApproveRequest(email, approver, ANIMAL_TOPIC);
   }
 
   @Test

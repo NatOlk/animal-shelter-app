@@ -31,5 +31,4 @@ public class AnimalNotificationHandlerRegistry {
       LOG.error("Can't find a handler for event");
     }
   }
-
 }

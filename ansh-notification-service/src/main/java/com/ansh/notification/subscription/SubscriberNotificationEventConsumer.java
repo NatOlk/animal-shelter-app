@@ -1,6 +1,6 @@
 package com.ansh.notification.subscription;
 
-import com.ansh.event.subscription.AnimalNotificationUserSubscribedEvent;
+import com.ansh.event.subscription.SubscriptionDecisionEvent;
 import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
 import com.ansh.utils.IdentifierMasker;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,15 +28,16 @@ public class SubscriberNotificationEventConsumer {
   @KafkaListener(topics = "${approveTopicId}", groupId = "animalGroupId")
   public void listen(ConsumerRecord<String, String> message) throws IOException {
 
-    AnimalNotificationUserSubscribedEvent event = new ObjectMapper().readValue(
-        message.value(),
-        AnimalNotificationUserSubscribedEvent.class);
+    SubscriptionDecisionEvent event = new ObjectMapper().readValue(message.value(),
+        SubscriptionDecisionEvent.class);
     String email = event.getEmail();
     String approver = event.getApprover();
     boolean reject = event.isReject();
-    LOG.debug("[approve topic] subscriber {} with approver {} isReject? {}",
-        IdentifierMasker.maskEmail(email),
-        IdentifierMasker.maskEmail(approver), reject);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("[approve topic] subscriber {} with approver {} isReject? {}",
+          IdentifierMasker.maskEmail(email),
+          IdentifierMasker.maskEmail(approver), reject);
+    }
     topicSubscriberRegistryService.handleSubscriptionApproval(email, approver, reject);
   }
 }
