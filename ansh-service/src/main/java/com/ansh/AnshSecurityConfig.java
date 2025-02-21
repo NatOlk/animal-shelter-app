@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@SuppressWarnings("squid:S4502") //use jwt tokens
 public class AnshSecurityConfig {
 
   @Autowired
