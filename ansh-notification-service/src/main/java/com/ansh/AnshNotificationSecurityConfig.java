@@ -11,16 +11,15 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 @EnableWebSecurity
-@SuppressWarnings("squid:S4502") //use jwt tokens
 public class AnshNotificationSecurityConfig {
 
   @Autowired
   private ApiKeyAuthFilter apiKeyAuthFilter;
 
   @Bean
+  @SuppressWarnings("squid:S4502") //use jwt tokens
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/**").permitAll()
