@@ -61,7 +61,7 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
       <Spacer y={5} />
       <Button color="default" variant="faded" onPress={() => hasFetched.current = false}>
         <div className="flex items-center gap-x-2">
-          <span>Reload subscribers</span><TfiReload size={20} />
+          <span>Reload subscribers without an approver</span><TfiReload size={20} />
         </div>
       </Button>
       <Spacer y={5} />
