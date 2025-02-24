@@ -46,7 +46,7 @@ const EditableFieldBase: React.FC<EditableFieldBaseProps> = ({
                     defaultSelectedKeys={[fieldValue]}
                     isRequired
                     aria-label="Editable"
-                    className="w-full md:w-28 editable-cell-field"
+                    className="w-full w-28 editable-cell-field"
                     onChange={(e) => setFieldValue(e.target.value)}>
                     {values.map((v) => (
                         <SelectItem key={v}>{v}</SelectItem>
@@ -74,7 +74,7 @@ const EditableFieldBase: React.FC<EditableFieldBaseProps> = ({
 
         return (
             <Input
-                className="w-full md:w-28 editable-cell-field"
+                className="w-full w-28 editable-cell-field"
                 value={fieldValue}
                 onChange={(e) => setFieldValue(e.target.value)}
             />

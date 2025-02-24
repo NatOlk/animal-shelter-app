@@ -65,7 +65,7 @@ const AddVaccination = ({ config, animalId, onError }: AddVaccinationProps) => {
                 <Select
                     name="vaccine"
                     defaultSelectedKeys={["Rabies"]}
-                    className="w-full md:w-32"
+                    className="w-full w-32"
                     aria-label="Vaccine"
                     onChange={handleInputChange}>
                     {config.vaccines.map((vaccine) => (
