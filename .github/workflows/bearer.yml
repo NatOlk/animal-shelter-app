@@ -29,7 +29,19 @@ jobs:
           format: sarif
           output: results.sarif
           exit-code: 0
-      # Upload SARIF file generated in previous step
+
+      # Changing SARIF-file if result is not an array
+      - name: Fix SARIF file format
+        if: always()
+        run: |
+          if [ -f results.sarif ]; then
+            echo "Fixing SARIF file..."
+            jq '(.runs[0].results) |= if type=="array" then . else [] end' results.sarif > results-fixed.sarif
+            mv results-fixed.sarif results.sarif
+          else
+            echo "No SARIF file found."
+          fi
+
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
