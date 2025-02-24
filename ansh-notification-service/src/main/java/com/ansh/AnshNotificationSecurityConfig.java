@@ -17,7 +17,7 @@ public class AnshNotificationSecurityConfig {
   private ApiKeyAuthFilter apiKeyAuthFilter;
 
   @Bean
-  @SuppressWarnings("squid:S4502") //use jwt tokens
+  @SuppressWarnings("squid:S4502")
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .csrf(AbstractHttpConfigurer::disable)
