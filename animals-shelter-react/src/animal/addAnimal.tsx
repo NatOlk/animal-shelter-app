@@ -69,7 +69,7 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
                 <Input
                     name="name"
                     value={animal.name}
-                    className="w-full md:w-32"
+                    className="w-full w-32"
                     aria-label="Animal Name"
                     onChange={handleInputChange}
                     isRequired />
@@ -78,7 +78,7 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
                 <Select
                     name="species"
                     defaultSelectedKeys={["Cat"]}
-                    className="w-full md:w-28"
+                    className="w-full w-28"
                     variant="bordered"
                     isRequired
                     aria-label="Animal Species"
@@ -91,7 +91,7 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
             <TableCell>
                 <Select
                     name="primaryColor"
-                    className="w-full md:w-28"
+                    className="w-full w-28"
                     defaultSelectedKeys={["White"]}
                     isRequired
                     aria-label="Animal Primary Color"
@@ -106,7 +106,7 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
                     name="breed"
                     value={animal.breed}
                     onChange={handleInputChange}
-                    className="w-full md:w-24"
+                    className="w-full w-24"
                     aria-label="Animal Breed" />
             </TableCell>
             <TableCell>
@@ -114,7 +114,7 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
                     name="implantChipId"
                     value={animal.implantChipId}
                     isRequired
-                    className="w-full md:w-36"
+                    className="w-full w-36"
                     onChange={handleInputChange}
                     aria-label="Animal Implant Chip" />
             </TableCell>
@@ -122,7 +122,7 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
                 <Select
                     name="gender"
                     defaultSelectedKeys={["F"]}
-                    className="w-full md:w-16"
+                    className="w-full w-16"
                     isRequired
                     aria-label="Animal Gender"
                     onChange={handleInputChange}>
@@ -141,7 +141,7 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
                 <Input
                     name="pattern"
                     value={animal.pattern}
-                    className="w-full md:w-24"
+                    className="w-full w-24"
                     aria-label="Animal Pattern"
                     onChange={handleInputChange} />
             </TableCell>

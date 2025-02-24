@@ -60,14 +60,15 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
           title={String(error)}
         />
       )}
-      <Table>
+      <Table className="table-fixed w-full">
         <TableHeader>
-          <TableColumn>#</TableColumn>
+          <TableColumn className="w-4">#</TableColumn>
           <TableColumn>Email</TableColumn>
           <TableColumn>Approver</TableColumn>
           <TableColumn>Topic</TableColumn>
-          <TableColumn className="w-full md:w-16">Accepted</TableColumn>
-          <TableColumn className="w-full md:w-16">Actions</TableColumn>
+          <TableColumn className="w-16">Approved?</TableColumn>
+          <TableColumn className="w-16">Accepted?</TableColumn>
+          <TableColumn className="w-16">Actions</TableColumn>
         </TableHeader>
         {allSubscribers.length > 0 ? (
           <TableBody>
@@ -82,8 +83,9 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
                 <TableCell>{subscriber.email}</TableCell>
                 <TableCell>{subscriber.approver}</TableCell>
                 <TableCell>{subscriber.topic}</TableCell>
+                <TableCell>{subscriber.approved ? 'Yes' : 'No'}</TableCell>
                 <TableCell>{subscriber.accepted ? 'Yes' : 'No'}</TableCell>
-                <TableCell className="w-full md:w-24">
+                <TableCell className="w-24">
                   {subscriber.approved && (
                     <Tooltip content="Unsubscribe" placement="bottom">
                       <Button

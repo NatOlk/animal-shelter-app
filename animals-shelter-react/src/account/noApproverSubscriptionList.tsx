@@ -75,14 +75,13 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
           title={String(error)}
         />
       )}
-      <Table>
+      <Table className="table-fixed w-full">
         <TableHeader>
-          <TableColumn>#</TableColumn>
+          <TableColumn className="w-4">#</TableColumn>
           <TableColumn>Email</TableColumn>
-          <TableColumn>Approver</TableColumn>
+          <TableColumn className="w-16">Approver</TableColumn>
           <TableColumn>Topic</TableColumn>
-          <TableColumn className="w-full md:w-16">Accepted</TableColumn>
-          <TableColumn className="w-full md:w-16">Actions</TableColumn>
+          <TableColumn className="w-16">Actions</TableColumn>
         </TableHeader>
         {unapprovedSubscribers.length > 0 ? (
           <TableBody>
@@ -92,8 +91,7 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
                 <TableCell>{subscriber.email}</TableCell>
                 <TableCell>{subscriber.approver || "N/A"}</TableCell>
                 <TableCell>{subscriber.topic}</TableCell>
-                <TableCell>No</TableCell>
-                <TableCell className="w-full md:w-24 flex space-x-2">
+                <TableCell className="w-full w-24 flex space-x-2">
                   <Tooltip content="Approve">
                     <Button color="default" variant="light" className="p-2 min-w-2 h-auto"
                       onPress={() => handleApprove(subscriber.email)}>
