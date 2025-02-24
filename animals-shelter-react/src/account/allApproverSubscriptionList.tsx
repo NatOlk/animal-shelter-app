@@ -35,13 +35,13 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
     fetchSubscribers();
   }, [userProfile.email]);
 
-  const handleUnsubscribe = async (token: string) => {
+  const handleUnsubscribe = async (email:string, token: string) => {
     try {
       await fetch(`/ansh/notification/external/animal-notify-unsubscribe/${token}`, {
         method: 'GET',
       });
       setAllSubscribers((prevSubscribers) =>
-        prevSubscribers.filter((subscriber) => subscriber.token !== token)
+        prevSubscribers.filter((subscriber) => subscriber.email !== email)
       );
     } catch (error) {
       setError(error);
@@ -89,7 +89,7 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
                       <Button
                         color="default" variant="light"
                         className="p-2 min-w-2 h-auto"
-                        onPress={() => handleUnsubscribe(subscriber.token)}>
+                        onPress={() => handleUnsubscribe(subscriber.email, subscriber.token)}>
                         <HiOutlineUserRemove />
                       </Button>
                     </Tooltip>

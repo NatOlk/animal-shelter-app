@@ -30,13 +30,13 @@ public class SubscriptionController {
   @GetMapping("/external/animal-notify-unsubscribe/{token}")
   public String unsubscribe(@PathVariable String token) {
     animalTopicSubscriberRegistryService.unregisterSubscriber(token);
-    return STR."Subscription with token \{token} removed";
+    return STR."Subscription is removed";
   }
 
   @GetMapping("/external/animal-notify-subscribe-check/{token}")
   public String checkSubscription(@PathVariable String token) {
     boolean isAccepted = animalTopicSubscriberRegistryService.acceptSubscription(token);
-    return STR."Subscription with token \{token} is \{isAccepted}";
+    return STR."Your subscription is \{isAccepted ? "accepted" : "not accepted"}";
   }
 
   @PostMapping("/internal/animal-notify-all-approver-subscriptions")
