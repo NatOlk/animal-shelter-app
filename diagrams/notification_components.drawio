@@ -1,6 +1,6 @@
-<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" modified="2025-02-26T10:25:33.124Z" etag="dO3kdL-id5wz_GC7F7kD" version="22.1.22" type="embed">
+<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" modified="2025-02-26T10:30:04.313Z" etag="fvdLr5N-OR4p7DvVlhN0" version="22.1.22" type="embed">
   <diagram name="Page-1" id="5f0bae14-7c28-e335-631c-24af17079c00">
-    <mxGraphModel dx="2483" dy="1616" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+    <mxGraphModel dx="1874" dy="1279" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -17,7 +17,7 @@
           <mxGeometry x="-50" y="1010" width="1020" height="290" as="geometry" />
         </mxCell>
         <mxCell id="89" value="" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;strokeWidth=2;fillColor=none;fontColor=#ffffff;strokeColor=#0000FF;" parent="1" vertex="1">
-          <mxGeometry x="-60" y="640" width="1020" height="340" as="geometry" />
+          <mxGeometry x="-60" y="630" width="1020" height="350" as="geometry" />
         </mxCell>
         <mxCell id="5" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" parent="1" vertex="1">
           <mxGeometry x="760.85" y="109" width="107.15" height="90" as="geometry" />
@@ -111,7 +111,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="126" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;&lt;b&gt;3. Send animal event&lt;/b&gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="1" vertex="1" connectable="0">
-          <mxGeometry x="659.9981227674326" y="668.2450479774066" as="geometry" />
+          <mxGeometry x="611.9981227674326" y="649.9950479774066" as="geometry" />
         </mxCell>
         <mxCell id="130" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.authenticated_user;" parent="1" vertex="1">
           <mxGeometry x="722" y="-320" width="78" height="78" as="geometry" />
@@ -188,6 +188,9 @@
         </mxCell>
         <mxCell id="171" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=#2D7600;fillColor=#60a917;shape=mxgraph.azure.message;pointerEvents=1;fontColor=#ffffff;" vertex="1" parent="1">
           <mxGeometry x="435" y="-290" width="50" height="37.5" as="geometry" />
+        </mxCell>
+        <mxCell id="172" value="&lt;b&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;5. Send emails&amp;nbsp;&lt;/font&gt;&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="492" y="-35" width="120" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
