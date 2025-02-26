@@ -3,6 +3,12 @@ name: 🐾 Animal Shelter Docker Compose (without nginx)
 on:
   push:
     branches: [ "main", "master" ]
+    paths-ignore:
+      - '**/*.png'
+      - '**/*.jpg'
+      - '**/*.jpeg'
+      - '**/*.svg'
+      - '**/*.drawio'
   pull_request:
     branches: [ "main", "master" ]
 
