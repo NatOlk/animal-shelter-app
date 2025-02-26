@@ -52,6 +52,10 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
 Here you can see a diagram showing the subscription approval and acceptance process.
 
 ![](diagrams/subscription_components.jpg)
+
+Here you can see a diagram showing the notification process.
+
+![](diagrams/notification_components.jpg)
 ## **Technologies**
 
 - **Frontend**: React, Vite, Apollo Client (for GraphQL operations), NextUI (for styling) Renamed to HeroUI
