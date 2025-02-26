@@ -20,14 +20,7 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
 ### **1. Frontend (React + TypeScript + Vite)**
 
 - **Animal and Vaccination Management**:
-    - Add new animals;
-    - Delete animals;
-    - Update animals;
-    - View animals list;
-    - Add new vaccination;
-    - Delete vaccination;
-    - Update vaccination;
-    - View vaccinations list.
+    - CRUD operations.
 - **User Management**:
     - User registration (will be implemented soon);
     - View user profiles.
@@ -59,21 +52,11 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
 Here you can see a diagram showing the subscription approval and acceptance process.
 
 ![](diagrams/subscription_components.jpg)
-
 ## **Technologies**
 
-- **Frontend**:
-    - React
-    - Vite
-    - Apollo Client (for GraphQL operations)
-    - NextUI (for styling) Renamed to HeroUI
-- **Backend**:
-    - Spring Boot
-    - PostgreSQL (database)
-    - Redis (subscriber cache)
-    - Apache Kafka (message queue)
-- **Containerization**:
-    - Docker & Docker Compose
+- **Frontend**: React, Vite, Apollo Client (for GraphQL operations), NextUI (for styling) Renamed to HeroUI
+- **Backend**: Spring Boot, PostgreSQL (database), Redis (subscriber cache), Apache Kafka (message queue)
+- **Containerization**: Docker & Docker Compose
 
 ---
 
@@ -82,7 +65,6 @@ Here you can see a diagram showing the subscription approval and acceptance proc
 ### **Prerequisites**
 
 - Docker and Docker Compose installed on your machine.
-- maven to build applications and npm for frontend development.
 
 ### **Steps to Run**
 
