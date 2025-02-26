@@ -56,6 +56,9 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
     - Sends emails to subscribers.
 
 ---
+Here you can see a diagram showing the subscription approval and acceptance process.
+
+![](diagrams/subscription_components.jpg)
 
 ## **Technologies**
 
