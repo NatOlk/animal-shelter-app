@@ -51,6 +51,12 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
 ---
 Here you can see a diagram showing the subscription approval and acceptance process.
 
+>Anyone can request a subscription to their email. There will be several subscription options, 
+starting with a widget on an external website that shows a small image and allows users to enter
+their email—like on a news site or a city website. The subscription request may also include a manager 
+for approval, or it could be submitted without one. 
+Additionally, requests can come through a shelter's website via a phone call or letter.
+> 
 ![](diagrams/subscription_components.jpg)
 
 Here you can see a diagram showing the notification process.
