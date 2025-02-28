@@ -51,7 +51,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @Test
   void shouldApproveSubscriber() throws Exception {
-    mockMvc.perform(post("/animal-notify-approve-subscriber")
+    mockMvc.perform(post("/api/animal-notify-approve-subscriber")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"email\":\"" + TEST_EMAIL + "\",\"approver\":\"" + APPROVER_EMAIL + "\"}"))
@@ -60,7 +60,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @Test
   void shouldRejectSubscriber() throws Exception {
-    mockMvc.perform(post("/animal-notify-reject-subscriber")
+    mockMvc.perform(post("/api/animal-notify-reject-subscriber")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"email\":\"" + TEST_EMAIL + "\"}"))
@@ -74,7 +74,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     when(pendingSubscriptionService.getSubscribersByApprover(eq(APPROVER_EMAIL)))
         .thenReturn(List.of(mockSubscriber));
 
-    mockMvc.perform(post("/animal-notify-pending-subscribers")
+    mockMvc.perform(post("/api/animal-notify-pending-subscribers")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
@@ -87,7 +87,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     when(pendingSubscriptionService.getPendingSubscribersWithoutApprover())
         .thenReturn(Collections.emptyList());
 
-    mockMvc.perform(get("/animal-notify-pending-no-approver-subscribers")
+    mockMvc.perform(get("/api/animal-notify-pending-no-approver-subscribers")
             .header(AUTH_HEADER, BEARER_TOKEN))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").isEmpty());
@@ -105,7 +105,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     when(notificationService.getAllSubscriptionByApprover(eq(APPROVER_EMAIL)))
         .thenReturn(Mono.just(subscriptions));
 
-    MvcResult mvcResult = mockMvc.perform(post("/animal-notify-all-approver-subscriptions")
+    MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-all-approver-subscriptions")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
@@ -123,7 +123,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     when(notificationService.getAnimalInfoStatusByApprover(eq(APPROVER_EMAIL)))
         .thenReturn(Mono.just(mockStatus));
 
-    MvcResult mvcResult = mockMvc.perform(post("/animal-notify-approver-status")
+    MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-approver-status")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
@@ -133,7 +133,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @Test
   void shouldReturnEmptyForInvalidApproverStatusRequest() throws Exception {
-    MvcResult mvcResult = mockMvc.perform(post("/animal-notify-approver-status")
+    MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-approver-status")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{}"))

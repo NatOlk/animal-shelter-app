@@ -26,10 +26,11 @@ public class AnshSecurityConfig {
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
-  @SuppressWarnings("squid:S4502") //use jwt tokens
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .csrf(AbstractHttpConfigurer::disable)
+        .csrf(csrf -> csrf.ignoringRequestMatchers(
+            "/api/**", "/public/**", "/graphql"
+        ))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/public/auth/login").permitAll()
             .requestMatchers("/public/auth/logout").permitAll()

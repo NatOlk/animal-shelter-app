@@ -31,7 +31,7 @@ const UserProfile: React.FC = () => {
 
   const updateSubscriptionStatus = async () => {
     if (!data?.currentUserProfile.email) return;
-    const status = await apiFetch<'NONE' | 'PENDING' | 'ACTIVE'>(`/animal-notify-approver-status`, {
+    const status = await apiFetch<'NONE' | 'PENDING' | 'ACTIVE'>(`/api/animal-notify-approver-status`, {
       method: 'POST',
       body: { approver: data.currentUserProfile.email },
     });

@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -17,10 +16,11 @@ public class AnshNotificationSecurityConfig {
   private ApiKeyAuthFilter apiKeyAuthFilter;
 
   @Bean
-  @SuppressWarnings("squid:S4502")
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .csrf(AbstractHttpConfigurer::disable)
+        .csrf(csrf -> csrf.ignoringRequestMatchers(
+            "/external/**", "/internal/**"
+        ))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/**").permitAll()
             .requestMatchers("/external/**").permitAll()
