@@ -2,14 +2,14 @@
 
 ## **About the Project**
 
-This project was created as part of my learning journey and practice with (Spring Boot, React, Docker, GraphQL, PostgreSQL). All requirements and the architecture were designed and implemented by me based on my understanding of how modern web applications should function. The project demonstrates my ability to work across the full development lifecycle — from database design and backend logic to frontend development and application deployment.
+This project is part of my continuous learning and professional growth as a software developer. While I have solid experience in software development, I always strive to explore new technologies and refine my expertise. Working on this application allows me to stay up to date with modern development approaches, including Spring Boot, React, Docker, GraphQL, and PostgreSQL.
 
+The entire architecture and requirements were designed and are being implemented by me, following best practices for building scalable web applications. The project demonstrates my ability to work across the full development lifecycle — from database design and backend logic to frontend development and deployment.
 ## **Project Description**
 
 The **Animal Shelter Management System** is a comprehensive application designed for managing animal
 shelters. It consists of a **frontend** and **two microservices** that handle animals, vaccinations,
-users, and newsletter subscribers. The project utilizes modern technologies like **React**, **Spring
-Boot**, **Redis**, **Kafka**, and **Docker**.
+users, and newsletter subscribers.
 
 Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projects/1/views/1
 
