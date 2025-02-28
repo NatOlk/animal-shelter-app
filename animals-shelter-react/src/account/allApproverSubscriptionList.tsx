@@ -20,7 +20,7 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
     const fetchSubscribers = async () => {
       try {
         setLoading(true);
-        const subscriberData = await apiFetch<Subscriber[]>(`/animal-notify-all-approver-subscriptions`, {
+        const subscriberData = await apiFetch<Subscriber[]>(`/api/animal-notify-all-approver-subscriptions`, {
           method: 'POST',
           body: { approver: userProfile.email },
         });

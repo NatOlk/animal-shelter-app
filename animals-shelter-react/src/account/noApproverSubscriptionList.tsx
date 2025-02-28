@@ -20,7 +20,7 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
 
     const fetchSubscribers = async () => {
       try {
-        const unapprovedData = await apiFetch<Subscriber[]>(`/animal-notify-pending-no-approver-subscribers`);
+        const unapprovedData = await apiFetch<Subscriber[]>(`/api/animal-notify-pending-no-approver-subscribers`);
         setUnapprovedSubscribers(unapprovedData);
       } catch (error) {
         setError(error as Error);
@@ -34,7 +34,7 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
 
   const handleApprove = async (email: string) => {
     try {
-      await apiFetch('/animal-notify-approve-subscriber', {
+      await apiFetch('/api/animal-notify-approve-subscriber', {
         method: 'POST',
         body: { email, approver: userProfile.email },
       });
@@ -46,7 +46,7 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
 
   const handleReject = async (email: string) => {
     try {
-      await apiFetch('/animal-notify-reject-subscriber', {
+      await apiFetch('/api/animal-notify-reject-subscriber', {
         method: 'POST',
         body: { email },
       });
