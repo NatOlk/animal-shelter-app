@@ -156,4 +156,11 @@
       font-weight: bold;
       color: inherit;
   }
+
+  .animal-details-link-align {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        gap: 2px;
+    }
 }

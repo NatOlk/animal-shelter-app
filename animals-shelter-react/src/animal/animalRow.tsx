@@ -2,6 +2,7 @@ import React from "react";
 import { TableRow, TableCell, Button } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { BiInjection } from "react-icons/bi";
+import { FaTools } from "react-icons/fa";
 import DeleteAnimal from "./deleteAnimal";
 import EditableAnimalField from "./editableAnimalField";
 import { AnimalRowProps } from "../common/types";
@@ -24,7 +25,7 @@ const AnimalRow = ({ animal, config, onError }: AnimalRowProps) => (
                 entity={animal}
                 value={animal.primaryColor}
                 name="primaryColor"
-                values={config.colors}/>
+                values={config.colors} />
         </TableCell>
         <TableCell>
             <EditableAnimalField entity={animal} value={animal.breed} name="breed" />
@@ -35,14 +36,14 @@ const AnimalRow = ({ animal, config, onError }: AnimalRowProps) => (
                 entity={animal}
                 value={animal.gender}
                 name="gender"
-                values={config.genders}/>
+                values={config.genders} />
         </TableCell>
         <TableCell>
             <EditableAnimalField
                 entity={animal}
                 value={animal.birthDate}
                 name="birthDate"
-                isDate={true}/>
+                isDate={true} />
         </TableCell>
         <TableCell>
             <EditableAnimalField entity={animal} value={animal.pattern} name="pattern" />
@@ -59,6 +60,14 @@ const AnimalRow = ({ animal, config, onError }: AnimalRowProps) => (
                     {animal.vaccinationCount}
                     <BiInjection />
                 </Button>
+                &nbsp;
+                <Link
+                    to={`/animals/${animal.id}`}
+                    state={{ id: animal.id }}
+                    color="primary"
+                    className="animal-details-link-align">
+                    <FaTools />
+                </Link>
                 &nbsp;
                 <DeleteAnimal id={animal.id} onError={onError} />
             </div>
