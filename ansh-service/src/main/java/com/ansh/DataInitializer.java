@@ -33,6 +33,15 @@ public class DataInitializer implements CommandLineRunner {
     sql = sql.replace(":defaultEmail", defaultEmail);
 
     jdbcTemplate.execute(sql);
-    LOG.debug("init SQL script executed with default email: {}", IdentifierMasker.maskEmail(defaultEmail));
+    LOG.debug("init default user SQL script executed with default email: {}", IdentifierMasker.maskEmail(defaultEmail));
+
+    ClassPathResource resourceAnimals = new ClassPathResource("init_animals.sql");
+    String sqlAnimals = StreamUtils.copyToString(resourceAnimals.getInputStream(), StandardCharsets.UTF_8);
+
+    sqlAnimals = sqlAnimals.replace(":defaultEmail", defaultEmail);
+
+    jdbcTemplate.execute(sqlAnimals);
+
+    LOG.debug("init animals SQL script executed with default email: {}", IdentifierMasker.maskEmail(defaultEmail));
   }
 }
