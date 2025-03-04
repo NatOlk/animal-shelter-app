@@ -8,6 +8,7 @@ import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.entity.PendingSubscriber;
+import io.micrometer.common.util.StringUtils;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
-import org.thymeleaf.util.StringUtils;
 
 @RestController
 @RequestMapping("/api")
