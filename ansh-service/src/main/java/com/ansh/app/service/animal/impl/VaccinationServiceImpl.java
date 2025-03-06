@@ -11,6 +11,7 @@ import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
 import com.ansh.repository.AnimalRepository;
 import com.ansh.repository.VaccinationRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -87,6 +89,7 @@ public class VaccinationServiceImpl implements VaccinationService {
   }
 
   @Override
+  @Transactional
   public Vaccination updateVaccination(@NonNull UpdateVaccinationInput vaccination)
       throws VaccinationNotFoundException, VaccinationUpdateException {
     Vaccination entity = vaccinationRepository.findById(vaccination.getId())
@@ -111,6 +114,9 @@ public class VaccinationServiceImpl implements VaccinationService {
       }
       vaccinationRepository.save(entity);
       LOG.debug("[vaccination] updated : {}", vaccination);
+    } catch (ObjectOptimisticLockingFailureException oe) {
+      throw new VaccinationUpdateException(
+          "Update conflict! Another user modified this vaccination.");
     } catch (Exception e) {
       throw new VaccinationUpdateException(STR."Could not update animal:\{e.getMessage()}");
     }

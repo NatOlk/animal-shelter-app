@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.util.List;
@@ -70,6 +71,9 @@ public class Animal {
   @JsonManagedReference
   @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Vaccination> vaccinations;
+
+  @Version
+  private long version;
 
   public void setImplantChipId(String implantChipId) {
     if (this.implantChipId != null) {
