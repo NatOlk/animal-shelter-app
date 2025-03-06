@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -76,6 +77,7 @@ public class AnimalServiceImpl implements AnimalService {
   }
 
   @Override
+  @Transactional
   public Animal updateAnimal(@NonNull UpdateAnimalInput animal)
       throws AnimalNotFoundException, AnimalUpdateException {
     Animal entity = animalRepository.findById(animal.getId())
@@ -102,6 +104,8 @@ public class AnimalServiceImpl implements AnimalService {
       }
       LOG.debug("[animal] updated : {}", animal);
       animalRepository.save(entity);
+    } catch (ObjectOptimisticLockingFailureException oe) {
+      throw new AnimalUpdateException("Update conflict! Another user modified this animal.");
     } catch (Exception e) {
       throw new AnimalUpdateException(STR."Could not update animal:\{e.getMessage()}");
     }

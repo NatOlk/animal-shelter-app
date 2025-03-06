@@ -1,3 +1,6 @@
+ALTER TABLE animals ALTER COLUMN version SET DEFAULT 0;
+ALTER TABLE vaccinations ALTER COLUMN version SET DEFAULT 0;
+
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
 VALUES ('2024-06-17', '2018-04-16', 'Persian', 'F', '11111111-21111111-1111', 'BoBo', '', 'Brown', 'Cat', 1);
 
