@@ -1,8 +1,8 @@
 package com.ansh.app.controller;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
-import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
+import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
@@ -27,9 +27,11 @@ public class SubscriptionController {
   @Autowired
   @Qualifier("notificationSubscriptionService")
   private NotificationSubscriptionService notificationService;
+
   @Autowired
   @Qualifier("animalInfoPendingSubscriptionService")
   private PendingSubscriptionService pendingSubscriptionService;
+
   @Autowired
   private UserProfileServiceImpl userProfileService;
 
@@ -77,7 +79,8 @@ public class SubscriptionController {
 
     notificationService.getAllSubscriptionByApprover(subscriptionRequest.getApprover())
         .subscribe(
-            output::setResult
+            output::setResult,
+            error -> output.setResult(Collections.emptyList())
         );
 
     return output;
@@ -99,7 +102,8 @@ public class SubscriptionController {
             status -> {
               userProfileService.updateNotificationStatusOfAuthUser(status);
               output.setResult(status);
-            }
+            },
+            error -> output.setResult(AnimalInfoNotifStatus.UNKNOWN)
         );
 
     return output;

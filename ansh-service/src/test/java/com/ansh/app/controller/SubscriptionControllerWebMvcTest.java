@@ -70,7 +70,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   @Test
   void shouldReturnPendingSubscribers() throws Exception {
     PendingSubscriber mockSubscriber = new PendingSubscriber();
-    mockSubscriber.setEmail(USERNAME);
+    mockSubscriber.setEmail(TEST_EMAIL);
     when(pendingSubscriptionService.getSubscribersByApprover(eq(APPROVER_EMAIL)))
         .thenReturn(List.of(mockSubscriber));
 
@@ -79,7 +79,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].email").value(USERNAME));
+        .andExpect(jsonPath("$[0].email").value(TEST_EMAIL));
   }
 
   @Test
@@ -99,9 +99,6 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     mockSubscription.setApprover(APPROVER_EMAIL);
     List<Subscription> subscriptions = List.of(mockSubscription);
 
-    DeferredResult<ResponseEntity<List<Subscription>>> deferredResult = new DeferredResult<>();
-    deferredResult.setResult(ResponseEntity.ok(subscriptions));
-
     when(notificationService.getAllSubscriptionByApprover(eq(APPROVER_EMAIL)))
         .thenReturn(Mono.just(subscriptions));
 
@@ -115,29 +112,60 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @Test
   void shouldReturnApproverStatus() throws Exception {
-    AnimalInfoNotifStatus mockStatus = AnimalInfoNotifStatus.ACTIVE;
-
-    DeferredResult<ResponseEntity<AnimalInfoNotifStatus>> deferredResult = new DeferredResult<>();
-    deferredResult.setResult(ResponseEntity.ok(mockStatus));
-
     when(notificationService.getAnimalInfoStatusByApprover(eq(APPROVER_EMAIL)))
-        .thenReturn(Mono.just(mockStatus));
+        .thenReturn(Mono.just(AnimalInfoNotifStatus.ACTIVE));
 
     MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-approver-status")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
         .andReturn();
-    assertEquals(mvcResult.getAsyncResult(), mockStatus);
+
+    assertEquals(mvcResult.getAsyncResult(), AnimalInfoNotifStatus.ACTIVE);
   }
 
   @Test
-  void shouldReturnEmptyForInvalidApproverStatusRequest() throws Exception {
+  void shouldReturnUnknownStatus_whenServiceFails() throws Exception {
+    when(notificationService.getAnimalInfoStatusByApprover(eq(APPROVER_EMAIL)))
+        .thenReturn(Mono.error(new RuntimeException("Service unavailable")));
+
     MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-approver-status")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{}"))
+            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
         .andReturn();
-    assertEquals(mvcResult.getAsyncResult(), AnimalInfoNotifStatus.NONE);
+
+    assertEquals(mvcResult.getAsyncResult(), AnimalInfoNotifStatus.UNKNOWN);
+  }
+
+  @Test
+  void shouldReturnEmptyList_whenServiceFails() throws Exception {
+    when(notificationService.getAllSubscriptionByApprover(eq(APPROVER_EMAIL)))
+        .thenReturn(Mono.error(new RuntimeException("Service unavailable")));
+
+    MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-all-approver-subscriptions")
+            .header(AUTH_HEADER, BEARER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+        .andReturn();
+
+    assertEquals(mvcResult.getAsyncResult(), Collections.emptyList());
+  }
+
+  @Test
+  void shouldReturnBadRequestForInvalidRequest() throws Exception {
+    mockMvc.perform(post("/api/animal-notify-approver-status")
+            .header(AUTH_HEADER, BEARER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{invalid-json}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void shouldReturnUnauthorized_whenNoAuthHeader() throws Exception {
+    mockMvc.perform(post("/api/animal-notify-approver-status")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+        .andExpect(status().isUnauthorized());
   }
 }
