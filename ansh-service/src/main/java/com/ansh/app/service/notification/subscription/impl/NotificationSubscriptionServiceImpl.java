@@ -4,6 +4,8 @@ import com.ansh.app.service.notification.subscription.NotificationSubscriptionSe
 import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.external.ExternalNotificationServiceClient;
+import com.ansh.utils.IdentifierMasker;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -34,9 +36,9 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
         allByApproverEndpoint,
         Map.of("approver", approver),
         new ParameterizedTypeReference<List<Subscription>>() {}
-    ).onErrorResume(throwable -> {
-      LOG.warn("Handling error in onErrorResume: {}", throwable.getMessage());
-      return Mono.empty();
+    ).onErrorResume(error -> {
+      LOG.warn("[approver subscriptions] Error {}", error.getMessage());
+      return Mono.just(Collections.emptyList());
     });
   }
 
@@ -46,8 +48,8 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
         statusByApproverEndpoint,
         Map.of("approver", approver),
         new ParameterizedTypeReference<AnimalInfoNotifStatus>() {}
-    ).onErrorResume(e -> {
-      LOG.warn("Returning fallback response for getAnimalInfoStatusByApprover");
+    ).onErrorResume(error -> {
+      LOG.warn("[approver status] Error {}", error.getMessage());
       return Mono.just(AnimalInfoNotifStatus.UNKNOWN);
     });
   }
