@@ -50,8 +50,7 @@ const DeleteAnimal: React.FC<DeleteProps> = ({ id, onError }) => {
             <Button
                 variant="light"
                 className="p-2 min-w-2 h-auto"
-                onPress={() => setIsModalOpen(true)}
-            >
+                onPress={() => setIsModalOpen(true)}>
                 <IoTrashOutline />
             </Button>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -68,8 +67,7 @@ const DeleteAnimal: React.FC<DeleteProps> = ({ id, onError }) => {
                             aria-label="Reason for removal"
                             onClear={() => setReason("")}
                             onChange={(e) => setReason(e.target.value)}
-                            isRequired
-                        />
+                            isRequired/>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="default" variant="bordered" size="sm" onPress={() => setIsModalOpen(false)}>
