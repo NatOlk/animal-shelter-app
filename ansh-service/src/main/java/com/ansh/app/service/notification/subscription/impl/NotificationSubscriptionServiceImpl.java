@@ -33,8 +33,11 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
     return externalNotificationServiceClient.post(
         allByApproverEndpoint,
         Map.of("approver", approver),
-        new ParameterizedTypeReference<>() {}
-    );
+        new ParameterizedTypeReference<List<Subscription>>() {}
+    ).onErrorResume(throwable -> {
+      LOG.warn("Handling error in onErrorResume: {}", throwable.getMessage());
+      return Mono.empty();
+    });
   }
 
   @Override
@@ -42,8 +45,11 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
     return externalNotificationServiceClient.post(
         statusByApproverEndpoint,
         Map.of("approver", approver),
-        new ParameterizedTypeReference<>() {}
-    );
+        new ParameterizedTypeReference<AnimalInfoNotifStatus>() {}
+    ).onErrorResume(e -> {
+      LOG.warn("Returning fallback response for getAnimalInfoStatusByApprover");
+      return Mono.just(AnimalInfoNotifStatus.UNKNOWN);
+    });
   }
 
   protected void setAllByApproverEndpoint(String allByApproverEndpoint) {

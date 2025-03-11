@@ -3,6 +3,7 @@ import Subscription from './subscription';
 import { Progress } from '@nextui-org/progress';
 import { Spacer, Tooltip } from '@nextui-org/react';
 import { TbBellRinging } from "react-icons/tb";
+import { CgUnavailable } from "react-icons/cg";
 import { SubscriptionStatusProps } from "../common/types";
 
 const UserAnimalTopicSubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ status }) => {
@@ -36,8 +37,17 @@ const UserAnimalTopicSubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ 
             and click the Unsubscribe button.</p>
           <Spacer y={10} />
           <Tooltip data-position="bottom" content="You are subscribed!">
-            <TbBellRinging size={32}/>
+            <TbBellRinging size={32} />
           </Tooltip>
+        </div>
+      );
+    case 'UNKNOWN':
+      return (
+        <div>
+          <p>The notification service is currently unavailable. We are working to restore the connection.</p>
+          <p>Your subscription status will be updated as soon as the service becomes available.</p>
+          <Spacer y={10} />
+           <CgUnavailable size={32}/>
         </div>
       );
     default:

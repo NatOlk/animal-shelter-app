@@ -57,6 +57,7 @@ public class UserProfile {
   }
 
   public enum AnimalInfoNotifStatus {
+    UNKNOWN,
     NONE,
     PENDING,
     ACTIVE
