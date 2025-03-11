@@ -12,6 +12,7 @@ import com.ansh.entity.subscription.Subscription;
 import com.ansh.app.service.notification.subscription.impl.AnimalInfoPendingSubscriptionServiceImpl;
 import com.ansh.app.service.notification.subscription.impl.NotificationSubscriptionServiceImpl;
 import com.ansh.repository.entity.PendingSubscriber;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -119,6 +120,25 @@ class SubscriptionControllerTest {
   }
 
   @Test
+  void shouldReturnEmptyList_whenServiceFails() throws InterruptedException {
+    when(notificationSubscriptionService.getAllSubscriptionByApprover(anyString()))
+        .thenReturn(Mono.error(new RuntimeException("Service unavailable")));
+
+    DeferredResult<List<Subscription>> deferredResult =
+        subscriptionController.getSubscribers(subscriptionRequest);
+
+    CountDownLatch latch = new CountDownLatch(1);
+    deferredResult.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertNotNull(deferredResult.getResult());
+    assertEquals(Collections.emptyList(), deferredResult.getResult());
+
+    verify(notificationSubscriptionService, times(1)).getAllSubscriptionByApprover(
+        subscriptionRequest.getApprover());
+  }
+
+  @Test
   void shouldReturnApproverStatus() throws InterruptedException {
     AnimalInfoNotifStatus status = AnimalInfoNotifStatus.ACTIVE;
     when(notificationSubscriptionService.getAnimalInfoStatusByApprover(anyString())).thenReturn(Mono.just(status));
@@ -136,5 +156,38 @@ class SubscriptionControllerTest {
 
     verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(subscriptionRequest.getApprover());
     verify(userProfileService, times(1)).updateNotificationStatusOfAuthUser(status);
+  }
+
+  @Test
+  void shouldReturnUnknownStatus_whenServiceFails() throws InterruptedException {
+    when(notificationSubscriptionService.getAnimalInfoStatusByApprover(anyString()))
+        .thenReturn(Mono.error(new RuntimeException("Service unavailable")));
+
+    DeferredResult<AnimalInfoNotifStatus> deferredResult =
+        subscriptionController.getApproverStatus(subscriptionRequest);
+
+    CountDownLatch latch = new CountDownLatch(1);
+    deferredResult.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertNotNull(deferredResult.getResult());
+    assertEquals(AnimalInfoNotifStatus.UNKNOWN, deferredResult.getResult());
+
+    verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(subscriptionRequest.getApprover());
+  }
+
+  @Test
+  void shouldHandleEmptyApproverGracefully() throws InterruptedException {
+    subscriptionRequest.setApprover("");
+
+    DeferredResult<List<Subscription>> deferredResult =
+        subscriptionController.getSubscribers(subscriptionRequest);
+
+    CountDownLatch latch = new CountDownLatch(1);
+    deferredResult.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertNotNull(deferredResult.getResult());
+    assertEquals(Collections.emptyList(), deferredResult.getResult());
   }
 }

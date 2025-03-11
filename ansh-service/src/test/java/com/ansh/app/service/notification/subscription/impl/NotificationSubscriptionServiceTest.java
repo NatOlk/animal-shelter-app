@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.external.ExternalNotificationServiceClient;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,6 +76,30 @@ class NotificationSubscriptionServiceTest {
   }
 
   @Test
+  void shouldReturnEmptyList_whenServiceFails() {
+    String approver = "approver@example.com";
+
+    when(externalNotificationServiceClient.post(
+        eq(allByApproverEndpoint),
+        eq(Map.of("approver", approver)),
+        eq(new ParameterizedTypeReference<List<Subscription>>() {})
+    )).thenReturn(Mono.error(new RuntimeException("Service unavailable")));
+
+    StepVerifier.create(notificationSubscriptionService.getAllSubscriptionByApprover(approver))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(0, result.size());
+        })
+        .verifyComplete();
+
+    verify(externalNotificationServiceClient).post(
+        eq(allByApproverEndpoint),
+        eq(Map.of("approver", approver)),
+        eq(new ParameterizedTypeReference<List<Subscription>>() {})
+    );
+  }
+
+  @Test
   void shouldReturnStatusByApprover() {
     String approver = "approver@example.com";
     AnimalInfoNotifStatus expectedStatus = AnimalInfoNotifStatus.ACTIVE;
@@ -96,6 +121,54 @@ class NotificationSubscriptionServiceTest {
         eq(statusByApproverEndpoint),
         eq(Map.of("approver", approver)),
         eq(new ParameterizedTypeReference<AnimalInfoNotifStatus>() {})
+    );
+  }
+
+  @Test
+  void shouldReturnUnknownStatus_whenServiceFails() {
+    String approver = "approver@example.com";
+
+    when(externalNotificationServiceClient.post(
+        eq(statusByApproverEndpoint),
+        eq(Map.of("approver", approver)),
+        eq(new ParameterizedTypeReference<AnimalInfoNotifStatus>() {})
+    )).thenReturn(Mono.error(new RuntimeException("Service unavailable")));
+
+    StepVerifier.create(notificationSubscriptionService.getAnimalInfoStatusByApprover(approver))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(AnimalInfoNotifStatus.UNKNOWN, result);
+        })
+        .verifyComplete();
+
+    verify(externalNotificationServiceClient).post(
+        eq(statusByApproverEndpoint),
+        eq(Map.of("approver", approver)),
+        eq(new ParameterizedTypeReference<AnimalInfoNotifStatus>() {})
+    );
+  }
+
+  @Test
+  void shouldHandleEmptyListFromService() {
+    String approver = "approver@example.com";
+
+    when(externalNotificationServiceClient.post(
+        eq(allByApproverEndpoint),
+        eq(Map.of("approver", approver)),
+        eq(new ParameterizedTypeReference<List<Subscription>>() {})
+    )).thenReturn(Mono.just(Collections.emptyList()));
+
+    StepVerifier.create(notificationSubscriptionService.getAllSubscriptionByApprover(approver))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(0, result.size());
+        })
+        .verifyComplete();
+
+    verify(externalNotificationServiceClient).post(
+        eq(allByApproverEndpoint),
+        eq(Map.of("approver", approver)),
+        eq(new ParameterizedTypeReference<List<Subscription>>() {})
     );
   }
 }
