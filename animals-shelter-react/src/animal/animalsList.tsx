@@ -15,7 +15,9 @@ const AnimalsList: React.FC = () => {
     const perPage = 8;
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [globalError, setGlobalError] = useState<string>("");
-    const { loading, error, data } = useQuery<{ allAnimals: Animal[] }>(ANIMALS_QUERY);
+    const { loading, error, data } = useQuery<{ allAnimals: Animal[] }>(ANIMALS_QUERY, {
+        fetchPolicy: "network-only",
+    });
     const config: Config | null = useConfig();
 
     const list = useAsyncList<Animal>({
