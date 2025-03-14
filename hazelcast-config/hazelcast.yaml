@@ -15,57 +15,23 @@ hazelcast:
           - localhost:5703
 
   map:
-    # === animals ===
     animals:
-      max-size:
-        policy: FREE_HEAP_PERCENTAGE
+      in-memory-format: BINARY
+      eviction:
+        eviction-policy: LRU
+        max-size-policy: FREE_HEAP_PERCENTAGE
         size: 80
-      eviction-policy: LRU
       time-to-live-seconds: 3600
-      near-cache:
-        invalidate-on-change: true
-        max-size: 500
-        time-to-live-seconds: 60
-        cache-local-entries: true
+      statistics-enabled: true
 
-    # === animal ===
-    animal:
-      max-size:
-        policy: FREE_HEAP_PERCENTAGE
-        size: 80
-      eviction-policy: LRU
-      time-to-live-seconds: 3600
-      near-cache:
-        invalidate-on-change: true
-        max-size: 500
-        time-to-live-seconds: 60
-        cache-local-entries: true
-
-    # === vaccinations ===
     vaccinations:
-      max-size:
-        policy: FREE_HEAP_PERCENTAGE
+      in-memory-format: BINARY
+      eviction:
+        eviction-policy: LRU
+        max-size-policy: FREE_HEAP_PERCENTAGE
         size: 80
-      eviction-policy: LRU
       time-to-live-seconds: 1800
-      near-cache:
-        invalidate-on-change: true
-        max-size: 500
-        time-to-live-seconds: 60
-        cache-local-entries: true
-
-    # === vaccination ===
-    vaccination:
-      max-size:
-        policy: FREE_HEAP_PERCENTAGE
-        size: 80
-      eviction-policy: LRU
-      time-to-live-seconds: 1800
-      near-cache:
-        invalidate-on-change: true
-        max-size: 500
-        time-to-live-seconds: 60
-        cache-local-entries: true
+      statistics-enabled: true
 
   serialization:
     allow-unsafe: true
@@ -73,7 +39,4 @@ hazelcast:
     enable-compression: true
 
   properties:
-    hazelcast.operation.thread.count: 8
-    hazelcast.io.thread.count: 4
-    hazelcast.logging.type: log4j2
-    hazelcast.diagnostics.enabled: true
+    hazelcast.logging.type: slf4j
