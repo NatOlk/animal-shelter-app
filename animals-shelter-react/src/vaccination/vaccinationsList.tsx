@@ -24,7 +24,8 @@ const VaccinationsList: React.FC = () => {
 
     const { loading, error, data } = useQuery<{ vaccinationByAnimalId: Vaccination[] }>(
         VACCINATIONS_QUERY, {
-        variables: { animalId: animalIdRef.current  }
+        variables: { animalId: animalIdRef.current  },
+        fetchPolicy: "network-only"
     }
     );
 

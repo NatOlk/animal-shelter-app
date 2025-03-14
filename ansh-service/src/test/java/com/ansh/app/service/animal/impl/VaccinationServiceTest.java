@@ -104,8 +104,12 @@ class VaccinationServiceTest {
   @Test
   void shouldDeleteVaccinationSuccessfully() throws VaccinationNotFoundException {
     Long vaccinationId = 1L;
+    Long animalId = 1L;
     Vaccination mockVaccination = new Vaccination();
     mockVaccination.setId(vaccinationId);
+    Animal mockAnimal = new Animal();
+    mockAnimal.setId(animalId);
+    mockVaccination.setAnimal(mockAnimal);
 
     when(vaccinationRepository.findById(vaccinationId)).thenReturn(Optional.of(mockVaccination));
 
