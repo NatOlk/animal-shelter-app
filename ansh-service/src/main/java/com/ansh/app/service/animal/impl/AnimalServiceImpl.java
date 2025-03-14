@@ -16,6 +16,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -34,17 +38,21 @@ public class AnimalServiceImpl implements AnimalService {
   private AnimalInfoNotificationService animalInfoNotificationService;
 
   @Override
+  @Cacheable(value = "animals", key = "'allAnimals'")
   public List<Animal> getAllAnimals() {
     return animalRepository.findAllByOrderByNameAsc();
   }
 
   @Override
+  @Cacheable(value = "animal", key = "#id")
   public Animal findById(Long id) throws AnimalNotFoundException {
     return animalRepository.findById(id)
         .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{id}"));
   }
 
   @Override
+  @CachePut(value = "animal", key = "#result.id")
+  @CacheEvict(value = "animals", allEntries = true)
   public Animal addAnimal(@NonNull AnimalInput animal) throws AnimalCreationException {
     try {
       Animal entity = Animal.builder()
@@ -78,6 +86,8 @@ public class AnimalServiceImpl implements AnimalService {
 
   @Override
   @Transactional
+  @CachePut(value = "animal", key = "#animal.id")
+  @CacheEvict(value = "animals", allEntries = true)
   public Animal updateAnimal(@NonNull UpdateAnimalInput animal)
       throws AnimalNotFoundException, AnimalUpdateException {
     Animal entity = animalRepository.findById(animal.getId())
@@ -114,6 +124,10 @@ public class AnimalServiceImpl implements AnimalService {
   }
 
   @Override
+  @Caching(evict = {
+      @CacheEvict(value = "animal", key = "#id"),
+      @CacheEvict(value = "animals", allEntries = true)
+  })
   public Animal removeAnimal(@NonNull Long id, String reason) throws AnimalNotFoundException {
     Animal animal = animalRepository.findById(id)
         .orElseThrow(() -> new AnimalNotFoundException(STR."Animal is not found \{id}"));
@@ -131,6 +145,7 @@ public class AnimalServiceImpl implements AnimalService {
 
   @Override
   @Transactional
+  @CachePut(value = "animal", key = "#id")
   public void updatePhotoUrl(Long id, String path) {
     animalRepository.updatePhotoPathById(id, path);
   }

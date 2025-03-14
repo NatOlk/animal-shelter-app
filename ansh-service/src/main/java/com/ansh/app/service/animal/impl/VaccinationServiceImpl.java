@@ -17,6 +17,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -37,11 +41,13 @@ public class VaccinationServiceImpl implements VaccinationService {
   private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
 
   @Override
+  @Cacheable(value = "vaccinations", key = "'allVaccinations'")
   public List<Vaccination> getAllVaccinations() {
     return vaccinationRepository.findAll();
   }
 
   @Override
+  @Cacheable(value = "vaccinations", key = "'animal-' + #animalId")
   public List<Vaccination> findByAnimalId(Long animalId) {
     return vaccinationRepository.findByAnimalId(animalId);
   }
@@ -52,6 +58,8 @@ public class VaccinationServiceImpl implements VaccinationService {
   }
 
   @Override
+  @CachePut(value = "vaccination", key = "#result.id")
+  @CacheEvict(value = "vaccinations", key = "'allVaccinations'")
   public Vaccination addVaccination(@NonNull VaccinationInput vaccination)
       throws VaccinationCreationException {
 
@@ -90,6 +98,8 @@ public class VaccinationServiceImpl implements VaccinationService {
 
   @Override
   @Transactional
+  @CachePut(value = "vaccination", key = "#vaccination.id")
+  @CacheEvict(value = "vaccinations", key = "'allVaccinations'")
   public Vaccination updateVaccination(@NonNull UpdateVaccinationInput vaccination)
       throws VaccinationNotFoundException, VaccinationUpdateException {
     Vaccination entity = vaccinationRepository.findById(vaccination.getId())
@@ -125,6 +135,10 @@ public class VaccinationServiceImpl implements VaccinationService {
   }
 
   @Override
+  @Caching(evict = {
+      @CacheEvict(value = "vaccination", key = "#id"),
+      @CacheEvict(value = "vaccinations", key = "'allVaccinations'")
+  })
   public Vaccination deleteVaccination(@NonNull Long id) throws VaccinationNotFoundException {
     Vaccination vaccination = vaccinationRepository.findById(id)
         .orElseThrow(
