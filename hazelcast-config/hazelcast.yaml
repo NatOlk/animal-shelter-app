@@ -2,7 +2,7 @@ hazelcast:
   cluster-name: ansh-cluster
 
   network:
-    public-address: localhost:5701
+    public-address: ansh-hazelcast:5701
 
     join:
       multicast:
@@ -10,9 +10,9 @@ hazelcast:
       tcp-ip:
         enabled: true
         member-list:
-          - localhost:5701
-          - localhost:5702
-          - localhost:5703
+          - ansh-hazelcast:5701
+          - ansh-hazelcast:5702
+          - ansh-hazelcast:5703
 
   map:
     animals:
@@ -40,3 +40,5 @@ hazelcast:
 
   properties:
     hazelcast.logging.type: slf4j
+    hazelcast.client.heartbeat.interval: 10000
+    hazelcast.client.heartbeat.timeout: 30000
