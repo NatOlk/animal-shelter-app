@@ -116,7 +116,7 @@ services:
       - ./config/keystore.p12:/app/keystore.p12
       - ./config/truststore.p12:/app/truststore.p12
     environment:
-      JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=BerlinApril2025 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
+      JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=${SSL_KEY_STORE_PASSWORD} -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-animal-shelter-notification:5432/animal_shelter_notification
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD_NOTIFICATION}
@@ -196,7 +196,7 @@ services:
       - ansh-service-logs:/app/logs
       - ansh-service-uploads:/uploads
     environment:
-      JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=BerlinApril2025 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/app/truststore.p12 -Dserver.ssl.key-store=file:/app/keystore.p12 -Djavax.net.ssl.trustStorePassword=${SSL_KEY_STORE_PASSWORD} -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-ansh:9092
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-animal-shelter:5432/Animal_Shelter
       SPRING_DATASOURCE_USERNAME: postgres
