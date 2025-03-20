@@ -220,7 +220,13 @@ openssl req -newkey rsa:2048 -nodes -keyout cert.key -out cert.csr -subj "/C=DE/
 - 🔑 cert.key: The private key used for encryption.
 - 📜 cert.csr: The CSR contains details such as domain, organization, and country.
 
-###  🔒 Step 3. Generates a PKCS12 keystore (keystore.p12) containing the private key and self-signed certificate.
+### 🛡️ Step 3. Create a Self-Signed Certificate
+
+```bash
+  openssl x509 -req -days 365 -in cert.csr -signkey cert.key -out cert.crt
+```
+
+###  🔒 Step 4. Generates a PKCS12 keystore (keystore.p12) containing the private key and self-signed certificate.
 
 ```bash
 keytool -genkeypair -alias ansh-cert -keyalg RSA -keysize 2048 -validity 365 -dname "CN=nginx-proxy-ansh, OU=IT, O=PetProject, L=Berlin, ST=Berlin, C=DE" -ext "SAN=dns:nginx-proxy-ansh" -keystore keystore.p12 -storetype PKCS12 -storepass your_ssl_key_store_password
@@ -228,7 +234,7 @@ keytool -genkeypair -alias ansh-cert -keyalg RSA -keysize 2048 -validity 365 -dn
 - 📂 keystore.p12: Stores the private key and self-signed certificate.
 - 🏷️ Alias (ansh-cert): A unique name for the certificate.
 
-###  🛡 Step 4. Creates a self-signed certificate (cert.crt) valid for 365 days.
+###  🛡 Step 5. Creates a self-signed certificate (cert.crt) valid for 365 days.
 
 ```bash
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout cert.key -out cert.crt -subj "/C=DE/ST=Berlin/L=Berlin/O=PetProject/OU=IT/CN=nginx-proxy-ansh"
@@ -236,7 +242,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout cert.key -out cert.c
 - 🔑 cert.key: The private key.
 - 📜 cert.crt: A self-signed certificate valid for 365 days.
 
-###  📜 Step 5. Imports the self-signed certificate into a truststore (truststore.p12), making it trusted.
+###  📜 Step 6. Imports the self-signed certificate into a truststore (truststore.p12), making it trusted.
 
 ```bash
 keytool -import -trustcacerts -file cert.crt -alias ansh-cert -keystore truststore.p12 -storepass your_ssl_key_store_password
