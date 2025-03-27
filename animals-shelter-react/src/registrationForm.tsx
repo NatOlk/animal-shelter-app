@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Spacer } from '@nextui-org/react';
 import { RegisterResponse } from "../common/types";
 
-const RegistrationForm: React.FC = () => {
+function RegistrationForm() {
   const [identifier, setIdentifier] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -12,7 +12,7 @@ const RegistrationForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  async function handleSubmit() {
     if (loading) return;
 
     setErrorMessage('');
@@ -32,7 +32,7 @@ const RegistrationForm: React.FC = () => {
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (!arePasswordsEqual(password, confirmPassword)) {
       setErrorMessage('Passwords do not match');
       return;
     }
@@ -42,14 +42,8 @@ const RegistrationForm: React.FC = () => {
     try {
       const response = await fetch('/ansh/api/public/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          identifier,
-          email,
-          password,
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, email, password })
       });
 
       if (response.ok) {
@@ -69,19 +63,19 @@ const RegistrationForm: React.FC = () => {
         setErrorMessage(errorData.message || 'Registration failed');
       }
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage('Registration failed');
-      }
+      setErrorMessage(error instanceof Error ? error.message : 'Registration failed');
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const validateEmail = (email: string) => {
+  function validateEmail(email: string) {
     return /\S+@\S+\.\S+/.test(email);
-  };
+  }
+
+  function arePasswordsEqual(p1: string, p2: string) {
+    return p1 === p2;
+  }
 
   return (
     <Form
@@ -92,9 +86,7 @@ const RegistrationForm: React.FC = () => {
       }}
       autoComplete="off">
       {errorMessage && (
-        <div style={{ color: 'red', marginBottom: '1rem' }}>
-          {errorMessage}
-        </div>
+        <div style={{ color: 'red', marginBottom: '1rem' }}>{errorMessage}</div>
       )}
       <div className="flex flex-col gap-4 max-w-md">
         <Input
@@ -125,8 +117,7 @@ const RegistrationForm: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           labelPlacement="outside"
-          isRequired
-        />
+          isRequired />
         <Input
           label="Confirm Password"
           placeholder="Repeat your password"
@@ -150,6 +141,6 @@ const RegistrationForm: React.FC = () => {
       </div>
     </Form>
   );
-};
+}
 
 export default RegistrationForm;
