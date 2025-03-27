@@ -39,6 +39,10 @@ const UserProfile: React.FC = () => {
   };
 
   const handleRoleChange = (keys: Set<string>) => {
+    if (isAdmin && !keys.has("ADMIN")) {
+      alert("You cannot remove the ADMIN role from yourself.");
+      return;
+    }
     setSelectedRoles(keys);
     if (isAdmin && user?.name) {
       try {
@@ -48,7 +52,6 @@ const UserProfile: React.FC = () => {
             roles: Array.from(keys),
           },
         });
-        console.log("Roles updated successfully");
       } catch (error) {
         console.error("Failed to update roles:", error);
       }

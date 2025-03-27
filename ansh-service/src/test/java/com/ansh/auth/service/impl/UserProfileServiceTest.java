@@ -1,6 +1,8 @@
 package com.ansh.auth.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -9,6 +11,7 @@ import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.auth.repository.UserProfileRepository;
 import com.ansh.entity.account.UserProfile.Role;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,5 +99,40 @@ class UserProfileServiceTest {
 
     assertEquals(status, mockUserProfile.getAnimalNotifyStatus());
     verify(userRepository, times(1)).save(mockUserProfile);
+  }
+
+
+  @Test
+  void shouldUpdateUserRolesSuccessfully() {
+    String username = "john";
+    List<String> roles = List.of("ADMIN", "DOCTOR");
+
+    UserProfile user = new UserProfile();
+    user.setName(username);
+
+    when(userRepository.findByIdentifier(username)).thenReturn(Optional.of(user));
+    when(userRepository.save(any(UserProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    UserProfile updatedUser = userProfileService.updateUserRoles(username, roles);
+
+    assertNotNull(updatedUser);
+    assertEquals(Set.of(UserProfile.Role.ADMIN, UserProfile.Role.DOCTOR), updatedUser.getRoles());
+
+    verify(userRepository, times(1)).findByIdentifier(username);
+    verify(userRepository, times(1)).save(user);
+  }
+
+  @Test
+  void shouldReturnNull_whenUserNotFound() {
+    String username = "notfound";
+    List<String> roles = List.of("USER");
+
+    when(userRepository.findByIdentifier(username)).thenReturn(Optional.empty());
+
+    UserProfile result = userProfileService.updateUserRoles(username, roles);
+
+    assertNull(result);
+    verify(userRepository, times(1)).findByIdentifier(username);
+    verify(userRepository, never()).save(any());
   }
 }

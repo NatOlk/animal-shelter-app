@@ -1,5 +1,6 @@
 package com.ansh.app.service.user;
 
+import com.ansh.app.service.exception.user.UserAlreadyExistException;
 import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import java.util.List;
@@ -27,9 +28,9 @@ public interface UserProfileService {
    * @param email the email address of the user to be registered (must be unique)
    * @param password the password for the new user (will be encoded before saving)
    * @return the created UserProfile entity
-   * @throws IllegalArgumentException if the email is already in use or invalid
+   * @throws UserAlreadyExistException if the email is already in use or invalid
    */
-  UserProfile registerUser(@NonNull String identifier, @NonNull String email, @NonNull String password) throws IllegalArgumentException;
+  UserProfile registerUser(@NonNull String identifier, @NonNull String email, @NonNull String password) throws UserAlreadyExistException;
 
   /**
    * Updates the animal notification subscription status for a user.

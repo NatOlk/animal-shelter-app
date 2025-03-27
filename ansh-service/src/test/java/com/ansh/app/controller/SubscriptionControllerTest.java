@@ -1,16 +1,20 @@
 package com.ansh.app.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
+import com.ansh.app.service.notification.subscription.impl.AnimalInfoPendingSubscriptionServiceImpl;
+import com.ansh.app.service.notification.subscription.impl.NotificationSubscriptionServiceImpl;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.app.service.notification.subscription.impl.AnimalInfoPendingSubscriptionServiceImpl;
-import com.ansh.app.service.notification.subscription.impl.NotificationSubscriptionServiceImpl;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +54,8 @@ class SubscriptionControllerTest {
 
   @Test
   void shouldApproveSubscriber() throws UnauthorizedActionException {
-    doNothing().when(animalInfoPendingSubscriptionService).approveSubscriber(anyString(), anyString());
+    doNothing().when(animalInfoPendingSubscriptionService)
+        .approveSubscriber(anyString(), anyString());
 
     subscriptionController.approve(subscriptionRequest);
 
@@ -60,7 +65,8 @@ class SubscriptionControllerTest {
 
   @Test
   void shouldRejectSubscriber() throws UnauthorizedActionException {
-    doNothing().when(animalInfoPendingSubscriptionService).rejectSubscriber(anyString(), anyString());
+    doNothing().when(animalInfoPendingSubscriptionService)
+        .rejectSubscriber(anyString(), anyString());
 
     subscriptionController.reject(subscriptionRequest);
 
@@ -72,7 +78,8 @@ class SubscriptionControllerTest {
   void shouldReturnPendingSubscribers() {
     PendingSubscriber subscriber = new PendingSubscriber();
     List<PendingSubscriber> subscribers = List.of(subscriber);
-    when(animalInfoPendingSubscriptionService.getSubscribersByApprover(anyString())).thenReturn(subscribers);
+    when(animalInfoPendingSubscriptionService.getSubscribersByApprover(anyString())).thenReturn(
+        subscribers);
 
     List<PendingSubscriber> result = subscriptionController.getPendingSubscribers(
         subscriptionRequest);
@@ -141,7 +148,8 @@ class SubscriptionControllerTest {
   @Test
   void shouldReturnApproverStatus() throws InterruptedException {
     AnimalInfoNotifStatus status = AnimalInfoNotifStatus.ACTIVE;
-    when(notificationSubscriptionService.getAnimalInfoStatusByApprover(anyString())).thenReturn(Mono.just(status));
+    when(notificationSubscriptionService.getAnimalInfoStatusByApprover(anyString())).thenReturn(
+        Mono.just(status));
     doNothing().when(userProfileService).updateNotificationStatusOfAuthUser(status);
 
     DeferredResult<AnimalInfoNotifStatus> deferredResult =
@@ -154,7 +162,8 @@ class SubscriptionControllerTest {
     assertNotNull(deferredResult.getResult());
     assertEquals(status, deferredResult.getResult());
 
-    verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(subscriptionRequest.getApprover());
+    verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(
+        subscriptionRequest.getApprover());
     verify(userProfileService, times(1)).updateNotificationStatusOfAuthUser(status);
   }
 
@@ -173,7 +182,8 @@ class SubscriptionControllerTest {
     assertNotNull(deferredResult.getResult());
     assertEquals(AnimalInfoNotifStatus.UNKNOWN, deferredResult.getResult());
 
-    verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(subscriptionRequest.getApprover());
+    verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(
+        subscriptionRequest.getApprover());
   }
 
   @Test
