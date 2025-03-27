@@ -1,23 +1,13 @@
 package com.ansh.entity.account;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.*;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_profiles", schema = "public")
@@ -30,32 +20,39 @@ public class UserProfile {
   @EqualsAndHashCode.Include
   private Long id;
 
-  @Column(unique = true)
+  @Column(unique = true, nullable = false)
   @EqualsAndHashCode.Include
   private String email;
 
-  @Column(unique = true)
+  @Column(unique = true, nullable = false)
   private String name;
 
-  @Column
+  @Column(nullable = false)
   private String password;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "animal_notif_status", nullable = false)
   private AnimalInfoNotifStatus animalNotifyStatus = AnimalInfoNotifStatus.NONE;
 
-  @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-  @JoinTable(
-      name = "user_roles",
-      joinColumns = {@JoinColumn(name = "user_id")},
-      inverseJoinColumns = {@JoinColumn(name = "role_id")}
-  )
-  @ToString.Exclude
+  @Transient
   private Set<Role> roles = new HashSet<>();
 
-  public void addRole(Role role) {
-    this.roles.add(role);
-    role.getUsers().add(this);
+  @Column(name = "roles")
+  private String rolesRaw;
+
+  public Set<Role> getRoles() {
+    if (rolesRaw == null || rolesRaw.isBlank()) return Set.of();
+    return Arrays.stream(rolesRaw.split(","))
+        .map(String::trim)
+        .map(Role::valueOf)
+        .collect(Collectors.toSet());
+  }
+
+  public void setRoles(Set<Role> roles) {
+    this.roles = roles;
+    this.rolesRaw = roles.stream()
+        .map(Enum::name)
+        .collect(Collectors.joining(","));
   }
 
   public enum AnimalInfoNotifStatus {
@@ -64,5 +61,17 @@ public class UserProfile {
     PENDING,
     ACTIVE
   }
-}
 
+  public enum Role {
+
+    USER,
+
+    VOLUNTEER,
+
+    EMPLOYEE,
+
+    DOCTOR,
+
+    ADMIN
+  }
+}

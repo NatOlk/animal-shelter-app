@@ -26,7 +26,7 @@ const Login: React.FC = () => {
             });
 
             if (response.ok) {
-                const responseBody: { token: string; email: string; name: string } = await response.json();
+                const responseBody: { token: string; email: string; name: string, roles: [string] } = await response.json();
                 const token = responseBody.token;
                 if (!token) {
                     navigate('/login');
@@ -35,6 +35,7 @@ const Login: React.FC = () => {
                 const userData = {
                     name: responseBody.name,
                     email: responseBody.email,
+                    roles: responseBody.roles,
                 };
                 login(userData, token);
                 navigate('/');

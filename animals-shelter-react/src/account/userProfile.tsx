@@ -8,24 +8,34 @@ import { GET_CURRENT_USER_PROFILE } from '../common/graphqlQueries';
 import { apiFetch } from '../common/api';
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
-import { Spacer } from "@nextui-org/react";
 import { Tabs, Tab } from "@nextui-org/tabs";
 import { MdOutlineAlternateEmail, MdGroupAdd } from "react-icons/md";
 import { TbUsersGroup } from "react-icons/tb";
 import { RiAdminLine } from "react-icons/ri";
 import { HiOutlineBellAlert } from "react-icons/hi2";
+import { Spacer, Select, SelectItem } from "@nextui-org/react";
 import { UserProfileData } from "../common/types";
+import { useAuth } from "../common/authContext";
+
+const ALL_ROLES = ["USER", "EMPLOYEE", "VOLUNTEER", "DOCTOR", "ADMIN"];
 
 const UserProfile: React.FC = () => {
   const { loading, error, data } = useQuery<UserProfileData>(GET_CURRENT_USER_PROFILE, {
     fetchPolicy: "network-only",
   });
 
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes("ADMIN");
+  console.log(isAdmin);
   const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState<'NONE' | 'PENDING' | 'ACTIVE' | null>(null);
+  const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (data?.currentUserProfile) {
       setAnimalNotifyStatusProfile(data.currentUserProfile.animalNotifyStatus || "NONE");
+
+      const roles = data.currentUserProfile.roles || [];
+      setSelectedRoles(new Set(roles));
     }
   }, [data]);
 
@@ -38,16 +48,15 @@ const UserProfile: React.FC = () => {
     setAnimalNotifyStatusProfile(status || "NONE");
   };
 
+  const handleRoleChange = (keys: Set<string>) => {
+    setSelectedRoles(keys);
+    //TODO add roles changes
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   const { name, email } = data.currentUserProfile;
-  const roles = data.currentUserProfile.roles || [];
-  const parsedRoles = roles.map(roleStr => {
-    const match = /name=(\w+)/.exec(roleStr);
-    return match ? match[1] : roleStr;
-  });
-  const rolesDisplay = parsedRoles.join(", ");
 
   return (
     <div className="containerProfile">
@@ -55,7 +64,7 @@ const UserProfile: React.FC = () => {
         <Card className="w-full">
           <CardHeader className="flex gap-3">
             <div className="flex flex-col">
-              <h1>User </h1>
+              <h1>User</h1>
             </div>
           </CardHeader>
           <Divider />
@@ -72,7 +81,19 @@ const UserProfile: React.FC = () => {
                   </div>}>
                   <div className="profileCardTabContent">
                     <Spacer y={5} />
-                    Your current roles: {rolesDisplay}
+                    <Select
+                      label="Your current roles"
+                      selectionMode="multiple"
+                      selectedKeys={selectedRoles}
+                      onSelectionChange={handleRoleChange}
+                      isDisabled={!isAdmin}
+                      className="max-w-md">
+                      {ALL_ROLES.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role.charAt(0) + role.slice(1).toLowerCase()}
+                        </SelectItem>
+                      ))}
+                    </Select>
                     <Spacer y={20} />
                   </div>
                 </Tab>
@@ -89,8 +110,7 @@ const UserProfile: React.FC = () => {
               </Tabs>
             </div>
           </CardBody>
-          <CardFooter>
-          </CardFooter>
+          <CardFooter />
         </Card>
       </div>
       <div className="subscriptionsTab">
