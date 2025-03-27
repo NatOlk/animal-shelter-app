@@ -153,3 +153,14 @@ export const GET_CURRENT_USER_PROFILE = gql`
     }
   }
 `;
+
+export const UPDATE_USER_ROLES = gql`
+  mutation UpdateUserRoles($username: String!, $roles: [String!]!) {
+    updateUserRoles(username: $username, roles: $roles) {
+      id
+      name
+      email
+      roles
+    }
+  }
+`;

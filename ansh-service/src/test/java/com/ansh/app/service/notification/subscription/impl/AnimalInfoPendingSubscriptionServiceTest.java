@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
-import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;

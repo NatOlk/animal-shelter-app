@@ -61,7 +61,9 @@ export interface Subscriber {
 
 export interface User {
   id: string | null;
+  name: string | null;
   email: string | null;
+  roles?: string[];
 }
 
 export interface AuthContextType {
@@ -122,3 +124,7 @@ export interface AddVaccinationProps {
   onError: (error: string) => void;
 }
 
+export interface RegisterResponse {
+  email: string;
+  message: string;
+}

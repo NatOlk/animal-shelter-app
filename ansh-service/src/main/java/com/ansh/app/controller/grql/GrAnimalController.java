@@ -21,6 +21,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -44,17 +45,20 @@ public class GrAnimalController {
   }
 
   @MutationMapping
+  @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
   public AnimalDTO addAnimal(@Argument AnimalInput animal) throws AnimalCreationException {
     return animalMapper.toDto(animalsService.addAnimal(animal));
   }
 
   @MutationMapping
+  @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
   public AnimalDTO updateAnimal(@Argument UpdateAnimalInput animal)
       throws AnimalNotFoundException, AnimalUpdateException {
     return animalMapper.toDto(animalsService.updateAnimal(animal));
   }
 
   @MutationMapping
+  @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
   public AnimalDTO deleteAnimal(@Argument Long id, @Argument String reason)
       throws AnimalNotFoundException {
     return animalMapper.toDto(animalsService.removeAnimal(id, reason));

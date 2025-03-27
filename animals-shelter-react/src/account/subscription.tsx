@@ -41,8 +41,7 @@ const Subscription: React.FC = () => {
                         isReadOnly
                         variant="bordered"
                         type="email"
-                        className="max-w-xs"
-                    />
+                        className="max-w-xs"/>
                     <Button onPress={handleSubscribe} color="default">
                         <LuSmilePlus />
                     </Button>

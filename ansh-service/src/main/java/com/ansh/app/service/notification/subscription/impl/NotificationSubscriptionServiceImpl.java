@@ -1,10 +1,9 @@
 package com.ansh.app.service.notification.subscription.impl;
 
 import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
-import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.external.ExternalNotificationServiceClient;
-import com.ansh.utils.IdentifierMasker;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

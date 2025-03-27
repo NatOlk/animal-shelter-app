@@ -1,6 +1,6 @@
 package com.ansh.app.service.notification.subscription.impl;
 
-import static com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus.PENDING;
+import static com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus.PENDING;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;

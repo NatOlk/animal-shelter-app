@@ -91,15 +91,19 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
                 <TableCell>{subscriber.email}</TableCell>
                 <TableCell>{subscriber.approver || "N/A"}</TableCell>
                 <TableCell>{subscriber.topic}</TableCell>
-                <TableCell className="w-full w-24 flex space-x-2">
+                <TableCell className="w-24">
                   <Tooltip content="Approve">
-                    <Button color="default" variant="light" className="p-2 min-w-2 h-auto"
+                    <Button
+                     color="default" variant="light"
+                     className="p-2 min-w-2 h-auto"
                       onPress={() => handleApprove(subscriber.email)}>
                       <HiOutlineUserAdd />
                     </Button>
                   </Tooltip>
                   <Tooltip content="Reject">
                     <Button
+                     color="default" variant="light"
+                     className="p-2 min-w-2 h-auto"
                       onPress={() => handleReject(subscriber.email)}>
                       <HiX />
                     </Button>

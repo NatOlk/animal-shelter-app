@@ -22,6 +22,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -50,17 +51,20 @@ public class GrVaccineController {
   }
 
   @MutationMapping
+  @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
   public VaccinationDTO updateVaccination(@Argument UpdateVaccinationInput vaccination)
       throws VaccinationNotFoundException, VaccinationUpdateException {
     return vaccinationMapper.toDto(vaccinationService.updateVaccination(vaccination));
   }
 
   @MutationMapping
+  @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
   public VaccinationDTO deleteVaccination(@Argument Long id) throws VaccinationNotFoundException {
     return vaccinationMapper.toDto(vaccinationService.deleteVaccination(id));
   }
 
   @MutationMapping
+  @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
   public VaccinationDTO addVaccination(@Argument VaccinationInput vaccination)
       throws VaccinationCreationException {
     return vaccinationMapper.toDto(vaccinationService.addVaccination(vaccination));

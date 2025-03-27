@@ -1,19 +1,17 @@
 package com.ansh.auth.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+import com.ansh.app.service.exception.user.UserAlreadyExistException;
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.service.impl.JwtServiceImpl;
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
-import com.ansh.entity.animal.UserProfile;
+import com.ansh.dto.RegisterUserRequest;
+import com.ansh.entity.account.UserProfile;
+import com.ansh.auth.service.impl.CustomUserDetails;
+import com.ansh.entity.account.UserProfile.Role;
 import jakarta.servlet.http.HttpSession;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,13 +24,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import java.util.Map;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 class AuthControllerTest {
 
   @Mock
   private AuthenticationManager authenticationManager;
-
-  @Mock
-  private UserProfileServiceImpl userProfileService;
 
   @Mock
   private JwtServiceImpl jwtService;
@@ -42,6 +41,9 @@ class AuthControllerTest {
 
   @Mock
   private HttpSession session;
+
+  @Mock
+  private UserProfileService userProfileService;
 
   @BeforeEach
   void setUp() {
@@ -55,29 +57,36 @@ class AuthControllerTest {
     String token = "jwtToken";
     String email = "test@example.com";
 
-    Authentication authentication = mock(Authentication.class);
-    when(authentication.getName()).thenReturn(identifier);
-
     UserProfile userProfile = new UserProfile();
     userProfile.setEmail(email);
-    userProfile.setName("testUser");
+    userProfile.setName(identifier);
+    userProfile.setRoles(Set.of(Role.ADMIN));
+
+    CustomUserDetails userDetails = new CustomUserDetails(userProfile);
+
+    Authentication authentication = mock(Authentication.class);
+    when(authentication.getPrincipal()).thenReturn(userDetails);
+    when(authentication.getName()).thenReturn(identifier);
 
     when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
         .thenReturn(authentication);
-    when(jwtService.generateToken(identifier)).thenReturn(token);
-    when(userProfileService.getAuthUser()).thenReturn(Optional.of(userProfile));
+
+    when(jwtService.generateToken(authentication)).thenReturn(token);
+
+    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+    securityContext.setAuthentication(authentication);
+    SecurityContextHolder.setContext(securityContext);
 
     ResponseEntity<Object> response = authController.login(identifier, password);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
     assertEquals(token, responseBody.get("token"));
-    assertEquals(email, responseBody.get("email"));
+    assertEquals(identifier, responseBody.get("name"));
 
     verify(authenticationManager, times(1)).authenticate(
         any(UsernamePasswordAuthenticationToken.class));
-    verify(jwtService, times(1)).generateToken(identifier);
-    verify(userProfileService, times(1)).getAuthUser();
+    verify(jwtService, times(1)).generateToken(authentication);
   }
 
   @Test
@@ -95,7 +104,7 @@ class AuthControllerTest {
 
     verify(authenticationManager, times(1)).authenticate(
         any(UsernamePasswordAuthenticationToken.class));
-    verifyNoInteractions(jwtService, userProfileService);
+    verifyNoInteractions(jwtService);
   }
 
   @Test
@@ -113,28 +122,7 @@ class AuthControllerTest {
 
     verify(authenticationManager, times(1)).authenticate(
         any(UsernamePasswordAuthenticationToken.class));
-    verifyNoInteractions(jwtService, userProfileService);
-  }
-
-  @Test
-  void shouldReturnNotFound_whenUserProfileIsAbsent() {
-    String identifier = "testUser";
-    String password = "password123";
-
-    Authentication authentication = mock(Authentication.class);
-
-    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-        .thenReturn(authentication);
-    when(userProfileService.getAuthUser()).thenReturn(Optional.empty());
-
-    ResponseEntity<Object> response = authController.login(identifier, password);
-
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    assertEquals("User profile not found", response.getBody());
-
-    verify(authenticationManager, times(1)).authenticate(
-        any(UsernamePasswordAuthenticationToken.class));
-    verify(userProfileService, times(1)).getAuthUser();
+    verifyNoInteractions(jwtService);
   }
 
   @Test
@@ -144,5 +132,53 @@ class AuthControllerTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals("Logout successful", response.getBody());
     verify(session, times(1)).invalidate();
+  }
+
+  @Test
+  void shouldRegisterUserSuccessfully() throws UserAlreadyExistException {
+    String identifier = "newuser";
+    String email = "newuser@example.com";
+    String password = "securepassword";
+
+    RegisterUserRequest request = new RegisterUserRequest();
+    request.setIdentifier(identifier);
+    request.setEmail(email);
+    request.setPassword(password);
+
+    UserProfile createdUser = new UserProfile();
+    createdUser.setName(identifier);
+    createdUser.setEmail(email);
+
+    when(userProfileService.registerUser(identifier, email, password)).thenReturn(createdUser);
+
+    UserProfile response = authController.registerUser(request);
+
+    assertEquals(identifier, response.getName());
+    assertEquals(email, response.getEmail());
+
+    verify(userProfileService, times(1)).registerUser(identifier, email, password);
+  }
+
+  @Test
+  void shouldThrowUserAlreadyExistException() throws UserAlreadyExistException {
+    String identifier = "existinguser";
+    String email = "existing@example.com";
+    String password = "somepassword";
+
+    RegisterUserRequest request = new RegisterUserRequest();
+    request.setIdentifier(identifier);
+    request.setEmail(email);
+    request.setPassword(password);
+
+    when(userProfileService.registerUser(identifier, email, password))
+        .thenThrow(new UserAlreadyExistException("User already exists"));
+
+    try {
+      authController.registerUser(request);
+    } catch (UserAlreadyExistException ex) {
+      assertEquals("User already exists", ex.getMessage());
+    }
+
+    verify(userProfileService, times(1)).registerUser(identifier, email, password);
   }
 }

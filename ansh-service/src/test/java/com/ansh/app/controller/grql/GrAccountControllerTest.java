@@ -2,7 +2,7 @@ package com.ansh.app.controller.grql;
 
 import com.ansh.DateScalarConfiguration;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
-import com.ansh.entity.animal.UserProfile;
+import com.ansh.entity.account.UserProfile;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

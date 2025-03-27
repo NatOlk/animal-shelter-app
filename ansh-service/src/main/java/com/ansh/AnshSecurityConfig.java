@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class AnshSecurityConfig {
 
   @Autowired
@@ -34,6 +35,7 @@ public class AnshSecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/public/auth/login").permitAll()
             .requestMatchers("/public/auth/logout").permitAll()
+            .requestMatchers("/public/auth/register").permitAll()
             .requestMatchers("/resources/**").permitAll()
             .requestMatchers("/uploads/**").permitAll()
             .requestMatchers("/graphql").authenticated()
@@ -41,7 +43,7 @@ public class AnshSecurityConfig {
         )
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .securityContext((securityContext) -> securityContext.requireExplicitSave(false))
+        .securityContext(securityContext -> securityContext.requireExplicitSave(false))
         .logout(logout -> logout
             .logoutSuccessUrl("/logout")
             .invalidateHttpSession(true)
@@ -80,5 +82,4 @@ public class AnshSecurityConfig {
     provider.setUserDetailsService(userDetailsService());
     return provider;
   }
-
 }

@@ -10,6 +10,7 @@ import UserProfile from './account/userProfile';
 import { ConfigProvider } from './common/configContext';
 import Login from "./login";
 import Logout from "./logout";
+import RegistrationForm from "./registrationForm";
 import ProtectedRoute from "./common/protectedRoute";
 import ErrorPage from "./errorPage";
 import { AuthProvider, useAuth } from './common/authContext';
@@ -37,6 +38,7 @@ const AppContent: FC = () => {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/logout" element={<Logout />} />
+              <Route path="/register" element={<RegistrationForm />} />
               <Route path="/error" element={<ErrorPage />} />
               <Route path="/profile" element={
                 <ProtectedRoute>

@@ -56,8 +56,8 @@ const AddAnimal = ({ config, onError }: AddAnimalProps) => {
                 }
             }
         }).catch((error) => {
-            setGlobalError("Failed to add animal: " + error.message);
-            setTimeout(() => setGlobalError(""), 15000);
+            onError("Failed to add animal: " + error.message);
+            setTimeout(() => onError(""), 15000);
         });
         setAnimal(initialValues);
     };
