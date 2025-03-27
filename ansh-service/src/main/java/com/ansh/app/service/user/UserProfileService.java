@@ -2,6 +2,7 @@ package com.ansh.app.service.user;
 
 import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
 
@@ -52,4 +53,14 @@ public interface UserProfileService {
    * @param status the new subscription status
    */
   void updateNotificationStatusOfAuthUser(@NonNull AnimalInfoNotifStatus status);
+
+  /**
+   * Updates the roles of a user identified by username.
+   * Roles are provided as strings and stored in the user profile as a comma-separated string.
+   *
+   * @param username   the unique identifier of the user (e.g. login name)
+   * @param roleNames  a list of role names to assign to the user (e.g. ["ADMIN", "EMPLOYEE"])
+   * @return the updated {@link UserProfile} entity with new roles
+   */
+  UserProfile updateUserRoles(String username, List<String> roleNames);
 }
