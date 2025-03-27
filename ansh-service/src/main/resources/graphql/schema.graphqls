@@ -92,4 +92,5 @@ type Mutation {
     addVaccination(vaccination: VaccinationInput!) : VaccinationDTO
     deleteVaccination(id: ID!) : VaccinationDTO
     updateVaccination(vaccination: UpdateVaccinationInput!) : VaccinationDTO
+    updateUserRoles(username: String!, roles: [String!]!): UserProfile!
 }

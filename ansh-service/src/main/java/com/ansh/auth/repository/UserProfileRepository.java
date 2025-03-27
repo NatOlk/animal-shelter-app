@@ -1,7 +1,7 @@
 package com.ansh.auth.repository;
 
-import com.ansh.entity.animal.UserProfile;
-import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.entity.account.UserProfile;
+import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +20,8 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
   @Query("select u from UserProfile u where (u.email = :identifier or u.name = :identifier)")
   Optional<UserProfile> findByIdentifier(@Param("identifier") String identifier);
 
+  @Query("select u from UserProfile u where u.email = :email or u.name = :identifier")
+  Optional<UserProfile> findByEmailOrIdentifier(@Param("email") String email, @Param("identifier") String identifier);
 
   @Modifying
   @Transactional
