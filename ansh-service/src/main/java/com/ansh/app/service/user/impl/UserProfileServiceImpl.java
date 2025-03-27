@@ -7,8 +7,10 @@ import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.account.UserProfile.Role;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
@@ -76,5 +78,22 @@ public class UserProfileServiceImpl implements UserProfileService {
       userProfile.get().setAnimalNotifyStatus(status);
       userRepository.save(userProfile.get());
     }
+  }
+
+  @Override
+  @Transactional
+  public UserProfile updateUserRoles(String username, List<String> roleNames) {
+    return userRepository.findByIdentifier(username)
+        .map(user -> {
+          Set<UserProfile.Role> roleSet = roleNames.stream()
+              .map(String::trim)
+              .map(String::toUpperCase)
+              .map(UserProfile.Role::valueOf)
+              .collect(Collectors.toSet());
+
+          user.setRoles(roleSet);
+          return userRepository.save(user);
+        })
+        .orElse(null);
   }
 }
