@@ -1,5 +1,6 @@
 package com.ansh.app.service.user.impl;
 
+import com.ansh.app.service.exception.user.UserAlreadyExistException;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.repository.UserProfileRepository;
 import com.ansh.auth.service.impl.CustomUserDetails;
@@ -32,9 +33,9 @@ public class UserProfileServiceImpl implements UserProfileService {
   @Override
   @Transactional
   public UserProfile registerUser(@NonNull String identifier, @NonNull String email,
-      @NonNull String password) throws IllegalArgumentException {
-    if (userRepository.findByEmailOrIdentifier(identifier, email).isPresent()) {
-      throw new IllegalArgumentException("Identifier OR Email already in use");
+      @NonNull String password) throws UserAlreadyExistException {
+    if (userRepository.findByEmailOrIdentifier(email, identifier).isPresent()) {
+      throw new UserAlreadyExistException("Identifier OR Email already in use");
     }
 
     String encodedPassword = new BCryptPasswordEncoder().encode(password);

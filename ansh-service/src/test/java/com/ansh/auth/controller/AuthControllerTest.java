@@ -3,7 +3,10 @@ package com.ansh.auth.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import com.ansh.app.service.exception.user.UserAlreadyExistException;
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.service.impl.JwtServiceImpl;
+import com.ansh.dto.RegisterUserRequest;
 import com.ansh.entity.account.UserProfile;
 import com.ansh.auth.service.impl.CustomUserDetails;
 import com.ansh.entity.account.UserProfile.Role;
@@ -38,6 +41,9 @@ class AuthControllerTest {
 
   @Mock
   private HttpSession session;
+
+  @Mock
+  private UserProfileService userProfileService;
 
   @BeforeEach
   void setUp() {
@@ -126,5 +132,53 @@ class AuthControllerTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals("Logout successful", response.getBody());
     verify(session, times(1)).invalidate();
+  }
+
+  @Test
+  void shouldRegisterUserSuccessfully() throws UserAlreadyExistException {
+    String identifier = "newuser";
+    String email = "newuser@example.com";
+    String password = "securepassword";
+
+    RegisterUserRequest request = new RegisterUserRequest();
+    request.setIdentifier(identifier);
+    request.setEmail(email);
+    request.setPassword(password);
+
+    UserProfile createdUser = new UserProfile();
+    createdUser.setName(identifier);
+    createdUser.setEmail(email);
+
+    when(userProfileService.registerUser(identifier, email, password)).thenReturn(createdUser);
+
+    UserProfile response = authController.registerUser(request);
+
+    assertEquals(identifier, response.getName());
+    assertEquals(email, response.getEmail());
+
+    verify(userProfileService, times(1)).registerUser(identifier, email, password);
+  }
+
+  @Test
+  void shouldThrowUserAlreadyExistException() throws UserAlreadyExistException {
+    String identifier = "existinguser";
+    String email = "existing@example.com";
+    String password = "somepassword";
+
+    RegisterUserRequest request = new RegisterUserRequest();
+    request.setIdentifier(identifier);
+    request.setEmail(email);
+    request.setPassword(password);
+
+    when(userProfileService.registerUser(identifier, email, password))
+        .thenThrow(new UserAlreadyExistException("User already exists"));
+
+    try {
+      authController.registerUser(request);
+    } catch (UserAlreadyExistException ex) {
+      assertEquals("User already exists", ex.getMessage());
+    }
+
+    verify(userProfileService, times(1)).registerUser(identifier, email, password);
   }
 }

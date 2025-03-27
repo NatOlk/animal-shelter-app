@@ -1,5 +1,6 @@
 package com.ansh.auth.controller;
 
+import com.ansh.app.service.exception.user.UserAlreadyExistException;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.service.JwtService;
 import com.ansh.auth.service.impl.CustomUserDetails;
@@ -61,7 +62,7 @@ public class AuthController {
   }
 
   @PostMapping("/register")
-  public UserProfile registerUser(@RequestBody RegisterUserRequest request) {
+  public UserProfile registerUser(@RequestBody RegisterUserRequest request) throws UserAlreadyExistException {
     return userProfileService.registerUser(request.getIdentifier(), request.getEmail(),
         request.getPassword());
   }
