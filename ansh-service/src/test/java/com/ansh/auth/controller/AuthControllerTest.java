@@ -4,10 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.ansh.auth.service.impl.JwtServiceImpl;
-import com.ansh.entity.account.Role;
-import com.ansh.entity.account.RoleType;
 import com.ansh.entity.account.UserProfile;
 import com.ansh.auth.service.impl.CustomUserDetails;
+import com.ansh.entity.account.UserProfile.Role;
 import jakarta.servlet.http.HttpSession;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +54,7 @@ class AuthControllerTest {
     UserProfile userProfile = new UserProfile();
     userProfile.setEmail(email);
     userProfile.setName(identifier);
-    userProfile.setRoles(Set.of(new Role(RoleType.ADMIN)));
+    userProfile.setRoles(Set.of(Role.ADMIN));
 
     CustomUserDetails userDetails = new CustomUserDetails(userProfile);
 

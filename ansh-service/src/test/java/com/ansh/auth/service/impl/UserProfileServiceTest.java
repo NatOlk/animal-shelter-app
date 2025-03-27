@@ -4,14 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-import com.ansh.auth.service.impl.CustomUserDetails;
-import com.ansh.entity.account.Role;
-import com.ansh.entity.account.RoleType;
 import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.auth.repository.UserProfileRepository;
-import java.util.List;
+import com.ansh.entity.account.UserProfile.Role;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +44,7 @@ class UserProfileServiceTest {
     mockUserProfile = new UserProfile();
     mockUserProfile.setName("test_user");
     mockUserProfile.setEmail("test@example.com");
-    mockUserProfile.setRoles(Set.of(new Role(RoleType.ADMIN)));
+    mockUserProfile.setRoles(Set.of(Role.ADMIN));
 
     customUserDetails = new CustomUserDetails(mockUserProfile);
   }

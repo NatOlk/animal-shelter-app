@@ -1,12 +1,10 @@
 package com.ansh.auth.service;
 
 import com.ansh.auth.service.impl.CustomUserDetails;
-import com.ansh.entity.account.Role;
-import com.ansh.entity.account.RoleType;
 import com.ansh.entity.account.UserProfile;
+import com.ansh.entity.account.UserProfile.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -76,8 +73,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         profile.setId(id);
         profile.setName(name);
         profile.setEmail(email);
-        profile.setRoles(roles.stream()
-            .map(r -> new Role(RoleType.valueOf(r))).collect(Collectors.toSet()));
+        profile.setRoles(
+            roles.stream()
+                .map(String::trim)
+                .map(UserProfile.Role::valueOf)
+                .collect(Collectors.toSet())
+        );
 
         CustomUserDetails userDetails = new CustomUserDetails(profile);
 

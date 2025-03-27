@@ -3,10 +3,9 @@ package com.ansh.app.service.user.impl;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.repository.UserProfileRepository;
 import com.ansh.auth.service.impl.CustomUserDetails;
-import com.ansh.entity.account.Role;
-import com.ansh.entity.account.RoleType;
 import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.entity.account.UserProfile.Role;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import java.util.Set;
@@ -42,7 +41,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     userProfile.setName(identifier);
     userProfile.setEmail(email);
     userProfile.setPassword(encodedPassword);
-    userProfile.setRoles(Set.of(new Role(RoleType.USER)));
+    userProfile.setRoles(Set.of(Role.USER));
 
     userRepository.save(userProfile);
 

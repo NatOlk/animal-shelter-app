@@ -69,13 +69,11 @@ public class AuthController {
   private ResponseEntity<Object> createAuthenticationResponse(Authentication authentication) {
     CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-    String email = user.getEmail();
-    String name = user.getName();
-
     Map<String, Object> responseMap = new HashMap<>();
     responseMap.put("token", jwtService.generateToken(authentication));
-    responseMap.put("email", email);
-    responseMap.put("name", name);
+    responseMap.put("email", user.getEmail());
+    responseMap.put("name", user.getName());
+    responseMap.put("roles", user.getRoleNames());
     return ResponseEntity.ok(responseMap);
   }
 

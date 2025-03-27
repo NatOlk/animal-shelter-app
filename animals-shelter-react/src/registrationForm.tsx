@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Spacer } from '@nextui-org/react';
-
-interface RegisterResponse {
-  email: string;
-  message: string;
-}
+import { RegisterResponse } from "../common/types";
 
 const RegistrationForm: React.FC = () => {
   const [identifier, setIdentifier] = useState<string>('');
