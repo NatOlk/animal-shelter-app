@@ -48,7 +48,7 @@ public abstract class AbstractControllerWebMvcTest {
 
     Mockito.when(customUserDetailsService.loadUserByUsername(USERNAME))
         .thenReturn(mockUserDetails);
-    Mockito.when(jwtService.isTokenValid(Mockito.eq(MOCK_TOKEN), Mockito.eq(mockUserDetails)))
+    Mockito.when(jwtService.isTokenValid(Mockito.eq(MOCK_TOKEN)))
         .thenReturn(true);
     Mockito.when(jwtService.extractUsername(MOCK_TOKEN))
         .thenReturn(USERNAME);

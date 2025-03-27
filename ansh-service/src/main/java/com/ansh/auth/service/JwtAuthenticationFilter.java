@@ -1,6 +1,9 @@
 package com.ansh.auth.service;
 
-import com.ansh.auth.service.impl.CustomUserDetailsService;
+import com.ansh.auth.service.impl.CustomUserDetails;
+import com.ansh.entity.account.Role;
+import com.ansh.entity.account.RoleType;
+import com.ansh.entity.account.UserProfile;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,10 +12,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -22,35 +28,32 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
   private final JwtService jwtService;
-  private final CustomUserDetailsService userDetailsService;
   private final List<String> publicPaths;
 
-  public JwtAuthenticationFilter(
-      JwtService jwtService,
-      CustomUserDetailsService userDetailsService,
+  public JwtAuthenticationFilter(JwtService jwtService,
       @Value("${security.public-paths}") String publicPaths) {
     this.jwtService = jwtService;
-    this.userDetailsService = userDetailsService;
     this.publicPaths = Arrays.asList(publicPaths.split(","));
   }
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    String requestURI = request.getRequestURI();
-    boolean shouldNotFiltered = publicPaths.stream().anyMatch(requestURI::startsWith);
-    LOG.debug("Should filter path {} ? {}", requestURI, !shouldNotFiltered);
+    var requestURI = request.getRequestURI();
+    var shouldNotFiltered = publicPaths.stream().anyMatch(requestURI::startsWith);
+    LOG.debug("Filter path {} ? {}", requestURI, !shouldNotFiltered);
     return shouldNotFiltered;
   }
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+      FilterChain filterChain) throws IOException {
     final String authHeader = request.getHeader("Authorization");
 
-    LOG.debug("Trying to check jwt token for path {} ", request.getRequestURI());
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      LOG.debug("Alert: no authorization token and bearer!");
+    LOG.debug("Checking jwt token for path {} ", request.getRequestURI());
+    if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.length() <= 7) {
+      LOG.debug("Alert: no authorization token or token is too short!");
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       response.getWriter().write("Unauthorized: Missing or invalid Authorization header");
       return;
@@ -58,17 +61,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     final String jwt = authHeader.substring(7);
 
     try {
-      final String user = jwtService.extractUsername(jwt);
-      if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-        var userDetails = userDetailsService.loadUserByUsername(user);
-        if (jwtService.isTokenValid(jwt, userDetails)) {
-          var authToken = new UsernamePasswordAuthenticationToken(
-              userDetails, null, userDetails.getAuthorities());
-          authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+      final String username = jwtService.extractUsername(jwt);
+      if (username != null && SecurityContextHolder.getContext().getAuthentication() == null
+          && jwtService.isTokenValid(jwt)) {
+        final String email = jwtService.extractEmail(jwt);
+        final String name = jwtService.extractName(jwt);
+        final Long id = jwtService.extractId(jwt);
+        final List<String> roles = jwtService.extractRoles(jwt);
+        var authorities = roles.stream()
+            .map(role -> new SimpleGrantedAuthority(STR."ROLE_\{role}"))
+            .collect(Collectors.toList());
 
-          SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
+        UserProfile profile = new UserProfile();
+        profile.setId(id);
+        profile.setName(name);
+        profile.setEmail(email);
+        profile.setRoles(roles.stream()
+            .map(r -> new Role(RoleType.valueOf(r))).collect(Collectors.toSet()));
+
+        CustomUserDetails userDetails = new CustomUserDetails(profile);
+
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+            userDetails, null, authorities);
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(authToken);
       }
+
       filterChain.doFilter(request, response);
 
     } catch (ExpiredJwtException e) {

@@ -5,7 +5,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<ChildrenProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [user, setUser] = useState<User>({ id: null, email: null });
+    const [user, setUser] = useState<User>({ id: null, name: null, email: null });
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<ChildrenProps> = ({ children }) => {
 
     const logout = (): void => {
         setIsAuthenticated(false);
-        setUser({ id: null, email: null });
+        setUser({ id: null, name: null, email: null });
         localStorage.removeItem('jwt');
     };
 

@@ -4,11 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.ansh.auth.service.impl.CustomUserDetails;
+import com.ansh.entity.account.Role;
+import com.ansh.entity.account.RoleType;
+import com.ansh.entity.account.UserProfile;
+import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.auth.repository.UserProfileRepository;
-import com.ansh.entity.animal.UserProfile;
-import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 class UserProfileServiceTest {
 
@@ -30,27 +34,33 @@ class UserProfileServiceTest {
   @Mock
   private SecurityContext securityContext;
 
-  @Mock
-  private UserDetails userDetails;
-
   @InjectMocks
   private UserProfileServiceImpl userProfileService;
+
+  private UserProfile mockUserProfile;
+
+  private CustomUserDetails customUserDetails;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+    mockUserProfile = new UserProfile();
+    mockUserProfile.setName("test_user");
+    mockUserProfile.setEmail("test@example.com");
+    mockUserProfile.setRoles(Set.of(new Role(RoleType.ADMIN)));
+
+    customUserDetails = new CustomUserDetails(mockUserProfile);
   }
 
   @Test
   void shouldFindByIdentifier() {
     String identifier = "test_user";
-    UserProfile userProfile = new UserProfile();
-    when(userRepository.findByIdentifier(identifier)).thenReturn(Optional.of(userProfile));
+    when(userRepository.findByIdentifier(identifier)).thenReturn(Optional.of(mockUserProfile));
 
     Optional<UserProfile> result = userProfileService.findByIdentifier(identifier);
 
     assertTrue(result.isPresent());
-    assertEquals(userProfile, result.get());
+    assertEquals(mockUserProfile, result.get());
   }
 
   @Test
@@ -67,30 +77,27 @@ class UserProfileServiceTest {
   void shouldFindAuthenticatedUser() {
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    when(userDetails.getUsername()).thenReturn("test_user");
-    when(userRepository.findByIdentifier("test_user")).thenReturn(Optional.of(new UserProfile()));
+    when(authentication.getPrincipal()).thenReturn(customUserDetails);
 
     SecurityContextHolder.setContext(securityContext);
     Optional<UserProfile> result = userProfileService.getAuthUser();
 
     assertTrue(result.isPresent());
+    assertEquals(mockUserProfile, result.get());
   }
 
   @Test
   void shouldUpdateNotificationStatusOfAuthUser() {
     AnimalInfoNotifStatus status = AnimalInfoNotifStatus.ACTIVE;
-    UserProfile userProfile = new UserProfile();
+
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    when(userDetails.getUsername()).thenReturn("test_user");
-    when(userRepository.findByIdentifier("test_user")).thenReturn(Optional.of(userProfile));
+    when(authentication.getPrincipal()).thenReturn(customUserDetails);
 
     SecurityContextHolder.setContext(securityContext);
     userProfileService.updateNotificationStatusOfAuthUser(status);
 
-    assertEquals(status, userProfile.getAnimalNotifyStatus());
-    verify(userRepository, times(1)).save(userProfile);
+    assertEquals(status, mockUserProfile.getAnimalNotifyStatus());
+    verify(userRepository, times(1)).save(mockUserProfile);
   }
 }

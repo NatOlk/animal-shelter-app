@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from './common/authContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Spacer } from '@nextui-org/react';
 
 const Login: React.FC = () => {
@@ -26,14 +26,14 @@ const Login: React.FC = () => {
             });
 
             if (response.ok) {
-                const responseBody: { token: string; user: string; email: string } = await response.json();
+                const responseBody: { token: string; email: string; name: string } = await response.json();
                 const token = responseBody.token;
                 if (!token) {
                     navigate('/login');
                     return;
                 }
                 const userData = {
-                    id: responseBody.user,
+                    name: responseBody.name,
                     email: responseBody.email,
                 };
                 login(userData, token);
@@ -54,8 +54,7 @@ const Login: React.FC = () => {
                 e.preventDefault();
                 handleSubmit();
             }}
-            autoComplete="off"
-        >
+            autoComplete="off">
             {errorMessage && (
                 <div style={{ color: 'red', marginBottom: '1rem' }}>
                     {errorMessage}
@@ -71,8 +70,7 @@ const Login: React.FC = () => {
                     value={identifier}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
                     labelPlacement="outside"
-                    isRequired
-                />
+                    isRequired />
                 <Input
                     label="Password"
                     placeholder="Enter your password"
@@ -81,15 +79,20 @@ const Login: React.FC = () => {
                     value={password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                     labelPlacement="outside"
-                    isRequired
-                />
+                    isRequired />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 w-full items-center">
                 <Button type="submit" color="default" variant="flat">
                     Login
                 </Button>
+                <Spacer y={2} />
+                <Link
+                    to="/register"
+                    className="text-sm text-blue-500 hover:underline cursor-pointer">
+                    Not registered?
+                </Link>
             </div>
-        </Form>
+        </Form >
     );
 };
 

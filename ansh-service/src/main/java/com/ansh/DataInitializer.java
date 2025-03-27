@@ -27,6 +27,12 @@ public class DataInitializer implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
+    ClassPathResource resourceRoles = new ClassPathResource("init_roles.sql");
+    String sqlRoles = StreamUtils.copyToString(resourceRoles.getInputStream(), StandardCharsets.UTF_8);
+
+    jdbcTemplate.execute(sqlRoles);
+    LOG.debug("init roles SQL script");
+
     ClassPathResource resource = new ClassPathResource("init.sql");
     String sql = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
 
