@@ -53,7 +53,6 @@ const UserProfile: React.FC = () => {
           },
         });
       } catch (error) {
-        console.error("Failed to update roles:", error);
       }
     }
   };
