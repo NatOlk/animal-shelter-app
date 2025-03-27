@@ -1,6 +1,6 @@
 package com.ansh.app.service.notification.subscription;
 
-import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import java.util.List;
 import reactor.core.publisher.Mono;

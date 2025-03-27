@@ -1,11 +1,11 @@
 package com.ansh.service.impl;
 
-import static com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus.ACTIVE;
-import static com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus.NONE;
-import static com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus.PENDING;
+import static com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus.ACTIVE;
+import static com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus.NONE;
+import static com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus.PENDING;
 
 import com.ansh.cache.SubscriptionCacheManager;
-import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.subscription.SubscriberNotificationEventProducer;
 import com.ansh.repository.SubscriptionRepository;
@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +61,7 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
 
   @Override
   @Transactional
-  public void registerSubscriber(String email, String approver) {
+  public void registerSubscriber(@NonNull String email, String approver) {
     findSubscriptionByEmail(email).ifPresentOrElse(
         this::handleExistingSubscription,
         () -> createAndRegisterNewSubscription(email, approver)
@@ -69,13 +70,13 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
 
 
   @Transactional
-  public void unregisterSubscriber(String token) {
+  public void unregisterSubscriber(@NonNull String token) {
     removeSubscriptionFromCacheAndDb(token);
   }
 
   @Override
   @Transactional
-  public boolean acceptSubscription(String token) {
+  public boolean acceptSubscription(@NonNull String token) {
     Optional<Subscription> subscriptionOpt = findSubscriptionByToken(token);
     subscriptionOpt.ifPresent(subscription -> {
       subscription.setAccepted(true);
@@ -93,12 +94,12 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
   }
 
   @Override
-  public List<Subscription> getAllSubscriptions(String approver) {
+  public List<Subscription> getAllSubscriptions(@NonNull String approver) {
     return subscriptionRepository.findByApproverAndTopic(approver, animalTopicId);
   }
 
   @Override
-  public AnimalInfoNotifStatus getSubscriptionStatus(String approver) {
+  public AnimalInfoNotifStatus getSubscriptionStatus(@NonNull String approver) {
     return findSubscriptionByEmail(approver)
         .map(subscription -> subscription.isAccepted() ? ACTIVE : PENDING)
         .orElse(NONE);
@@ -106,7 +107,7 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
 
   @Override
   @Transactional
-  public void handleSubscriptionApproval(String email, String approver, boolean reject) {
+  public void handleSubscriptionApproval(@NonNull String email, String approver, boolean reject) {
     findSubscriptionByEmail(email).ifPresent(subscription -> {
       if (reject) {
         removeSubscriptionFromCacheAndDb(subscription.getToken());
@@ -129,6 +130,7 @@ public class AnimalTopicSubscriberRegistryServiceImpl implements
   }
 
   private void createAndRegisterNewSubscription(String email, String approver) {
+    if(approver == null) approver = "";
     Subscription newSubscription = Subscription.builder()
         .topic(animalTopicId)
         .email(email)

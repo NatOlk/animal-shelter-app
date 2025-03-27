@@ -42,6 +42,12 @@ const UserProfile: React.FC = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   const { name, email } = data.currentUserProfile;
+  const roles = data.currentUserProfile.roles || [];
+  const parsedRoles = roles.map(roleStr => {
+    const match = /name=(\w+)/.exec(roleStr);
+    return match ? match[1] : roleStr;
+  });
+  const rolesDisplay = parsedRoles.join(", ");
 
   return (
     <div className="containerProfile">
@@ -66,7 +72,7 @@ const UserProfile: React.FC = () => {
                   </div>}>
                   <div className="profileCardTabContent">
                     <Spacer y={5} />
-                    Your current roles: Admin, Employee
+                    Your current roles: {rolesDisplay}
                     <Spacer y={20} />
                   </div>
                 </Tab>

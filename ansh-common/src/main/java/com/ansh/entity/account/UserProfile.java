@@ -1,4 +1,4 @@
-package com.ansh.entity.animal;
+package com.ansh.entity.account;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "user_profiles", schema = "public")
@@ -25,7 +26,7 @@ import lombok.EqualsAndHashCode;
 public class UserProfile {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @EqualsAndHashCode.Include
   private Long id;
 
@@ -43,12 +44,13 @@ public class UserProfile {
   @Column(name = "animal_notif_status", nullable = false)
   private AnimalInfoNotifStatus animalNotifyStatus = AnimalInfoNotifStatus.NONE;
 
-  @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+  @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
   @JoinTable(
       name = "user_roles",
       joinColumns = {@JoinColumn(name = "user_id")},
       inverseJoinColumns = {@JoinColumn(name = "role_id")}
   )
+  @ToString.Exclude
   private Set<Role> roles = new HashSet<>();
 
   public void addRole(Role role) {

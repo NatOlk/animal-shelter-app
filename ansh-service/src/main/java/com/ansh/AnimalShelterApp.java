@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(scanBasePackages = "com.ansh")
 @Configuration
 @EnableTransactionManagement
-@EntityScan(basePackages = "com.ansh.entity.animal, com.ansh.repository.entity")
+@EntityScan(basePackages = "com.ansh.entity.animal, com.ansh.repository.entity, com.ansh.entity.account")
 @EnableCaching
 public class AnimalShelterApp {
 

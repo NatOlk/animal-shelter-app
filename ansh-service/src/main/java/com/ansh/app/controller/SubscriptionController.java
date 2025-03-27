@@ -5,7 +5,7 @@ import com.ansh.app.service.notification.subscription.NotificationSubscriptionSe
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.animal.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.repository.entity.PendingSubscriber;
 import io.micrometer.common.util.StringUtils;
@@ -46,8 +46,7 @@ public class SubscriptionController {
 
   @PostMapping("/animal-notify-reject-subscriber")
   public void reject(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {
-    if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(
-        req.getEmail())) {
+    if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(req.getEmail())) {
       return;
     }
     pendingSubscriptionService.rejectSubscriber(req.getEmail(), req.getApprover());

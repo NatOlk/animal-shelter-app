@@ -2,6 +2,9 @@ package com.ansh.auth.controller;
 
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.service.JwtService;
+import com.ansh.auth.service.impl.CustomUserDetails;
+import com.ansh.dto.RegisterUserRequest;
+import com.ansh.entity.account.UserProfile;
 import com.ansh.utils.IdentifierMasker;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -15,13 +18,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/public/auth")
 public class AuthController {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
@@ -33,13 +37,15 @@ public class AuthController {
   @Autowired
   private JwtService jwtService;
 
-  @PostMapping("/public/auth/login")
+  @PostMapping("/login")
   public ResponseEntity<Object> login(@RequestParam String identifier,
       @RequestParam String password) {
     String maskedIdentifier = IdentifierMasker.maskIdentifier(identifier);
     try {
-      Authentication authentication = authenticateUser(identifier, password);
-      return processAuthenticatedUser(authentication, maskedIdentifier);
+      Authentication authentication = authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(identifier, password));
+      LOG.debug("[auth] Authentication successful for user: {}", maskedIdentifier);
+      return createAuthenticationResponse(authentication);
     } catch (BadCredentialsException e) {
       return createErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid credentials", maskedIdentifier);
     } catch (Exception e) {
@@ -48,41 +54,29 @@ public class AuthController {
     }
   }
 
-  @PostMapping("/public/auth/logout")
+  @PostMapping("/logout")
   public ResponseEntity<String> logout(HttpSession session) {
     session.invalidate();
     return ResponseEntity.ok("Logout successful");
   }
 
-  private Authentication authenticateUser(String identifier, String password) {
-    return authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(identifier, password)
-    );
+  @PostMapping("/register")
+  public UserProfile registerUser(@RequestBody RegisterUserRequest request) {
+    return userProfileService.registerUser(request.getIdentifier(), request.getEmail(),
+        request.getPassword());
   }
 
-  private ResponseEntity<Object> processAuthenticatedUser(Authentication authentication,
-      String maskedIdentifier) {
-    LOG.debug("[auth] Authentication successful for user: {}", maskedIdentifier);
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    return userProfileService.getAuthUser()
-        .map(userProfile -> createAuthenticationResponse(userProfile.getEmail(), authentication,
-            maskedIdentifier))
-        .orElseGet(() -> createErrorResponse(HttpStatus.NOT_FOUND, "User profile not found",
-            maskedIdentifier));
-  }
+  private ResponseEntity<Object> createAuthenticationResponse(Authentication authentication) {
+    CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-  private ResponseEntity<Object> createAuthenticationResponse(String email,
-      Authentication authentication, String maskedIdentifier) {
-    String maskedEmail = IdentifierMasker.maskEmail(email);
-    if (!maskedEmail.isEmpty()) {
-      Map<String, Object> responseMap = new HashMap<>();
-      responseMap.put("token", jwtService.generateToken(authentication.getName()));
-      responseMap.put("email", email);
-      LOG.debug("[auth] Token generated for user: {}", maskedEmail);
-      return ResponseEntity.ok(responseMap);
-    } else {
-      return createErrorResponse(HttpStatus.NOT_FOUND, "Invalid email format", maskedIdentifier);
-    }
+    String email = user.getEmail();
+    String name = user.getName();
+
+    Map<String, Object> responseMap = new HashMap<>();
+    responseMap.put("token", jwtService.generateToken(authentication));
+    responseMap.put("email", email);
+    responseMap.put("name", name);
+    return ResponseEntity.ok(responseMap);
   }
 
   private ResponseEntity<Object> createErrorResponse(HttpStatus status, String message,
