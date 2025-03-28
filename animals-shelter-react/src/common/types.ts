@@ -72,6 +72,7 @@ export interface AuthContextType {
   login: (userData: User, token: string) => void;
   logout: () => void;
   isLoading: boolean;
+  isAdmin: boolean;
 }
 
 export interface SubscriptionStatusProps {
