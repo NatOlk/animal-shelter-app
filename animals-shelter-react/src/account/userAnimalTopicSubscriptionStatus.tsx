@@ -1,5 +1,5 @@
 import React from 'react';
-import Subscription from './subscription';
+import Subscription from '../subscription/subscription';
 import { Progress } from '@nextui-org/progress';
 import { Spacer, Tooltip } from '@nextui-org/react';
 import { TbBellRinging } from "react-icons/tb";

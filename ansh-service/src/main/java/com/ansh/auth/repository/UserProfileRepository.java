@@ -3,6 +3,7 @@ package com.ansh.auth.repository;
 import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,8 +25,10 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
   Optional<UserProfile> findByEmailOrIdentifier(@Param("email") String email, @Param("identifier") String identifier);
 
   @Modifying
-  @Transactional
   @Query("update UserProfile u set u.animalNotifyStatus = :status where u.email = :identifier or u.name = :identifier")
   void updateAnimalNotificationSubscriptionStatus(@Param("identifier") String identifier,
       @Param("status") AnimalInfoNotifStatus status);
+
+  @Query("select u from UserProfile u where not u.rolesRaw LIKE %:adminRole%")
+  List<UserProfile> findAllNonAdminUsers(@Param("adminRole") String adminRole);
 }

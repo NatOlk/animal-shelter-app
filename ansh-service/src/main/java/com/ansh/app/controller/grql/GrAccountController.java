@@ -35,6 +35,12 @@ public class GrAccountController {
     return userProfileService.updateUserRoles(username, roles);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
+  @QueryMapping
+  public List<UserProfile> allNonAdminUsers() {
+    return userProfileService.findAllNonAdminUsers();
+  }
+
   @GraphQlExceptionHandler
   public GraphQLError handle(@NonNull Throwable ex, @NonNull DataFetchingEnvironment environment) {
     return GraphQLError.newError()

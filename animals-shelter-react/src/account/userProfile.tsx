@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import AllApproverSubscriptionList from './allApproverSubscriptionList';
-import PendingSubscriptionList from './pendingSubscriptionList';
-import NoApproverSubscriptionList from './noApproverSubscriptionList';
+import AllApproverSubscriptionList from '../subscription/allApproverSubscriptionList';
+import PendingSubscriptionList from '../subscription/pendingSubscriptionList';
+import NoApproverSubscriptionList from '../subscription/noApproverSubscriptionList';
 import UserAnimalTopicSubscriptionStatus from './userAnimalTopicSubscriptionStatus';
 import { apiFetch } from '../common/api';
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
