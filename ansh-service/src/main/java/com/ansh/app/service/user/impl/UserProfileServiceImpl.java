@@ -52,6 +52,7 @@ public class UserProfileServiceImpl implements UserProfileService {
   }
 
   @Override
+  @Transactional
   public void updateAnimalNotificationSubscriptionStatus(@NonNull String identifier,
       @NonNull AnimalInfoNotifStatus status) {
     userRepository.updateAnimalNotificationSubscriptionStatus(identifier, status);
@@ -96,5 +97,10 @@ public class UserProfileServiceImpl implements UserProfileService {
           return userRepository.save(user);
         })
         .orElse(null);
+  }
+
+  @Override
+  public List<UserProfile> findAllNonAdminUsers() {
+    return userRepository.findAllNonAdminUsers(Role.ADMIN.name());
   }
 }

@@ -164,3 +164,15 @@ export const UPDATE_USER_ROLES = gql`
     }
   }
 `;
+
+export const GET_NON_ADMIN_USERS = gql`
+  query {
+    allNonAdminUsers {
+      id
+      name
+      email
+      roles
+      animalNotifyStatus
+    }
+  }
+`;

@@ -7,6 +7,7 @@ import SideBarContent from './sideBarContent';
 import NavBarContent from './navBarContent';
 import AllVaccinationsList from "./vaccination/allVaccinationsList";
 import UserProfile from './account/userProfile';
+import UsersList from './account/usersList';
 import { ConfigProvider } from './common/configContext';
 import Login from "./login";
 import Logout from "./logout";
@@ -14,7 +15,7 @@ import RegistrationForm from "./registrationForm";
 import ProtectedRoute from "./common/protectedRoute";
 import ErrorPage from "./errorPage";
 import { AuthProvider, useAuth } from './common/authContext';
-import QuickSubscribe from './account/quickSubscribe';
+import QuickSubscribe from './subscription/quickSubscribe';
 import { Spacer } from "@nextui-org/react";
 import ErrorBoundary from './common/errorBoundary';
 import './styles/global.css';
@@ -30,7 +31,9 @@ const AppContent: FC = () => {
 
       <div className="main-container">
         {isAuthenticated && <aside className="sidebar">
-          <SideBarContent />
+          <ProtectedRoute>
+            <SideBarContent />
+          </ProtectedRoute>
         </aside>}
 
         <main className="content">
@@ -60,7 +63,16 @@ const AppContent: FC = () => {
                   <AllVaccinationsList />
                 </ProtectedRoute>
               } />
-              <Route path="/animals/:id" element={<AnimalDetails />} />
+              <Route path="/animals/:id" element={
+                <ProtectedRoute>
+                  <AnimalDetails />
+                </ProtectedRoute>
+              } />
+              <Route path="/usersList" element={
+                <ProtectedRoute>
+                  <UsersList />
+                </ProtectedRoute>
+              } />
             </Routes>
           </ErrorBoundary>
         </main>

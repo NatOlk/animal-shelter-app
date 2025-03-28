@@ -1,16 +1,35 @@
 import React from "react";
 import { useAuth } from './common/authContext';
 import { Divider } from "@nextui-org/divider";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Logout from './logout';
 
 const SideBarContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  console.log('is auth? ' + isAuthenticated);
+  const location = useLocation();
+  const isProfile = location.pathname === "/profile" || location.pathname === "/usersList";
 
   return (
-    <>
-      {isAuthenticated && (
-        <div className="max-w-md">
+    <div className="max-w-md">
+      {isProfile ? (
+        <>
+          <div className="space-y-1">
+            <Link to="/" color="foreground">
+              <h4 className="text-medium font-medium">Back to Animals</h4>
+            </Link>
+          </div>
+          <Divider className="my-4" />
+          <div className="space-y-1">
+           <Link to="/usersList" color="foreground">
+            <h4 className="text-medium font-medium">Manage users</h4>
+           </Link>
+          </div>
+          <Divider className="my-4" />
+          <Logout />
+        </>
+      ) : (
+        <>
           <div className="space-y-1">
             <Link to="/" color="foreground">
               <h4 className="text-medium font-medium">Animals</h4>
@@ -24,9 +43,9 @@ const SideBarContent: React.FC = () => {
           </div>
           <Divider className="my-4" />
           <Logout />
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 };
 

@@ -64,4 +64,11 @@ public interface UserProfileService {
    * @return the updated {@link UserProfile} entity with new roles
    */
   UserProfile updateUserRoles(String username, List<String> roleNames);
+
+  /**
+   * Retrieves all user profiles from the database that do not have the ADMIN role.
+   *
+   * @return a list of UserProfile entities without the ADMIN role
+   */
+  List<UserProfile> findAllNonAdminUsers();
 }
