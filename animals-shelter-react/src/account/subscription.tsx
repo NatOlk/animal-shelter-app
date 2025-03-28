@@ -4,7 +4,7 @@ import { Input, Button, Progress, Spacer } from "@nextui-org/react";
 import { LuSmilePlus } from "react-icons/lu";
 
 const Subscription: React.FC = () => {
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const [email, setEmail] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -17,16 +17,16 @@ const Subscription: React.FC = () => {
     const handleSubscribe = async () => {
         if (!email.trim()) return;
         setLoading(true);
-
+        const body: any = { email };
+        if (isAdmin) {
+            body.approver = user?.email;
+        }
         await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                email: email,
-                approver: user?.email,
-            }),
+            body: JSON.stringify(body),
         });
     };
 
@@ -41,7 +41,7 @@ const Subscription: React.FC = () => {
                         isReadOnly
                         variant="bordered"
                         type="email"
-                        className="max-w-xs"/>
+                        className="max-w-xs" />
                     <Button onPress={handleSubscribe} color="default">
                         <LuSmilePlus />
                     </Button>

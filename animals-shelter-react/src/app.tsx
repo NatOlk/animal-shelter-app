@@ -20,7 +20,7 @@ import ErrorBoundary from './common/errorBoundary';
 import './styles/global.css';
 
 const AppContent: FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
 
   return (
     <>
@@ -65,8 +65,9 @@ const AppContent: FC = () => {
           </ErrorBoundary>
         </main>
       </div>
+
       <Spacer y={10} />
-      {isAuthenticated && <QuickSubscribe />}
+      {isAuthenticated && isAdmin && <QuickSubscribe />}
     </>
   );
 };

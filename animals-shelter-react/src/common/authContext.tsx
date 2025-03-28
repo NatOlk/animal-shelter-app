@@ -27,13 +27,22 @@ export const AuthProvider: React.FC<ChildrenProps> = ({ children }) => {
         localStorage.removeItem('jwt');
     };
 
-    const contextValue = useMemo(() => ({
-        isAuthenticated,
-        user,
-        login,
-        logout,
-        isLoading
-    }), [isAuthenticated, user, isLoading]);
+    const isAdmin = useMemo(() => {
+        return user?.roles?.includes("ADMIN") || false;
+    }, [user]);
+
+    const contextValue = useMemo(
+        () => ({
+          isAuthenticated,
+          user,
+          login,
+          logout,
+          isLoading,
+          isAdmin,
+        }),
+        [isAuthenticated, user, isLoading, isAdmin]
+      );
+
 
     return (
         <AuthContext.Provider value={contextValue}>

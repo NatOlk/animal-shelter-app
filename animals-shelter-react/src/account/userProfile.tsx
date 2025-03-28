@@ -19,8 +19,7 @@ import { useMutation } from "@apollo/client";
 const ALL_ROLES = ["USER", "EMPLOYEE", "VOLUNTEER", "DOCTOR", "ADMIN"];
 
 const UserProfile: React.FC = () => {
-  const { user } = useAuth();
-  const isAdmin = user?.roles?.includes("ADMIN");
+  const { user, isAdmin} = useAuth();
   const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState<'NONE' | 'PENDING' | 'ACTIVE' | null>('NONE');
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set(user?.roles || []));
   const [updateUserRoles] = useMutation(UPDATE_USER_ROLES);
@@ -114,28 +113,29 @@ const UserProfile: React.FC = () => {
           <CardFooter />
         </Card>
       </div>
-      <div className="subscriptionsTab">
-        <div className="flex flex-col">
-          <Tabs aria-label="Subscriptions" size="lg" variant="bordered">
-            <Tab key="pending" title={
-              <div className="flex items-center space-x-2">
-                <MdGroupAdd /><p>Pending subscribers</p>
-              </div>}>
-              <PendingSubscriptionList userProfile={user} />
-              <Divider className="my-4" />
-              <NoApproverSubscriptionList userProfile={user} />
-            </Tab>
-            <Tab key="all" title={
-              <div className="flex items-center space-x-2">
-                <TbUsersGroup /><p>All subscribers</p>
-              </div>}>
-              <AllApproverSubscriptionList userProfile={user} />
-            </Tab>
-          </Tabs>
+      {isAdmin && (
+        <div className="subscriptionsTab">
+          <div className="flex flex-col">
+            <Tabs aria-label="Subscriptions" size="lg" variant="bordered">
+              <Tab key="pending" title={
+                <div className="flex items-center space-x-2">
+                  <MdGroupAdd /><p>Pending subscribers</p>
+                </div>}>
+                <PendingSubscriptionList userProfile={user} />
+                <Divider className="my-4" />
+                <NoApproverSubscriptionList userProfile={user} />
+              </Tab>
+              <Tab key="all" title={
+                <div className="flex items-center space-x-2">
+                  <TbUsersGroup /><p>All subscribers</p>
+                </div>}>
+                <AllApproverSubscriptionList userProfile={user} />
+              </Tab>
+            </Tabs>
+          </div>
         </div>
-      </div>
+      )};
     </div>
-  );
-};
+)};
 
 export default UserProfile;
