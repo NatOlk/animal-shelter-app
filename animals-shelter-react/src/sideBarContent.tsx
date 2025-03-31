@@ -5,8 +5,6 @@ import { Link, useLocation } from "react-router-dom";
 import Logout from './logout';
 
 const SideBarContent: React.FC = () => {
-  const { isAuthenticated } = useAuth();
-  console.log('is auth? ' + isAuthenticated);
   const location = useLocation();
   const isProfile = location.pathname === "/profile" || location.pathname === "/usersList";
 

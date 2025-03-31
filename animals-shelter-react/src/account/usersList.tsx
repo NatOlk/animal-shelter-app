@@ -16,7 +16,6 @@ const UsersList: React.FC = () => {
   const [updateRoles] = useMutation(UPDATE_USER_ROLES);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  console.log(data?.allNonAdminUsers);
   const handleRoleChange = async (userId: string, newRoles: Set<string>) => {
     try {
       updateRoles({
