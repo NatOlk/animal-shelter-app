@@ -1,0 +1,36 @@
+name: Run Tests and Check Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Maven and run tests
+        run: mvn clean verify
+
+      - name: Check coverage > 60%
+        run: |
+          COVERAGE=$(grep -Po '(?<=<line-rate>)[^<]+' target/site/jacoco/jacoco.xml | head -1)
+          PERCENT=$(echo "$COVERAGE * 100" | bc)
+          echo "Coverage: $PERCENT %"
+          THRESHOLD=60.0
+          RESULT=$(echo "$PERCENT >= $THRESHOLD" | bc)
+          if [ "$RESULT" -ne 1 ]; then
+            echo "Code coverage is below threshold ($THRESHOLD%)!"
+            exit 1
+          fi
