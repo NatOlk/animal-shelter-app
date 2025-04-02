@@ -1,4 +1,4 @@
-name: 🧪 Coverage for ansh-service only
+name: 🐾 Animal Shelter Coverage for ansh-service only
 
 on:
   push:
@@ -75,3 +75,14 @@ jobs:
           else
             echo "✅ Code coverage is above threshold"
           fi
+          
+      - name: 📝 Post coverage comment to PR
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: ansh-service/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 60
+          update-comment: true
+          title: 📊 Coverage Report
+          pass-emoji: "✅"
+          fail-emoji: "❌"
