@@ -37,15 +37,16 @@ jobs:
             exit 1
           fi
 
-          MISSED=$(grep -oP '<counter type="INSTRUCTION"[^>]*missed="\K[0-9]+' "$JACOCO_FILE")
-          COVERED=$(grep -oP '<counter type="INSTRUCTION"[^>]*covered="\K[0-9]+' "$JACOCO_FILE")
+          COVERAGE_LINE=$(awk '/<report>/,/<\/report>/' "$JACOCO_FILE" | grep '<counter type="INSTRUCTION"' | head -1)
+          MISSED=$(echo "$COVERAGE_LINE" | grep -oP 'missed="\K[0-9]+')
+          COVERED=$(echo "$COVERAGE_LINE" | grep -oP 'covered="\K[0-9]+')
 
           if [ -z "$MISSED" ] || [ -z "$COVERED" ]; then
             echo "❌ Could not extract instruction counters"
             exit 1
           fi
 
-          TOTAL=$(($MISSED + $COVERED))
+          TOTAL=$((MISSED + COVERED))
 
           if [ "$TOTAL" -eq 0 ]; then
             echo "❌ Total instruction count is zero"
