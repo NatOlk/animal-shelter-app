@@ -37,8 +37,8 @@ jobs:
             exit 1
           fi
 
-          MISSED=$(grep -Po '<counter type="INSTRUCTION">.*?<missed>\K\d+' "$JACOCO_FILE")
-          COVERED=$(grep -Po '<counter type="INSTRUCTION">.*?<covered>\K\d+' "$JACOCO_FILE")
+          MISSED=$(grep -oP '<counter type="INSTRUCTION"[^>]*missed="\K[0-9]+' "$JACOCO_FILE")
+          COVERED=$(grep -oP '<counter type="INSTRUCTION"[^>]*covered="\K[0-9]+' "$JACOCO_FILE")
 
           if [ -z "$MISSED" ] || [ -z "$COVERED" ]; then
             echo "❌ Could not extract instruction counters"
