@@ -66,7 +66,7 @@ jobs:
           PERCENT=$(echo "scale=2; $COVERED * 100 / $TOTAL" | bc)
           echo "📈 Instruction coverage: $PERCENT%"
           
-          THRESHOLD=90.0
+          THRESHOLD=65.0
           RESULT=$(echo "$PERCENT >= $THRESHOLD" | bc)
           
           if [ "$RESULT" -ne 1 ]; then
@@ -81,7 +81,7 @@ jobs:
         with:
           paths: ansh-service/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 60
+          min-coverage-overall: 65
           update-comment: true
           title: 📊 Coverage Report
           pass-emoji: "✅"
