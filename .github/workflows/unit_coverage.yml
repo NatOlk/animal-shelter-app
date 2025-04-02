@@ -66,7 +66,7 @@ jobs:
           PERCENT=$(echo "scale=2; $COVERED * 100 / $TOTAL" | bc)
           echo "📈 Instruction coverage: $PERCENT%"
           
-          THRESHOLD=30.0
+          THRESHOLD=90.0
           RESULT=$(echo "$PERCENT >= $THRESHOLD" | bc)
           
           if [ "$RESULT" -ne 1 ]; then
