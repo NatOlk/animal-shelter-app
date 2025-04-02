@@ -80,7 +80,7 @@ const AnimalDetails: React.FC = () => {
         formData.append("birthDate", animal.birthDate);
 
         try {
-            const response = await apiFetch(`/${id}/upload-photo`, {
+            const response = await apiFetch(`/api/${id}/upload-photo`, {
                 method: 'POST',
                 body: formData
             });
