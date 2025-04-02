@@ -31,34 +31,41 @@ jobs:
       - name: 📊 Check coverage > 60%
         run: |
           JACOCO_FILE="ansh-service/target/site/jacoco/jacoco.xml"
-
+          
           if [ ! -f "$JACOCO_FILE" ]; then
             echo "❌ Coverage file not found: $JACOCO_FILE"
             exit 1
           fi
-
-          COVERAGE_LINE=$(awk '/<report>/,/<\/report>/' "$JACOCO_FILE" | grep '<counter type="INSTRUCTION"' | head -1)
-          MISSED=$(echo "$COVERAGE_LINE" | grep -oP 'missed="\K[0-9]+')
-          COVERED=$(echo "$COVERAGE_LINE" | grep -oP 'covered="\K[0-9]+')
-
+          
+          echo "🔍 Looking for INSTRUCTION counter inside <report> section..."
+          
+          COVERAGE_LINE=$(xmllint --xpath 'string(//report/counter[@type="INSTRUCTION"]/@missed)' "$JACOCO_FILE" 2>/dev/null)
+          MISSED=$COVERAGE_LINE
+          
+          COVERED_LINE=$(xmllint --xpath 'string(//report/counter[@type="INSTRUCTION"]/@covered)' "$JACOCO_FILE" 2>/dev/null)
+          COVERED=$COVERED_LINE
+          
+          echo "➡️ MISSED = $MISSED"
+          echo "➡️ COVERED = $COVERED"
+          
           if [ -z "$MISSED" ] || [ -z "$COVERED" ]; then
-            echo "❌ Could not extract instruction counters"
+            echo "❌ Could not extract instruction counters from XML"
             exit 1
           fi
-
+          
           TOTAL=$((MISSED + COVERED))
-
+          
           if [ "$TOTAL" -eq 0 ]; then
             echo "❌ Total instruction count is zero"
             exit 1
           fi
-
+          
           PERCENT=$(echo "scale=2; $COVERED * 100 / $TOTAL" | bc)
           echo "📈 Instruction coverage: $PERCENT%"
-
+          
           THRESHOLD=60.0
           RESULT=$(echo "$PERCENT >= $THRESHOLD" | bc)
-
+          
           if [ "$RESULT" -ne 1 ]; then
             echo "❌ Code coverage is below threshold ($THRESHOLD%)!"
             exit 1
