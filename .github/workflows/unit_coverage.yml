@@ -28,6 +28,9 @@ jobs:
         run: mvn verify jacoco:report
         working-directory: ./ansh-service
 
+      - name: 🛠 Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
       - name: 📊 Check coverage > 60%
         run: |
           JACOCO_FILE="ansh-service/target/site/jacoco/jacoco.xml"
