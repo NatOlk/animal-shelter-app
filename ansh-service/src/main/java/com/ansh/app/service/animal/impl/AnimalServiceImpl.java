@@ -1,7 +1,6 @@
 package com.ansh.app.service.animal.impl;
 
 import com.ansh.app.service.animal.AnimalService;
-import com.ansh.app.service.animal.FileStorageService;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
@@ -37,9 +36,6 @@ public class AnimalServiceImpl implements AnimalService {
 
   @Autowired
   private AnimalInfoNotificationService animalInfoNotificationService;
-
-  @Autowired
-  private FileStorageService fileStorageService;
 
   @Override
   @Cacheable(value = "animals", key = "'allAnimals'")
@@ -149,7 +145,7 @@ public class AnimalServiceImpl implements AnimalService {
 
   @Override
   @Transactional
-  @CacheEvict(value = "animal", key = "#id")
+  @CachePut(value = "animal", key = "#id")
   public void updatePhotoUrl(Long id, String path) {
     animalRepository.updatePhotoPathById(id, path);
   }
