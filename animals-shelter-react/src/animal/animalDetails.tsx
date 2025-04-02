@@ -145,7 +145,7 @@ const AnimalDetails: React.FC = () => {
                                     <Image
                                         isZoomed
                                         alt="Animal Image"
-                                        src={`${config.animalShelterApp}${photoImgPath}?timestamp=${forceUpdate}`}
+                                        src={`${config.animalShelterApp}/${photoImgPath}?timestamp=${forceUpdate}`}
                                         width={350}
                                         height={350}
                                         radius="md"

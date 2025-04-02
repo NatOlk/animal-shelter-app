@@ -145,7 +145,7 @@ public class AnimalServiceImpl implements AnimalService {
 
   @Override
   @Transactional
-  @CachePut(value = "animal", key = "#id")
+  @CacheEvict(value = "animal", key = "#id")
   public void updatePhotoUrl(Long id, String path) {
     animalRepository.updatePhotoPathById(id, path);
   }
