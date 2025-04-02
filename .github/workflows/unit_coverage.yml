@@ -31,29 +31,36 @@ jobs:
       - name: 📊 Check coverage > 60%
         run: |
           JACOCO_FILE="ansh-service/target/site/jacoco/jacoco.xml"
-          
+
           if [ ! -f "$JACOCO_FILE" ]; then
             echo "❌ Coverage file not found: $JACOCO_FILE"
             exit 1
           fi
-          
-          COVERAGE=$(grep -Po '(?<=<line-rate>)[^<]+' "$JACOCO_FILE" | head -1)
-          
-          if [ -z "$COVERAGE" ]; then
-            echo "❌ Could not extract coverage from jacoco.xml"
+
+          MISSED=$(grep -Po '<counter type="INSTRUCTION">.*?<missed>\K\d+' "$JACOCO_FILE")
+          COVERED=$(grep -Po '<counter type="INSTRUCTION">.*?<covered>\K\d+' "$JACOCO_FILE")
+
+          if [ -z "$MISSED" ] || [ -z "$COVERED" ]; then
+            echo "❌ Could not extract instruction counters"
             exit 1
           fi
-          
-          PERCENT=$(echo "$COVERAGE * 100" | bc -l | xargs printf "%.2f")
-          echo "📈 Coverage: $PERCENT %"
-          
+
+          TOTAL=$(($MISSED + $COVERED))
+
+          if [ "$TOTAL" -eq 0 ]; then
+            echo "❌ Total instruction count is zero"
+            exit 1
+          fi
+
+          PERCENT=$(echo "scale=2; $COVERED * 100 / $TOTAL" | bc)
+          echo "📈 Instruction coverage: $PERCENT%"
+
           THRESHOLD=60.0
           RESULT=$(echo "$PERCENT >= $THRESHOLD" | bc)
-          
+
           if [ "$RESULT" -ne 1 ]; then
             echo "❌ Code coverage is below threshold ($THRESHOLD%)!"
             exit 1
           else
             echo "✅ Code coverage is above threshold"
           fi
-     
