@@ -5,8 +5,13 @@ import { Link, useLocation } from "react-router-dom";
 import Logout from './logout';
 
 const SideBarContent: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
   const isProfile = location.pathname === "/profile" || location.pathname === "/usersList";
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="max-w-md">
@@ -14,14 +19,14 @@ const SideBarContent: React.FC = () => {
         <>
           <div className="space-y-1">
             <Link to="/" color="foreground">
-              <h4 className="text-medium font-medium">Back to Animals</h4>
+              <h4 className="text-medium font-medium">‹‹ Back</h4>
             </Link>
           </div>
           <Divider className="my-4" />
           <div className="space-y-1">
-           <Link to="/usersList" color="foreground">
-            <h4 className="text-medium font-medium">Manage users</h4>
-           </Link>
+            <Link to="/usersList" color="foreground">
+              <h4 className="text-medium font-medium">Manage users</h4>
+            </Link>
           </div>
           <Divider className="my-4" />
           <Logout />
