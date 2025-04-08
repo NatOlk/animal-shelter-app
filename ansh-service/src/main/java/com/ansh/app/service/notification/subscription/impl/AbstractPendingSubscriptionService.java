@@ -4,8 +4,8 @@ import static com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus.PENDING;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
@@ -24,14 +24,14 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
   protected final PendingSubscriberRepository pendingSubscriberRepository;
   protected final UserSubscriptionAuthorityService userSubscriptionAuthorityService;
   protected final PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer;
-  protected final UserProfileServiceImpl userProfileService;
+  protected final UserProfileService userProfileService;
 
   protected AbstractPendingSubscriptionService(
       String topicId,
       PendingSubscriberRepository pendingSubscriberRepository,
       UserSubscriptionAuthorityService userSubscriptionAuthorityService,
       PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer,
-      UserProfileServiceImpl userProfileService) {
+      UserProfileService userProfileService) {
     this.topicId = topicId;
     this.pendingSubscriberRepository = pendingSubscriberRepository;
     this.userSubscriptionAuthorityService = userSubscriptionAuthorityService;

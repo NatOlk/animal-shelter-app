@@ -1,6 +1,6 @@
 package com.ansh.app.controller.grql;
 
-import com.ansh.app.service.animal.impl.AnimalServiceImpl;
+import com.ansh.app.service.animal.AnimalService;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Controller;
 public class GrAnimalController {
 
   @Autowired
-  private AnimalServiceImpl animalsService;
+  private AnimalService animalsService;
 
   @Autowired
   private AnimalMapper animalMapper;

@@ -15,8 +15,8 @@ import com.ansh.entity.subscription.Subscription;
 import com.ansh.event.AddVaccinationEvent;
 import com.ansh.event.AnimalEvent;
 import com.ansh.event.RemoveAnimalEvent;
-import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
-import com.ansh.service.impl.EmailServiceImpl;
+import com.ansh.service.AnimalTopicSubscriberRegistryService;
+import com.ansh.service.EmailService;
 import com.ansh.utils.LinkGenerator;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +41,10 @@ class AddVaccinationNotificationHandlerTest {
   private AddVaccinationNotificationHandler handler;
 
   @Mock
-  private AnimalTopicSubscriberRegistryServiceImpl animalTopicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
 
   @Mock
-  private EmailServiceImpl emailService;
+  private EmailService emailService;
 
   @Mock
   private LinkGenerator linkGenerator;

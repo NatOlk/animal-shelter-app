@@ -2,7 +2,7 @@ package com.ansh.notification.app.handler;
 
 import com.ansh.event.AnimalEvent;
 import com.ansh.service.AnimalTopicSubscriberRegistryService;
-import com.ansh.service.impl.EmailServiceImpl;
+import com.ansh.service.EmailService;
 import com.ansh.utils.EmailParamsBuilder;
 import com.ansh.utils.IdentifierMasker;
 import com.ansh.utils.LinkGenerator;
@@ -17,7 +17,7 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   private static final Logger LOG = LoggerFactory.getLogger(
       AbstractAnimalNotificationHandler.class);
   @Autowired
-  private EmailServiceImpl emailService;
+  private EmailService emailService;
   @Autowired
   private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
   @Autowired

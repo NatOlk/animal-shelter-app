@@ -3,7 +3,7 @@ package com.ansh.app.controller;
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
@@ -33,7 +33,7 @@ public class SubscriptionController {
   private PendingSubscriptionService pendingSubscriptionService;
 
   @Autowired
-  private UserProfileServiceImpl userProfileService;
+  private UserProfileService userProfileService;
 
   @PostMapping("/animal-notify-approve-subscriber")
   public void approve(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {

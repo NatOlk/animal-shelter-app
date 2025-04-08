@@ -4,7 +4,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
-import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
+import com.ansh.service.AnimalTopicSubscriberRegistryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 class SubscriberNotificationEventConsumerTest {
 
   @Mock
-  private AnimalTopicSubscriberRegistryServiceImpl topicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryService topicSubscriberRegistryService;
 
   @InjectMocks
   private SubscriberNotificationEventConsumer subscriberNotificationEventConsumer;

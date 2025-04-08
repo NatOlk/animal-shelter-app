@@ -25,7 +25,7 @@ class SubscriptionNotificationEmailServiceTest {
   @Mock
   private LinkGenerator linkGenerator;
 
-  private final static String TEST_TOKEN = "test-token";
+  private final String TEST_TOKEN = "test-token";
 
   @BeforeEach
   void setUp() {

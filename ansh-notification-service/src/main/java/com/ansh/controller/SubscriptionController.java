@@ -5,10 +5,9 @@ import static java.lang.StringTemplate.STR;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
+import com.ansh.service.AnimalTopicSubscriberRegistryService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubscriptionController {
 
   @Autowired
-  private AnimalTopicSubscriberRegistryServiceImpl animalTopicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
 
   @PostMapping("/external/animal-notify-subscribe")
   public void subscribe(@RequestBody SubscriptionRequest request) {
@@ -28,7 +27,7 @@ public class SubscriptionController {
     email = email.replace("\"", "");
 
     String approver = request.getApprover();
-    if (approver == null ) approver = "";
+    if (approver == null) approver = "";
     approver = approver.replace("\"", "");
     animalTopicSubscriberRegistryService.registerSubscriber(email, approver);
   }

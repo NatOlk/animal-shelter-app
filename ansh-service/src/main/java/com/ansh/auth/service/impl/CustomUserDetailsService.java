@@ -1,6 +1,6 @@
 package com.ansh.auth.service.impl;
 
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
+import com.ansh.app.service.user.UserProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
   @Autowired
-  private UserProfileServiceImpl userService;
+  private UserProfileService userService;
 
   @Override
   public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
