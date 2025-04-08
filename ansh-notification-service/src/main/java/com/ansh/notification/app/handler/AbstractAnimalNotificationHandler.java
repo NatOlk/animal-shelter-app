@@ -1,7 +1,7 @@
 package com.ansh.notification.app.handler;
 
 import com.ansh.event.AnimalEvent;
-import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
+import com.ansh.service.AnimalTopicSubscriberRegistryService;
 import com.ansh.service.impl.EmailServiceImpl;
 import com.ansh.utils.EmailParamsBuilder;
 import com.ansh.utils.IdentifierMasker;
@@ -19,7 +19,7 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   @Autowired
   private EmailServiceImpl emailService;
   @Autowired
-  private AnimalTopicSubscriberRegistryServiceImpl animalTopicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
   @Autowired
   private Executor emailNotificationExecutor;
   @Autowired
