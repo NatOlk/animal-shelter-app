@@ -27,7 +27,6 @@ dependencies {
 
     implementation("com.ansh:ansh-common:1.0")
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("com.h2database:h2")

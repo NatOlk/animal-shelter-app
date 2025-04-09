@@ -1,6 +1,7 @@
 package com.ansh.stats.repository
 
 import com.ansh.stats.entity.SubscriptionDecisionEventDocument
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.mongodb.repository.MongoRepository
 
-interface SubscriptionDecisionStatsRepository : JpaRepository<SubscriptionDecisionEventDocument, Long>
+interface SubscriptionDecisionStatsRepository :
+    MongoRepository<SubscriptionDecisionEventDocument, Long>
