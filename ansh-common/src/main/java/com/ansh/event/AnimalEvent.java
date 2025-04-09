@@ -3,6 +3,8 @@ package com.ansh.event;
 import com.ansh.entity.animal.Animal;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.beans.ConstructorProperties;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -20,10 +22,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public abstract class AnimalEvent {
 
   private Animal animal;
+
+  private LocalDate created = LocalDate.now();
+
+  AnimalEvent(Animal animal) {
+    this.animal = animal;
+  }
 
   public Map<String, Object> getParams() {
     Map<String, Object> params = new HashMap<>();

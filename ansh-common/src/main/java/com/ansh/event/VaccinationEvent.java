@@ -35,7 +35,7 @@ public abstract class VaccinationEvent extends AnimalEvent {
 
   @Override
   public Map<String, Object> getParams() {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
 
     if (getAnimal() != null) {
       params.put("animalName", getAnimal().getName());

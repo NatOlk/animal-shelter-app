@@ -59,7 +59,10 @@ public class VaccinationServiceImpl implements VaccinationService {
 
   @Override
   @CachePut(value = "vaccination", key = "#result.id")
-  @CacheEvict(value = "vaccinations", key = "'allVaccinations'")
+  @Caching(evict = {
+      @CacheEvict(value = "vaccinations", key = "'allVaccinations'"),
+      @CacheEvict(value = "vaccinations", key = "'animal-' + #vaccination.animalId")
+  })
   public Vaccination addVaccination(@NonNull VaccinationInput vaccination)
       throws VaccinationCreationException {
 

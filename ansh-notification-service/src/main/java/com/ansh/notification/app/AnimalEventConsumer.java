@@ -18,7 +18,7 @@ public class AnimalEventConsumer {
   @Autowired
   private AnimalNotificationHandlerRegistry handlerRegistry;
 
-  @KafkaListener(topics = "${animalTopicId}", groupId = "animalGroupId")
+  @KafkaListener(topics = "${animalTopicId}", groupId = "notificationGroupId")
   public void listen(ConsumerRecord<String, String> message) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.findAndRegisterModules();

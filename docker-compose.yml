@@ -247,6 +247,48 @@ services:
       - backend
       - frontend
 
+  ansh-stats-mongo:
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+
+  ansh-stats-mongo-express:
+   image: mongo-express
+   container_name: mongo-express
+   restart: always
+   ports:
+    - "8087:8087"
+   environment:
+    ME_CONFIG_MONGODB_SERVER: ansh-stats-mongo
+    ME_CONFIG_MONGODB_PORT: 27017
+    ME_CONFIG_BASICAUTH_USERNAME: admin
+    ME_CONFIG_BASICAUTH_PASSWORD: admin
+   depends_on:
+    - ansh-stats-mongo
+   networks:
+    - backend
+
+  ansh-stats-service:
+    container_name: ansh-stats-service
+    build:
+      context: .
+      dockerfile: Dockerfile_stats
+    depends_on:
+      - kafka-ansh
+      - ansh-stats-mongo
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-ansh:9092
+      SPRING_DATASOURCE_URL: mongodb://ansh-stats-mongo:27017/ansh-stats
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge

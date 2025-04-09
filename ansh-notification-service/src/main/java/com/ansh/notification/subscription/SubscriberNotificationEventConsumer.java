@@ -25,7 +25,7 @@ public class SubscriberNotificationEventConsumer {
   @Autowired
   private AnimalTopicSubscriberRegistryServiceImpl topicSubscriberRegistryService;
 
-  @KafkaListener(topics = "${approveTopicId}", groupId = "animalGroupId")
+  @KafkaListener(topics = "${approveTopicId}", groupId = "notificationGroupId")
   public void listen(ConsumerRecord<String, String> message) throws IOException {
 
     SubscriptionDecisionEvent event = new ObjectMapper().readValue(message.value(),
