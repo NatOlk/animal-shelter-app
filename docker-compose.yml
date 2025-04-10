@@ -281,7 +281,9 @@ services:
       - ansh-stats-mongo
     ports:
       - "8082:8082"
+      - "5007:5007"
     environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007"
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-ansh:9092
       SPRING_DATASOURCE_URL: mongodb://ansh-stats-mongo:27017/ansh-stats
       SPRING_DATASOURCE_USERNAME: admin

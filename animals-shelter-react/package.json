@@ -39,7 +39,8 @@
     "rollup": "^4.32.0",
     "spin.js": "^4.1.2",
     "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0"
+    "@types/react-dom": "^18.2.0",
+    "recharts": "^2.7.2"
   },
   "main": "index.js",
   "homepage": "http://localhost:5173",

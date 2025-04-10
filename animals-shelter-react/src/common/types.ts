@@ -129,3 +129,17 @@ export interface RegisterResponse {
   email: string;
   message: string;
 }
+
+type CountByDate = {
+  date: string
+  count: number
+}
+
+type AnimalLifespan = {
+id: number
+name: string
+species: string
+daysInSystem: number
+hoursInSystem: number
+minutesInSystem: number
+}

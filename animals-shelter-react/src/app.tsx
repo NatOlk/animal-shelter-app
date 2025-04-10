@@ -16,6 +16,7 @@ import ProtectedRoute from "./common/protectedRoute";
 import ErrorPage from "./errorPage";
 import { AuthProvider, useAuth } from './common/authContext';
 import QuickSubscribe from './subscription/quickSubscribe';
+import StatisticsDashboard from './stats/statisticsDashboard';
 import { Spacer } from "@nextui-org/react";
 import ErrorBoundary from './common/errorBoundary';
 import './styles/global.css';
@@ -71,6 +72,11 @@ const AppContent: FC = () => {
               <Route path="/usersList" element={
                 <ProtectedRoute>
                   <UsersList />
+                </ProtectedRoute>
+              } />
+              <Route path="/statistics" element={
+                <ProtectedRoute>
+                 <StatisticsDashboard />
                 </ProtectedRoute>
               } />
             </Routes>
