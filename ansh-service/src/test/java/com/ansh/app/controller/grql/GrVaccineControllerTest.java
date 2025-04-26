@@ -31,6 +31,7 @@ class GrVaccineControllerTest {
   @Autowired
   private GraphQlTester graphQlTester;
 
+  //TODO check this
   @MockBean
   private VaccinationServiceImpl vaccinationService;
 
@@ -99,8 +100,8 @@ class GrVaccineControllerTest {
   @Test
   void updateVaccination_shouldUpdateVaccine()
       throws VaccinationNotFoundException, VaccinationUpdateException {
-    UpdateVaccinationInput vaccinationInput = new UpdateVaccinationInput(1L,"Rabies",
-        "A123","test@example.com", LocalDate.parse("2024-11-29"), "First dose");
+    UpdateVaccinationInput vaccinationInput = new UpdateVaccinationInput(1L, "Rabies",
+        "A123", "test@example.com", LocalDate.parse("2024-11-29"), "First dose");
 
     when(vaccinationService.updateVaccination(vaccinationInput)).thenReturn(vaccination);
 

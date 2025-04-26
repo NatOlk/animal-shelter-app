@@ -210,14 +210,14 @@ services:
     networks:
       - backend
 
-  ansh-react-app:
-    container_name: ansh-react-app
+  ansh-ui-app:
+    container_name: ansh-ui-app
     build:
-      context: ./animals-shelter-react
+      context: animals-shelter-ui
       dockerfile: Dockerfile
     volumes:
-      - ./animals-shelter-react/src:/app/src
-      - ./animals-shelter-react/public:/app/public
+      - ./animals-shelter-ui/src:/app/src
+      - ./animals-shelter-ui/public:/app/public
     command: >
       sh -c "npm install && npx tailwindcss -c tailwind.config.js 
       -i ./src/styles/global.css 
@@ -242,7 +242,7 @@ services:
     depends_on:
       - ansh-service
       - ansh-notification-service
-      - ansh-react-app
+      - ansh-ui-app
     networks:
       - backend
       - frontend
@@ -250,6 +250,10 @@ services:
   ansh-stats-mongo:
     image: mongo:6
     container_name: mongo
+    volumes:
+      - mongo-data:/data/db
+      - mongo-logs:/var/log/mongodb
+      - mongo-configs:/data/configdb
     ports:
       - "27017:27017"
     networks:
@@ -321,3 +325,6 @@ volumes:
   hazelcast-data:
   hazelcast-mc-data:
   hazelcast-mc-conf:
+  mongo-data:
+  mongo-logs:
+  mongo-configs:

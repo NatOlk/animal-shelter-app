@@ -46,7 +46,7 @@ class AnimalEventConsumerTest {
 
     AnimalEvent expectedEvent = objectMapper.readValue(json, AddAnimalEvent.class);
 
-    animalEventConsumer.listen(message);
+    animalEventConsumer.listenAnimalTopic(message);
 
     ArgumentCaptor<AnimalEvent> captor = ArgumentCaptor.forClass(AnimalEvent.class);
     verify(handlerRegistry, times(1)).handleEvent(captor.capture());

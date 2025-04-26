@@ -35,11 +35,12 @@ public class PendingSubscriptionDecisionProducer {
 
   private void sendEvent(String email, String approver, String topic, boolean isReject) {
     try {
-      SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
-      event.setEmail(email);
-      event.setApprover(approver);
-      event.setTopic(topic);
-      event.setReject(isReject);
+      SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
+          .email(email)
+          .approver(approver)
+          .topic(topic)
+          .reject(isReject)
+          .build();
 
       String jsonMessage = objectMapper.writeValueAsString(event);
       kafkaTemplate.send(approveTopicId, jsonMessage);

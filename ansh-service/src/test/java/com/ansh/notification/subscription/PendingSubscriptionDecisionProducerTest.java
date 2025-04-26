@@ -42,11 +42,12 @@ class PendingSubscriptionDecisionProducerTest {
     String email = "user@example.com";
     String approver = "approverUser";
     String topic = "animal-topic";
-    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
-    event.setEmail(email);
-    event.setApprover(approver);
-    event.setTopic(topic);
-    event.setReject(false);
+    SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
+        .email(email)
+        .approver(approver)
+        .topic(topic)
+        .reject(false)
+        .build();
 
     String jsonMessage = "{\"email\":\"user@example.com\",\"approver\":\"approverUser\",\"topic\":\"animal-topic\",\"reject\":false}";
     when(objectMapper.writeValueAsString(event)).thenReturn(jsonMessage);
@@ -62,11 +63,12 @@ class PendingSubscriptionDecisionProducerTest {
     String email = "user@example.com";
     String approver = "approverUser";
     String topic = "animal-topic";
-    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
-    event.setEmail(email);
-    event.setApprover(approver);
-    event.setTopic(topic);
-    event.setReject(true);
+    SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
+        .email(email)
+        .approver(approver)
+        .topic(topic)
+        .reject(true)
+        .build();
 
     String jsonMessage = "{\"email\":\"user@example.com\",\"approver\":\"approverUser\",\"topic\":\"animal-topic\",\"reject\":true}";
     when(objectMapper.writeValueAsString(event)).thenReturn(jsonMessage);

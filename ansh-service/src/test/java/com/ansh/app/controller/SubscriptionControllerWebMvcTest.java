@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ansh.AnshSecurityConfig;
+import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
+import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.notification.subscription.impl.AnimalInfoPendingSubscriptionServiceImpl;
 import com.ansh.app.service.notification.subscription.impl.NotificationSubscriptionServiceImpl;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
@@ -41,11 +43,11 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @MockBean
   @Qualifier("notificationSubscriptionService")
-  private NotificationSubscriptionServiceImpl notificationService;
+  private NotificationSubscriptionService notificationService;
 
   @MockBean
   @Qualifier("animalInfoPendingSubscriptionService")
-  private AnimalInfoPendingSubscriptionServiceImpl pendingSubscriptionService;
+  private PendingSubscriptionService pendingSubscriptionService;
 
   @Test
   void shouldApproveSubscriber() throws Exception {

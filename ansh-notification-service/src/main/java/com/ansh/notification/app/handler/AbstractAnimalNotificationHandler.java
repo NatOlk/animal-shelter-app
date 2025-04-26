@@ -1,11 +1,12 @@
 package com.ansh.notification.app.handler;
 
 import com.ansh.event.AnimalEvent;
-import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
-import com.ansh.service.impl.EmailServiceImpl;
+import com.ansh.service.EmailService;
+import com.ansh.service.SubscriberRegistryService;
 import com.ansh.utils.EmailParamsBuilder;
 import com.ansh.utils.IdentifierMasker;
 import com.ansh.utils.LinkGenerator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import org.slf4j.Logger;
@@ -16,19 +17,28 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
 
   private static final Logger LOG = LoggerFactory.getLogger(
       AbstractAnimalNotificationHandler.class);
+
   @Autowired
-  private EmailServiceImpl emailService;
-  @Autowired
-  private AnimalTopicSubscriberRegistryServiceImpl animalTopicSubscriberRegistryService;
+  private EmailService emailService;
+
   @Autowired
   private Executor emailNotificationExecutor;
+
   @Autowired
   private LinkGenerator linkGenerator;
+
+  /**
+   * Returns the list of subscriber registries to send notifications to.
+   *
+   * @return list of SubscriberRegistryService
+   */
+  protected abstract List<SubscriberRegistryService> getSubscriberRegistryServices();
 
   @Override
   public void handle(AnimalEvent event) {
     if (!getHandledEventType().isInstance(event)) {
-      LOG.error("Incorrect event type: expected {}, but got {}", getHandledEventType().getSimpleName(), event.getClass().getSimpleName());
+      LOG.error("Incorrect event type: expected {}, but got {}",
+          getHandledEventType().getSimpleName(), event.getClass().getSimpleName());
       throw new IllegalArgumentException(
           STR."Invalid event type for handler: \{event.getClass().getSimpleName()}");
     }
@@ -40,20 +50,24 @@ public abstract class AbstractAnimalNotificationHandler implements AnimalEventNo
   protected abstract String getNotificationTemplate();
 
   private void sendNotifications(Map<String, Object> params, String subject, String templateName) {
-    animalTopicSubscriberRegistryService.getAcceptedAndApprovedSubscribers()
-        .forEach(subscription -> {
-          params.putAll(new EmailParamsBuilder()
-              .name(subscription.getEmail())
-              .unsubscribeLink(
-                  linkGenerator.generateUnsubscribeLink(subscription.getToken()))
-              .build());
+    for (SubscriberRegistryService registryService : getSubscriberRegistryServices()) {
+      registryService.getAcceptedAndApprovedSubscribers()
+          .forEach(subscription -> {
+            Map<String, Object> personalParams = new EmailParamsBuilder()
+                .name(subscription.getEmail())
+                .unsubscribeLink(linkGenerator.generateUnsubscribeLink(subscription.getToken()))
+                .build();
 
-          emailNotificationExecutor.execute(() -> {
-                LOG.debug("Thread: {} is sending email to {}", Thread.currentThread().getName(),
-                    IdentifierMasker.maskEmail(subscription.getEmail()));
-                emailService.sendEmail(subscription.getEmail(), subject, templateName, params);
-              }
-          );
-        });
+            personalParams.putAll(params);
+
+            emailNotificationExecutor.execute(() -> {
+              LOG.debug("Thread: {} is sending email to {}",
+                  Thread.currentThread().getName(),
+                  IdentifierMasker.maskEmail(subscription.getEmail()));
+              emailService.sendEmail(subscription.getEmail(), subject, templateName,
+                  personalParams);
+            });
+          });
+    }
   }
 }

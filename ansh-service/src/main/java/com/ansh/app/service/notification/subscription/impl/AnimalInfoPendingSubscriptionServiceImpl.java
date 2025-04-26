@@ -1,5 +1,6 @@
 package com.ansh.app.service.notification.subscription.impl;
 
+import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
@@ -9,7 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service("animalInfoPendingSubscriptionService")
-public class AnimalInfoPendingSubscriptionServiceImpl extends AbstractPendingSubscriptionService {
+public class AnimalInfoPendingSubscriptionServiceImpl extends AbstractPendingSubscriptionService
+    implements PendingSubscriptionService {
 
   @Autowired
   public AnimalInfoPendingSubscriptionServiceImpl(

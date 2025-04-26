@@ -40,6 +40,7 @@ public abstract class AnimalEvent {
     params.put("animalImplantChip", animal.getImplantChipId());
     params.put("animalGender", animal.getGender());
     params.put("dateAdded", animal.getAdmissionDate());
+    params.put("animalDetailsLink", "/details/" + animal.getId());
 
     return params;
   }

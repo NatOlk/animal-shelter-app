@@ -1,7 +1,16 @@
 package com.ansh.auth.service.impl;
 
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.entity.account.UserProfile;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -10,15 +19,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 class CustomUserDetailsServiceTest {
 
   @Mock
-  private UserProfileServiceImpl userService;
+  private UserProfileService userService;
 
   @InjectMocks
   private CustomUserDetailsService customUserDetailsService;

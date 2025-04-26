@@ -27,8 +27,12 @@ public class SubscriberNotificationEventProducer {
 
   public void sendPendingApproveRequest(String email, String approver, String topic) {
     try {
-      SubscriptionDecisionEvent event =
-          new SubscriptionDecisionEvent();
+      SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
+          .email(email)
+          .approver(approver)
+          .topic(topic)
+          .build();
+
       event.setEmail(email);
       event.setApprover(approver);
       event.setTopic(topic);

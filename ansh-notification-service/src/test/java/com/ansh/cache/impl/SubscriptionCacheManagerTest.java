@@ -1,4 +1,4 @@
-package com.ansh.cache;
+package com.ansh.cache.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,11 +23,11 @@ import org.springframework.data.redis.core.ValueOperations;
 
 class SubscriptionCacheManagerTest {
 
-  private static final String ANIMAL_TOPIC_ID = "test-topic";
   private static final String CACHE_LAST_UPDATED = "cache_last_updated";
+  private static final String TOPIC = "tpc";
 
   @InjectMocks
-  private SubscriptionCacheManager subscriptionCacheManager;
+  private SubscriptionCacheManagerImpl subscriptionCacheManager;
 
   @Mock
   private SubscriptionCache subscriptionCache;
@@ -45,15 +45,14 @@ class SubscriptionCacheManagerTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
     when(updRedisTemplate.opsForValue()).thenReturn(valueOperations);
-    subscriptionCacheManager.setAnimalTopicId(ANIMAL_TOPIC_ID);
   }
 
   @Test
   void testInitializeCache() {
-    Subscription subscription = new Subscription();
+    Subscription subscription = Subscription.builder().topic(TOPIC).build();
     List<Subscription> subscriptions = List.of(subscription);
 
-    when(subscriptionRepository.findApprovedAndAcceptedSubscriptionsByTopic(ANIMAL_TOPIC_ID))
+    when(subscriptionRepository.findApprovedAndAcceptedSubscriptions())
         .thenReturn(subscriptions);
 
     subscriptionCacheManager.initializeCache();
@@ -71,23 +70,23 @@ class SubscriptionCacheManagerTest {
 
     verify(subscriptionCache, times(1)).clearCache();
     verify(subscriptionRepository, times(1))
-        .findApprovedAndAcceptedSubscriptionsByTopic(eq(ANIMAL_TOPIC_ID));
+        .findApprovedAndAcceptedSubscriptions();
   }
 
   @Test
   void testShouldUpdateCacheWhenNoLastUpdated() {
-    when(valueOperations.get(eq(CACHE_LAST_UPDATED))).thenReturn(null);
+    when(valueOperations.get(CACHE_LAST_UPDATED)).thenReturn(null);
 
     boolean result = subscriptionCacheManager.shouldUpdateCache();
 
     assertTrue(result);
-    verify(valueOperations, times(1)).get(eq(CACHE_LAST_UPDATED));
+    verify(valueOperations, times(1)).get(CACHE_LAST_UPDATED);
   }
 
   @Test
   void testShouldUpdateCacheWhenCacheIsStale() {
     long staleTime = System.currentTimeMillis() - (25 * 60 * 60 * 1000); // 25 hours ago
-    when(valueOperations.get(eq(CACHE_LAST_UPDATED))).thenReturn(String.valueOf(staleTime));
+    when(valueOperations.get(CACHE_LAST_UPDATED)).thenReturn(String.valueOf(staleTime));
 
     boolean result = subscriptionCacheManager.shouldUpdateCache();
 
@@ -97,7 +96,7 @@ class SubscriptionCacheManagerTest {
   @Test
   void testShouldNotUpdateCacheWhenCacheIsFresh() {
     long freshTime = System.currentTimeMillis() - (23 * 60 * 60 * 1000); // 23 hours ago
-    when(valueOperations.get(eq(CACHE_LAST_UPDATED))).thenReturn(String.valueOf(freshTime));
+    when(valueOperations.get(CACHE_LAST_UPDATED)).thenReturn(String.valueOf(freshTime));
 
     boolean result = subscriptionCacheManager.shouldUpdateCache();
 
@@ -105,14 +104,25 @@ class SubscriptionCacheManagerTest {
   }
 
   @Test
-  void testGetAllFromCache() {
-    List<Subscription> subscriptions = List.of(new Subscription());
-    when(subscriptionCache.getAllFromCache()).thenReturn(subscriptions);
+  void testGetAllFromCacheByTopic() {
+    List<Subscription> subscriptions = List.of(Subscription.builder().topic(TOPIC).build());
+    when(subscriptionCache.getAllFromCache(TOPIC)).thenReturn(subscriptions);
 
-    List<Subscription> result = subscriptionCacheManager.getAllFromCache();
+    List<Subscription> result = subscriptionCacheManager.getAllFromCache(TOPIC);
 
     assertEquals(subscriptions, result);
-    verify(subscriptionCache, times(1)).getAllFromCache();
+    verify(subscriptionCache, times(1)).getAllFromCache(TOPIC);
+  }
+
+  @Test
+  void testGetAllFromCacheByTopic_whenTopicIsNotExist() {
+    List<Subscription> subscriptions = List.of(Subscription.builder().topic(TOPIC).build());
+    when(subscriptionCache.getAllFromCache(TOPIC)).thenReturn(subscriptions);
+
+    List<Subscription> result = subscriptionCacheManager.getAllFromCache("Fake");
+
+    assertEquals(0, result.size());
+    verify(subscriptionCache, times(1)).getAllFromCache("Fake");
   }
 
   @Test

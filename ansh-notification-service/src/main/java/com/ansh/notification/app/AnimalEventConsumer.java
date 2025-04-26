@@ -15,11 +15,14 @@ public class AnimalEventConsumer {
   @Value("${animalTopicId}")
   private String animalTopicId;
 
+  @Value("${vaccinationTopicId}")
+  private String vaccinationTopicId;
+
   @Autowired
   private AnimalNotificationHandlerRegistry handlerRegistry;
 
-  @KafkaListener(topics = "${animalTopicId}", groupId = "notificationGroupId")
-  public void listen(ConsumerRecord<String, String> message) throws IOException {
+  @KafkaListener(topics = {"${animalTopicId}", "${vaccinationTopicId}"}, groupId = "notificationGroupId")
+  public void listenAnimalTopic(ConsumerRecord<String, String> message) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.findAndRegisterModules();
     AnimalEvent animalEvent = objectMapper.readValue(message.value(), AnimalEvent.class);

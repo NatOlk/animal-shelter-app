@@ -2,6 +2,7 @@ server:
   port: 8082
 
 animalTopicId: animalTopicId
+vaccinationTopicId: vaccinationTopicId
 approveTopicId: approveTopicId
 
 spring:

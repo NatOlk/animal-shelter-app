@@ -1,7 +1,7 @@
 package com.ansh.app.controller;
 
+import com.ansh.app.service.animal.AnimalService;
 import com.ansh.app.service.animal.FileStorageService;
-import com.ansh.app.service.animal.impl.AnimalServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class AnimalPhotoController {
   private static final Logger LOG = LoggerFactory.getLogger(AnimalPhotoController.class);
 
   @Autowired
-  private AnimalServiceImpl animalService;
+  private AnimalService animalService;
 
   @Autowired
   private FileStorageService fileStorageService;

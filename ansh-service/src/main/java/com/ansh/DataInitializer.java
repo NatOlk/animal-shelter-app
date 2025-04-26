@@ -1,7 +1,13 @@
 package com.ansh;
 
+import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
+import com.ansh.entity.animal.Animal;
+import com.ansh.entity.animal.Vaccination;
+import com.ansh.repository.AnimalRepository;
+import com.ansh.repository.VaccinationRepository;
 import com.ansh.utils.IdentifierMasker;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +31,13 @@ public class DataInitializer implements CommandLineRunner {
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
+  @Autowired
+  private AnimalRepository animalRepository;
+  @Autowired
+  private VaccinationRepository vaccinationRepository;
+  @Autowired
+  private AnimalInfoNotificationService notificationService;
+
   @Override
   public void run(String... args) throws Exception {
     ClassPathResource resource = new ClassPathResource("init.sql");
@@ -43,5 +56,28 @@ public class DataInitializer implements CommandLineRunner {
     jdbcTemplate.execute(sqlAnimals);
 
     LOG.debug("init animals SQL script executed with default email: {}", IdentifierMasker.maskEmail(defaultEmail));
+    f();
+  }
+
+  private void f() {
+    LOG.debug("Starting event sending...");
+
+    List<Animal> animals = animalRepository.findAllWithVaccinations();
+
+    LOG.debug("Find {} animals...", animals.size());
+    for (Animal animal : animals) {
+      notificationService.sendAddAnimalMessage(animal);
+      LOG.debug("Send notification for {}", animal);
+    }
+
+    List<Vaccination> vaccinations = vaccinationRepository.findAllWithAnimal();
+    LOG.debug("Find {} vaccinations...", vaccinations.size());
+    for (Vaccination vaccination : vaccinations) {
+      if (vaccination.getAnimal() != null) {
+        vaccination.getAnimal().setVaccinations(null);
+      }
+      notificationService.sendAddVaccinationMessage(vaccination);
+      LOG.debug("Send notification for {}", vaccination);
+    }
   }
 }

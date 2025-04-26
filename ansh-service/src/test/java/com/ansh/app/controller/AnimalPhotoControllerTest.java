@@ -9,8 +9,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ansh.app.service.animal.AnimalService;
 import com.ansh.app.service.animal.FileStorageService;
-import com.ansh.app.service.animal.impl.AnimalServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class AnimalPhotoControllerTest {
   private AnimalPhotoController controller;
 
   @Mock
-  private AnimalServiceImpl animalService;
+  private AnimalService animalService;
 
   @Mock
   private FileStorageService fileStorageService;

@@ -34,6 +34,7 @@ class VaccinationServiceTest {
   @Mock
   private AnimalRepository animalRepository;
 
+  //TODO check this
   @Mock
   private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
 

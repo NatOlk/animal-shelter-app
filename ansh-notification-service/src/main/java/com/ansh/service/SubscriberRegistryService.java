@@ -6,9 +6,16 @@ import java.util.List;
 import org.springframework.lang.NonNull;
 
 /**
- * Service interface for managing animal topic subscriptions.
+ * Service interface for managing subscriptions.
  */
-public interface AnimalTopicSubscriberRegistryService {
+public interface SubscriberRegistryService {
+
+  /**
+   * Returns the ID of the topic that this service is responsible for handling.
+   *
+   * @return the topic ID associated with this subscription service
+   */
+  String getTopicId();
 
   /**
    * Registers a new subscriber for animal topic notifications.

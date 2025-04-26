@@ -2,7 +2,6 @@ package com.ansh.stats.notification
 
 import com.ansh.event.AnimalEvent
 import com.ansh.stats.service.AnimalService
-import com.ansh.stats.service.AnimalStatsService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
@@ -16,7 +15,10 @@ class AnimalStatsEventConsumer(
 ) {
     private val logger = LoggerFactory.getLogger(AnimalStatsEventConsumer::class.java)
 
-    @KafkaListener(topics = ["\${animalTopicId}"], groupId = "statsGroupId")
+    @KafkaListener(
+        topics = ["\${animalTopicId}", "\${vaccinationTopicId}"],
+        groupId = "statsGroupId"
+    )
     fun listen(message: ConsumerRecord<String, String>) {
         try {
             val event = objectMapper.readValue(message.value(), AnimalEvent::class.java)
