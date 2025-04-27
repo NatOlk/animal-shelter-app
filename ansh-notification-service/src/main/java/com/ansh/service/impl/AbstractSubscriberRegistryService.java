@@ -120,7 +120,7 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
         .build();
     subscriptionRepository.save(newSubscription);
     subscriberNotificationEventProducer.sendPendingApproveRequest(email, approver, getTopicId());
-    LOG.debug("Register a new subscriber {}", IdentifierMasker.maskEmail(email));
+    LOG.debug("Register a new subscriber {} for topic {}", IdentifierMasker.maskEmail(email), getTopicId());
   }
 
   private void handleExistingSubscription(Subscription subscription) {

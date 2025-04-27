@@ -22,4 +22,8 @@ public class PendingSubscriptionServiceStrategy {
   public Optional<PendingSubscriptionService> getServiceByTopic(String topic) {
     return Optional.ofNullable(subscriptionServices.get(topic));
   }
+
+  public List<PendingSubscriptionService> getAllServices() {
+    return List.copyOf(subscriptionServices.values());
+  }
 }

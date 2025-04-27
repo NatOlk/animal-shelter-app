@@ -43,7 +43,6 @@ class PendingSubscriptionConsumerTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
     consumer.setSubscriptionTopicId(SUBSCRIPTION_TOPIC);
-    consumer.setAnimalTopicId(ANIMAL_TOPIC);
   }
 
   @Test

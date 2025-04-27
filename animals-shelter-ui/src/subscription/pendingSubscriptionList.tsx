@@ -36,31 +36,40 @@ const PendingSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile 
     fetchSubscribers();
   }, [userProfile.email]);
 
-  const handleApprove = async (email: string) => {
+  const handleApprove = async (subscriber: Subscriber) => {
     try {
       await apiFetch('/api/animal-notify-approve-subscriber', {
         method: 'POST',
-        body: { email, approver: userProfile.email },
+        body: {
+          email: subscriber.email,
+          approver: userProfile.email,
+          topic: subscriber.topic,
+        },
       });
 
-      setPendingSubscribers((prev) => prev.filter((subscriber) => subscriber.email !== email));
+      setPendingSubscribers((prev) => prev.filter((s) => s.email !== subscriber.email));
     } catch (error) {
-      setError(error);
+      setError(error as Error);
     }
   };
 
-  const handleReject = async (email: string) => {
+  const handleReject = async (subscriber: Subscriber) => {
     try {
       await apiFetch('/api/animal-notify-reject-subscriber', {
         method: 'POST',
-        body: { email, approver: userProfile.email },
+        body: {
+          email: subscriber.email,
+          approver: userProfile.email,
+          topic: subscriber.topic,
+        },
       });
 
-      setPendingSubscribers((prev) => prev.filter((subscriber) => subscriber.email !== email));
+      setPendingSubscribers((prev) => prev.filter((s) => s.email !== subscriber.email));
     } catch (error) {
-      setError(error);
+      setError(error as Error);
     }
   };
+
 
   return (
     <>
@@ -100,13 +109,13 @@ const PendingSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile 
                 <TableCell className="w-24 flex space-x-2">
                   <Tooltip content="Approve">
                     <Button color="default" variant="light" className="p-2 min-w-2 h-auto"
-                      onPress={() => handleApprove(subscriber.email)}>
+                      onPress={() => handleApprove(subscriber)}>
                       <HiOutlineUserAdd />
                     </Button>
                   </Tooltip>
                   <Tooltip content="Reject">
                     <Button color="default" variant="light" className="p-2 min-w-2 h-auto"
-                      onPress={() => handleReject(subscriber.email)}>
+                      onPress={() => handleReject(subscriber)}>
                       <HiX />
                     </Button>
                   </Tooltip>

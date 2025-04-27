@@ -27,7 +27,6 @@ public class SubscriptionController {
   private SubscriptionFacade subscriptionFacade;
 
   @PostMapping("/external/animal-notify-subscribe")
-
   public void subscribe(@RequestBody SubscriptionRequest request) {
     String email = request.getEmail();
     if (email == null || email.isEmpty()) {

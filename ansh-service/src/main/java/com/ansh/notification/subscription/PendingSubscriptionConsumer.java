@@ -22,8 +22,6 @@ public class PendingSubscriptionConsumer {
 
   @Value("${subscriptionTopicId}")
   private String subscriptionTopicId;
-  @Value("${animalTopicId}")
-  private String animalTopicId;
 
   @Autowired
   private PendingSubscriptionServiceStrategy serviceStrategy;
@@ -64,9 +62,5 @@ public class PendingSubscriptionConsumer {
 
   protected void setSubscriptionTopicId(String subscriptionTopicId) {
     this.subscriptionTopicId = subscriptionTopicId;
-  }
-
-  protected void setAnimalTopicId(String animalTopicId) {
-    this.animalTopicId = animalTopicId;
   }
 }
