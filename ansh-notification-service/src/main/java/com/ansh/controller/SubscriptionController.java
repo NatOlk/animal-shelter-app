@@ -4,9 +4,9 @@ import com.ansh.dto.EmployeeSubscriptionRequest;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
+import com.ansh.facade.SubscriptionFacade;
 import com.ansh.service.SubscriberRegistryService;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,11 @@ public class SubscriptionController {
   @Qualifier("animalShelterNewsSubscriber")
   private SubscriberRegistryService animalShelterNewsSubscriber;
 
+  @Autowired
+  private SubscriptionFacade subscriptionFacade;
+
   @PostMapping("/external/animal-notify-subscribe")
+
   public void subscribe(@RequestBody SubscriptionRequest request) {
     String email = request.getEmail();
     if (email == null || email.isEmpty()) {
@@ -53,7 +57,7 @@ public class SubscriptionController {
 
   @PostMapping("/internal/animal-notify-all-approver-subscriptions")
   public List<Subscription> allSubscriptionsByApprover(@RequestBody SubscriptionRequest request) {
-    return animalShelterNewsSubscriber.getAllSubscriptions(request.getApprover());
+    return subscriptionFacade.getAllSubscriptionByApprover(request.getApprover());
   }
 
   @PostMapping("/internal/animal-notify-approver-status")
