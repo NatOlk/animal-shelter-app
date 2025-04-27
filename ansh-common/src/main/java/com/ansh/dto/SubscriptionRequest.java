@@ -7,4 +7,7 @@ public class SubscriptionRequest {
   private String email;
   private String approver;
   private String topic;
+  private boolean subscribeToNews;
+  private boolean subscribeToAnimalInfo;
+  private boolean subscribeToVaccination;
 }
