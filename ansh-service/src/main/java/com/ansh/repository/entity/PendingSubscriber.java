@@ -7,12 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "pending_subscribers")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PendingSubscriber {
@@ -27,7 +29,7 @@ public class PendingSubscriber {
   @Column
   private String topic;
   @Column
-  private Boolean approved = false;
+  private Boolean approved;
 
   public PendingSubscriber(String email, String approver, String topic) {
     this.email = email;

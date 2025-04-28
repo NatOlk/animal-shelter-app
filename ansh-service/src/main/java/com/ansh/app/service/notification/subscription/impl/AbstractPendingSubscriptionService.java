@@ -4,6 +4,7 @@ import static com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus.PENDING;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
@@ -24,14 +25,14 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
   protected final PendingSubscriberRepository pendingSubscriberRepository;
   protected final UserSubscriptionAuthorityService userSubscriptionAuthorityService;
   protected final PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer;
-  protected final UserProfileServiceImpl userProfileService;
+  protected final UserProfileService userProfileService;
 
   protected AbstractPendingSubscriptionService(
       String topicId,
       PendingSubscriberRepository pendingSubscriberRepository,
       UserSubscriptionAuthorityService userSubscriptionAuthorityService,
       PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer,
-      UserProfileServiceImpl userProfileService) {
+      UserProfileService userProfileService) {
     this.topicId = topicId;
     this.pendingSubscriberRepository = pendingSubscriberRepository;
     this.userSubscriptionAuthorityService = userSubscriptionAuthorityService;
@@ -45,7 +46,7 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
     userSubscriptionAuthorityService.checkAuthorityToApprove(approver);
     findPendingSubscriber(email)
         .ifPresent(subscriber -> {
-          deletePendingSubscriber(email);
+          updatePendingSubscriberStatus(email, true);
           pendingSubscriptionDecisionProducer.sendApprove(subscriber.getEmail(), approver,
               subscriber.getTopic());
           LOG.debug("[{} subscription] approval sent for {} by {}", topicId,
@@ -59,7 +60,7 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
     userSubscriptionAuthorityService.checkAuthorityToReject(approver);
     findPendingSubscriber(email)
         .ifPresent(subscriber -> {
-          deletePendingSubscriber(email);
+          updatePendingSubscriberStatus(email, false);
           pendingSubscriptionDecisionProducer.sendReject(subscriber.getEmail(),
               subscriber.getApprover(), subscriber.getTopic());
           LOG.debug("[{} subscription] rejection sent for {}", topicId,
@@ -83,12 +84,12 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
 
   @Override
   public List<PendingSubscriber> getSubscribersByApprover(String approver) {
-    return pendingSubscriberRepository.findByApproverAndTopic(approver, topicId);
+    return pendingSubscriberRepository.findPendingByApproverAndTopic(approver, topicId);
   }
 
   @Override
   public List<PendingSubscriber> getPendingSubscribersWithoutApprover() {
-    return pendingSubscriberRepository.findByTopicAndApproverIsNullOrEmpty(topicId);
+    return pendingSubscriberRepository.findPendingWithoutApproverAndByTopic(topicId);
   }
 
   @Override
@@ -97,10 +98,10 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
   }
 
   private Optional<PendingSubscriber> findPendingSubscriber(String email) {
-    return pendingSubscriberRepository.findByEmailAndTopic(email, topicId);
+    return pendingSubscriberRepository.findPendingByEmailAndTopic(email, topicId);
   }
 
-  private void deletePendingSubscriber(String email) {
-    pendingSubscriberRepository.deleteByEmailAndTopic(email, topicId);
+  private void updatePendingSubscriberStatus(String email, boolean approved) {
+    pendingSubscriberRepository.updateApprovalStatus(email, topicId, approved);
   }
 }

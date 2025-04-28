@@ -5,10 +5,10 @@ WORKDIR /app
 COPY . .
 
 WORKDIR /app/ansh-common
-RUN mvn clean install -DskipTests=true
+RUN mvn clean install
 
 WORKDIR /app/ansh-notification-service
-RUN mvn clean package -DskipTests=true
+RUN mvn clean package
 
 FROM eclipse-temurin:21-jdk-alpine
 

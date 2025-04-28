@@ -4,7 +4,7 @@ import com.ansh.app.service.animal.VaccinationService;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
 import com.ansh.app.service.exception.animal.VaccinationUpdateException;
-import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
+import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
 import com.ansh.dto.UpdateVaccinationInput;
 import com.ansh.dto.VaccinationInput;
 import com.ansh.entity.animal.Animal;
@@ -38,7 +38,7 @@ public class VaccinationServiceImpl implements VaccinationService {
   private AnimalRepository animalRepository;
 
   @Autowired
-  private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
+  private AnimalInfoNotificationService animalInfoNotificationService;
 
   @Override
   @Cacheable(value = "vaccinations", key = "'allVaccinations'")
@@ -106,7 +106,8 @@ public class VaccinationServiceImpl implements VaccinationService {
   public Vaccination updateVaccination(@NonNull UpdateVaccinationInput vaccination)
       throws VaccinationNotFoundException, VaccinationUpdateException {
     Vaccination entity = vaccinationRepository.findById(vaccination.getId())
-        .orElseThrow(() -> new VaccinationNotFoundException(STR."Vaccination not found \{vaccination.getId()}"));
+        .orElseThrow(() -> new VaccinationNotFoundException(
+            STR."Vaccination not found \{vaccination.getId()}"));
 
     try {
       if (vaccination.getVaccine() != null) {

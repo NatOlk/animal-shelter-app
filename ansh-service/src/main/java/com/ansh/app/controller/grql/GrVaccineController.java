@@ -1,6 +1,6 @@
 package com.ansh.app.controller.grql;
 
-import com.ansh.app.service.animal.impl.VaccinationServiceImpl;
+import com.ansh.app.service.animal.VaccinationService;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
 import com.ansh.app.service.exception.animal.VaccinationUpdateException;
@@ -31,7 +31,7 @@ public class GrVaccineController {
   private static final Logger LOG = LoggerFactory.getLogger(GrVaccineController.class);
 
   @Autowired
-  private VaccinationServiceImpl vaccinationService;
+  private VaccinationService vaccinationService;
   @Autowired
   private VaccinationMapper vaccinationMapper;
 

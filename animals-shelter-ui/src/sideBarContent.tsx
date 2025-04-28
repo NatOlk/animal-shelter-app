@@ -7,8 +7,7 @@ import Logout from './logout';
 const SideBarContent: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
-  const isProfile = location.pathname === "/profile" || location.pathname === "/usersList"
-    || location.pathname === "/statistics";
+  const isProfile = location.pathname === "/profile" || location.pathname === "/usersList";
 
   return (
     <div className="max-w-md">
@@ -25,19 +24,13 @@ const SideBarContent: React.FC = () => {
             <>
               <div className="space-y-1">
                 <Link to="/profile" color="foreground">
-                  <h4 className="text-medium font-medium">Profile</h4>
+                  <h4 className="text-medium font-medium">Profile / Subscriptions</h4>
                 </Link>
               </div>
               <Divider className="my-4" />
               <div className="space-y-1">
                 <Link to="/usersList" color="foreground">
-                  <h4 className="text-medium font-medium">Manage users</h4>
-                </Link>
-              </div>
-              <Divider className="my-4" />
-              <div className="space-y-1">
-                <Link to="/statistics" color="foreground">
-                  <h4 className="text-medium font-medium">Statistics</h4>
+                  <h4 className="text-medium font-medium">Manage Users</h4>
                 </Link>
               </div>
               <Divider className="my-4" />
@@ -54,12 +47,24 @@ const SideBarContent: React.FC = () => {
             </Link>
           </div>
           <Divider className="my-4" />
+
           <div className="space-y-1">
             <Link to="/allvaccinations" color="foreground">
               <h4 className="text-medium font-medium">Vaccinations</h4>
             </Link>
           </div>
           <Divider className="my-4" />
+
+          {user?.roles?.includes('ADMIN') && (
+            <>
+              <div className="space-y-1">
+                <Link to="/statistics" color="foreground">
+                  <h4 className="text-medium font-medium">Statistics</h4>
+                </Link>
+              </div>
+              <Divider className="my-4" />
+            </>
+          )}
           <Logout />
         </>
       )}

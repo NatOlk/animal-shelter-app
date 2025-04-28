@@ -1,16 +1,22 @@
 package com.ansh.auth.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import com.ansh.app.service.exception.user.UserAlreadyExistException;
 import com.ansh.app.service.user.UserProfileService;
-import com.ansh.auth.service.impl.JwtServiceImpl;
+import com.ansh.auth.service.JwtService;
+import com.ansh.auth.service.impl.CustomUserDetails;
 import com.ansh.dto.RegisterUserRequest;
 import com.ansh.entity.account.UserProfile;
-import com.ansh.auth.service.impl.CustomUserDetails;
 import com.ansh.entity.account.UserProfile.Role;
 import jakarta.servlet.http.HttpSession;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +29,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
-import java.util.Map;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -34,7 +38,7 @@ class AuthControllerTest {
   private AuthenticationManager authenticationManager;
 
   @Mock
-  private JwtServiceImpl jwtService;
+  private JwtService jwtService;
 
   @InjectMocks
   private AuthController authController;
