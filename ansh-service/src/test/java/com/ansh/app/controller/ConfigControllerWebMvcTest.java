@@ -6,20 +6,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ansh.AnshSecurityConfig;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ConfigController.class)
 @Import(AnshSecurityConfig.class)
 class ConfigControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
-  @Autowired
-  private MockMvc mockMvc;
-
   @Test
   void testGetConfig() throws Exception {
+    System.out.println("Start testing get config...");
     mockMvc.perform(get("/api/config")
             .header(AUTH_HEADER, BEARER_TOKEN))
         .andExpect(status().isOk())
@@ -33,11 +29,13 @@ class ConfigControllerWebMvcTest extends AbstractControllerWebMvcTest {
         .andExpect(jsonPath("$.vaccines[0]").value("Rabies"));
   }
 
+  @Test
   void shouldGetConfig_whenNoAuth() throws Exception {
     mockMvc.perform(get("/api/config"))
-        .andExpect(status().isForbidden());
+        .andExpect(status().isUnauthorized());
   }
 
+  @Test
   void shouldReturnForbidden_GetConfig_whenWrongAuth() throws Exception {
     mockMvc.perform(get("/api/config")
             .header(AUTH_HEADER, BEARER_TOKEN + "Fake"))

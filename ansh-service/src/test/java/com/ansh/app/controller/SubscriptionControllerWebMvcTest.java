@@ -17,13 +17,11 @@ import com.ansh.repository.entity.PendingSubscriber;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import reactor.core.publisher.Mono;
 
@@ -33,9 +31,6 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   private static final String APPROVER_EMAIL = "admin@example.com";
   private static final String TEST_EMAIL = "test@example.com";
-
-  @Autowired
-  private MockMvc mockMvc;
 
   @MockBean
   @Qualifier("notificationSubscriptionService")
