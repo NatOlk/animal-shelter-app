@@ -15,7 +15,6 @@ class ConfigControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
   @Test
   void testGetConfig() throws Exception {
-    System.out.println("Start testing get config...");
     mockMvc.perform(get("/api/config")
             .header(AUTH_HEADER, BEARER_TOKEN))
         .andExpect(status().isOk())

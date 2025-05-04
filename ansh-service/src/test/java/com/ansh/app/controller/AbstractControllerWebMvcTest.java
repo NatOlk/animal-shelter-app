@@ -44,7 +44,6 @@ public abstract class AbstractControllerWebMvcTest {
 
   @BeforeEach
   void setUpBase() {
-    System.out.println(STR."=== Setting up mocks for user: \{USERNAME}");
     UserDetails mockUserDetails = new User(
         USERNAME,
         "password",

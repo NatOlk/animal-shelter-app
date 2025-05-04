@@ -26,9 +26,6 @@ jobs:
       - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 🧹 Purge Maven cache (clean up dependencies)
-        run: mvn dependency:purge-local-repository -DactTransitively=false -DreResolve=false || echo "Maven purge failed or not needed"
-
       - name: 🚀 Start services (without nginx)
         run: docker-compose up -d redis-ansh zookeeper-ansh kafka-ansh postgres-animal-shelter postgres-animal-shelter-notification ansh-service ansh-notification-service ansh-react-app
 
