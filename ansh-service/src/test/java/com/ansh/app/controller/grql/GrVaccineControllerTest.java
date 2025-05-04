@@ -4,7 +4,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import com.ansh.DateScalarConfiguration;
-import com.ansh.app.service.animal.impl.VaccinationServiceImpl;
+import com.ansh.app.service.animal.VaccinationService;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
 import com.ansh.app.service.exception.animal.VaccinationUpdateException;
@@ -32,7 +32,7 @@ class GrVaccineControllerTest {
   private GraphQlTester graphQlTester;
 
   @MockBean
-  private VaccinationServiceImpl vaccinationService;
+  private VaccinationService vaccinationService;
 
   @MockBean
   private VaccinationMapper vaccinationMapper;
@@ -99,8 +99,8 @@ class GrVaccineControllerTest {
   @Test
   void updateVaccination_shouldUpdateVaccine()
       throws VaccinationNotFoundException, VaccinationUpdateException {
-    UpdateVaccinationInput vaccinationInput = new UpdateVaccinationInput(1L,"Rabies",
-        "A123","test@example.com", LocalDate.parse("2024-11-29"), "First dose");
+    UpdateVaccinationInput vaccinationInput = new UpdateVaccinationInput(1L, "Rabies",
+        "A123", "test@example.com", LocalDate.parse("2024-11-29"), "First dose");
 
     when(vaccinationService.updateVaccination(vaccinationInput)).thenReturn(vaccination);
 

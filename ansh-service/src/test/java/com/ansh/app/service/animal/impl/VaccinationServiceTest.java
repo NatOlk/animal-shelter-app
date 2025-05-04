@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
-import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
+import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
 import com.ansh.dto.VaccinationInput;
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
@@ -35,7 +35,7 @@ class VaccinationServiceTest {
   private AnimalRepository animalRepository;
 
   @Mock
-  private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
+  private AnimalInfoNotificationService animalInfoNotificationService;
 
   @InjectMocks
   private VaccinationServiceImpl vaccinationService;

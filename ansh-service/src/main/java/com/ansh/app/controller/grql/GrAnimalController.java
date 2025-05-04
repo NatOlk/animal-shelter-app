@@ -1,9 +1,6 @@
 package com.ansh.app.controller.grql;
 
 import com.ansh.app.service.animal.AnimalService;
-import com.ansh.app.service.exception.animal.AnimalCreationException;
-import com.ansh.app.service.exception.animal.AnimalNotFoundException;
-import com.ansh.app.service.exception.animal.AnimalUpdateException;
 import com.ansh.dto.AnimalDTO;
 import com.ansh.dto.AnimalInput;
 import com.ansh.dto.UpdateAnimalInput;
@@ -40,27 +37,25 @@ public class GrAnimalController {
   }
 
   @QueryMapping
-  public AnimalDTO animalById(@Argument Long id) throws AnimalNotFoundException {
+  public AnimalDTO animalById(@Argument Long id) {
     return animalMapper.toDto(animalsService.findById(id));
   }
 
   @MutationMapping
   @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
-  public AnimalDTO addAnimal(@Argument AnimalInput animal) throws AnimalCreationException {
+  public AnimalDTO addAnimal(@Argument AnimalInput animal) {
     return animalMapper.toDto(animalsService.addAnimal(animal));
   }
 
   @MutationMapping
   @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
-  public AnimalDTO updateAnimal(@Argument UpdateAnimalInput animal)
-      throws AnimalNotFoundException, AnimalUpdateException {
+  public AnimalDTO updateAnimal(@Argument UpdateAnimalInput animal) {
     return animalMapper.toDto(animalsService.updateAnimal(animal));
   }
 
   @MutationMapping
   @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
-  public AnimalDTO deleteAnimal(@Argument Long id, @Argument String reason)
-      throws AnimalNotFoundException {
+  public AnimalDTO deleteAnimal(@Argument Long id, @Argument String reason) {
     return animalMapper.toDto(animalsService.removeAnimal(id, reason));
   }
 
