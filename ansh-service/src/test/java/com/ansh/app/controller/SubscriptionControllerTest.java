@@ -78,8 +78,9 @@ class SubscriptionControllerTest {
   void shouldReturnPendingSubscribers() {
     PendingSubscriber subscriber = new PendingSubscriber();
     List<PendingSubscriber> subscribers = List.of(subscriber);
-    when(animalInfoPendingSubscriptionService.getSubscribersByApprover(anyString())).thenReturn(
-        subscribers);
+    when(animalInfoPendingSubscriptionService.getSubscribersByApprover(anyString()))
+        .thenReturn(
+            subscribers);
 
     List<PendingSubscriber> result = subscriptionController.getPendingSubscribers(
         subscriptionRequest);
@@ -162,8 +163,8 @@ class SubscriptionControllerTest {
     assertNotNull(deferredResult.getResult());
     assertEquals(status, deferredResult.getResult());
 
-    verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(
-        subscriptionRequest.getApprover());
+    verify(notificationSubscriptionService, times(1))
+        .getAnimalInfoStatusByApprover(subscriptionRequest.getApprover());
     verify(userProfileService, times(1)).updateNotificationStatusOfAuthUser(status);
   }
 

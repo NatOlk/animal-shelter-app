@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,7 +31,6 @@ import reactor.core.publisher.Mono;
 @Import(AnshSecurityConfig.class)
 class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
 
-  private static final String AUTH_HEADER = HttpHeaders.AUTHORIZATION;
   private static final String APPROVER_EMAIL = "admin@example.com";
   private static final String TEST_EMAIL = "test@example.com";
 
@@ -52,7 +50,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     mockMvc.perform(post("/api/animal-notify-approve-subscriber")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"email\":\"" + TEST_EMAIL + "\",\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+            .content(STR."{\"email\":\"\{TEST_EMAIL}\",\"approver\":\"\{APPROVER_EMAIL}\"}"))
         .andExpect(status().isOk());
   }
 
@@ -61,7 +59,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     mockMvc.perform(post("/api/animal-notify-reject-subscriber")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"email\":\"" + TEST_EMAIL + "\"}"))
+            .content(STR."{\"email\":\"\{TEST_EMAIL}\"}"))
         .andExpect(status().isOk());
   }
 
@@ -75,7 +73,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     mockMvc.perform(post("/api/animal-notify-pending-subscribers")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+            .content(STR."{\"approver\":\"\{APPROVER_EMAIL}\"}"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].email").value(TEST_EMAIL));
   }
@@ -103,7 +101,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-all-approver-subscriptions")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+            .content(STR."{\"approver\":\"\{APPROVER_EMAIL}\"}"))
         .andReturn();
     assertEquals(mvcResult.getAsyncResult(), subscriptions);
   }
@@ -116,7 +114,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-approver-status")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+            .content(STR."{\"approver\":\"\{APPROVER_EMAIL}\"}"))
         .andReturn();
 
     assertEquals(mvcResult.getAsyncResult(), AnimalInfoNotifStatus.ACTIVE);
@@ -130,7 +128,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-approver-status")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+            .content(STR."{\"approver\":\"\{APPROVER_EMAIL}\"}"))
         .andReturn();
 
     assertEquals(mvcResult.getAsyncResult(), AnimalInfoNotifStatus.UNKNOWN);
@@ -144,7 +142,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
     MvcResult mvcResult = mockMvc.perform(post("/api/animal-notify-all-approver-subscriptions")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+            .content(STR."{\"approver\":\"\{APPROVER_EMAIL}\"}"))
         .andReturn();
 
     assertEquals(mvcResult.getAsyncResult(), Collections.emptyList());
@@ -163,7 +161,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   void shouldReturnUnauthorized_whenNoAuthHeader() throws Exception {
     mockMvc.perform(post("/api/animal-notify-approver-status")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"approver\":\"" + APPROVER_EMAIL + "\"}"))
+            .content(STR."{\"approver\":\"\{APPROVER_EMAIL}\"}"))
         .andExpect(status().isUnauthorized());
   }
 }

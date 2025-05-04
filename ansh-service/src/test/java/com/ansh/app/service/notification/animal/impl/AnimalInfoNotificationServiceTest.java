@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
 import com.ansh.event.AddAnimalEvent;
