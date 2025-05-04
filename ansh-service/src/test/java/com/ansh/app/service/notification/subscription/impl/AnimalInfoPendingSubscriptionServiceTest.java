@@ -11,8 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
@@ -39,7 +39,7 @@ class AnimalInfoPendingSubscriptionServiceTest {
   private PendingSubscriberRepository pendingSubscriberRepository;
 
   @Mock
-  private UserProfileServiceImpl userProfileService;
+  private UserProfileService userProfileService;
 
   @Mock
   private UserSubscriptionAuthorityService userSubscriptionAuthorityService;
@@ -60,7 +60,6 @@ class AnimalInfoPendingSubscriptionServiceTest {
     pendingSubscriber.setEmail(SUBSCRIBER_EMAIL);
     pendingSubscriber.setTopic(ANIMAL_TOPIC);
     pendingSubscriber.setApprover(APPROVER_EMAIL);
-
 
     service = new AnimalInfoPendingSubscriptionServiceImpl(
         ANIMAL_TOPIC,

@@ -1,7 +1,7 @@
 package com.ansh.app.service.notification.subscription.impl;
 
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class AnimalInfoPendingSubscriptionServiceImpl extends AbstractPendingSub
       PendingSubscriberRepository pendingSubscriberRepository,
       UserSubscriptionAuthorityService userSubscriptionAuthorityService,
       PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer,
-      UserProfileServiceImpl userProfileService) {
+      UserProfileService userProfileService) {
     super(animalTopicId, pendingSubscriberRepository, userSubscriptionAuthorityService,
         pendingSubscriptionDecisionProducer, userProfileService);
   }

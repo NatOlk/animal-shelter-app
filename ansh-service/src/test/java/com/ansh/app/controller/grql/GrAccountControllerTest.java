@@ -1,7 +1,7 @@
 package com.ansh.app.controller.grql;
 
 import com.ansh.DateScalarConfiguration;
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
+import com.ansh.app.service.user.UserProfileService;
 import com.ansh.entity.account.UserProfile;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class GrAccountControllerTest {
   private GraphQlTester graphQlTester;
 
   @MockBean
-  private UserProfileServiceImpl userProfileService;
+  private UserProfileService userProfileService;
 
   @Test
   void currentUserProfile_shouldReturnUserProfile() {

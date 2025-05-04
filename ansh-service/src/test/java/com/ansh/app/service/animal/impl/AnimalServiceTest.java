@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 import com.ansh.app.service.exception.animal.AnimalCreationException;
 import com.ansh.app.service.exception.animal.AnimalNotFoundException;
 import com.ansh.app.service.exception.animal.AnimalUpdateException;
-import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
+import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
 import com.ansh.dto.AnimalInput;
 import com.ansh.dto.UpdateAnimalInput;
 import com.ansh.entity.animal.Animal;
@@ -33,7 +33,7 @@ class AnimalServiceTest {
   private AnimalRepository animalRepository;
 
   @Mock
-  private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
+  private AnimalInfoNotificationService animalInfoNotificationService;
 
   @InjectMocks
   private AnimalServiceImpl animalService;
@@ -59,7 +59,7 @@ class AnimalServiceTest {
   }
 
   @Test
-  void shouldFindAnimalById_whenExists() throws AnimalNotFoundException {
+  void shouldFindAnimalById_whenExists() {
     Animal animal = new Animal();
     animal.setId(1L);
 
@@ -162,7 +162,7 @@ class AnimalServiceTest {
   }
 
   @Test
-  void shouldRemoveAnimalSuccessfully() throws AnimalNotFoundException {
+  void shouldRemoveAnimalSuccessfully() {
     Animal animal = new Animal();
     animal.setId(1L);
 

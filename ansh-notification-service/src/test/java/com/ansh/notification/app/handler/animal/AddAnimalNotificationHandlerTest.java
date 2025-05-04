@@ -15,8 +15,8 @@ import com.ansh.entity.subscription.Subscription;
 import com.ansh.event.AddAnimalEvent;
 import com.ansh.event.AnimalEvent;
 import com.ansh.event.RemoveAnimalEvent;
+import com.ansh.service.AnimalTopicSubscriberRegistryService;
 import com.ansh.service.EmailService;
-import com.ansh.service.impl.AnimalTopicSubscriberRegistryServiceImpl;
 import com.ansh.utils.LinkGenerator;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +41,7 @@ class AddAnimalNotificationHandlerTest {
   private AddAnimalNotificationHandler handler;
 
   @Mock
-  private AnimalTopicSubscriberRegistryServiceImpl animalTopicSubscriberRegistryService;
+  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
 
   @Mock
   private EmailService emailService;
@@ -95,8 +95,10 @@ class AddAnimalNotificationHandlerTest {
     assert capturedParams.get("name").equals(TEST_EMAIL);
     assert capturedParams.get("unsubscribeLink").equals(UNSUBSCRIBE_LINK_TEMPLATE);
     assert capturedParams.get("animalName").equals(ANIMAL_NAME);
-    assertFalse(capturedParams.containsKey("confirmationLink"), "Confirmation link should not be present in captured params");
-    assertFalse(capturedParams.containsKey("subscriptionLink"), "Subscription link should not be present in captured params");
+    assertFalse(capturedParams.containsKey("confirmationLink"),
+        "Confirmation link should not be present in captured params");
+    assertFalse(capturedParams.containsKey("subscriptionLink"),
+        "Subscription link should not be present in captured params");
   }
 
   @Test
