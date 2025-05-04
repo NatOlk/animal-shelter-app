@@ -25,7 +25,7 @@ jobs:
         run: mvn clean install -DskipTests -pl ansh-common -am
 
       - name: 🧪 Run tests & coverage for ansh-service
-        run: mvn verify jacoco:report
+        run: mvn -X verify jacoco:report
         working-directory: ./ansh-service
 
       - name: 🛠 Install xmllint
