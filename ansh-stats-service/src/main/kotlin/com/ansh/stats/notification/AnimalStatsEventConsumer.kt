@@ -1,6 +1,6 @@
 package com.ansh.stats.notification
 
-import com.ansh.event.AnimalEvent
+import com.ansh.event.AnimalShelterEvent
 import com.ansh.stats.service.AnimalService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -21,7 +21,7 @@ class AnimalStatsEventConsumer(
     )
     fun listen(message: ConsumerRecord<String, String>) {
         try {
-            val event = objectMapper.readValue(message.value(), AnimalEvent::class.java)
+            val event = objectMapper.readValue(message.value(), AnimalShelterEvent::class.java)
             logger.info("[STATS] Received AnimalEvent: ${event.animal}")
             animalService.saveEvent(event)
         } catch (e: Exception) {

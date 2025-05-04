@@ -1,5 +1,6 @@
 package com.ansh.notification.app.handler.animal;
 
+import static com.ansh.event.AnimalShelterTopic.ANIMAL_INFO;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -7,19 +8,18 @@ import static org.mockito.Mockito.*;
 
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.event.AnimalEvent;
-import com.ansh.event.AddAnimalEvent;
-import com.ansh.event.RemoveAnimalEvent;
+import com.ansh.event.AnimalShelterEvent;
+import com.ansh.event.animal.AddAnimalEvent;
+import com.ansh.event.animal.RemoveAnimalEvent;
 import com.ansh.notification.NotificationMessages;
 import com.ansh.service.EmailService;
 import com.ansh.service.SubscriberRegistryService;
+import com.ansh.strategy.SubscriberRegistryServiceStrategy;
 import com.ansh.utils.LinkGenerator;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +34,9 @@ class RemoveAnimalNotificationHandlerTest {
 
   @InjectMocks
   private RemoveAnimalNotificationHandler handler;
+
+  @Mock
+  private SubscriberRegistryServiceStrategy subscriberRegistryServiceStrategy;
 
   @Mock
   private SubscriberRegistryService animalTopicSubscriber;
@@ -54,33 +57,45 @@ class RemoveAnimalNotificationHandlerTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
 
+    // given
     Subscription mockSubscription = new Subscription();
     mockSubscription.setEmail(TEST_EMAIL);
     mockSubscription.setToken(MOCK_TOKEN);
 
-    when(animalTopicSubscriber.getAcceptedAndApprovedSubscribers()).thenReturn(List.of(mockSubscription));
-    when(animalShelterNewsSubscriber.getAcceptedAndApprovedSubscribers()).thenReturn(List.of(mockSubscription));
-    when(linkGenerator.generateUnsubscribeLink(anyString())).thenReturn(UNSUBSCRIBE_LINK);
+    when(animalTopicSubscriber.getAcceptedAndApprovedSubscribers())
+        .thenReturn(List.of(mockSubscription));
+    when(animalShelterNewsSubscriber.getAcceptedAndApprovedSubscribers())
+        .thenReturn(List.of(mockSubscription));
+    when(linkGenerator.generateUnsubscribeLink(anyString()))
+        .thenReturn(UNSUBSCRIBE_LINK);
+
+    when(subscriberRegistryServiceStrategy
+        .getServiceByTopic(ANIMAL_INFO.getTopicName()))
+        .thenReturn(Optional.of(animalTopicSubscriber));
   }
 
   @Test
   void shouldSendEmailToAllSubscribers() {
-    AnimalEvent event = new RemoveAnimalEvent();
+    // given
     Animal animal = new Animal();
     animal.setId(1L);
     animal.setName(ANIMAL_NAME);
+
+    AnimalShelterEvent event = new RemoveAnimalEvent();
     event.setAnimal(animal);
 
-    handler.handle(event);
-
     ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-    verify(emailNotificationExecutor, times(2)).execute(runnableCaptor.capture());
+    ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+
+    // when
+    handler.handle(ANIMAL_INFO.getTopicName(), event);
+
+    // then
+    verify(emailNotificationExecutor, times(1)).execute(runnableCaptor.capture());
 
     runnableCaptor.getAllValues().forEach(Runnable::run);
 
-    ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
-
-    verify(emailService, times(2)).sendEmail(
+    verify(emailService, times(1)).sendEmail(
         eq(TEST_EMAIL),
         eq(NotificationMessages.REMOVE_ANIMAL_SUBJECT),
         eq(NotificationMessages.REMOVE_ANIMAL_TEMPLATE),
@@ -88,23 +103,27 @@ class RemoveAnimalNotificationHandlerTest {
     );
 
     List<Map<String, Object>> capturedParamsList = paramsCaptor.getAllValues();
-    for (Map<String, Object> capturedParams : capturedParamsList) {
-      assertNotNull(capturedParams);
-      assertEquals(TEST_EMAIL, capturedParams.get("name"));
-      assertEquals(UNSUBSCRIBE_LINK, capturedParams.get("unsubscribeLink"));
-      assertEquals(ANIMAL_NAME, capturedParams.get("animalName"));
+    for (Map<String, Object> params : capturedParamsList) {
+      assertNotNull(params);
+      assertEquals(TEST_EMAIL, params.get("name"));
+      assertEquals(UNSUBSCRIBE_LINK, params.get("unsubscribeLink"));
+      assertEquals(ANIMAL_NAME, params.get("animalName"));
     }
   }
 
   @Test
   void shouldThrowException_WhenWrongEventType() {
-    AnimalEvent event = new AddAnimalEvent();
+    // given
     Animal animal = new Animal();
     animal.setId(1L);
     animal.setName(ANIMAL_NAME);
+
+    AnimalShelterEvent event = new AddAnimalEvent();
     event.setAnimal(animal);
 
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> handler.handle(event));
+    // when / then
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> handler.handle(ANIMAL_INFO.getTopicName(), event));
 
     assertNotNull(exception);
     assertEquals("Invalid event type for handler: AddAnimalEvent", exception.getMessage());

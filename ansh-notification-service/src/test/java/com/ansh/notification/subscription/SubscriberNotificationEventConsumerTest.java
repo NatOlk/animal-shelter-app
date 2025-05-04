@@ -1,132 +1,100 @@
 package com.ansh.notification.subscription;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
+import com.ansh.event.AnimalShelterTopic;
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
 import com.ansh.service.SubscriberRegistryService;
+import com.ansh.strategy.SubscriberRegistryServiceStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Optional;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 class SubscriberNotificationEventConsumerTest {
 
-  private SubscriberRegistryService animalTopicSubscriber;
-  private SubscriberRegistryService vaccinationTopicSubscriber;
-  private SubscriberNotificationEventConsumer consumer;
+  private static final String ANIMAL_TOPIC = AnimalShelterTopic.ANIMAL_INFO.getTopicName();
+  private static final String TEST_EMAIL = "test@test.com";
+  private static final String APPROVER_EMAIL = "approver@test.com";
+
   private ObjectMapper objectMapper;
+  private SubscriberRegistryServiceStrategy serviceStrategy;
+  private SubscriberRegistryService mockService;
+  private SubscriberNotificationEventConsumer consumer;
 
   @BeforeEach
   void setUp() {
     objectMapper = new ObjectMapper();
+    serviceStrategy = mock(SubscriberRegistryServiceStrategy.class);
+    mockService = mock(SubscriberRegistryService.class);
 
-    animalTopicSubscriber = mock(SubscriberRegistryService.class);
-    vaccinationTopicSubscriber = mock(SubscriberRegistryService.class);
-
-    when(animalTopicSubscriber.getTopicId()).thenReturn("animal-topic");
-    when(vaccinationTopicSubscriber.getTopicId()).thenReturn("vaccination-topic");
-
-    consumer = new SubscriberNotificationEventConsumer(List.of(animalTopicSubscriber,
-        vaccinationTopicSubscriber));
+    consumer = new SubscriberNotificationEventConsumer();
+    consumer.setSubscriberRegistryServiceStrategy(serviceStrategy);
   }
 
   @Test
-  void shouldProcessAnimalTopicSuccessfully() throws Exception {
+  void shouldHandleSubscriptionWhenServiceExists() throws Exception {
+    // given
     SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
-        .email("test@example.com")
-        .approver("admin@example.com")
-        .topic("animal-topic")
+        .topic(ANIMAL_TOPIC)
+        .email(TEST_EMAIL)
+        .approver(APPROVER_EMAIL)
         .reject(false)
         .build();
 
     String json = objectMapper.writeValueAsString(event);
-    ConsumerRecord<String, String> record = new ConsumerRecord<>("animal-topic", 0, 0L, "key",
-        json);
+    ConsumerRecord<String, String> record = new ConsumerRecord<>(ANIMAL_TOPIC, 0, 0L, "key", json);
 
+    when(serviceStrategy.getServiceByTopic(ANIMAL_TOPIC)).thenReturn(Optional.of(mockService));
+
+    // when
     consumer.listen(record);
 
-    verify(animalTopicSubscriber, times(1)).handleSubscriptionApproval(
-        "test@example.com",
-        "admin@example.com",
-        false
-    );
-    verify(vaccinationTopicSubscriber, times(0)).handleSubscriptionApproval(
-        "test@example.com",
-        "admin@example.com",
-        false
-    );
+    // then
+    verify(mockService).handleSubscriptionApproval(TEST_EMAIL, APPROVER_EMAIL, false);
   }
 
   @Test
-  void shouldProcessVaccinationTopicSuccessfully() throws Exception {
+  void shouldLogWarningWhenNoServiceFound() throws Exception {
+    // given
     SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
-        .email("doc@example.com")
-        .approver("vet@example.com")
-        .topic("vaccination-topic")
-        .reject(true)
-        .build();
-
-    String json = objectMapper.writeValueAsString(event);
-    ConsumerRecord<String, String> record = new ConsumerRecord<>("vaccination-topic", 0, 0L, "key",
-        json);
-
-    consumer.listen(record);
-
-    verify(vaccinationTopicSubscriber, times(1)).handleSubscriptionApproval(
-        "doc@example.com",
-        "vet@example.com",
-        true
-    );
-    verify(animalTopicSubscriber, times(0)).handleSubscriptionApproval(
-        "test@example.com",
-        "admin@example.com",
-        false
-    );
-  }
-
-  @Test
-  void shouldDoNothing_WhenNoMatchingServiceFound() throws Exception {
-    SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
-        .email("user@example.com")
-        .approver("admin@example.com")
         .topic("unknown-topic")
-        .reject(false)
+        .email(TEST_EMAIL)
+        .approver(APPROVER_EMAIL)
+        .reject(true)
         .build();
 
     String json = objectMapper.writeValueAsString(event);
     ConsumerRecord<String, String> record = new ConsumerRecord<>("unknown-topic", 0, 0L, "key",
         json);
 
+    when(serviceStrategy.getServiceByTopic("unknown-topic")).thenReturn(Optional.empty());
+
+    // when
     consumer.listen(record);
 
-    verify(vaccinationTopicSubscriber, times(0)).handleSubscriptionApproval(
-        "doc@example.com",
-        "vet@example.com",
-        true
-    );
-    verify(animalTopicSubscriber, times(0)).handleSubscriptionApproval(
-        "test@example.com",
-        "admin@example.com",
-        false
-    );
+    // then — no call
+    verifyNoInteractions(mockService);
   }
 
   @Test
-  void shouldThrowException_WhenJsonInvalid() {
-    String invalidJson = "this is not a valid json";
-    ConsumerRecord<String, String> record = new ConsumerRecord<>("animal-topic", 0, 0L, "key",
+  void shouldThrowExceptionOnInvalidJson() {
+    // given
+    String invalidJson = "invalid json";
+    ConsumerRecord<String, String> record = new ConsumerRecord<>(ANIMAL_TOPIC, 0, 0L, "key",
         invalidJson);
 
-    Exception thrown = null;
+    // when / then
     try {
       consumer.listen(record);
-    } catch (Exception e) {
-      thrown = e;
+      assert false : "Expected IOException to be thrown";
+    } catch (IOException e) {
+      // success
     }
-
-    assert thrown != null;
-    assert thrown instanceof com.fasterxml.jackson.core.JsonProcessingException;
   }
 }

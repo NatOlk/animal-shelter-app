@@ -1,8 +1,9 @@
 package com.ansh.service.impl;
 
+import com.ansh.entity.subscription.Subscription;
+import com.ansh.event.AnimalShelterTopic;
 import com.ansh.service.SubscriberRegistryService;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,15 +11,14 @@ import org.springframework.stereotype.Service;
 public class VaccinationTopicSubscriberRegistryServiceImpl extends AbstractSubscriberRegistryService
     implements SubscriberRegistryService {
 
-  @Value("${vaccinationTopicId}")
-  private String vaccinationTopicId;
-
   @Override
   public String getTopicId() {
-    return vaccinationTopicId;
+    return AnimalShelterTopic.VACCINATION_INFO.getTopicName();
   }
 
-  protected void setVaccinationTopicId(String vaccinationTopicId) {
-    this.vaccinationTopicId = vaccinationTopicId;
+  @Override
+  protected void approveSubscription(Subscription subscription, String approver) {
+    super.acceptSubscription(subscription.getToken());
+    super.approveSubscription(subscription, approver);
   }
 }

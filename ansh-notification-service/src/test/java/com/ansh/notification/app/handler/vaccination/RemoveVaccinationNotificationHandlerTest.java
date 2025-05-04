@@ -11,15 +11,18 @@ import static org.mockito.Mockito.when;
 
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.event.AddAnimalEvent;
-import com.ansh.event.AnimalEvent;
-import com.ansh.event.RemoveVaccinationEvent;
+import com.ansh.event.AnimalShelterEvent;
+import com.ansh.event.AnimalShelterTopic;
+import com.ansh.event.animal.AddAnimalEvent;
+import com.ansh.event.vaccination.RemoveVaccinationEvent;
 import com.ansh.notification.NotificationMessages;
 import com.ansh.service.EmailService;
 import com.ansh.service.SubscriberRegistryService;
+import com.ansh.strategy.SubscriberRegistryServiceStrategy;
 import com.ansh.utils.LinkGenerator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +40,9 @@ class RemoveVaccinationNotificationHandlerTest {
 
   @InjectMocks
   private RemoveVaccinationNotificationHandler handler;
+
+  @Mock
+  private SubscriberRegistryServiceStrategy subscriberRegistryServiceStrategy;
 
   @Mock
   private SubscriberRegistryService vaccinationTopicSubscriber;
@@ -62,24 +68,30 @@ class RemoveVaccinationNotificationHandlerTest {
         .thenReturn(List.of(mockSubscription));
     when(linkGenerator.generateUnsubscribeLink(anyString()))
         .thenReturn(UNSUBSCRIBE_LINK);
+    when(subscriberRegistryServiceStrategy
+        .getServiceByTopic(AnimalShelterTopic.VACCINATION_INFO.getTopicName()))
+        .thenReturn(Optional.of(vaccinationTopicSubscriber));
   }
 
   @Test
   void shouldSendEmailToVaccinationSubscribers() {
-    AnimalEvent event = new RemoveVaccinationEvent();
+    // given
     Animal animal = new Animal();
     animal.setId(1L);
     animal.setName(ANIMAL_NAME);
+
+    AnimalShelterEvent event = new RemoveVaccinationEvent();
     event.setAnimal(animal);
 
-    handler.handle(event);
-
     ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-    verify(emailNotificationExecutor, times(1)).execute(runnableCaptor.capture());
-
-    runnableCaptor.getValue().run();
-
     ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+
+    // when
+    handler.handle(AnimalShelterTopic.VACCINATION_INFO.getTopicName(), event);
+
+    // then
+    verify(emailNotificationExecutor, times(1)).execute(runnableCaptor.capture());
+    runnableCaptor.getValue().run();
 
     verify(emailService, times(1)).sendEmail(
         eq(TEST_EMAIL),
@@ -97,14 +109,17 @@ class RemoveVaccinationNotificationHandlerTest {
 
   @Test
   void shouldThrowException_WhenWrongEventType() {
-    AnimalEvent event = new AddAnimalEvent();
+    // given
     Animal animal = new Animal();
     animal.setId(1L);
     animal.setName(ANIMAL_NAME);
+
+    AnimalShelterEvent event = new AddAnimalEvent();
     event.setAnimal(animal);
 
+    // when / then
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> handler.handle(event));
+        () -> handler.handle(AnimalShelterTopic.VACCINATION_INFO.getTopicName(), event));
 
     assertNotNull(exception);
     assertEquals("Invalid event type for handler: AddAnimalEvent", exception.getMessage());

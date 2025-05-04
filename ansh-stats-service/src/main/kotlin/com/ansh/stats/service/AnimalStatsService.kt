@@ -14,13 +14,13 @@ class AnimalStatsService(
     private val logger = LoggerFactory.getLogger(AnimalStatsService::class.java)
 
     fun getAnimalCount(): Long {
-        val count = repository.countByEventType("com.ansh.event.AddAnimalEvent")
+        val count = repository.countByEventType("com.ansh.event.animal.AddAnimalEvent")
         logger.debug("Animal count (added): $count")
         return count
     }
 
     fun getAddedAnimalsGroupedByDate(): Map<LocalDate, Long> {
-        val events = repository.findByEventType("com.ansh.event.AddAnimalEvent")
+        val events = repository.findByEventType("com.ansh.event.animal.AddAnimalEvent")
         logger.debug("Found ${events.size} add animal events")
         val grouped = events.groupingBy { it.receivedAt.toLocalDate() }.eachCount()
             .mapValues { it.value.toLong() }
@@ -35,7 +35,7 @@ class AnimalStatsService(
     }
 
     fun getAddedVaccinationsGroupedByDate(): Map<LocalDate, Long> {
-        val events = repository.findByEventType("com.ansh.event.AddVaccinationEvent")
+        val events = repository.findByEventType("com.ansh.event.vaccination.AddVaccinationEvent")
         logger.debug("Found ${events.size} add vaccination events")
         val grouped = events.groupingBy { it.receivedAt.toLocalDate() }.eachCount()
             .mapValues { it.value.toLong() }
@@ -46,8 +46,8 @@ class AnimalStatsService(
     fun getAnimalLifespans(): List<AnimalLifespanStats> {
         val allEvents = repository.findByEventTypeIn(
             listOf(
-                "com.ansh.event.AddAnimalEvent",
-                "com.ansh.event.RemoveAnimalEvent"
+                "com.ansh.event.animal.AddAnimalEvent",
+                "com.ansh.event.animal.RemoveAnimalEvent"
             )
         )
         logger.debug("Found ${allEvents.size} total add/remove animal events")
@@ -55,8 +55,8 @@ class AnimalStatsService(
         return allEvents
             .groupBy { it.animalId }
             .mapNotNull { (animalId, events) ->
-                val addEvent = events.find { it.eventType == "com.ansh.event.AddAnimalEvent" }
-                val removeEvent = events.find { it.eventType == "com.ansh.event.RemoveAnimalEvent" }
+                val addEvent = events.find { it.eventType == "com.ansh.event.animal.AddAnimalEvent" }
+                val removeEvent = events.find { it.eventType == "com.ansh.event.animal.RemoveAnimalEvent" }
 
                 if (addEvent != null && removeEvent != null) {
                     val duration = Duration.between(addEvent.receivedAt, removeEvent.receivedAt)

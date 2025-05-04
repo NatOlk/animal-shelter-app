@@ -7,9 +7,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.event.AddAnimalEvent;
-import com.ansh.event.AnimalEvent;
-import com.ansh.notification.app.animal.AnimalInfoNotificationProducer;
+import com.ansh.event.animal.AddAnimalEvent;
+import com.ansh.event.AnimalShelterEvent;
+import com.ansh.event.AnimalShelterTopic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 class AnimalInfoNotificationProducerTest {
 
-  private static final String ANIMAL_TOPIC = "animalTopic";
 
   @Mock
   private KafkaTemplate<String, String> kafkaTemplate;
@@ -35,30 +34,30 @@ class AnimalInfoNotificationProducerTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    animalInfoNotificationProducer.setAnimalTopicId(ANIMAL_TOPIC);
   }
 
   @Test
   void sendMessage_success() throws JsonProcessingException {
-    AnimalEvent animalEvent = new AddAnimalEvent();
+    AnimalShelterEvent animalShelterEvent = new AddAnimalEvent();
     String jsonMessage = "{\"event\":\"test\"}";
 
-    when(objectMapper.writeValueAsString(animalEvent)).thenReturn(jsonMessage);
+    when(objectMapper.writeValueAsString(animalShelterEvent)).thenReturn(jsonMessage);
 
-    animalInfoNotificationProducer.sendNotification(animalEvent);
+    animalInfoNotificationProducer.sendNotification(animalShelterEvent);
 
-    verify(kafkaTemplate, times(1)).send(eq(ANIMAL_TOPIC), eq(jsonMessage));
+    verify(kafkaTemplate, times(1))
+        .send(eq(AnimalShelterTopic.ANIMAL_INFO.getTopicName()), eq(jsonMessage));
   }
 
   @Test
   void sendMessage_jsonProcessingException() throws JsonProcessingException {
-    AnimalEvent animalEvent = new AddAnimalEvent();
+    AnimalShelterEvent animalShelterEvent = new AddAnimalEvent();
 
-    when(objectMapper.writeValueAsString(animalEvent)).thenThrow(
+    when(objectMapper.writeValueAsString(animalShelterEvent)).thenThrow(
         new JsonProcessingException("Error") {
         });
 
-    animalInfoNotificationProducer.sendNotification(animalEvent);
+    animalInfoNotificationProducer.sendNotification(animalShelterEvent);
 
     verify(kafkaTemplate, never()).send(anyString(), anyString());
   }

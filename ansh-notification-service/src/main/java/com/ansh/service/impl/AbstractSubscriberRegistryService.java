@@ -10,7 +10,6 @@ import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.subscription.SubscriberNotificationEventProducer;
 import com.ansh.repository.SubscriptionRepository;
 import com.ansh.service.SubscriberRegistryService;
-import com.ansh.service.SubscriptionNotificationEmailService;
 import com.ansh.utils.IdentifierMasker;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -23,19 +22,35 @@ import org.springframework.lang.NonNull;
 
 public abstract class AbstractSubscriberRegistryService implements SubscriberRegistryService {
 
-  protected static final Logger LOG = LoggerFactory.getLogger(AbstractSubscriberRegistryService.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(
+      AbstractSubscriberRegistryService.class);
 
   @Autowired
   protected SubscriptionRepository subscriptionRepository;
-
-  @Autowired
-  protected SubscriptionNotificationEmailService subscriptionNotificationEmailService;
 
   @Autowired
   protected SubscriberNotificationEventProducer subscriberNotificationEventProducer;
 
   @Autowired
   protected SubscriptionCacheManager cacheManager;
+
+  /**
+   * Handles an already existing subscription.
+   */
+  protected void handleExistingSubscription(Subscription subscription) {
+    LOG.debug("Existing subscription found for email: {}, topic: {}. Skipping creation.",
+        IdentifierMasker.maskEmail(subscription.getEmail()), getTopicId());
+  }
+
+  /**
+   * Sends a confirmation email after a subscription token is successfully accepted.
+   */
+  protected void sendSuccessTokenConfirmationEmail(Subscription subscription) {}
+
+  /**
+   * Sends an email prompting the user to accept their subscription (e.g., via token link).
+   */
+  protected void sendNeedAcceptSubscriptionEmail(Subscription subscription) {}
 
   @Override
   @Transactional
@@ -60,7 +75,7 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
       subscription.setAccepted(true);
       subscriptionRepository.save(subscription);
       cacheManager.addToCache(subscription);
-      subscriptionNotificationEmailService.sendSuccessTokenConfirmationEmail(subscription);
+      sendSuccessTokenConfirmationEmail(subscription);
     });
     return subscriptionOpt.isPresent();
   }
@@ -76,8 +91,8 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
   }
 
   @Override
-  public AnimalInfoNotifStatus getSubscriptionStatus(@NonNull String approver) {
-    return findSubscriptionByEmail(approver)
+  public AnimalInfoNotifStatus getSubscriptionStatus(@NonNull String email) {
+    return findSubscriptionByEmail(email)
         .map(subscription -> subscription.isAccepted() ? ACTIVE : PENDING)
         .orElse(NONE);
   }
@@ -94,11 +109,11 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
     });
   }
 
-  private void approveSubscription(Subscription subscription, String approver) {
+  protected void approveSubscription(Subscription subscription, String approver) {
     subscription.setApprover(approver);
     subscription.setApproved(true);
     subscriptionRepository.save(subscription);
-    subscriptionNotificationEmailService.sendNeedAcceptSubscriptionEmail(subscription);
+    sendNeedAcceptSubscriptionEmail(subscription);
   }
 
   private void removeSubscriptionFromCacheAndDb(String token) {
@@ -120,18 +135,8 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
         .build();
     subscriptionRepository.save(newSubscription);
     subscriberNotificationEventProducer.sendPendingApproveRequest(email, approver, getTopicId());
-    LOG.debug("Register a new subscriber {} for topic {}", IdentifierMasker.maskEmail(email), getTopicId());
-  }
-
-  private void handleExistingSubscription(Subscription subscription) {
-    if (!subscription.isApproved()) {
-      return;
-    }
-    if (subscription.isAccepted()) {
-      subscriptionNotificationEmailService.sendRepeatConfirmationEmail(subscription);
-    } else {
-      subscriptionNotificationEmailService.sendNeedAcceptSubscriptionEmail(subscription);
-    }
+    LOG.debug("Register a new subscriber {} for topic {}", IdentifierMasker.maskEmail(email),
+        getTopicId());
   }
 
   private Optional<Subscription> findSubscriptionByEmail(String email) {

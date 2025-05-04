@@ -1,6 +1,6 @@
 import com.ansh.entity.animal.Animal
 import com.ansh.entity.animal.Vaccination
-import com.ansh.event.AddAnimalEvent
+import com.ansh.event.animal.AddAnimalEvent
 import com.ansh.stats.repository.AnimalEventRepository
 import com.ansh.stats.service.AnimalService
 import org.junit.jupiter.api.Test

@@ -3,10 +3,10 @@ package com.ansh.app.service.notification.subscription.impl;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
+import com.ansh.event.AnimalShelterTopic;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service("animalShelterNewsPendingSubscriptionService")
@@ -16,12 +16,12 @@ public class AnimalShelterNewsPendingSubscriptionServiceImpl extends
 
   @Autowired
   public AnimalShelterNewsPendingSubscriptionServiceImpl(
-      @Value("${animalShelterNewsTopicId}") String animalShelterNewsTopicId,
       PendingSubscriberRepository pendingSubscriberRepository,
       UserSubscriptionAuthorityService userSubscriptionAuthorityService,
       PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer,
       UserProfileService userProfileService) {
-    super(animalShelterNewsTopicId, pendingSubscriberRepository, userSubscriptionAuthorityService,
+    super(AnimalShelterTopic.ANIMAL_SHELTER_NEWS.getTopicName(), pendingSubscriberRepository,
+        userSubscriptionAuthorityService,
         pendingSubscriptionDecisionProducer, userProfileService);
   }
 }

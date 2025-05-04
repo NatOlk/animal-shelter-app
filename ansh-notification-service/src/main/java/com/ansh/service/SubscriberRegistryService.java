@@ -56,12 +56,12 @@ public interface SubscriberRegistryService {
   List<Subscription> getAllSubscriptions(@NonNull String approver);
 
   /**
-   * Retrieves the subscription status for a specific approver.
+   * Retrieves the subscription status for a specific account.
    *
-   * @param approver the email or identifier of the approver
-   * @return the subscription status for the given approver
+   * @param email the email or identifier of the account.
+   * @return the subscription status for the given email
    */
-  AnimalInfoNotifStatus getSubscriptionStatus(@NonNull String approver);
+  AnimalInfoNotifStatus getSubscriptionStatus(@NonNull String email);
 
   /**
    * Handles the approval or rejection of a subscription request.

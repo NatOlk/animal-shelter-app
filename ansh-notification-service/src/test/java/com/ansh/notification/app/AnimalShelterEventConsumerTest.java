@@ -1,10 +1,13 @@
 package com.ansh.notification.app;
 
+import static com.ansh.event.AnimalShelterTopic.ANIMAL_INFO;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.ansh.event.AddAnimalEvent;
-import com.ansh.event.AnimalEvent;
+import com.ansh.event.AnimalShelterEvent;
+import com.ansh.event.AnimalShelterTopic;
+import com.ansh.event.animal.AddAnimalEvent;
 import com.ansh.notification.app.handler.AnimalNotificationHandlerRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -17,9 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 
-class AnimalEventConsumerTest {
-
-  private static final String ANIMAL_TOPIC = "animalTopicId";
+class AnimalShelterEventConsumerTest {
 
   @Mock
   private AnimalNotificationHandlerRegistry handlerRegistry;
@@ -32,7 +33,6 @@ class AnimalEventConsumerTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    animalEventConsumer.setAnimalTopicId(ANIMAL_TOPIC);
     objectMapper = new ObjectMapper();
     objectMapper.findAndRegisterModules();
   }
@@ -42,16 +42,17 @@ class AnimalEventConsumerTest {
 
     String json = "{\"type\":\"addAnimalEvent\", \"animal\":{\"name\":\"Rex\", \"species\":\"Dog\","
         + " \"implantChipId\":\"1234567890\", \"gender\":\"M\", \"admissionDate\":\"2024-12-01\"}}";
-    ConsumerRecord<String, String> message = new ConsumerRecord<>(ANIMAL_TOPIC, 0, 0L, "key", json);
+    ConsumerRecord<String, String> message = new ConsumerRecord<>(ANIMAL_INFO.getTopicName(), 0, 0L, "key", json);
 
-    AnimalEvent expectedEvent = objectMapper.readValue(json, AddAnimalEvent.class);
+    AnimalShelterEvent expectedEvent = objectMapper.readValue(json, AddAnimalEvent.class);
 
     animalEventConsumer.listenAnimalTopic(message);
 
-    ArgumentCaptor<AnimalEvent> captor = ArgumentCaptor.forClass(AnimalEvent.class);
-    verify(handlerRegistry, times(1)).handleEvent(captor.capture());
+    ArgumentCaptor<AnimalShelterEvent> captor = ArgumentCaptor.forClass(AnimalShelterEvent.class);
+    verify(handlerRegistry, times(1))
+        .handleEvent(eq(ANIMAL_INFO.getTopicName()), captor.capture());
 
-    AnimalEvent capturedEvent = captor.getValue();
+    AnimalShelterEvent capturedEvent = captor.getValue();
     assert capturedEvent instanceof AddAnimalEvent : "Captured event is not of type AddAnimalEvent";
     assert capturedEvent.getAnimal().getName()
         .equals(expectedEvent.getAnimal().getName()) : "Animal name doesn't match";

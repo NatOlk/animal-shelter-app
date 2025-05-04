@@ -1,101 +1,79 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useAuth } from '../common/authContext';
-import { Input, Button, Progress, Spacer, Checkbox } from "@nextui-org/react";
+import { Button, Spacer } from "@nextui-org/react";
 import { LuSmilePlus } from "react-icons/lu";
+import { topics, TopicKey } from '../common/types';
+import { HiOutlineUserRemove } from "react-icons/hi";
 
 const Subscription: React.FC = () => {
-    const { user, isAdmin } = useAuth();
-    const [email, setEmail] = useState<string>('');
+  const { user, isAdmin } = useAuth();
 
-    const [subscribeToNews, setSubscribeToNews] = useState<boolean>(true);
-    const [subscribeToAnimalInfo, setSubscribeToAnimalInfo] = useState<boolean>(true);
-    const [subscribeToVaccination, setSubscribeToVaccination] = useState<boolean>(false);
+  const handleSubscribe = async (topicKey: TopicKey) => {
+    if (!user?.email) return;
 
-    const [subscriptionStatuses, setSubscriptionStatuses] = useState<Record<string, 'NONE' | 'PENDING' | 'ACTIVE'>>({
-        animalShelterNews: 'NONE',
-        animalInfo: 'NONE',
-        vaccinationInfo: 'NONE',
-    });
+    try {
+      const body: Record<string, any> = {
+        email: user.email,
+        topic: topicKey,
+      };
 
-    useEffect(() => {
-        if (user?.email) {
-            setEmail(user.email);
-        }
-    }, [user?.email]);
+      if (isAdmin) {
+        body.approver = user.email;
+      }
 
-    const handleSubscribe = async () => {
-        if (!email.trim()) return;
+      await fetch(`/ansh/notification/external/subscriptions/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-        const selectedTopics = [];
-        if (subscribeToNews) selectedTopics.push('animalShelterNews');
-        if (subscribeToAnimalInfo) selectedTopics.push('animalInfo');
-        if (subscribeToVaccination) selectedTopics.push('vaccination');
+      // TODO: add status update later
+    } catch (error) {
+      // TODO: handle error later
+    }
+  };
 
-        for (const topic of selectedTopics) {
-            setSubscriptionStatuses(prev => ({ ...prev, [topic]: 'PENDING' }));
-
-            try {
-                const body: any = { email, topic };
-                if (isAdmin) {
-                    body.approver = user?.email;
-                }
-
-                await fetch(`/ansh/notification/external/animal-notify-subscribe`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body),
-                });
-
-                setSubscriptionStatuses(prev => ({ ...prev, [topic]: 'ACTIVE' }));
-            } catch (error) {
-                setSubscriptionStatuses(prev => ({ ...prev, [topic]: 'NONE' }));
-            }
-        }
-    };
-
-    const renderCheckbox = (label: string, topicKey: string, isSelected: boolean, setSelected: (v: boolean) => void) => (
-        <Checkbox
-            isSelected={isSelected}
-            onValueChange={setSelected}
-            color="default"
-        >
-            {label}
-            {isSelected && subscriptionStatuses[topicKey] === 'PENDING' && (
-                <Progress
-                    isIndeterminate
-                    aria-label={`Subscribing to ${label}...`}
-                    size="sm"
-                    className="mt-2"
-                />
-            )}
-            {isSelected && subscriptionStatuses[topicKey] === 'ACTIVE' && (
-                <div className="text-green-600 text-sm mt-1">✅ Subscribed</div>
-            )}
-        </Checkbox>
-    );
-
-    return (
-        <div className="flex flex-col gap-4">
-            {renderCheckbox('Subscribe to News', 'news', subscribeToNews, setSubscribeToNews)}
-            {renderCheckbox('Subscribe to Animal Information', 'animalInfo', subscribeToAnimalInfo, setSubscribeToAnimalInfo)}
-            {renderCheckbox('Subscribe to Vaccination Updates', 'vaccination', subscribeToVaccination, setSubscribeToVaccination)}
-
-            <div className="flex items-center gap-3">
-                <Input
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    isReadOnly
-                    variant="bordered"
-                    type="email"
-                    className="max-w-xs"
-                />
-                <Button onPress={handleSubscribe} color="default">
-                    <LuSmilePlus />
-                </Button>
-            </div>
-        </div>
-    );
+  return (
+    <div className="w-full max-w-xl">
+      <h2 className="text-lg font-semibold mb-4">Available Subscriptions</h2>
+      <table className="w-full table-auto border-collapse">
+        <thead>
+          <tr className="text-left">
+            <th className="py-2 px-4">Subscription</th>
+            <th className="py-2 px-4">Description</th>
+            <th className="py-2 px-4">Status</th>
+            <th className="py-2 px-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {topics.map(({ key, label, description }) => (
+            <tr key={key} className="border-t">
+              <td className="py-3 px-4">
+                <div className="font-medium">{label}</div>
+              </td>
+              <td className="py-3 px-4">
+                <div className="font-small">{description}</div>
+              </td>
+              <td className="py-3 px-4">{/* Placeholder for future status */}</td>
+              <td className="py-3 px-4 flex gap-2">
+                <Button
+                  onPress={() => handleSubscribe(key)}
+                  color="default"
+                  size="sm"
+                  startContent={<LuSmilePlus />}/>
+                <Button
+                  isDisabled
+                  color="danger"
+                  size="sm"
+                  startContent={<HiOutlineUserRemove />}/>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <Spacer y={4} />
+    </div>
+  );
 };
 
 export default Subscription;

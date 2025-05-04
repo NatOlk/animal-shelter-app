@@ -15,6 +15,7 @@ import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.event.AnimalShelterTopic;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
@@ -30,7 +31,7 @@ import org.mockito.MockitoAnnotations;
 
 class AnimalInfoPendingSubscriptionServiceTest {
 
-  private static final String ANIMAL_TOPIC = "animalTopicId";
+  private static final String ANIMAL_TOPIC = AnimalShelterTopic.ANIMAL_INFO.getTopicName();
   private static final String SUBSCRIBER_EMAIL = "subscriber@email.com";
   private static final String APPROVER_EMAIL = "approver@mail.com";
   @Mock
@@ -63,7 +64,6 @@ class AnimalInfoPendingSubscriptionServiceTest {
     pendingSubscriber.setApprover(APPROVER_EMAIL);
 
     service = new AnimalInfoPendingSubscriptionServiceImpl(
-        ANIMAL_TOPIC,
         pendingSubscriberRepository,
         userSubscriptionAuthorityService,
         animalNotificationUserSubscribedProducer,

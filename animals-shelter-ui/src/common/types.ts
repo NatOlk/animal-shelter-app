@@ -136,10 +136,31 @@ type CountByDate = {
 }
 
 type AnimalLifespan = {
-id: number
-name: string
-species: string
-daysInSystem: number
-hoursInSystem: number
-minutesInSystem: number
+  id: number
+  name: string
+  species: string
+  daysInSystem: number
+  hoursInSystem: number
+  minutesInSystem: number
 }
+
+export const topics = [
+{
+  key: 'animalShelterNewsTopicId',
+  label: 'Animal Shelter News',
+  description: 'Get the latest announcements, stories, and shelter-wide news.'
+},
+{
+  key: 'animalTopicId',
+  label: 'Animal Information',
+  description: 'Stay informed about new arrivals, adoptions, and animal removals.'
+},
+{
+  key: 'vaccinationTopicId',
+  label: 'Vaccination Updates',
+  description: 'Receive notifications about newly added or removed vaccinations.'
+},
+] as const;
+
+
+export type TopicKey = typeof topics[number]['key'];

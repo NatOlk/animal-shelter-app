@@ -10,23 +10,24 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AnimalInfoNotificationProducer extends AbstractNotificationProducer
+public class AnimalShelterNewsNotificationProducer extends AbstractNotificationProducer
     implements AnimalShelterNotificationProducer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AnimalInfoNotificationProducer.class);
+  private static final Logger LOG = LoggerFactory.getLogger(
+      AnimalShelterNewsNotificationProducer.class);
 
-  public AnimalInfoNotificationProducer(KafkaTemplate<String, String> kafkaTemplate,
+  public AnimalShelterNewsNotificationProducer(KafkaTemplate<String, String> kafkaTemplate,
       ObjectMapper objectMapper) {
     super(kafkaTemplate, objectMapper);
   }
 
   @Override
   public String getTopicId() {
-    return AnimalShelterTopic.ANIMAL_INFO.getTopicName();
+    return AnimalShelterTopic.ANIMAL_SHELTER_NEWS.getTopicName();
   }
 
   @Override
   protected String getLogPrefix() {
-    return "[animal info topic]";
+    return "[animal shelter news topic]";
   }
 }

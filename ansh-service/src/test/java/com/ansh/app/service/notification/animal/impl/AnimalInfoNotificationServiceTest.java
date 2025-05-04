@@ -3,16 +3,20 @@ package com.ansh.app.service.notification.animal.impl;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.ansh.app.service.notification.animal.impl.AnimalInfoNotificationServiceImpl;
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
-import com.ansh.event.AddAnimalEvent;
-import com.ansh.event.AddVaccinationEvent;
-import com.ansh.event.RemoveAnimalEvent;
-import com.ansh.event.RemoveVaccinationEvent;
+import com.ansh.event.animal.AddAnimalEvent;
+import com.ansh.event.vaccination.AddVaccinationEvent;
+import com.ansh.event.AnimalShelterTopic;
+import com.ansh.event.animal.RemoveAnimalEvent;
+import com.ansh.event.vaccination.RemoveVaccinationEvent;
 import com.ansh.notification.app.animal.AnimalInfoNotificationProducer;
+import com.ansh.notification.app.vaccination.VaccinationInfoNotificationProducer;
+import com.ansh.notification.strategy.NotificationProducerStrategy;
 import java.time.LocalDate;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,12 +28,24 @@ class AnimalInfoNotificationServiceTest {
   @Mock
   private AnimalInfoNotificationProducer animalInfoProducer;
 
+  @Mock
+  private VaccinationInfoNotificationProducer vaccinationInfoNotificationProducer;
+
+  @Mock
+  private NotificationProducerStrategy notificationProducerStrategy;
+
   @InjectMocks
   private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+    when(notificationProducerStrategy.getServiceByTopic(
+        AnimalShelterTopic.ANIMAL_INFO.getTopicName()))
+        .thenReturn(Optional.of(animalInfoProducer));
+    when(notificationProducerStrategy.getServiceByTopic(
+        AnimalShelterTopic.VACCINATION_INFO.getTopicName()))
+        .thenReturn(Optional.of(vaccinationInfoNotificationProducer));
   }
 
   @Test
@@ -67,7 +83,8 @@ class AnimalInfoNotificationServiceTest {
 
     animalInfoNotificationService.sendAddVaccinationMessage(vaccination);
 
-    verify(animalInfoProducer, times(1)).sendNotification(any(AddVaccinationEvent.class));
+    verify(vaccinationInfoNotificationProducer, times(1)).sendNotification(
+        any(AddVaccinationEvent.class));
   }
 
   @Test
@@ -82,6 +99,7 @@ class AnimalInfoNotificationServiceTest {
 
     animalInfoNotificationService.sendRemoveVaccinationMessage(vaccination);
 
-    verify(animalInfoProducer, times(1)).sendNotification(any(RemoveVaccinationEvent.class));
+    verify(vaccinationInfoNotificationProducer, times(1)).sendNotification(
+        any(RemoveVaccinationEvent.class));
   }
 }

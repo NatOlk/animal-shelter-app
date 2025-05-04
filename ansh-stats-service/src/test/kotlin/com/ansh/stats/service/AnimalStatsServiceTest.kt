@@ -1,8 +1,8 @@
 package com.ansh.stats.service
 
 import com.ansh.entity.animal.Animal
-import com.ansh.event.AddAnimalEvent
-import com.ansh.event.RemoveAnimalEvent
+import com.ansh.event.animal.AddAnimalEvent
+import com.ansh.event.animal.RemoveAnimalEvent
 import com.ansh.stats.entity.AnimalEventDocument
 import com.ansh.stats.entity.AnimalLifespanStats
 import com.ansh.stats.repository.AnimalEventRepository
@@ -27,7 +27,7 @@ class AnimalStatsServiceTest {
 
         val addEvent = AnimalEventDocument(
             id = "1",
-            eventType = "com.ansh.event.AddAnimalEvent",
+            eventType = "com.ansh.event.animal.AddAnimalEvent",
             animalId = animal.id,
             payload = AddAnimalEvent(animal),
             receivedAt = now.minusDays(2).minusHours(5).minusMinutes(30)
@@ -35,7 +35,7 @@ class AnimalStatsServiceTest {
 
         val removeEvent = AnimalEventDocument(
             id = "2",
-            eventType = "com.ansh.event.RemoveAnimalEvent",
+            eventType = "com.ansh.event.animal.RemoveAnimalEvent",
             animalId = animal.id,
             payload = RemoveAnimalEvent(animal),
             receivedAt = now
@@ -44,8 +44,8 @@ class AnimalStatsServiceTest {
         Mockito.`when`(
             repository.findByEventTypeIn(
                 listOf(
-                    "com.ansh.event.AddAnimalEvent",
-                    "com.ansh.event.RemoveAnimalEvent"
+                    "com.ansh.event.animal.AddAnimalEvent",
+                    "com.ansh.event.animal.RemoveAnimalEvent"
                 )
             )
         ).thenReturn(listOf(addEvent, removeEvent))

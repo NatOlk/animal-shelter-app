@@ -17,24 +17,29 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Optional;
 
-class AnimalTopicSubscriberRegistryServiceTest {
+class AnimalShelterNewsSubscriberRegistryServiceTest {
 
-  private static final String ANIMAL_TOPIC = AnimalShelterTopic.ANIMAL_INFO.getTopicName();
+  private static final String ANIMAL_TOPIC = AnimalShelterTopic.ANIMAL_SHELTER_NEWS.getTopicName();
   private static final String TEST_EMAIL = "test@test.com";
   private static final String APPROVER_EMAIL = "approver@test.com";
 
   @Mock
   private SubscriptionRepository subscriptionRepository;
+
   @Mock
   private SubscriberNotificationEventProducer subscriberNotificationInfoProducer;
+
   @Mock
   private SubscriptionNotificationEmailService subscriptionNotificationService;
+
   @Mock
   private RedisTemplate<String, Subscription> subscriptionRedisTemplate;
+
   @Mock
   private RedisTemplate<String, String> updRedisTemplate;
+
   @InjectMocks
-  private AnimalTopicSubscriberRegistryServiceImpl registryService;
+  private AnimalShelterNewsTopicSubscriberRegistryServiceImpl registryService;
 
   @BeforeEach
   void setUp() {
@@ -75,8 +80,8 @@ class AnimalTopicSubscriberRegistryServiceTest {
 
     // then
     verify(subscriptionRepository, never()).save(any(Subscription.class));
-    verify(subscriptionNotificationService, never())
-        .sendRepeatConfirmationEmail(existingSubscription); // <- проверяем, что не отправлялось
+    verify(subscriptionNotificationService, times(1))
+        .sendRepeatConfirmationEmail(existingSubscription);
     verifyNoInteractions(subscriberNotificationInfoProducer);
   }
 }

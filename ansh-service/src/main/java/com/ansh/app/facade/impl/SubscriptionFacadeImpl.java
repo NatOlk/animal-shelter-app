@@ -33,7 +33,7 @@ public class SubscriptionFacadeImpl implements SubscriptionFacade {
       return output;
     }
 
-    notificationService.getAnimalInfoStatusByApprover(req.getApprover())
+    notificationService.getAnimalInfoStatusByAccount(req.getApprover())
         .subscribe(
             status -> {
               userProfileService.updateNotificationStatusOfAuthUser(status);

@@ -47,7 +47,9 @@ const PendingSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile 
         },
       });
 
-      setPendingSubscribers((prev) => prev.filter((s) => s.email !== subscriber.email));
+      setPendingSubscribers((prev) =>
+        prev.filter((s) => !(s.email === subscriber.email && s.topic === subscriber.topic))
+      );
     } catch (error) {
       setError(error as Error);
     }
@@ -64,7 +66,9 @@ const PendingSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile 
         },
       });
 
-      setPendingSubscribers((prev) => prev.filter((s) => s.email !== subscriber.email));
+      setPendingSubscribers((prev) =>
+        prev.filter((s) => !(s.email === subscriber.email && s.topic === subscriber.topic))
+      );
     } catch (error) {
       setError(error as Error);
     }

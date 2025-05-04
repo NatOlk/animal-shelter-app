@@ -102,6 +102,7 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
   }
 
   private void updatePendingSubscriberStatus(String email, boolean approved) {
+    //TODO - what if subscriber is removed from subscribtion thrh notifi endpoint
     pendingSubscriberRepository.updateApprovalStatus(email, topicId, approved);
   }
 }

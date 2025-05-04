@@ -1,17 +1,17 @@
-package com.ansh.event;
+package com.ansh.event.animal;
 
 import com.ansh.entity.animal.Animal;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ansh.event.AnimalShelterEvent;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Getter
-@Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class RemoveAnimalEvent extends AnimalEvent {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class RemoveAnimalEvent extends AnimalShelterEvent {
+
   @JsonProperty("reason")
   private String reason;
 

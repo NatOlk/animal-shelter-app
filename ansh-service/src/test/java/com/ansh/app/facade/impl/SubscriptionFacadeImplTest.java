@@ -40,7 +40,7 @@ class SubscriptionFacadeImplTest {
 
   @Test
   void shouldReturnActiveStatus() {
-    when(notificationService.getAnimalInfoStatusByApprover(anyString()))
+    when(notificationService.getAnimalInfoStatusByAccount(anyString()))
         .thenReturn(Mono.just(AnimalInfoNotifStatus.ACTIVE));
 
     var result = subscriptionFacade.getApproverStatus(request);
@@ -51,7 +51,7 @@ class SubscriptionFacadeImplTest {
 
   @Test
   void shouldReturnUnknownStatusOnError() {
-    when(notificationService.getAnimalInfoStatusByApprover(anyString()))
+    when(notificationService.getAnimalInfoStatusByAccount(anyString()))
         .thenReturn(Mono.error(new RuntimeException()));
 
     var result = subscriptionFacade.getApproverStatus(request);

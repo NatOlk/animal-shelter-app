@@ -37,11 +37,11 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
 
   const handleUnsubscribe = async (email:string, token: string) => {
     try {
-      await fetch(`/ansh/notification/external/animal-notify-unsubscribe/${token}`, {
+      await fetch(`/ansh/notification/external/subscriptions/unsubscribe/${token}`, {
         method: 'GET',
       });
-      setAllSubscribers((prevSubscribers) =>
-        prevSubscribers.filter((subscriber) => subscriber.email !== email)
+      setAllSubscribers((prev) =>
+       prev.filter((s) => !(s.email === email && s.token === token))
       );
     } catch (error) {
       setError(error);

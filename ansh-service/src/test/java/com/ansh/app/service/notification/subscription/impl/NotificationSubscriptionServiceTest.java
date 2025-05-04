@@ -110,7 +110,7 @@ class NotificationSubscriptionServiceTest {
         eq(new ParameterizedTypeReference<AnimalInfoNotifStatus>() {})
     )).thenReturn(Mono.just(expectedStatus));
 
-    StepVerifier.create(notificationSubscriptionService.getAnimalInfoStatusByApprover(approver))
+    StepVerifier.create(notificationSubscriptionService.getAnimalInfoStatusByAccount(approver))
         .assertNext(result -> {
           assertNotNull(result);
           assertEquals(expectedStatus, result);
@@ -134,7 +134,7 @@ class NotificationSubscriptionServiceTest {
         eq(new ParameterizedTypeReference<AnimalInfoNotifStatus>() {})
     )).thenReturn(Mono.error(new RuntimeException("Service unavailable")));
 
-    StepVerifier.create(notificationSubscriptionService.getAnimalInfoStatusByApprover(approver))
+    StepVerifier.create(notificationSubscriptionService.getAnimalInfoStatusByAccount(approver))
         .assertNext(result -> {
           assertNotNull(result);
           assertEquals(AnimalInfoNotifStatus.UNKNOWN, result);

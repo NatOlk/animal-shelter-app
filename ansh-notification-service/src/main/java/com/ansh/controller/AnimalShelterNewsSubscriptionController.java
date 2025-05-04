@@ -10,6 +10,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for managing subscriptions **only** to Animal Shelter News notifications.
+ * This controller handles:
+ * - New subscription requests
+ * - Unsubscription by token
+ * - Subscription confirmation by token
+ * Note: It specifically works **only with the Animal Shelter News topic**.
+ */
+
 @RestController
 public class AnimalShelterNewsSubscriptionController {
 

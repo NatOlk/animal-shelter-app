@@ -34,5 +34,4 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
   @Query("select count(u) > 0 from UserProfile u where (u.email = :identifier or u.name = :identifier) and u.rolesRaw like %:adminRole%")
   boolean hasRole(@Param("identifier") String identifier, @Param("adminRole") String adminRole);
-
 }

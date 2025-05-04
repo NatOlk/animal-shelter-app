@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Animal Shelter News</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+<h2>Latest News from Animal Shelter Hippo</h2>
+
+<p>Hello <span th:text="${name}">Friend</span>,</p>
+
+<p>We're excited to keep you informed about what’s happening at Animal Shelter Hippo. Here's the latest update:</p>
+
+<blockquote style="border-left: 4px solid #ccc; margin: 1em 0; padding-left: 1em; color: #555;">
+    <span th:text="${animalName}"></span>
+</blockquote>
+
+<p>We believe staying connected helps our animals find loving homes faster and keeps our community engaged and compassionate.</p>
+
+<p>If you enjoy receiving our updates, no action is needed.</p>
+
+<p>If you ever wish to unsubscribe, simply click the link below:</p>
+<p>
+    <a th:href="${unsubscribeLink}" style="color: #c00;">Unsubscribe from Newsletters</a>
+</p>
+
+<hr style="margin: 2em 0;">
+
+<p style="font-size: 0.9em; color: #888;">
+    You are receiving this email because you subscribed to Animal Shelter Hippo news. If you didn’t sign up, you can safely ignore this message.
+</p>
+
+<p>Warm regards,<br/>The Animal Shelter Hippo Team</p>
+</body>
+</html>

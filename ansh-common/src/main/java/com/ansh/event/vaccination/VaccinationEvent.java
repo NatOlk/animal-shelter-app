@@ -1,7 +1,10 @@
-package com.ansh.event;
+package com.ansh.event.vaccination;
 
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
+import com.ansh.event.AnimalShelterEvent;
+import com.ansh.event.vaccination.AddVaccinationEvent;
+import com.ansh.event.vaccination.RemoveVaccinationEvent;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -23,7 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class VaccinationEvent extends AnimalEvent {
+public abstract class VaccinationEvent extends AnimalShelterEvent {
 
   @JsonProperty("vaccination")
   private Vaccination vaccination;
