@@ -45,7 +45,7 @@ public class AnimalServiceImpl implements AnimalService {
 
   @Override
   @Cacheable(value = "animal", key = "#id")
-  public Animal findById(Long id) throws AnimalNotFoundException {
+  public Animal findById(Long id) {
     return animalRepository.findById(id)
         .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{id}"));
   }
@@ -53,7 +53,7 @@ public class AnimalServiceImpl implements AnimalService {
   @Override
   @CachePut(value = "animal", key = "#result.id")
   @CacheEvict(value = "animals", allEntries = true)
-  public Animal addAnimal(@NonNull AnimalInput animal) throws AnimalCreationException {
+  public Animal addAnimal(@NonNull AnimalInput animal) {
     try {
       Animal entity = Animal.builder()
           .name(animal.getName())
@@ -88,8 +88,7 @@ public class AnimalServiceImpl implements AnimalService {
   @Transactional
   @CachePut(value = "animal", key = "#animal.id")
   @CacheEvict(value = "animals", allEntries = true)
-  public Animal updateAnimal(@NonNull UpdateAnimalInput animal)
-      throws AnimalNotFoundException, AnimalUpdateException {
+  public Animal updateAnimal(@NonNull UpdateAnimalInput animal) {
     Animal entity = animalRepository.findById(animal.getId())
         .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{animal.getId()}"));
 
@@ -128,7 +127,7 @@ public class AnimalServiceImpl implements AnimalService {
       @CacheEvict(value = "animal", key = "#id"),
       @CacheEvict(value = "animals", allEntries = true)
   })
-  public Animal removeAnimal(@NonNull Long id, String reason) throws AnimalNotFoundException {
+  public Animal removeAnimal(@NonNull Long id, String reason) {
     Animal animal = animalRepository.findById(id)
         .orElseThrow(() -> new AnimalNotFoundException(STR."Animal is not found \{id}"));
     animalRepository.delete(animal);

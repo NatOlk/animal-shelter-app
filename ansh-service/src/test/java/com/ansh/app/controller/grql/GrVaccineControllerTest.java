@@ -30,8 +30,10 @@ class GrVaccineControllerTest {
 
   @Autowired
   private GraphQlTester graphQlTester;
+
   @MockBean
   private VaccinationService vaccinationService;
+
   @MockBean
   private VaccinationMapper vaccinationMapper;
 

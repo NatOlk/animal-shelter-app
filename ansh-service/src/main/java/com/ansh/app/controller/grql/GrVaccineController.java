@@ -1,9 +1,6 @@
 package com.ansh.app.controller.grql;
 
 import com.ansh.app.service.animal.VaccinationService;
-import com.ansh.app.service.exception.animal.VaccinationCreationException;
-import com.ansh.app.service.exception.animal.VaccinationNotFoundException;
-import com.ansh.app.service.exception.animal.VaccinationUpdateException;
 import com.ansh.dto.AnimalDTO;
 import com.ansh.dto.UpdateVaccinationInput;
 import com.ansh.dto.VaccinationDTO;
@@ -52,21 +49,19 @@ public class GrVaccineController {
 
   @MutationMapping
   @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
-  public VaccinationDTO updateVaccination(@Argument UpdateVaccinationInput vaccination)
-      throws VaccinationNotFoundException, VaccinationUpdateException {
+  public VaccinationDTO updateVaccination(@Argument UpdateVaccinationInput vaccination) {
     return vaccinationMapper.toDto(vaccinationService.updateVaccination(vaccination));
   }
 
   @MutationMapping
   @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
-  public VaccinationDTO deleteVaccination(@Argument Long id) throws VaccinationNotFoundException {
+  public VaccinationDTO deleteVaccination(@Argument Long id) {
     return vaccinationMapper.toDto(vaccinationService.deleteVaccination(id));
   }
 
   @MutationMapping
   @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
-  public VaccinationDTO addVaccination(@Argument VaccinationInput vaccination)
-      throws VaccinationCreationException {
+  public VaccinationDTO addVaccination(@Argument VaccinationInput vaccination) {
     return vaccinationMapper.toDto(vaccinationService.addVaccination(vaccination));
   }
 

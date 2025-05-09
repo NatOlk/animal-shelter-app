@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
   @Autowired
-  private UserProfileService userService;
+  private UserProfileService userProfileService;
 
   @Override
   public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
-    return userService.findByIdentifier(identifier)
+    return userProfileService.findByIdentifier(identifier)
         .map(CustomUserDetails::new)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
   }

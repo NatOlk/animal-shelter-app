@@ -2,9 +2,6 @@ package com.ansh.app.controller.grql;
 
 import com.ansh.DateScalarConfiguration;
 import com.ansh.app.service.animal.AnimalService;
-import com.ansh.app.service.exception.animal.AnimalCreationException;
-import com.ansh.app.service.exception.animal.AnimalNotFoundException;
-import com.ansh.app.service.exception.animal.AnimalUpdateException;
 import com.ansh.dto.AnimalDTO;
 import com.ansh.dto.AnimalInput;
 import com.ansh.dto.UpdateAnimalInput;
@@ -73,7 +70,7 @@ class GrAnimalControllerTest {
   }
 
   @Test
-  void animalById_shouldReturnAnimal() throws AnimalNotFoundException {
+  void animalById_shouldReturnAnimal() {
     Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
 
     Mockito.when(animalService.findById(1L)).thenReturn(animal);
@@ -95,7 +92,7 @@ class GrAnimalControllerTest {
   }
 
   @Test
-  void addAnimal_shouldReturnAddedAnimal() throws AnimalCreationException {
+  void addAnimal_shouldReturnAddedAnimal() {
 
     Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
     AnimalInput animalInput = new AnimalInput("Fido", "Dog", "Brown",
@@ -131,8 +128,7 @@ class GrAnimalControllerTest {
 
 
   @Test
-  void updateAnimal_shouldReturnUpdatedAnimal()
-      throws AnimalUpdateException, AnimalNotFoundException {
+  void updateAnimal_shouldReturnUpdatedAnimal() {
     Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
     UpdateAnimalInput updateAnimalInput = new UpdateAnimalInput(1L, "White", "Beagle",
         "Male", LocalDate.parse("2022-01-01"), "Striped", null);
@@ -164,7 +160,7 @@ class GrAnimalControllerTest {
   }
 
   @Test
-  void deleteAnimal_shouldReturnDeletedAnimal() throws AnimalNotFoundException {
+  void deleteAnimal_shouldReturnDeletedAnimal() {
     Animal animal = mockAnimalToDto(1L, "Fido", "Dog");
 
     Mockito.when(animalService.removeAnimal(1L, "Wrong information"))

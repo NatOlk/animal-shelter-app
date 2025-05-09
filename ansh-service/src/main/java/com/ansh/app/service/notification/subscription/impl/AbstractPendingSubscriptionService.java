@@ -6,7 +6,6 @@ import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.app.service.user.UserSubscriptionAuthorityService;
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;

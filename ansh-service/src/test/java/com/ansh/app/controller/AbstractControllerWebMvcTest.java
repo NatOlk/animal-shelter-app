@@ -2,10 +2,13 @@ package com.ansh.app.controller;
 
 import com.ansh.AnshSecurityConfig;
 import com.ansh.app.service.user.UserProfileService;
-import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.auth.service.JwtService;
 import com.ansh.auth.service.impl.CustomUserDetailsService;
+import com.ansh.entity.account.UserProfile;
+import com.ansh.entity.account.UserProfile.Role;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +50,18 @@ public abstract class AbstractControllerWebMvcTest {
         List.of(new SimpleGrantedAuthority("ADMIN"))
     );
 
+    UserProfile userProfile = new UserProfile();
+    userProfile.setName(USERNAME);
+    userProfile.setPassword("password");
+    userProfile.setRoles(Set.of(Role.ADMIN));
+
     Mockito.when(customUserDetailsService.loadUserByUsername(USERNAME))
         .thenReturn(mockUserDetails);
-    Mockito.when(jwtService.isTokenValid(Mockito.eq(MOCK_TOKEN)))
+    Mockito.when(jwtService.isTokenValid(MOCK_TOKEN))
         .thenReturn(true);
     Mockito.when(jwtService.extractUsername(MOCK_TOKEN))
         .thenReturn(USERNAME);
+    Mockito.when(userProfileService.findByIdentifier(USERNAME))
+        .thenReturn(Optional.of(userProfile));
   }
 }

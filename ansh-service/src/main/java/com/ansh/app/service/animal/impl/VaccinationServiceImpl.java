@@ -59,12 +59,8 @@ public class VaccinationServiceImpl implements VaccinationService {
 
   @Override
   @CachePut(value = "vaccination", key = "#result.id")
-  @Caching(evict = {
-      @CacheEvict(value = "vaccinations", key = "'allVaccinations'"),
-      @CacheEvict(value = "vaccinations", key = "'animal-' + #vaccination.animalId")
-  })
-  public Vaccination addVaccination(@NonNull VaccinationInput vaccination)
-      throws VaccinationCreationException {
+  @CacheEvict(value = "vaccinations", key = "'allVaccinations'")
+  public Vaccination addVaccination(@NonNull VaccinationInput vaccination) {
 
     Animal animal = animalRepository.findById(vaccination.getAnimalId()).orElse(null);
     if (animal == null) {
@@ -103,8 +99,7 @@ public class VaccinationServiceImpl implements VaccinationService {
   @Transactional
   @CachePut(value = "vaccination", key = "#vaccination.id")
   @CacheEvict(value = "vaccinations", key = "'allVaccinations'")
-  public Vaccination updateVaccination(@NonNull UpdateVaccinationInput vaccination)
-      throws VaccinationNotFoundException, VaccinationUpdateException {
+  public Vaccination updateVaccination(@NonNull UpdateVaccinationInput vaccination) {
     Vaccination entity = vaccinationRepository.findById(vaccination.getId())
         .orElseThrow(() -> new VaccinationNotFoundException(
             STR."Vaccination not found \{vaccination.getId()}"));
@@ -144,7 +139,7 @@ public class VaccinationServiceImpl implements VaccinationService {
       @CacheEvict(value = "vaccinations", key = "'allVaccinations'"),
       @CacheEvict(value = "vaccinations", key = "'animal-' + #animalId")
   })
-  public Vaccination deleteVaccination(@NonNull Long id) throws VaccinationNotFoundException {
+  public Vaccination deleteVaccination(@NonNull Long id) {
     Vaccination vaccination = vaccinationRepository.findById(id)
         .orElseThrow(
             () -> new VaccinationNotFoundException(STR."Vaccination not found for: \{id}"));
