@@ -20,7 +20,7 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
     const fetchSubscribers = async () => {
       try {
         setLoading(true);
-        const subscriberData = await apiFetch<Subscriber[]>(`/api/animal-notify-all-approver-subscriptions`, {
+        const subscriberData = await apiFetch<Subscriber[]>(`/api/subscription/all`, {
           method: 'POST',
           body: { approver: userProfile.email },
         });
@@ -35,13 +35,18 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
     fetchSubscribers();
   }, [userProfile.email]);
 
-  const handleUnsubscribe = async (email:string, token: string) => {
+  const handleUnsubscribe = async (email: string, approver:string, topic: string) => {
     try {
-      await fetch(`/ansh/notification/external/subscriptions/unsubscribe/${token}`, {
-        method: 'GET',
+      await apiFetch(`/api/subscription/unsubscribe`, {
+        method: 'POST',
+        body: {
+          email: email,
+          topic: topic,
+          approver: approver,
+        },
       });
       setAllSubscribers((prev) =>
-       prev.filter((s) => !(s.email === email && s.token === token))
+        prev.filter((s) => !(s.email === email && s.topic === topic))
       );
     } catch (error) {
       setError(error);
@@ -91,7 +96,7 @@ const AllApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProf
                       <Button
                         color="default" variant="light"
                         className="p-2 min-w-2 h-auto"
-                        onPress={() => handleUnsubscribe(subscriber.email, subscriber.token)}>
+                        onPress={() => handleUnsubscribe(subscriber.email, subscriber.approver, subscriber.topic)}>
                         <HiOutlineUserRemove />
                       </Button>
                     </Tooltip>

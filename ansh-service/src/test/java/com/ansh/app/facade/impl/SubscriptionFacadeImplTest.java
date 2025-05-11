@@ -1,7 +1,6 @@
 package com.ansh.app.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -9,9 +8,12 @@ import com.ansh.app.service.notification.subscription.NotificationSubscriptionSe
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.dto.NotificationStatusDTO;
 import com.ansh.entity.subscription.Subscription;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,6 +21,9 @@ import org.mockito.Mock;
 import reactor.core.publisher.Mono;
 
 class SubscriptionFacadeImplTest {
+
+  private static final String APPROVER_EMAIL = "admin@example.com";
+  private static final String TOPIC = "animalTopicId";
 
   @InjectMocks
   private SubscriptionFacadeImpl subscriptionFacade;
@@ -34,60 +39,97 @@ class SubscriptionFacadeImplTest {
   @BeforeEach
   void setUp() {
     openMocks(this);
-    request = new SubscriptionRequest();
-    request.setApprover("admin@example.com");
+    request = SubscriptionRequest.builder()
+        .approver(APPROVER_EMAIL)
+        .topic(TOPIC)
+        .build();
   }
 
   @Test
-  void shouldReturnActiveStatus() {
-    when(notificationService.getAnimalInfoStatusByAccount(anyString()))
-        .thenReturn(Mono.just(AnimalInfoNotifStatus.ACTIVE));
-
-    var result = subscriptionFacade.getApproverStatus(request);
-    result.onCompletion(() ->
-        assertEquals(AnimalInfoNotifStatus.ACTIVE, result.getResult())
+  void shouldReturnActiveStatus() throws InterruptedException {
+    // given
+    NotificationStatusDTO expected = new NotificationStatusDTO(
+        AnimalInfoNotifStatus.NONE,
+        AnimalInfoNotifStatus.ACTIVE,
+        AnimalInfoNotifStatus.NONE
     );
+
+    when(notificationService.getStatusesByAccount(APPROVER_EMAIL))
+        .thenReturn(Mono.just(expected));
+
+    // when
+    var result = subscriptionFacade.getNotificationStatusesByAccount(request.getApprover());
+
+    // then
+    CountDownLatch latch = new CountDownLatch(1);
+    result.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertEquals(expected, result.getResult());
   }
 
   @Test
-  void shouldReturnUnknownStatusOnError() {
-    when(notificationService.getAnimalInfoStatusByAccount(anyString()))
-        .thenReturn(Mono.error(new RuntimeException()));
+  void shouldReturnUnknownStatusOnError() throws InterruptedException {
+    // given
+    when(notificationService.getStatusesByAccount(APPROVER_EMAIL))
+        .thenReturn(Mono.error(new RuntimeException("Failed")));
 
-    var result = subscriptionFacade.getApproverStatus(request);
-    result.onCompletion(() ->
-        assertEquals(AnimalInfoNotifStatus.UNKNOWN, result.getResult())
-    );
+    // when
+    var result = subscriptionFacade.getNotificationStatusesByAccount(request.getApprover());
+
+    // then
+    CountDownLatch latch = new CountDownLatch(1);
+    result.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertEquals(new NotificationStatusDTO(), result.getResult());
   }
 
   @Test
   void shouldReturnNoneStatusIfApproverIsEmpty() {
+    // given
     request.setApprover(null);
 
-    var result = subscriptionFacade.getApproverStatus(request);
-    assertEquals(AnimalInfoNotifStatus.NONE, result.getResult());
+    // when
+    var result = subscriptionFacade.getNotificationStatusesByAccount(request.getApprover());
+
+    // then
+    assertEquals(new NotificationStatusDTO(), result.getResult());
   }
 
   @Test
-  void shouldReturnAllSubscribers() {
-    List<Subscription> subscriptions = Collections.singletonList(new Subscription());
-    when(notificationService.getAllSubscriptionByApprover(anyString()))
+  void shouldReturnAllSubscribers() throws InterruptedException {
+    // given
+    List<Subscription> subscriptions = List.of(new Subscription());
+
+    when(notificationService.getAllSubscriptionByAccount(APPROVER_EMAIL))
         .thenReturn(Mono.just(subscriptions));
 
-    var result = subscriptionFacade.getAllSubscribers(request);
-    result.onCompletion(() ->
-        assertEquals(subscriptions, result.getResult())
-    );
+    // when
+    var result = subscriptionFacade.getAllSubscribers(request.getApprover());
+
+    // then
+    CountDownLatch latch = new CountDownLatch(1);
+    result.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertEquals(subscriptions, result.getResult());
   }
 
   @Test
-  void shouldReturnEmptyListOnError() {
-    when(notificationService.getAllSubscriptionByApprover(anyString()))
-        .thenReturn(Mono.error(new RuntimeException()));
+  void shouldReturnEmptyListOnError() throws InterruptedException {
+    // given
+    when(notificationService.getAllSubscriptionByAccount(APPROVER_EMAIL))
+        .thenReturn(Mono.error(new RuntimeException("DB error")));
 
-    var result = subscriptionFacade.getAllSubscribers(request);
-    result.onCompletion(() ->
-        assertEquals(Collections.emptyList(), result.getResult())
-    );
+    // when
+    var result = subscriptionFacade.getAllSubscribers(request.getApprover());
+
+    // then
+    CountDownLatch latch = new CountDownLatch(1);
+    result.onCompletion(latch::countDown);
+    latch.await(1, TimeUnit.SECONDS);
+
+    assertEquals(Collections.emptyList(), result.getResult());
   }
 }

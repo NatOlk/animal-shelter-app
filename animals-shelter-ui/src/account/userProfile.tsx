@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AllApproverSubscriptionList from '../subscription/allApproverSubscriptionList';
 import PendingSubscriptionList from '../subscription/pendingSubscriptionList';
 import NoApproverSubscriptionList from '../subscription/noApproverSubscriptionList';
-import UserAnimalTopicSubscriptionStatus from './userAnimalTopicSubscriptionStatus';
+import Subscription from '../subscription/subscription';
 import { apiFetch } from '../common/api';
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
@@ -20,22 +20,12 @@ const ALL_ROLES = ["USER", "EMPLOYEE", "VOLUNTEER", "DOCTOR", "ADMIN"];
 
 const UserProfile: React.FC = () => {
   const { user, isAdmin} = useAuth();
-  const [animalNotifyStatusProfile, setAnimalNotifyStatusProfile] = useState<'NONE' | 'PENDING' | 'ACTIVE' | null>('NONE');
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set(user?.roles || []));
   const [updateUserRoles] = useMutation(UPDATE_USER_ROLES);
 
   useEffect(() => {
     setSelectedRoles(new Set(user?.roles || []));
   }, [user]);
-
-  const updateSubscriptionStatus = async () => {
-    if (!user?.email) return;
-    const status = await apiFetch<'NONE' | 'PENDING' | 'ACTIVE'>("/api/animal-notify-approver-status", {
-      method: "POST",
-      body: { approver: user.email },
-    });
-    setAnimalNotifyStatusProfile(status || "NONE");
-  };
 
   const handleRoleChange = (keys: Set<string>) => {
     if (isAdmin && !keys.has("ADMIN")) {
@@ -72,9 +62,7 @@ const UserProfile: React.FC = () => {
               <MdOutlineAlternateEmail /> {user?.email}</div>
             <Spacer y={10} />
             <div className="flex w-full flex-col">
-              <Tabs aria-label="RolesSubscriptions"
-                size="lg" variant="bordered"
-                onSelectionChange={updateSubscriptionStatus}>
+              <Tabs aria-label="RolesSubscriptions" size="lg" variant="bordered">
                 <Tab key="roles" title={
                   <div className="flex items-center space-x-2">
                     <RiAdminLine /><p>Roles</p>
@@ -103,7 +91,7 @@ const UserProfile: React.FC = () => {
                   </div>}>
                   <div className="profileCardTabContent">
                     <Spacer y={5} />
-                    <UserAnimalTopicSubscriptionStatus status={animalNotifyStatusProfile} />
+                    <Subscription />
                     <Spacer y={5} />
                   </div>
                 </Tab>

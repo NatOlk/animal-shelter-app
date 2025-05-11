@@ -45,12 +45,14 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
   /**
    * Sends a confirmation email after a subscription token is successfully accepted.
    */
-  protected void sendSuccessTokenConfirmationEmail(Subscription subscription) {}
+  protected void sendSuccessTokenConfirmationEmail(Subscription subscription) {
+  }
 
   /**
    * Sends an email prompting the user to accept their subscription (e.g., via token link).
    */
-  protected void sendNeedAcceptSubscriptionEmail(Subscription subscription) {}
+  protected void sendNeedAcceptSubscriptionEmail(Subscription subscription) {
+  }
 
   @Override
   @Transactional
@@ -63,8 +65,14 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
 
   @Override
   @Transactional
-  public void unregisterSubscriber(@NonNull String token) {
+  public void unsubscribe(@NonNull String token) {
     removeSubscriptionFromCacheAndDb(token);
+  }
+
+  @Override
+  @Transactional
+  public void unsubscribe(String email, String approver) {
+    removeSubscriptionFromCacheAndDb(email, approver);
   }
 
   @Override
@@ -119,6 +127,15 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
   private void removeSubscriptionFromCacheAndDb(String token) {
     subscriptionRepository.deleteByTokenAndTopic(token, getTopicId());
     cacheManager.removeFromCache(token);
+  }
+
+  private void removeSubscriptionFromCacheAndDb(String email, String approver) {
+    subscriptionRepository.findByEmailAndTopic(email, getTopicId())
+        .ifPresent(subscription -> {
+              subscriptionRepository.deleteByEmailAndTopic(email, getTopicId());
+              cacheManager.removeFromCache(subscription.getToken());
+            }
+        );
   }
 
   private void createAndRegisterNewSubscription(String email, String approver) {

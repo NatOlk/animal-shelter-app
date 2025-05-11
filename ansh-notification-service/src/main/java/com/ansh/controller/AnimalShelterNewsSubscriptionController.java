@@ -44,7 +44,7 @@ public class AnimalShelterNewsSubscriptionController {
 
   @GetMapping("/external/animal-notify-unsubscribe/{token}")
   public String unsubscribe(@PathVariable String token) {
-    animalShelterNewsSubscriber.unregisterSubscriber(token);
+    animalShelterNewsSubscriber.unsubscribe(token);
     return "Subscription is removed";
   }
 

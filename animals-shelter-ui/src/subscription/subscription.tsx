@@ -1,35 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../common/authContext';
-import { Button, Spacer } from "@nextui-org/react";
+import { Button, Spacer, Tooltip } from "@nextui-org/react";
 import { LuSmilePlus } from "react-icons/lu";
-import { topics, TopicKey } from '../common/types';
 import { HiOutlineUserRemove } from "react-icons/hi";
+import { topics, TopicKey } from '../common/types';
+import { apiFetch } from '../common/api';
+import TopicSubscriptionStatus from './topicSubscriptionStatus';
 
 const Subscription: React.FC = () => {
   const { user, isAdmin } = useAuth();
+  const [statuses, setStatuses] = useState<Record<TopicKey, string>>({});
+
+  const fetchStatuses = async () => {
+    if (!user?.email) return;
+
+    const data = await apiFetch("/api/subscription/statuses", {
+      method: "POST",
+      body: { approver: user.email }
+    });
+
+    if (data) {
+      setStatuses({
+        animalShelterNewsTopicId: data.animalShelterNewsTopicId,
+        animalTopicId: data.animalTopicId,
+        vaccinationTopicId: data.vaccinationTopicId,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchStatuses();
+  }, [user]);
 
   const handleSubscribe = async (topicKey: TopicKey) => {
     if (!user?.email) return;
 
     try {
-      const body: Record<string, any> = {
-        email: user.email,
-        topic: topicKey,
-      };
 
-      if (isAdmin) {
-        body.approver = user.email;
-      }
-
-      await fetch(`/ansh/notification/external/subscriptions/register`, {
+      await apiFetch(`/api/subscription/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: {
+          email: user.email,
+          topic: topicKey,
+          approver: isAdmin ? user.email : undefined,
+        },
       });
 
-      // TODO: add status update later
+      await fetchStatuses();
     } catch (error) {
-      // TODO: handle error later
+      console.error("Failed to subscribe:", error);
     }
   };
 
@@ -48,24 +67,26 @@ const Subscription: React.FC = () => {
         <tbody>
           {topics.map(({ key, label, description }) => (
             <tr key={key} className="border-t">
+              <td className="py-3 px-4 font-medium">{label}</td>
+              <td className="py-3 px-4">{description}</td>
               <td className="py-3 px-4">
-                <div className="font-medium">{label}</div>
+                <TopicSubscriptionStatus status={statuses[key]} />
               </td>
-              <td className="py-3 px-4">
-                <div className="font-small">{description}</div>
-              </td>
-              <td className="py-3 px-4">{/* Placeholder for future status */}</td>
               <td className="py-3 px-4 flex gap-2">
-                <Button
-                  onPress={() => handleSubscribe(key)}
-                  color="default"
-                  size="sm"
-                  startContent={<LuSmilePlus />}/>
-                <Button
-                  isDisabled
-                  color="danger"
-                  size="sm"
-                  startContent={<HiOutlineUserRemove />}/>
+                <Tooltip content="Subscribe" placement="bottom">
+                  <Button onPress={() => handleSubscribe(key)}
+                    color="default" variant="light"
+                    className="p-2 min-w-2 h-auto">
+                    <LuSmilePlus />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="Unsubscribe" placement="bottom">
+                  <Button
+                    color="default" variant="light"
+                    className="p-2 min-w-2 h-auto">
+                    <HiOutlineUserRemove />
+                  </Button>
+                </Tooltip>
               </td>
             </tr>
           ))}

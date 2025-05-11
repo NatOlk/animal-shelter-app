@@ -18,7 +18,7 @@ const PendingSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile 
     setLoading(true);
     setError(null);
     try {
-      const pendingData = await apiFetch<Subscriber[]>(`/api/animal-notify-pending-subscribers`, {
+      const pendingData = await apiFetch<Subscriber[]>(`/api/subscription/pending-subscribers`, {
         method: 'POST',
         body: { approver: userProfile.email },
       });
@@ -38,7 +38,7 @@ const PendingSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile 
 
   const handleApprove = async (subscriber: Subscriber) => {
     try {
-      await apiFetch('/api/animal-notify-approve-subscriber', {
+      await apiFetch('/api/subscription/approve', {
         method: 'POST',
         body: {
           email: subscriber.email,
@@ -57,7 +57,7 @@ const PendingSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfile 
 
   const handleReject = async (subscriber: Subscriber) => {
     try {
-      await apiFetch('/api/animal-notify-reject-subscriber', {
+      await apiFetch('/api/subscription/reject', {
         method: 'POST',
         body: {
           email: subscriber.email,

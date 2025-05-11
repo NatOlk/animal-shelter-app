@@ -26,11 +26,19 @@ public interface SubscriberRegistryService {
   void registerSubscriber(@NonNull String email, String approver);
 
   /**
-   * Unregisters a subscriber using their subscription token.
+   * Unsubscribes a subscriber using their subscription token.
    *
    * @param token the unique token identifying the subscription
    */
-  void unregisterSubscriber(@NonNull String token);
+  void unsubscribe(@NonNull String token);
+
+  /**
+   * Unsubscribes a subscriber for animal topic notifications.
+   *
+   * @param email the email of the subscriber
+   * @param approver the approver who unregisters subscription
+   */
+  void unsubscribe(@NonNull String email, String approver);
 
   /**
    * Accepts a subscription request based on the provided token.

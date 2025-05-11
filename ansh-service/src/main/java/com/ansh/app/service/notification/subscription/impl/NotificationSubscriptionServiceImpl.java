@@ -1,6 +1,7 @@
 package com.ansh.app.service.notification.subscription.impl;
 
 import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
+import com.ansh.dto.NotificationStatusDTO;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.notification.external.ExternalNotificationServiceClient;
@@ -18,23 +19,31 @@ import reactor.core.publisher.Mono;
 @Service("notificationSubscriptionService")
 public class NotificationSubscriptionServiceImpl implements NotificationSubscriptionService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(NotificationSubscriptionServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(
+      NotificationSubscriptionServiceImpl.class);
 
   @Autowired
   private ExternalNotificationServiceClient externalNotificationServiceClient;
 
-  @Value("${notification.subscription.endpoint.allByApprover}")
-  private String allByApproverEndpoint;
+  @Value("${notification.subscription.endpoint.register}")
+  private String registerEndpoint;
 
-  @Value("${notification.subscription.endpoint.statusByApprover}")
-  private String statusByApproverEndpoint;
+  @Value("${notification.subscription.endpoint.unsubscribe}")
+  private String unsubscribeEndpoint;
+
+  @Value("${notification.subscription.endpoint.all}")
+  private String allEndpoint;
+
+  @Value("${notification.subscription.endpoint.statuses}")
+  private String statusesEndpoint;
 
   @Override
-  public Mono<List<Subscription>> getAllSubscriptionByApprover(String approver) {
+  public Mono<List<Subscription>> getAllSubscriptionByAccount(String approver) {
     return externalNotificationServiceClient.post(
-        allByApproverEndpoint,
+        allEndpoint,
         Map.of("approver", approver),
-        new ParameterizedTypeReference<List<Subscription>>() {}
+        new ParameterizedTypeReference<List<Subscription>>() {
+        }
     ).onErrorResume(error -> {
       LOG.warn("[approver subscriptions] Error {}", error.getMessage());
       return Mono.just(Collections.emptyList());
@@ -42,22 +51,58 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
   }
 
   @Override
-  public Mono<AnimalInfoNotifStatus> getAnimalInfoStatusByApprover(String approver) {
+  public Mono<NotificationStatusDTO> getStatusesByAccount(String email) {
     return externalNotificationServiceClient.post(
-        statusByApproverEndpoint,
-        Map.of("approver", approver),
-        new ParameterizedTypeReference<AnimalInfoNotifStatus>() {}
+        statusesEndpoint,
+        Map.of("approver", email),
+        new ParameterizedTypeReference<NotificationStatusDTO>() {
+        }
     ).onErrorResume(error -> {
       LOG.warn("[approver status] Error {}", error.getMessage());
-      return Mono.just(AnimalInfoNotifStatus.UNKNOWN);
+      return Mono.just(new NotificationStatusDTO(AnimalInfoNotifStatus.UNKNOWN,
+          AnimalInfoNotifStatus.UNKNOWN, AnimalInfoNotifStatus.UNKNOWN));
     });
   }
 
-  protected void setAllByApproverEndpoint(String allByApproverEndpoint) {
-    this.allByApproverEndpoint = allByApproverEndpoint;
+  @Override
+  public void registerSubscriber(String email, String approver, String topic) {
+    externalNotificationServiceClient.post(
+        registerEndpoint,
+        Map.of(
+            "email", email,
+            "approver", approver,
+            "topic", topic
+        ),
+        new ParameterizedTypeReference<Subscription>() {
+        }
+    ).onErrorResume(error -> {
+      LOG.warn("[register subscriber] Error: {}", error.getMessage());
+      return Mono.empty();
+    }).subscribe();
   }
 
-  protected void setStatusByApproverEndpoint(String statusByApproverEndpoint) {
-    this.statusByApproverEndpoint = statusByApproverEndpoint;
+  @Override
+  public void unsubscribe(String email, String approver, String topic) {
+    externalNotificationServiceClient.post(
+        unsubscribeEndpoint,
+        Map.of(
+            "email", email,
+            "approver", approver,
+            "topic", topic
+        ),
+        new ParameterizedTypeReference<Subscription>() {
+        }
+    ).onErrorResume(error -> {
+      LOG.warn("[unregister subscriber] Error: {}", error.getMessage());
+      return Mono.empty();
+    }).subscribe();
+  }
+
+  protected void setAllEndpoint(String allEndpoint) {
+    this.allEndpoint = allEndpoint;
+  }
+
+  protected void setStatusesEndpoint(String statusesEndpoint) {
+    this.statusesEndpoint = statusesEndpoint;
   }
 }
