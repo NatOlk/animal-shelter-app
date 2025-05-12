@@ -26,9 +26,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class AnimalTopicSubscriberRegistryServiceTest {
+class VaccinationTopicSubscriberRegistryServiceTest {
 
-  private static final String ANIMAL_TOPIC = AnimalShelterTopic.ANIMAL_INFO.getTopicName();
+  private static final String VACCINATION_TOPIC = AnimalShelterTopic.VACCINATION_INFO.getTopicName();
   private static final String TEST_EMAIL = "test@test.com";
   private static final String APPROVER_EMAIL = "approver@test.com";
 
@@ -41,7 +41,7 @@ class AnimalTopicSubscriberRegistryServiceTest {
   @Mock
   private SubscriptionCacheManager cacheManager;
   @InjectMocks
-  private AnimalTopicSubscriberRegistryServiceImpl registryService;
+  private VaccinationTopicSubscriberRegistryServiceImpl registryService;
 
   @BeforeEach
   void setUp() {
@@ -51,7 +51,7 @@ class AnimalTopicSubscriberRegistryServiceTest {
   @Test
   void testRegisterSubscriber_whenSubscriptionDoesNotExist() {
     // given
-    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC))
+    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC))
         .thenReturn(Optional.empty());
 
     // when
@@ -60,7 +60,7 @@ class AnimalTopicSubscriberRegistryServiceTest {
     // then
     verify(subscriptionRepository, times(1)).save(any(Subscription.class));
     verify(subscriberNotificationInfoProducer, times(1))
-        .sendPendingApproveRequest(TEST_EMAIL, APPROVER_EMAIL, ANIMAL_TOPIC);
+        .sendPendingApproveRequest(TEST_EMAIL, APPROVER_EMAIL, VACCINATION_TOPIC);
     // check that no email is sent
     verifyNoInteractions(subscriptionNotificationService);
   }
@@ -70,12 +70,12 @@ class AnimalTopicSubscriberRegistryServiceTest {
     // given
     Subscription existingSubscription = Subscription.builder()
         .email(TEST_EMAIL)
-        .topic(ANIMAL_TOPIC)
+        .topic(VACCINATION_TOPIC)
         .accepted(true)
         .approved(true)
         .build();
 
-    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC))
+    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC))
         .thenReturn(Optional.of(existingSubscription));
 
     // when
@@ -94,16 +94,14 @@ class AnimalTopicSubscriberRegistryServiceTest {
     Subscription subscription = Subscription.builder()
         .token("testToken")
         .email(TEST_EMAIL)
-        .topic(ANIMAL_TOPIC)
+        .topic(VACCINATION_TOPIC)
         .build();
 
-    when(subscriptionRepository.findByTokenAndTopic("testToken", ANIMAL_TOPIC))
+    when(subscriptionRepository.findByTokenAndTopic("testToken", VACCINATION_TOPIC))
         .thenReturn(Optional.of(subscription));
 
-    // when
     boolean result = registryService.acceptSubscription("testToken");
 
-    // then
     assertTrue(result);
     verify(subscriptionRepository).save(subscription);
   }
@@ -111,21 +109,19 @@ class AnimalTopicSubscriberRegistryServiceTest {
   @Test
   void testAcceptSubscription_whenTokenDoesNotExist() {
     // given
-    when(subscriptionRepository.findByTokenAndTopic("invalidToken", ANIMAL_TOPIC)).thenReturn(
+    when(subscriptionRepository.findByTokenAndTopic("invalidToken", VACCINATION_TOPIC)).thenReturn(
         Optional.empty());
-    // when
+
     boolean result = registryService.acceptSubscription("invalidToken");
-    // then
+
     assertFalse(result);
   }
 
   @Test
   void testUnsubscribe_byToken() {
-    // when
     registryService.unsubscribe("tokenToRemove");
 
-    //then
-    verify(subscriptionRepository).deleteByTokenAndTopic("tokenToRemove", ANIMAL_TOPIC);
+    verify(subscriptionRepository).deleteByTokenAndTopic("tokenToRemove", VACCINATION_TOPIC);
     verify(cacheManager).removeFromCache("tokenToRemove");
   }
 
@@ -135,30 +131,26 @@ class AnimalTopicSubscriberRegistryServiceTest {
     Subscription subscription = Subscription.builder()
         .token("tokenToRemove")
         .email(TEST_EMAIL)
-        .topic(ANIMAL_TOPIC)
+        .topic(VACCINATION_TOPIC)
         .build();
 
-    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC))
+    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC))
         .thenReturn(Optional.of(subscription));
 
-    // when
     registryService.unsubscribe(TEST_EMAIL, APPROVER_EMAIL);
 
-    //then
-    verify(subscriptionRepository).deleteByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC);
+    verify(subscriptionRepository).deleteByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC);
     verify(cacheManager).removeFromCache(subscription.getToken());
   }
 
   @Test
   void testGetSubscriptionStatus_none() {
     // given
-    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC)).thenReturn(
+    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC)).thenReturn(
         Optional.empty());
 
-    // when
     var status = registryService.getSubscriptionStatus(TEST_EMAIL);
 
-    //then
     assertEquals(NONE, status);
   }
 
@@ -167,17 +159,15 @@ class AnimalTopicSubscriberRegistryServiceTest {
     // given
     Subscription subscription = Subscription.builder()
         .email(TEST_EMAIL)
-        .topic(ANIMAL_TOPIC)
+        .topic(VACCINATION_TOPIC)
         .accepted(false)
         .build();
 
-    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC)).thenReturn(
+    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC)).thenReturn(
         Optional.of(subscription));
 
-    // when
     var status = registryService.getSubscriptionStatus(TEST_EMAIL);
 
-    // then
     assertEquals(PENDING, status);
   }
 
@@ -186,17 +176,15 @@ class AnimalTopicSubscriberRegistryServiceTest {
     // given
     Subscription subscription = Subscription.builder()
         .email(TEST_EMAIL)
-        .topic(ANIMAL_TOPIC)
+        .topic(VACCINATION_TOPIC)
         .accepted(true)
         .build();
 
-    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC)).thenReturn(
+    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC)).thenReturn(
         Optional.of(subscription));
 
-    // when
     var status = registryService.getSubscriptionStatus(TEST_EMAIL);
 
-    //then
     assertEquals(ACTIVE, status);
   }
 
@@ -206,16 +194,15 @@ class AnimalTopicSubscriberRegistryServiceTest {
     Subscription subscription = Subscription.builder()
         .token("rejectToken")
         .email(TEST_EMAIL)
-        .topic(ANIMAL_TOPIC)
+        .topic(VACCINATION_TOPIC)
         .build();
 
-    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC)).thenReturn(
+    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC)).thenReturn(
         Optional.of(subscription));
 
     registryService.handleSubscriptionApproval(TEST_EMAIL, APPROVER_EMAIL, true);
 
-    // when
-    verify(subscriptionRepository).deleteByTokenAndTopic("rejectToken", ANIMAL_TOPIC);
+    verify(subscriptionRepository).deleteByTokenAndTopic("rejectToken", VACCINATION_TOPIC);
     verify(cacheManager).removeFromCache("rejectToken");
   }
 
@@ -225,15 +212,14 @@ class AnimalTopicSubscriberRegistryServiceTest {
     Subscription subscription = Subscription.builder()
         .token("approveToken")
         .email(TEST_EMAIL)
-        .topic(ANIMAL_TOPIC)
+        .topic(VACCINATION_TOPIC)
         .build();
 
-    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, ANIMAL_TOPIC)).thenReturn(
+    when(subscriptionRepository.findByEmailAndTopic(TEST_EMAIL, VACCINATION_TOPIC)).thenReturn(
         Optional.of(subscription));
 
-    // when
     registryService.handleSubscriptionApproval(TEST_EMAIL, APPROVER_EMAIL, false);
-    // then
+
     verify(subscriptionRepository, times(2)).save(subscription);
     verify(cacheManager, times(1)).addToCache(subscription);
     // check that no email is sent

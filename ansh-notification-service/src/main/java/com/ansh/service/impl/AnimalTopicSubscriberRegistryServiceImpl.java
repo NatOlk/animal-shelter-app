@@ -1,6 +1,5 @@
 package com.ansh.service.impl;
 
-import com.ansh.entity.subscription.Subscription;
 import com.ansh.event.AnimalShelterTopic;
 import com.ansh.service.SubscriberRegistryService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,10 +15,8 @@ public class AnimalTopicSubscriberRegistryServiceImpl extends AbstractSubscriber
     return AnimalShelterTopic.ANIMAL_INFO.getTopicName();
   }
 
-
   @Override
-  protected void approveSubscription(Subscription subscription, String approver) {
-    super.acceptSubscription(subscription.getToken());
-    super.approveSubscription(subscription, approver);
+  protected boolean isAutoAccept() {
+    return true;
   }
 }

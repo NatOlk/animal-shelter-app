@@ -54,6 +54,22 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
   protected void sendNeedAcceptSubscriptionEmail(Subscription subscription) {
   }
 
+  /**
+   * Determines whether the subscription should be automatically accepted upon approval.
+   * <p>
+   * This method can be overridden in subclasses to specify if subscriptions for a given topic
+   * should bypass manual confirmation and be activated immediately after approval.
+   * </p>
+   * <p>
+   * Returns {@code false} by default, meaning manual confirmation is still required.
+   * </p>
+   *
+   * @return {@code true} if the subscription should be auto-accepted, {@code false} otherwise
+   */
+  protected boolean isAutoAccept() {
+    return false;
+  }
+
   @Override
   @Transactional
   public void registerSubscriber(@NonNull String email, String approver) {
@@ -71,21 +87,8 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
 
   @Override
   @Transactional
-  public void unsubscribe(String email, String approver) {
+  public void unsubscribe(@NonNull String email, String approver) {
     removeSubscriptionFromCacheAndDb(email, approver);
-  }
-
-  @Override
-  @Transactional
-  public boolean acceptSubscription(@NonNull String token) {
-    Optional<Subscription> subscriptionOpt = findSubscriptionByToken(token);
-    subscriptionOpt.ifPresent(subscription -> {
-      subscription.setAccepted(true);
-      subscriptionRepository.save(subscription);
-      cacheManager.addToCache(subscription);
-      sendSuccessTokenConfirmationEmail(subscription);
-    });
-    return subscriptionOpt.isPresent();
   }
 
   @Override
@@ -107,6 +110,23 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
 
   @Override
   @Transactional
+  public boolean acceptSubscription(@NonNull String token) {
+    Optional<Subscription> subscriptionOpt = findSubscriptionByToken(token);
+    subscriptionOpt.ifPresent(this::accept);
+    return subscriptionOpt.isPresent();
+  }
+
+  protected void accept(Subscription subscription) {
+    LOG.debug("Accepting subscription for {} in topic {}",
+        IdentifierMasker.maskEmail(subscription.getEmail()), getTopicId());
+    subscription.setAccepted(true);
+    subscriptionRepository.save(subscription);
+    cacheManager.addToCache(subscription);
+    sendSuccessTokenConfirmationEmail(subscription);
+  }
+
+  @Override
+  @Transactional
   public void handleSubscriptionApproval(@NonNull String email, String approver, boolean reject) {
     findSubscriptionByEmail(email).ifPresent(subscription -> {
       if (reject) {
@@ -118,10 +138,15 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
   }
 
   protected void approveSubscription(Subscription subscription, String approver) {
+    LOG.debug("Approving subscription for {} by approver {} in topic {}",
+        IdentifierMasker.maskEmail(subscription.getEmail()), approver, getTopicId());
     subscription.setApprover(approver);
     subscription.setApproved(true);
     subscriptionRepository.save(subscription);
     sendNeedAcceptSubscriptionEmail(subscription);
+    if (isAutoAccept()) {
+      accept(subscription);
+    }
   }
 
   private void removeSubscriptionFromCacheAndDb(String token) {
