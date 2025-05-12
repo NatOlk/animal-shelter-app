@@ -52,6 +52,23 @@ const Subscription: React.FC = () => {
     }
   };
 
+   const handleUnsubscribe = async (topic: string) => {
+      try {
+        await apiFetch(`/api/subscription/unsubscribe`, {
+          method: 'POST',
+          body: {
+            email: user.email,
+            topic: topic,
+            approver: user.email,
+          },
+        });
+
+        await fetchStatuses();
+      } catch (error) {
+        setError(error);
+      }
+    };
+
   return (
     <div className="w-full max-w-xl">
       <h2 className="text-lg font-semibold mb-4">Available Subscriptions</h2>
@@ -81,7 +98,7 @@ const Subscription: React.FC = () => {
                   </Button>
                 </Tooltip>
                 <Tooltip content="Unsubscribe" placement="bottom">
-                  <Button
+                  <Button onPress={() => handleUnsubscribe(key)}
                     color="default" variant="light"
                     className="p-2 min-w-2 h-auto">
                     <HiOutlineUserRemove />
