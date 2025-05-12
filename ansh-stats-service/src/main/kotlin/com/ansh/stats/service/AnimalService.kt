@@ -19,7 +19,7 @@ class AnimalService(
             animalId = event.animal.id,
             payload = event
         )
-        logger.debug("Saving animal event: $document")
+        logger.debug("Saving animal event: {}", document)
         repository.save(document)
         logger.info("Animal event saved: type=${document.eventType}, animalId=${document.animalId}")
     }

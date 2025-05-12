@@ -25,14 +25,14 @@ export default function AnimalLifespanChart() {
   }, [])
 
   const getDuration = (animal: AnimalLifespan) =>
-    animal.daysInSystem * 1440 + animal.hoursInSystem * 60 + animal.minutesInSystem
+    animal.daysInSystem * 1440
 
   const sortedData = [...data].sort((a, b) => getDuration(b) - getDuration(a))
   const visibleData = showAll ? sortedData : sortedData.slice(0, 10)
 
   const tooltipFormatter = (_: any, __: string, props: any) => {
     const animal = props.payload
-    return `${animal.daysInSystem}d ${animal.hoursInSystem}h ${animal.minutesInSystem}m`
+    return `${animal.daysInSystem}d`
   }
 
   return (
@@ -64,9 +64,7 @@ export default function AnimalLifespanChart() {
           <Tooltip formatter={tooltipFormatter} />
           <Bar
             dataKey={(animal: AnimalLifespan) =>
-              animal.daysInSystem +
-              animal.hoursInSystem / 24 +
-              animal.minutesInSystem / 1440
+              animal.daysInSystem
             }
             fill="#8884d8"
             name="Lifespan (days)"

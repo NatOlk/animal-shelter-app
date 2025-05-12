@@ -1,15 +1,16 @@
-package com.ansh.stats.service
+package com.ansh.stats.service.stats
 
 import com.ansh.entity.animal.Animal
 import com.ansh.event.animal.AddAnimalEvent
 import com.ansh.event.animal.RemoveAnimalEvent
+import com.ansh.stats.constants.EventTypes
 import com.ansh.stats.entity.AnimalEventDocument
 import com.ansh.stats.entity.AnimalLifespanStats
 import com.ansh.stats.repository.AnimalEventRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 class AnimalStatsServiceTest {
 
@@ -18,34 +19,37 @@ class AnimalStatsServiceTest {
 
     @Test
     fun `getAnimalLifespans returns correct lifespan stats`() {
-        val now = LocalDateTime.now()
+        val now = LocalDate.now()
+        val createdAt = now.minusDays(2)
         val animal = Animal().apply {
             id = 1L
             name = "Bella"
             species = "Dog"
         }
 
+        val addEventPayload = AddAnimalEvent(animal).apply {
+            created = createdAt
+        }
+
         val addEvent = AnimalEventDocument(
             id = "1",
-            eventType = "com.ansh.event.animal.AddAnimalEvent",
+            eventType = EventTypes.ADD_ANIMAL,
             animalId = animal.id,
-            payload = AddAnimalEvent(animal),
-            receivedAt = now.minusDays(2).minusHours(5).minusMinutes(30)
+            payload = addEventPayload
         )
 
         val removeEvent = AnimalEventDocument(
             id = "2",
-            eventType = "com.ansh.event.animal.RemoveAnimalEvent",
+            eventType = EventTypes.REMOVE_ANIMAL,
             animalId = animal.id,
-            payload = RemoveAnimalEvent(animal),
-            receivedAt = now
+            payload = RemoveAnimalEvent(animal)
         )
 
         Mockito.`when`(
             repository.findByEventTypeIn(
                 listOf(
-                    "com.ansh.event.animal.AddAnimalEvent",
-                    "com.ansh.event.animal.RemoveAnimalEvent"
+                    EventTypes.ADD_ANIMAL,
+                    EventTypes.REMOVE_ANIMAL
                 )
             )
         ).thenReturn(listOf(addEvent, removeEvent))
@@ -58,7 +62,5 @@ class AnimalStatsServiceTest {
         assertEquals(animal.name, lifespan.name)
         assertEquals(animal.species, lifespan.species)
         assertEquals(2, lifespan.daysInSystem)
-        assertEquals(5, lifespan.hoursInSystem)
-        assertEquals(30, lifespan.minutesInSystem)
     }
 }
