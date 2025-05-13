@@ -6,7 +6,7 @@ import com.ansh.stats.repository.SubscriptionDecisionStatsRepository
 import org.springframework.stereotype.Service
 
 @Service
-class SubscriptionService(
+class SubscriptionDecisionService(
     private val repository: SubscriptionDecisionStatsRepository
 ) {
     fun saveEvent(event: SubscriptionDecisionEvent) {

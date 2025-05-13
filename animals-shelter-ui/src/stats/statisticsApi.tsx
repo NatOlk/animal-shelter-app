@@ -27,3 +27,15 @@ export async function fetchAnimalLifespans(): Promise<{ [animalId: string]: numb
   if (!response.ok) throw new Error("Failed to fetch animal lifespans")
   return response.json()
 }
+
+export async function fetchSubscriptionDecisionCount(): Promise<{ [animalId: string]: number }> {
+  const response = await fetch("/ansh/stats/stats/subscription/count")
+  if (!response.ok) throw new Error("Failed to fetch subscription decision")
+  return response.json()
+}
+
+export async function fetchSubscriptionDecisionByTopic(): Promise<TopicDecisionStats[]> {
+  const response = await fetch("/ansh/stats/stats/subscription/by-topic")
+  if (!response.ok) throw new Error("Failed to fetch subscription decision by topic")
+  return response.json()
+}

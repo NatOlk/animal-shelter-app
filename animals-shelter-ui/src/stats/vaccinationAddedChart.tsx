@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react"
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
+import { BarChart, Bar, XAxis, YAxis,
+  Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts"
 import CountByDate from "../common/types";
+import { fetchVaccinationsByDate } from "./statisticsApi"
 
 export default function VaccinationAddedChart() {
   const [data, setData] = useState<CountByDate[]>([])
@@ -16,11 +11,7 @@ export default function VaccinationAddedChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/ansh/stats/stats/vaccinations/added-by-date")
-        if (!response.ok) {
-          throw new Error("Failed to fetch vaccination data")
-        }
-        const json = await response.json()
+        const json = await fetchVaccinationsByDate()
         const transformed = Object.entries(json).map(([date, count]) => ({
           date,
           count: Number(count),

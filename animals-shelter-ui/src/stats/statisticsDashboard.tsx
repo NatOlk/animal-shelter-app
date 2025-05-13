@@ -1,8 +1,12 @@
-import { Spacer } from "@nextui-org/react"
+import { Spacer, Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import AnimalAddedChart from "./animalAddedChart"
 import VaccinationAddedChart from "./vaccinationAddedChart"
 import AnimalLifespanChart from "./animalLifespanChart"
+import SubscriptionDecisionsChart from "./subscriptionDecisionsChart"
 import { useEffect, useState } from "react"
+import { MdOutlinePets } from "react-icons/md";
+import { BsPersonBoundingBox } from "react-icons/bs";
+import { fetchAnimalCount, fetchVaccinationCount } from "./statisticsApi"
 
 export default function StatisticsPage() {
   const [animalCount, setAnimalCount] = useState<number>(0)
@@ -12,8 +16,8 @@ export default function StatisticsPage() {
     const fetchCounts = async () => {
       try {
         const [animalRes, vaccinationRes] = await Promise.all([
-          fetch("/ansh/stats/stats/animals/count"),
-          fetch("/ansh/stats/stats/vaccinations/count"),
+          fetchAnimalCount(),
+          fetchVaccinationCount(),
         ])
 
         setAnimalCount(await animalRes.json())
@@ -27,22 +31,37 @@ export default function StatisticsPage() {
   }, [])
 
   return (
-    <div className="p-6 space-y-12">
-      <h1 className="text-2xl font-bold">Statistics Dashboard</h1>
-
-      <div className="space-y-2">
-        <p>Total Animals: <strong>{animalCount}</strong></p>
-        <p>Total Vaccinations: <strong>{vaccinationCount}</strong></p>
-      </div>
-
-      <Spacer y={10} />
-      <AnimalAddedChart />
-
-      <Spacer y={10} />
-      <VaccinationAddedChart />
-
-      <Spacer y={10} />
-      <AnimalLifespanChart />
+    <div className="flex w-full flex-col">
+      <Tabs aria-label="Stats Options" size="lg" variant="bordered">
+        <Tab key="animalStats" title={
+          <div className="flex items-center space-x-2">
+            <MdOutlinePets /><p>Animals</p>
+          </div>}>
+          <Card>
+            <CardBody>
+              <h2>Total Animals: <strong>{animalCount}</strong></h2>
+              <h2>Total Vaccinations: <strong>{vaccinationCount}</strong></h2>
+              <Spacer y={5} />
+              <AnimalAddedChart />
+              <Spacer y={5} />
+              <VaccinationAddedChart />
+              <Spacer y={5} />
+              <AnimalLifespanChart />
+            </CardBody>
+          </Card>
+        </Tab>
+        <Tab key="subscriptionStats" title={
+          <div className="flex items-center space-x-2">
+            <BsPersonBoundingBox /><p>Subscription Decisions</p>
+          </div>}>
+          <Card>
+            <CardBody>
+              <Spacer y={5} />
+              <SubscriptionDecisionsChart />
+            </CardBody>
+          </Card>
+        </Tab>
+      </Tabs>
     </div>
   )
 }

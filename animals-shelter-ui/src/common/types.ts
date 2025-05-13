@@ -164,3 +164,9 @@ export const topics = [
 
 
 export type TopicKey = typeof topics[number]['key'];
+
+export type TopicDecisionStats = {
+  topic: string
+  approvedCount: number
+  rejectedCount: number
+}

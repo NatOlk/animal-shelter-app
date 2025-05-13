@@ -4,6 +4,7 @@ import {
 } from "recharts"
 import { Button } from "@nextui-org/react"
 import AnimalLifespan from "../common/types";
+import { fetchAnimalLifespans } from "./statisticsApi"
 
 export default function AnimalLifespanChart() {
   const [data, setData] = useState<AnimalLifespan[]>([])
@@ -12,9 +13,7 @@ export default function AnimalLifespanChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/ansh/stats/stats/animals/lifespans")
-        if (!response.ok) throw new Error("Network response was not ok")
-        const json = await response.json()
+        const json = await fetchAnimalLifespans()
         setData(json)
       } catch (error) {
         console.error("Error fetching lifespan data", error)
