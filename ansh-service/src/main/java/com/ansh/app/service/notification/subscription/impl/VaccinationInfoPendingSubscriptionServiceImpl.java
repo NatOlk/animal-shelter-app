@@ -2,7 +2,6 @@ package com.ansh.app.service.notification.subscription.impl;
 
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.user.UserProfileService;
-import com.ansh.app.service.user.UserSubscriptionAuthorityService;
 import com.ansh.event.AnimalShelterTopic;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
@@ -17,11 +16,9 @@ public class VaccinationInfoPendingSubscriptionServiceImpl extends
   @Autowired
   public VaccinationInfoPendingSubscriptionServiceImpl(
       PendingSubscriberRepository pendingSubscriberRepository,
-      UserSubscriptionAuthorityService userSubscriptionAuthorityService,
       PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer,
       UserProfileService userProfileService) {
     super(AnimalShelterTopic.VACCINATION_INFO.getTopicName(), pendingSubscriberRepository,
-        userSubscriptionAuthorityService,
         pendingSubscriptionDecisionProducer, userProfileService);
   }
 }

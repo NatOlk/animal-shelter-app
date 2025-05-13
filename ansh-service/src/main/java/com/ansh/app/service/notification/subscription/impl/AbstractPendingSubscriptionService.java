@@ -5,7 +5,6 @@ import static com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus.PENDING;
 import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.user.UserProfileService;
-import com.ansh.app.service.user.UserSubscriptionAuthorityService;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
 import com.ansh.repository.PendingSubscriberRepository;
 import com.ansh.repository.entity.PendingSubscriber;
@@ -22,19 +21,16 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
       AbstractPendingSubscriptionService.class);
   protected final String topicId;
   protected final PendingSubscriberRepository pendingSubscriberRepository;
-  protected final UserSubscriptionAuthorityService userSubscriptionAuthorityService;
   protected final PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer;
   protected final UserProfileService userProfileService;
 
   protected AbstractPendingSubscriptionService(
       String topicId,
       PendingSubscriberRepository pendingSubscriberRepository,
-      UserSubscriptionAuthorityService userSubscriptionAuthorityService,
       PendingSubscriptionDecisionProducer pendingSubscriptionDecisionProducer,
       UserProfileService userProfileService) {
     this.topicId = topicId;
     this.pendingSubscriberRepository = pendingSubscriberRepository;
-    this.userSubscriptionAuthorityService = userSubscriptionAuthorityService;
     this.pendingSubscriptionDecisionProducer = pendingSubscriptionDecisionProducer;
     this.userProfileService = userProfileService;
   }
@@ -42,7 +38,6 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
   @Override
   @Transactional
   public void approveSubscriber(String email, String approver) throws UnauthorizedActionException {
-    userSubscriptionAuthorityService.checkAuthorityToApprove(approver);
     findPendingSubscriber(email)
         .ifPresent(subscriber -> {
           updatePendingSubscriberStatus(email, true);
@@ -56,7 +51,6 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
   @Override
   @Transactional
   public void rejectSubscriber(String email, String approver) throws UnauthorizedActionException {
-    userSubscriptionAuthorityService.checkAuthorityToReject(approver);
     findPendingSubscriber(email)
         .ifPresent(subscriber -> {
           updatePendingSubscriberStatus(email, false);

@@ -25,9 +25,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class AnimalInfoPendingSubscriptionServiceTest {
+class AnimalShelterNewsPendingSubscriptionServiceTest {
 
-  private static final String ANIMAL_TOPIC = AnimalShelterTopic.ANIMAL_INFO.getTopicName();
+  private static final String ANIMAL_TOPIC = AnimalShelterTopic.ANIMAL_SHELTER_NEWS.getTopicName();
   private static final String SUBSCRIBER_EMAIL = "subscriber@email.com";
   private static final String APPROVER_EMAIL = "approver@mail.com";
   @Mock
@@ -40,7 +40,7 @@ class AnimalInfoPendingSubscriptionServiceTest {
   private UserProfileService userProfileService;
 
   @InjectMocks
-  private AnimalInfoPendingSubscriptionServiceImpl service;
+  private AnimalShelterNewsPendingSubscriptionServiceImpl service;
 
   @Captor
   private ArgumentCaptor<PendingSubscriber> subscriberCaptor;
@@ -56,7 +56,7 @@ class AnimalInfoPendingSubscriptionServiceTest {
     pendingSubscriber.setTopic(ANIMAL_TOPIC);
     pendingSubscriber.setApprover(APPROVER_EMAIL);
 
-    service = new AnimalInfoPendingSubscriptionServiceImpl(
+    service = new AnimalShelterNewsPendingSubscriptionServiceImpl(
         pendingSubscriberRepository,
         animalNotificationUserSubscribedProducer,
         userProfileService
@@ -108,6 +108,7 @@ class AnimalInfoPendingSubscriptionServiceTest {
     verify(pendingSubscriberRepository, times(1))
         .updateApprovalStatus(SUBSCRIBER_EMAIL, ANIMAL_TOPIC, false);
   }
+
 
   @Test
   void shouldNotRejectSubscriber_whenNotFound() throws UnauthorizedActionException {

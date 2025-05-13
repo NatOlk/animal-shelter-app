@@ -24,7 +24,6 @@ import reactor.test.StepVerifier;
 class NotificationSubscriptionServiceTest {
 
   private static final String APPROVER = "approver@example.com";
-  private static final String TOPIC = "animalTopicId";
   private static final String ALL_BY_APPROVER_ENDPOINT = "/internal/animal-notify-all-approver-subscriptions";
   private static final String STATUS_BY_APPROVER_ENDPOINT = "/internal/animal-notify-approver-status";
 
