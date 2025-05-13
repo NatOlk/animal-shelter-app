@@ -2,11 +2,9 @@ package com.ansh.notification.external;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-import jakarta.annotation.PostConstruct;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -23,24 +21,22 @@ public class ExternalNotificationServiceClient {
   private static final String CIRCUIT_BREAKER_NAME = "notificationService";
   private static final String RETRY_NAME = "notificationRetry";
 
-  @Autowired
-  private WebClient.Builder webClientBuilder;
+  private final WebClient webClient;
+  private final String notificationApiKey;
+  private final String animalShelterNotificationApp;
 
-  @Value("${app.animalShelterNotificationApp}")
-  private String animalShelterNotificationApp;
-
-  @Value("${notification.api.key}")
-  private String notificationApiKey;
-
-  private WebClient webClient;
-
-  @PostConstruct
-  public void init() {
-    webClient = webClientBuilder.baseUrl(animalShelterNotificationApp).build();
+  public ExternalNotificationServiceClient(
+      WebClient.Builder webClientBuilder,
+      @Value("${app.animalShelterNotificationApp}") String animalShelterNotificationApp,
+      @Value("${notification.api.key}") String notificationApiKey
+  ) {
+    this.animalShelterNotificationApp = animalShelterNotificationApp;
+    this.notificationApiKey = notificationApiKey;
+    this.webClient = webClientBuilder.baseUrl(animalShelterNotificationApp).build();
   }
 
-  @CircuitBreaker(name = "notificationService", fallbackMethod = "fallback")
-  @Retry(name = "notificationRetry", fallbackMethod = "fallback")
+  @CircuitBreaker(name = CIRCUIT_BREAKER_NAME, fallbackMethod = "fallback")
+  @Retry(name = RETRY_NAME, fallbackMethod = "fallback")
   public <T> Mono<T> post(String endpoint, Map<String, Object> requestBody,
       ParameterizedTypeReference<T> responseType) {
     return webClient.post()
@@ -54,7 +50,7 @@ public class ExternalNotificationServiceClient {
                 .flatMap(errorBody -> {
                   LOG.error("WebClient error: {} - {}", response.statusCode(), errorBody);
                   return Mono.error(new RuntimeException(
-                      STR."WebClient request failed with status: \{response.statusCode()}"));
+                      "WebClient request failed with status: " + response.statusCode()));
                 })
         )
         .bodyToMono(responseType);
