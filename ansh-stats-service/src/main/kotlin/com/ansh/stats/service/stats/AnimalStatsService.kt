@@ -1,7 +1,7 @@
 package com.ansh.stats.service.stats
 
 import com.ansh.stats.constants.EventTypes
-import com.ansh.stats.entity.AnimalLifespanStats
+import com.ansh.stats.dto.AnimalLifespanStats
 import com.ansh.stats.repository.AnimalEventRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

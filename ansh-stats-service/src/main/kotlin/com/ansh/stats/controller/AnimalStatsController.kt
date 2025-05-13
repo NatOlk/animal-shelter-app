@@ -1,6 +1,6 @@
 package com.ansh.stats.controller
 
-import com.ansh.stats.entity.AnimalLifespanStats
+import com.ansh.stats.dto.AnimalLifespanStats
 import com.ansh.stats.service.stats.AnimalStatsService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping

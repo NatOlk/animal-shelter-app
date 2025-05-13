@@ -4,6 +4,7 @@ server:
 animalTopicId: animalTopicId
 vaccinationTopicId: vaccinationTopicId
 approveTopicId: approveTopicId
+subscriptionTopicId: subscriptionTopicId
 
 spring:
   application:

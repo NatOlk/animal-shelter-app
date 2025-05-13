@@ -17,7 +17,7 @@ class SubscriptionDecisionStatsEventConsumer(
     private val logger = LoggerFactory.getLogger(SubscriptionDecisionStatsEventConsumer::class.java)
 
     @KafkaListener(topics = ["\${approveTopicId}"], groupId = "statsGroup")
-    fun listen(message: ConsumerRecord<String, String>) {
+    fun listenApproveTopic(message: ConsumerRecord<String, String>) {
         try {
             val event =
                 objectMapper.readValue(message.value(), SubscriptionDecisionEvent::class.java)
@@ -25,7 +25,23 @@ class SubscriptionDecisionStatsEventConsumer(
             logger.info(
                 "[STATS SERVICE] Received SubscriptionDecisionEvent: email=${event.email}, approver=${event.approver}, reject=${event.isReject}"
             )
-            statsService.saveEvent(event)
+            statsService.saveDecisionEvent(event)
+
+        } catch (e: Exception) {
+            logger.error("Failed to process event: ${message.value()}", e)
+        }
+    }
+
+    @KafkaListener(topics = ["\${subscriptionTopicId}"], groupId = "statsGroup")
+    fun listenSubscriptionTopic(message: ConsumerRecord<String, String>) {
+        try {
+            val event =
+                objectMapper.readValue(message.value(), SubscriptionDecisionEvent::class.java)
+
+            logger.info(
+                "[STATS SERVICE] Received SubscriptionDecisionEvent: email=${event.email}, approver=${event.approver}, reject=${event.isReject}"
+            )
+            statsService.saveRequestEvent(event)
 
         } catch (e: Exception) {
             logger.error("Failed to process event: ${message.value()}", e)

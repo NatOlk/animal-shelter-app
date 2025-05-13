@@ -41,6 +41,7 @@ public class SubscriberNotificationEventProducer {
       kafkaTemplate.send(subscriptionTopicId, jsonMessage);
     } catch (Exception e) {
       LOG.error("Exception during sending message: {}", e.getMessage());
+    //  throw new RuntimeException();
     }
   }
 

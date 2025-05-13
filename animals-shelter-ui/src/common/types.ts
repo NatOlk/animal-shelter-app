@@ -167,6 +167,12 @@ export type TopicKey = typeof topics[number]['key'];
 
 export type TopicDecisionStats = {
   topic: string
+  count: number
   approvedCount: number
   rejectedCount: number
+}
+
+export type TopicRequestStats = {
+  topic: string
+  count: number
 }

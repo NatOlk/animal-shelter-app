@@ -5,7 +5,7 @@ import com.ansh.event.animal.AddAnimalEvent
 import com.ansh.event.animal.RemoveAnimalEvent
 import com.ansh.stats.constants.EventTypes
 import com.ansh.stats.entity.AnimalEventDocument
-import com.ansh.stats.entity.AnimalLifespanStats
+import com.ansh.stats.dto.AnimalLifespanStats
 import com.ansh.stats.repository.AnimalEventRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

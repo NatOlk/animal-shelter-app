@@ -1,4 +1,4 @@
-package com.ansh.stats.entity
+package com.ansh.stats.dto
 
 data class AnimalLifespanStats(
     val id: Long,

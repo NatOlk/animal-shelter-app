@@ -3,18 +3,18 @@ import {
   BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from "recharts"
-import { fetchSubscriptionDecisionByTopic, TopicDecisionStats } from "./statisticsApi"
+import { fetchSubscriptionRequestByTopic, TopicRequestStats } from "./statisticsApi"
 
-export default function SubscriptionDecisionsChart() {
-  const [data, setData] = useState<TopicDecisionStats[]>([])
+export default function SubscriptionRequestsChart() {
+  const [data, setData] = useState<TopicRequestStats[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const json = await fetchSubscriptionDecisionByTopic()
+        const json = await fetchSubscriptionRequestByTopic()
         setData(json)
       } catch (error) {
-        console.error("Error fetching subscription decision data:", error)
+        console.error("Error fetching subscription request data:", error)
       }
     }
 
@@ -23,7 +23,7 @@ export default function SubscriptionDecisionsChart() {
 
   return (
     <div style={{ width: "100%", height: 400 }}>
-      <h2 className="text-xl font-semibold mb-2">Subscription Decisions by Topic</h2>
+      <h2 className="text-xl font-semibold mb-2">Subscription Requests by Topic</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -31,9 +31,7 @@ export default function SubscriptionDecisionsChart() {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="approvedCount" fill="#82ca9d" name="Approved" />
-          <Bar dataKey="rejectedCount" fill="#ff7f7f" name="Rejected" />
-          <Bar dataKey="count" fill="#8884d8" name="Total" />
+          <Bar dataKey="count" fill="#8884d8" name="Requests" />
         </BarChart>
       </ResponsiveContainer>
     </div>
