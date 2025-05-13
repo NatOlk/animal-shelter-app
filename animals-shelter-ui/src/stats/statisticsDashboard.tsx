@@ -24,7 +24,7 @@ export default function StatisticsPage() {
         setAnimalCount(await animalRes.json())
         setVaccinationCount(await vaccinationRes.json())
       } catch (error) {
-        console.error("Failed to fetch counts:", error)
+        console.error("Failed to fetch counts")
       }
     }
 
