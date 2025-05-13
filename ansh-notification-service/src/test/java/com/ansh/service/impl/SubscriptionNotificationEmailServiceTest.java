@@ -16,85 +16,107 @@ import org.mockito.MockitoAnnotations;
 
 class SubscriptionNotificationEmailServiceTest {
 
+  private static final String EMAIL = "test@example.com";
+  private static final String TEST_TOKEN = "test-token";
+  private static final String UNSUBSCRIBE_LINK =
+      "http://localhost:8081/external/animal-notify-unsubscribe/" + TEST_TOKEN;
+  private static final String CONFIRMATION_LINK =
+      "http://localhost:8081/external/animal-notify-subscribe-check/" + TEST_TOKEN;
+
+  private static final String SUBJECT_ACCEPT = "[animal-shelter-app] Please accept subscription for Animal Shelter News";
+  private static final String SUBJECT_SUCCESS = "[animal-shelter-app] Subscription for Animal Shelter News";
+
+  private static final String TEMPLATE_ACCEPT = "acceptSubscription";
+  private static final String TEMPLATE_SUCCESS = "successSubscription";
+  private static final String TEMPLATE_REPEAT = "repeatSubscription";
+
   @Mock
   private EmailService emailService;
-
-  @InjectMocks
-  private SubscriptionNotificationEmailServiceImpl subscriptionNotificationService;
 
   @Mock
   private LinkGenerator linkGenerator;
 
-  private final String TEST_TOKEN = "test-token";
+  @InjectMocks
+  private SubscriptionNotificationEmailServiceImpl subscriptionNotificationService;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    when(linkGenerator.generateUnsubscribeLink(TEST_TOKEN)).thenReturn("http://localhost:8081/external/animal-notify-unsubscribe/" + TEST_TOKEN);
-    when(linkGenerator.generateConfirmationLink(TEST_TOKEN)).thenReturn("http://localhost:8081/external/animal-notify-subscribe-check/" + TEST_TOKEN);
+
+    when(linkGenerator.generateUnsubscribeLink(TEST_TOKEN)).thenReturn(UNSUBSCRIBE_LINK);
+    when(linkGenerator.generateConfirmationLink(TEST_TOKEN)).thenReturn(CONFIRMATION_LINK);
   }
 
   @Test
   void testSendNeedAcceptSubscriptionEmail() {
+    // given
     Subscription subscription = new Subscription();
-    subscription.setEmail("test@example.com");
+    subscription.setEmail(EMAIL);
     subscription.setToken(TEST_TOKEN);
 
-    subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(subscription);
-
     Map<String, Object> expectedParams = Map.of(
-        "name", "test@example.com",
-        "unsubscribeLink", "http://localhost:8081/external/animal-notify-unsubscribe/test-token",
-        "confirmationLink", "http://localhost:8081/external/animal-notify-subscribe-check/test-token",
-        "subscriptionLink", "http://localhost:8081/external/animal-notify-subscribe-check/test-token"
+        "name", EMAIL,
+        "unsubscribeLink", UNSUBSCRIBE_LINK,
+        "confirmationLink", CONFIRMATION_LINK,
+        "subscriptionLink", CONFIRMATION_LINK
     );
 
+    // when
+    subscriptionNotificationService.sendNeedAcceptSubscriptionEmail(subscription);
+
+    // then
     verify(emailService).sendEmail(
-        eq("test@example.com"),
-        eq("[animal-shelter-app] Please accept subscription for Animal Shelter app"),
-        eq("acceptSubscription"),
+        eq(EMAIL),
+        eq(SUBJECT_ACCEPT),
+        eq(TEMPLATE_ACCEPT),
         eq(expectedParams)
     );
   }
 
   @Test
   void testSendSuccessTokenConfirmationEmail() {
+    // given
     Subscription subscription = new Subscription();
-    subscription.setEmail("test@example.com");
-    subscription.setToken("test-token");
-
-    subscriptionNotificationService.sendSuccessTokenConfirmationEmail(subscription);
+    subscription.setEmail(EMAIL);
+    subscription.setToken(TEST_TOKEN);
 
     Map<String, Object> expectedParams = Map.of(
-        "name", "test@example.com",
-        "unsubscribeLink", "http://localhost:8081/external/animal-notify-unsubscribe/test-token"
+        "name", EMAIL,
+        "unsubscribeLink", UNSUBSCRIBE_LINK
     );
 
+    // when
+    subscriptionNotificationService.sendSuccessTokenConfirmationEmail(subscription);
+
+    // then
     verify(emailService).sendEmail(
-        eq("test@example.com"),
-        eq("[animal-shelter-app] Subscription for Animal Shelter app"),
-        eq("successSubscription"),
+        eq(EMAIL),
+        eq(SUBJECT_SUCCESS),
+        eq(TEMPLATE_SUCCESS),
         eq(expectedParams)
     );
   }
 
   @Test
   void testSendRepeatConfirmationEmail() {
+    // given
     Subscription subscription = new Subscription();
-    subscription.setEmail("test@example.com");
+    subscription.setEmail(EMAIL);
     subscription.setToken(TEST_TOKEN);
 
-    subscriptionNotificationService.sendRepeatConfirmationEmail(subscription);
-
     Map<String, Object> expectedParams = Map.of(
-        "name", "test@example.com",
-        "unsubscribeLink", "http://localhost:8081/external/animal-notify-unsubscribe/test-token"
+        "name", EMAIL,
+        "unsubscribeLink", UNSUBSCRIBE_LINK
     );
 
+    // when
+    subscriptionNotificationService.sendRepeatConfirmationEmail(subscription);
+
+    // then
     verify(emailService).sendEmail(
-        eq("test@example.com"),
-        eq("[animal-shelter-app] Subscription for Animal Shelter app"),
-        eq("repeatSubscription"),
+        eq(EMAIL),
+        eq(SUBJECT_SUCCESS),
+        eq(TEMPLATE_REPEAT),
         eq(expectedParams)
     );
   }

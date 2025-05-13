@@ -47,7 +47,7 @@ public abstract class AbstractControllerWebMvcTest {
     UserDetails mockUserDetails = new User(
         USERNAME,
         "password",
-        List.of(new SimpleGrantedAuthority("ADMIN"))
+        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
     );
 
     UserProfile userProfile = new UserProfile();

@@ -1,19 +1,11 @@
 package com.ansh.app.controller;
 
-import com.ansh.app.service.exception.user.UnauthorizedActionException;
-import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
-import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
-import com.ansh.app.service.user.UserProfileService;
+import com.ansh.app.facade.SubscriptionFacade;
+import com.ansh.dto.NotificationStatusDTO;
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.repository.entity.PendingSubscriber;
-import io.micrometer.common.util.StringUtils;
-import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,86 +17,25 @@ import org.springframework.web.context.request.async.DeferredResult;
 public class SubscriptionController {
 
   @Autowired
-  @Qualifier("notificationSubscriptionService")
-  private NotificationSubscriptionService notificationService;
+  private SubscriptionFacade subscriptionFacade;
 
-  @Autowired
-  @Qualifier("animalInfoPendingSubscriptionService")
-  private PendingSubscriptionService pendingSubscriptionService;
-
-  @Autowired
-  private UserProfileService userProfileService;
-
-  @PostMapping("/animal-notify-approve-subscriber")
-  public void approve(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {
-    if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(
-        req.getEmail())) {
-      return;
-    }
-    pendingSubscriptionService.approveSubscriber(req.getEmail(), req.getApprover());
+  @PostMapping("/subscription/register")
+  public void registerSubscriber(@RequestBody SubscriptionRequest req) {
+    subscriptionFacade.registerSubscription(req);
   }
 
-  @PostMapping("/animal-notify-reject-subscriber")
-  public void reject(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {
-    if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(req.getEmail())) {
-      return;
-    }
-    pendingSubscriptionService.rejectSubscriber(req.getEmail(), req.getApprover());
+  @PostMapping("/subscription/unsubscribe")
+  public void unsubscribe(@RequestBody SubscriptionRequest req) {
+    subscriptionFacade.unsubscribe(req);
   }
 
-  @PostMapping(value = "/animal-notify-pending-subscribers")
-  public List<PendingSubscriber> getPendingSubscribers(
-      @RequestBody SubscriptionRequest subscriptionRequest) {
-    if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {
-      return Collections.emptyList();
-    }
-    return pendingSubscriptionService.getSubscribersByApprover(subscriptionRequest.getApprover());
+  @PostMapping("/subscription/all")
+  public DeferredResult<List<Subscription>> getSubscribers(@RequestBody SubscriptionRequest req) {
+    return subscriptionFacade.getAllSubscribers(req.getApprover());
   }
 
-  @GetMapping("/animal-notify-pending-no-approver-subscribers")
-  public List<PendingSubscriber> getPendingNoApproverSubscribers() {
-    return pendingSubscriptionService.getPendingSubscribersWithoutApprover();
-  }
-
-  @PostMapping("/animal-notify-all-approver-subscriptions")
-  public DeferredResult<List<Subscription>> getSubscribers(
-      @RequestBody SubscriptionRequest subscriptionRequest) {
-    DeferredResult<List<Subscription>> output = new DeferredResult<>();
-
-    if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {
-      output.setResult(Collections.emptyList());
-      return output;
-    }
-
-    notificationService.getAllSubscriptionByApprover(subscriptionRequest.getApprover())
-        .subscribe(
-            output::setResult,
-            error -> output.setResult(Collections.emptyList())
-        );
-
-    return output;
-  }
-
-  @PostMapping("/animal-notify-approver-status")
-  public DeferredResult<AnimalInfoNotifStatus> getApproverStatus(
-      @RequestBody SubscriptionRequest subscriptionRequest) {
-
-    DeferredResult<AnimalInfoNotifStatus> output = new DeferredResult<>();
-
-    if (StringUtils.isEmpty(subscriptionRequest.getApprover())) {
-      output.setResult(AnimalInfoNotifStatus.NONE);
-      return output;
-    }
-
-    notificationService.getAnimalInfoStatusByApprover(subscriptionRequest.getApprover())
-        .subscribe(
-            status -> {
-              userProfileService.updateNotificationStatusOfAuthUser(status);
-              output.setResult(status);
-            },
-            error -> output.setResult(AnimalInfoNotifStatus.UNKNOWN)
-        );
-
-    return output;
+  @PostMapping("/subscription/statuses")
+  public DeferredResult<NotificationStatusDTO> getStatuses(@RequestBody SubscriptionRequest req) {
+    return subscriptionFacade.getNotificationStatusesByAccount(req.getApprover());
   }
 }

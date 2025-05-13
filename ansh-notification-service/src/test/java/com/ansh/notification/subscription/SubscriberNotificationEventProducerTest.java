@@ -19,6 +19,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 class SubscriberNotificationEventProducerTest {
 
   private static final String SUBSCRIPTION_TOPIC = "subscriptionTopicId";
+  private static final String EMAIL = "test@example.com";
+  private static final String APPROVER = "admin";
+  private static final String TOPIC = "animal_notifications";
 
   @Mock
   private KafkaTemplate<String, String> kafkaTemplate;
@@ -36,42 +39,37 @@ class SubscriberNotificationEventProducerTest {
   }
 
   @Test
-  void testSendApproveRequest() throws Exception {
-
-    String email = "test@example.com";
-    String approver = "admin";
-    String topic = "animal_notifications";
-
+  void testSendApproveRequest_successfullySendsMessage() throws Exception {
+    // given
     SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
-    event.setEmail(email);
-    event.setApprover(approver);
-    event.setTopic(topic);
+    event.setEmail(EMAIL);
+    event.setApprover(APPROVER);
+    event.setTopic(TOPIC);
 
     String jsonMessage = "{\"email\":\"test@example.com\", \"approver\":\"admin\", \"topic\":\"animal_notifications\"}";
-
     when(objectMapper.writeValueAsString(event)).thenReturn(jsonMessage);
 
-    subscriberNotificationEventProducer.sendPendingApproveRequest(email, approver, topic);
+    // when
+    subscriberNotificationEventProducer.sendPendingApproveRequest(EMAIL, APPROVER, TOPIC);
 
+    // then
     verify(kafkaTemplate, times(1)).send(eq(SUBSCRIPTION_TOPIC), eq(jsonMessage));
   }
 
   @Test
-  void testSendApproveRequestExceptionHandling() throws Exception {
-
-    String email = "test@example.com";
-    String approver = "admin";
-    String topic = "animal_notifications";
-
+  void testSendApproveRequest_whenSerializationFails_doesNotSendMessage() throws Exception {
+    // given
     SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
-    event.setEmail(email);
-    event.setApprover(approver);
-    event.setTopic(topic);
+    event.setEmail(EMAIL);
+    event.setApprover(APPROVER);
+    event.setTopic(TOPIC);
 
     when(objectMapper.writeValueAsString(event)).thenThrow(new RuntimeException("Test exception"));
 
-    subscriberNotificationEventProducer.sendPendingApproveRequest(email, approver, topic);
+    // when
+    subscriberNotificationEventProducer.sendPendingApproveRequest(EMAIL, APPROVER, TOPIC);
 
+    // then
     verify(kafkaTemplate, never()).send(eq(SUBSCRIPTION_TOPIC), anyString());
   }
 }

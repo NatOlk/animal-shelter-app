@@ -1,8 +1,8 @@
 package com.ansh.notification.app.handler.animal;
 
-import com.ansh.event.RemoveAnimalEvent;
-import com.ansh.notification.app.handler.AbstractAnimalNotificationHandler;
+import com.ansh.event.animal.RemoveAnimalEvent;
 import com.ansh.notification.NotificationMessages;
+import com.ansh.notification.app.handler.AbstractAnimalNotificationHandler;
 import org.springframework.stereotype.Component;
 
 @Component

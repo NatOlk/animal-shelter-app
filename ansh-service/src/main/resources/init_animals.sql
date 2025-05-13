@@ -5,26 +5,26 @@ INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id,
 VALUES ('2024-06-17', '2018-04-16', 'Persian', 'F', '11111111-21111111-1111', 'BoBo', '', 'Brown', 'Cat', 1);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
-VALUES ('2024-06-17', '2021-04-16', 'Persian', 'F', '11111111-11111111-1111', 'Kitty', '', 'Brown', 'Cat', 2);
+VALUES ('2024-07-21', '2021-04-16', 'Persian', 'F', '11111111-11111111-1111', 'Kitty', '', 'Brown', 'Cat', 2);
 
 INSERT INTO vaccinations (animal_id, batch, comments, email, vaccination_time, vaccine, id)
 VALUES (2, 'RTL-0001', 'First vaccination for the new cat.', ':defaultEmail', '2024-10-18 10:00:00', 'Rabies', 1),
-       (2, 'RTL-0002', 'Second vaccination for the new cat.', ':defaultEmail', '2024-10-18 10:00:00', 'Rabies', 2);
+       (2, 'RTL-0002', 'Second vaccination for the new cat.', ':defaultEmail', '2024-12-18 10:00:00', 'Rabies', 2);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
-VALUES ('2024-06-17', '2020-05-10', 'Bulldog', 'M', '11111111-11111111-1113', 'Bobby', '', 'White', 'Dog', 3);
+VALUES ('2024-06-30', '2020-05-10', 'Bulldog', 'M', '11111111-11111111-1113', 'Bobby', '', 'White', 'Dog', 3);
 
 INSERT INTO vaccinations (animal_id, batch, comments, email, vaccination_time, vaccine, id)
-VALUES (3, 'RTL-0003', 'First vaccination for the new dog.', ':defaultEmail', '2024-10-18 10:00:00', 'Rabies', 3);
+VALUES (3, 'RTL-0003', 'First vaccination for the new dog.', ':defaultEmail', '2024-10-02 10:00:00', 'Rabies', 3);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
-VALUES ('2024-06-17', '2021-06-01', 'Syrian', 'F', '11111111-11111111-1114', 'Hammy', '', 'Gold', 'Hamster', 4);
+VALUES ('2024-07-13', '2021-06-01', 'Syrian', 'F', '11111111-11111111-1114', 'Hammy', '', 'Gold', 'Hamster', 4);
 
 INSERT INTO vaccinations (animal_id, batch, comments, email, vaccination_time, vaccine, id)
 VALUES (4, 'RTL-0004', 'Hamster first vaccine.', ':defaultEmail', '2024-10-20 10:30:00', 'Distemper', 4);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
-VALUES ('2024-06-17', '2022-08-25', 'Himalayan', 'M', '11111111-11111111-1115', 'Thumper', '', 'White', 'Rabbit', 5);
+VALUES ('2024-10-21', '2022-08-25', 'Himalayan', 'M', '11111111-11111111-1115', 'Thumper', '', 'White', 'Rabbit', 5);
 
 INSERT INTO vaccinations (animal_id, batch, comments, email, vaccination_time, vaccine, id)
 VALUES (5, 'RTL-0005', 'First vaccination for rabbit.', ':defaultEmail', '2024-10-22 12:00:00', 'Parvovirus', 5);
@@ -66,7 +66,7 @@ INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id,
 VALUES ('2024-06-17', '2023-05-15', 'Persian', 'F', '11111111-11111111-11124', 'Lily', '', 'Cream', 'Cat', 14);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
-VALUES ('2024-06-17', '2022-07-30', 'Poodle', 'M', '11111111-11111111-1125', 'Sammy', '', 'White', 'Dog', 15);
+VALUES ('2024-11-27', '2022-07-30', 'Poodle', 'M', '11111111-11111111-1125', 'Sammy', '', 'White', 'Dog', 15);
 
 INSERT INTO animals (admission_date, birth_date, breed, gender, implant_chip_id, name, pattern, primary_color, species, id)
 VALUES ('2024-06-17', '2021-10-20', 'Golden Retriever', 'F', '11111111-11111111-1126', 'Goldie', '', 'Gold', 'Dog', 16);

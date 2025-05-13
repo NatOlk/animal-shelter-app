@@ -31,8 +31,16 @@ public class UserProfile {
   private String password;
 
   @Enumerated(EnumType.STRING)
+  @Column(name = "animal_news_notif_status", nullable = false)
+  private AnimalInfoNotifStatus animalNewsNotifyStatus = AnimalInfoNotifStatus.NONE;
+
+  @Enumerated(EnumType.STRING)
   @Column(name = "animal_notif_status", nullable = false)
   private AnimalInfoNotifStatus animalNotifyStatus = AnimalInfoNotifStatus.NONE;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "vaccination_notif_status", nullable = false)
+  private AnimalInfoNotifStatus vaccinationNotifyStatus = AnimalInfoNotifStatus.NONE;
 
   @Transient
   private Set<Role> roles = new HashSet<>();

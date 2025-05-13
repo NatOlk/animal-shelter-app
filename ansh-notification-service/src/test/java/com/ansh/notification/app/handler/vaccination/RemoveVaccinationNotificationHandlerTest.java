@@ -11,14 +11,18 @@ import static org.mockito.Mockito.when;
 
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.event.AddAnimalEvent;
-import com.ansh.event.AnimalEvent;
-import com.ansh.event.RemoveVaccinationEvent;
-import com.ansh.service.AnimalTopicSubscriberRegistryService;
+import com.ansh.event.AnimalShelterEvent;
+import com.ansh.event.AnimalShelterTopic;
+import com.ansh.event.animal.AddAnimalEvent;
+import com.ansh.event.vaccination.RemoveVaccinationEvent;
+import com.ansh.notification.NotificationMessages;
 import com.ansh.service.EmailService;
+import com.ansh.service.SubscriberRegistryService;
+import com.ansh.strategy.SubscriberRegistryServiceStrategy;
 import com.ansh.utils.LinkGenerator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,16 +35,17 @@ class RemoveVaccinationNotificationHandlerTest {
 
   private static final String TEST_EMAIL = "test@example.com";
   private static final String MOCK_TOKEN = "mock-token";
-  private static final String UNSUBSCRIBE_LINK_TEMPLATE = "http://example.com/unsubscribe/mock-token";
-  private static final String REMOVE_VAX_SUBJECT = "[animal-shelter-app] Vaccine removed";
-  private static final String REMOVE_VAX_TEMPLATE = "removeVaccineTemplate";
+  private static final String UNSUBSCRIBE_LINK = "http://example.com/unsubscribe/mock-token";
   private static final String ANIMAL_NAME = "Barsik";
 
   @InjectMocks
   private RemoveVaccinationNotificationHandler handler;
 
   @Mock
-  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
+  private SubscriberRegistryServiceStrategy subscriberRegistryServiceStrategy;
+
+  @Mock
+  private SubscriberRegistryService vaccinationTopicSubscriber;
 
   @Mock
   private EmailService emailService;
@@ -59,54 +64,62 @@ class RemoveVaccinationNotificationHandlerTest {
     mockSubscription.setEmail(TEST_EMAIL);
     mockSubscription.setToken(MOCK_TOKEN);
 
-    when(animalTopicSubscriberRegistryService.getAcceptedAndApprovedSubscribers())
+    when(vaccinationTopicSubscriber.getAcceptedAndApprovedSubscribers())
         .thenReturn(List.of(mockSubscription));
     when(linkGenerator.generateUnsubscribeLink(anyString()))
-        .thenReturn(UNSUBSCRIBE_LINK_TEMPLATE);
+        .thenReturn(UNSUBSCRIBE_LINK);
+    when(subscriberRegistryServiceStrategy
+        .getServiceByTopic(AnimalShelterTopic.VACCINATION_INFO.getTopicName()))
+        .thenReturn(Optional.of(vaccinationTopicSubscriber));
   }
 
   @Test
-  void testHandleNotification() {
-    AnimalEvent event = new RemoveVaccinationEvent();
+  void shouldSendEmailToVaccinationSubscribers() {
+    // given
     Animal animal = new Animal();
     animal.setId(1L);
     animal.setName(ANIMAL_NAME);
+
+    AnimalShelterEvent event = new RemoveVaccinationEvent();
     event.setAnimal(animal);
 
-    handler.handle(event);
-
     ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-    verify(emailNotificationExecutor, times(1)).execute(runnableCaptor.capture());
-
-    runnableCaptor.getValue().run();
-
     ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+
+    // when
+    handler.handle(AnimalShelterTopic.VACCINATION_INFO.getTopicName(), event);
+
+    // then
+    verify(emailNotificationExecutor, times(1)).execute(runnableCaptor.capture());
+    runnableCaptor.getValue().run();
 
     verify(emailService, times(1)).sendEmail(
         eq(TEST_EMAIL),
-        eq(REMOVE_VAX_SUBJECT),
-        eq(REMOVE_VAX_TEMPLATE),
+        eq(NotificationMessages.REMOVE_VACCINE_SUBJECT),
+        eq(NotificationMessages.REMOVE_VACCINE_TEMPLATE),
         paramsCaptor.capture()
     );
 
     Map<String, Object> capturedParams = paramsCaptor.getValue();
-    assert capturedParams != null;
-    assert capturedParams.get("name").equals(TEST_EMAIL);
-    assert capturedParams.get("unsubscribeLink").equals(UNSUBSCRIBE_LINK_TEMPLATE);
-    assert capturedParams.get("animalName").equals(ANIMAL_NAME);
+    assertNotNull(capturedParams);
+    assertEquals(TEST_EMAIL, capturedParams.get("name"));
+    assertEquals(UNSUBSCRIBE_LINK, capturedParams.get("unsubscribeLink"));
+    assertEquals(ANIMAL_NAME, capturedParams.get("animalName"));
   }
 
   @Test
-  void testThrowException_whenWrongEventType() {
-    AnimalEvent event = new AddAnimalEvent();
+  void shouldThrowException_WhenWrongEventType() {
+    // given
     Animal animal = new Animal();
     animal.setId(1L);
     animal.setName(ANIMAL_NAME);
+
+    AnimalShelterEvent event = new AddAnimalEvent();
     event.setAnimal(animal);
 
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      handler.handle(event);
-    });
+    // when / then
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> handler.handle(AnimalShelterTopic.VACCINATION_INFO.getTopicName(), event));
 
     assertNotNull(exception);
     assertEquals("Invalid event type for handler: AddAnimalEvent", exception.getMessage());

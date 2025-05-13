@@ -16,6 +16,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Inte
 
   void deleteByEmailAndTopic(@NonNull String email, @NonNull String topic);
 
+  @Query("select s from Subscription s where s.accepted = true and s.approved = true")
+  List<Subscription> findApprovedAndAcceptedSubscriptions();
+
   @Query("select s from Subscription s where s.topic = :topic and s.accepted = true and s.approved = true")
   List<Subscription> findApprovedAndAcceptedSubscriptionsByTopic(@Param("topic") String topic);
 

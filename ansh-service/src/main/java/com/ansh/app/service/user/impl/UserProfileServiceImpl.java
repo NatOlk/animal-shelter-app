@@ -7,6 +7,7 @@ import com.ansh.auth.service.impl.CustomUserDetails;
 import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.account.UserProfile.Role;
+import com.ansh.dto.NotificationStatusDTO;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -74,12 +75,13 @@ public class UserProfileServiceImpl implements UserProfileService {
 
   @Override
   @Transactional
-  public void updateNotificationStatusOfAuthUser(@NonNull AnimalInfoNotifStatus status) {
-    Optional<UserProfile> userProfile = getAuthUser();
-    if (userProfile.isPresent()) {
-      userProfile.get().setAnimalNotifyStatus(status);
-      userRepository.save(userProfile.get());
-    }
+  public void updateNotificationStatusOfAuthUser(@NonNull NotificationStatusDTO statuses) {
+    getAuthUser().ifPresent(user -> {
+      user.setAnimalNewsNotifyStatus(statuses.animalShelterNewsTopicId());
+      user.setAnimalNotifyStatus(statuses.animalTopicId());
+      user.setVaccinationNotifyStatus(statuses.vaccinationTopicId());
+      userRepository.save(user);
+    });
   }
 
   @Override

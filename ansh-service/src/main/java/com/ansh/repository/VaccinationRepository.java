@@ -16,4 +16,6 @@ public interface VaccinationRepository extends JpaRepository<Vaccination, Long> 
   @Query("select count(v) from Vaccination v where v.animal.id = :animalId")
   int findVaccinationCountByAnimalId(@NonNull Long animalId);
 
+  @Query("select v from Vaccination v join fetch v.animal")
+  List<Vaccination> findAllWithAnimal();
 }

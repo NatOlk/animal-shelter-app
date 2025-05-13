@@ -1,6 +1,6 @@
 package com.ansh.notification.app.handler;
 
-import com.ansh.event.AnimalEvent;
+import com.ansh.event.AnimalShelterEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class AnimalNotificationHandlerRegistry {
 
   private static final Logger LOG = LoggerFactory.getLogger(AnimalNotificationHandlerRegistry.class);
-  private final Map<Class<? extends AnimalEvent>, AnimalEventNotificationHandler> handlerMap
+  private final Map<Class<? extends AnimalShelterEvent>, AnimalEventNotificationHandler> handlerMap
       = new HashMap<>();
 
   @Autowired
@@ -23,10 +23,10 @@ public class AnimalNotificationHandlerRegistry {
     }
   }
 
-  public void handleEvent(AnimalEvent event) {
+  public void handleEvent(String topic, AnimalShelterEvent event) {
     AnimalEventNotificationHandler handler = handlerMap.get(event.getClass());
     if (handler != null) {
-      handler.handle(event);
+      handler.handle(topic, event);
     } else {
       LOG.error("Can't find a handler for event");
     }

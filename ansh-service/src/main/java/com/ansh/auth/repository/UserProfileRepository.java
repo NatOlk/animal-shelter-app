@@ -2,7 +2,6 @@ package com.ansh.auth.repository;
 
 import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,7 +21,8 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
   Optional<UserProfile> findByIdentifier(@Param("identifier") String identifier);
 
   @Query("select u from UserProfile u where u.email = :email or u.name = :identifier")
-  Optional<UserProfile> findByEmailOrIdentifier(@Param("email") String email, @Param("identifier") String identifier);
+  Optional<UserProfile> findByEmailOrIdentifier(@Param("email") String email,
+      @Param("identifier") String identifier);
 
   @Modifying
   @Query("update UserProfile u set u.animalNotifyStatus = :status where u.email = :identifier or u.name = :identifier")
@@ -31,4 +31,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
   @Query("select u from UserProfile u where not u.rolesRaw LIKE %:adminRole%")
   List<UserProfile> findAllNonAdminUsers(@Param("adminRole") String adminRole);
+
+  @Query("select count(u) > 0 from UserProfile u where (u.email = :identifier or u.name = :identifier) and u.rolesRaw like %:adminRole%")
+  boolean hasRole(@Param("identifier") String identifier, @Param("adminRole") String adminRole);
 }

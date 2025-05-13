@@ -43,7 +43,6 @@ class PendingSubscriptionConsumerTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
     consumer.setSubscriptionTopicId(SUBSCRIPTION_TOPIC);
-    consumer.setAnimalTopicId(ANIMAL_TOPIC);
   }
 
   @Test
@@ -52,10 +51,11 @@ class PendingSubscriptionConsumerTest {
     ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
         json);
 
-    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
-    event.setEmail("test@example.com");
-    event.setApprover("admin");
-    event.setTopic(ANIMAL_TOPIC);
+    SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
+        .email("test@example.com")
+        .approver("admin@example.com")
+        .topic(ANIMAL_TOPIC)
+        .build();
 
     when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
     when(serviceStrategy.getServiceByTopic(ANIMAL_TOPIC)).thenReturn(
@@ -93,10 +93,11 @@ class PendingSubscriptionConsumerTest {
     ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
         json);
 
-    SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
-    event.setEmail("test@example.com");
-    event.setApprover("admin");
-    event.setTopic(UNKNOWN_TOPIC);
+    SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
+        .email("test@example.com")
+        .approver("admin@example.com")
+        .topic(UNKNOWN_TOPIC)
+        .build();
 
     when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
     when(serviceStrategy.getServiceByTopic(UNKNOWN_TOPIC)).thenReturn(Optional.empty());

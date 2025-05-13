@@ -3,6 +3,7 @@ package com.ansh.app.service.user;
 import com.ansh.app.service.exception.user.UserAlreadyExistException;
 import com.ansh.entity.account.UserProfile;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.dto.NotificationStatusDTO;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.lang.NonNull;
@@ -49,11 +50,11 @@ public interface UserProfileService {
   Optional<UserProfile> getAuthUser();
 
   /**
-   * Updates the notification subscription status for the currently authenticated user.
+   * Updates the notification subscription statuses for the currently authenticated user.
    *
-   * @param status the new subscription status
+   * @param statuses the new subscription statuses
    */
-  void updateNotificationStatusOfAuthUser(@NonNull AnimalInfoNotifStatus status);
+  void updateNotificationStatusOfAuthUser(@NonNull NotificationStatusDTO statuses);
 
   /**
    * Updates the roles of a user identified by username.

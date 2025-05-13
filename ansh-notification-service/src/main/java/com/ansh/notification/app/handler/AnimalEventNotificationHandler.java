@@ -1,9 +1,9 @@
 package com.ansh.notification.app.handler;
 
-import com.ansh.event.AnimalEvent;
+import com.ansh.event.AnimalShelterEvent;
 
 public interface AnimalEventNotificationHandler {
 
-  Class<? extends AnimalEvent> getHandledEventType();
-  void handle(AnimalEvent event);
+  Class<? extends AnimalShelterEvent> getHandledEventType();
+  void handle(String topic, AnimalShelterEvent event);
 }

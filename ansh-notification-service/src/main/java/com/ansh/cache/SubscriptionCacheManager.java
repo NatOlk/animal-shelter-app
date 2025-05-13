@@ -1,70 +1,51 @@
 package com.ansh.cache;
 
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.repository.SubscriptionRepository;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 
-@Component
-public class SubscriptionCacheManager {
+/**
+ * Interface for managing the subscription cache.
+ * Defines operations for initializing, updating, retrieving and modifying cache entries.
+ */
+public interface SubscriptionCacheManager {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SubscriptionCacheManager.class);
-  private static final String CACHE_LAST_UPDATED = "cache_last_updated";
-  @Autowired
-  private SubscriptionCache subscriptionCache;
-  @Autowired
-  private SubscriptionRepository subscriptionRepository;
-  @Autowired
-  @Qualifier("updRedisTemplate")
-  private RedisTemplate<String, String> updRedisTemplate;
-  @Value("${animalTopicId}")
-  private String animalTopicId;
+  /**
+   * Initializes the cache with the current subscriptions from the database.
+   * Should be called at application startup or after a full reset.
+   */
+  void initializeCache();
 
-  public void initializeCache() {
-    List<Subscription> subscriptions = subscriptionRepository.findApprovedAndAcceptedSubscriptionsByTopic(
-        animalTopicId);
-    LOG.debug("[Cache Init] Initializing cache with {} subscriptions.", subscriptions.size());
-    subscriptions.forEach(subscriptionCache::addToCache);
-    updRedisTemplate.opsForValue()
-        .set(CACHE_LAST_UPDATED, String.valueOf(System.currentTimeMillis()));
-  }
+  /**
+   * Reloads the cache completely by clearing existing entries and fetching fresh data.
+   */
+  void reloadCache();
 
-  public void reloadCache() {
-    LOG.info("[Cache Reload] Reloading cache...");
-    subscriptionCache.clearCache();
-    initializeCache();
-  }
+  /**
+   * Determines whether the cache should be updated.
+   *
+   * @return true if the cache needs to be updated, false otherwise
+   */
+  boolean shouldUpdateCache();
 
-  public boolean shouldUpdateCache() {
-    String lastUpdated = updRedisTemplate.opsForValue().get(CACHE_LAST_UPDATED);
-    if (lastUpdated == null) {
-      return true;
-    }
+  /**
+   * Retrieves all subscriptions for a given topic from the cache.
+   *
+   * @param topic the topic for which subscriptions are requested
+   * @return list of subscriptions matching the topic
+   */
+  List<Subscription> getAllFromCache(String topic);
 
-    long lastUpdatedTime = Long.parseLong(lastUpdated);
-    long currentTime = System.currentTimeMillis();
-    return (currentTime - lastUpdatedTime) > 24 * 60 * 60 * 1000;
-  }
+  /**
+   * Removes a subscription from the cache by its unique token.
+   *
+   * @param token the unique subscription token
+   */
+  void removeFromCache(String token);
 
-  public List<Subscription> getAllFromCache() {
-    return subscriptionCache.getAllFromCache();
-  }
-
-  public void removeFromCache(String token) {
-    subscriptionCache.removeFromCache(token);
-  }
-
-  public void addToCache(Subscription subscription) {
-    subscriptionCache.addToCache(subscription);
-  }
-
-  protected void setAnimalTopicId(String animalTopicId) {
-    this.animalTopicId = animalTopicId;
-  }
+  /**
+   * Adds a subscription to the cache.
+   *
+   * @param subscription the subscription to be added
+   */
+  void addToCache(Subscription subscription);
 }

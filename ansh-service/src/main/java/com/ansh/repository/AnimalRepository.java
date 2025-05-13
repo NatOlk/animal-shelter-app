@@ -1,6 +1,7 @@
 package com.ansh.repository;
 
 import com.ansh.entity.animal.Animal;
+import com.ansh.entity.animal.Vaccination;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,4 +19,6 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
   @Modifying
   @Query("update Animal a set a.photoImgPath = :photoImgPath where a.id = :id")
   void updatePhotoPathById(@Param("id") Long id, @Param("photoImgPath") String photoImgPath);
+  @Query("select distinct a from Animal a left join fetch a.vaccinations")
+  List<Animal> findAllWithVaccinations();
 }

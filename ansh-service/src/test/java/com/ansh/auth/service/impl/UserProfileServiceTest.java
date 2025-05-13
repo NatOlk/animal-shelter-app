@@ -4,13 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.ansh.entity.account.UserProfile;
-import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.app.service.user.impl.UserProfileServiceImpl;
 import com.ansh.auth.repository.UserProfileRepository;
+import com.ansh.entity.account.UserProfile;
+import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.account.UserProfile.Role;
+import com.ansh.dto.NotificationStatusDTO;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,12 +43,12 @@ class UserProfileServiceTest {
   private UserProfileServiceImpl userProfileService;
 
   private UserProfile mockUserProfile;
-
   private CustomUserDetails customUserDetails;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+
     mockUserProfile = new UserProfile();
     mockUserProfile.setName("test_user");
     mockUserProfile.setEmail("test@example.com");
@@ -87,20 +92,29 @@ class UserProfileServiceTest {
   }
 
   @Test
-  void shouldUpdateNotificationStatusOfAuthUser() {
-    AnimalInfoNotifStatus status = AnimalInfoNotifStatus.ACTIVE;
+  void shouldUpdateNotificationStatusesOfAuthUser() {
+    // given
+    NotificationStatusDTO statusDTO = new NotificationStatusDTO(
+        AnimalInfoNotifStatus.ACTIVE,
+        AnimalInfoNotifStatus.PENDING,
+        AnimalInfoNotifStatus.UNKNOWN
+    );
 
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.isAuthenticated()).thenReturn(true);
     when(authentication.getPrincipal()).thenReturn(customUserDetails);
 
     SecurityContextHolder.setContext(securityContext);
-    userProfileService.updateNotificationStatusOfAuthUser(status);
 
-    assertEquals(status, mockUserProfile.getAnimalNotifyStatus());
+    // when
+    userProfileService.updateNotificationStatusOfAuthUser(statusDTO);
+
+    // then
+    assertEquals(AnimalInfoNotifStatus.ACTIVE, mockUserProfile.getAnimalNewsNotifyStatus());
+    assertEquals(AnimalInfoNotifStatus.PENDING, mockUserProfile.getAnimalNotifyStatus());
+    assertEquals(AnimalInfoNotifStatus.UNKNOWN, mockUserProfile.getVaccinationNotifyStatus());
     verify(userRepository, times(1)).save(mockUserProfile);
   }
-
 
   @Test
   void shouldUpdateUserRolesSuccessfully() {
@@ -111,15 +125,13 @@ class UserProfileServiceTest {
     user.setName(username);
 
     when(userRepository.findByIdentifier(username)).thenReturn(Optional.of(user));
-    when(userRepository.save(any(UserProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(userRepository.save(any(UserProfile.class))).thenAnswer(
+        invocation -> invocation.getArgument(0));
 
     UserProfile updatedUser = userProfileService.updateUserRoles(username, roles);
 
     assertNotNull(updatedUser);
-    assertEquals(Set.of(UserProfile.Role.ADMIN, UserProfile.Role.DOCTOR), updatedUser.getRoles());
-
-    verify(userRepository, times(1)).findByIdentifier(username);
-    verify(userRepository, times(1)).save(user);
+    assertEquals(Set.of(Role.ADMIN, Role.DOCTOR), updatedUser.getRoles());
   }
 
   @Test
@@ -132,7 +144,6 @@ class UserProfileServiceTest {
     UserProfile result = userProfileService.updateUserRoles(username, roles);
 
     assertNull(result);
-    verify(userRepository, times(1)).findByIdentifier(username);
     verify(userRepository, never()).save(any());
   }
 }

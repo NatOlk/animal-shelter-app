@@ -27,7 +27,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: 🚀 Start services (without nginx)
-        run: docker-compose up -d redis-ansh zookeeper-ansh kafka-ansh postgres-animal-shelter postgres-animal-shelter-notification ansh-service ansh-notification-service ansh-react-app
+        run: docker-compose up -d redis-ansh zookeeper-ansh kafka-ansh postgres-animal-shelter postgres-animal-shelter-notification ansh-service ansh-notification-service ansh-ui-app
 
       - name: 📜 Show all running containers
         run: docker ps -a

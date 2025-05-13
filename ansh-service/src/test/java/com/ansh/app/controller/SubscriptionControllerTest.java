@@ -2,21 +2,14 @@ package com.ansh.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.ansh.app.service.exception.user.UnauthorizedActionException;
-import com.ansh.app.service.notification.subscription.NotificationSubscriptionService;
-import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
-import com.ansh.app.service.user.UserProfileService;
+import com.ansh.app.facade.SubscriptionFacade;
+import com.ansh.dto.NotificationStatusDTO;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.repository.entity.PendingSubscriber;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -26,179 +19,69 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.context.request.async.DeferredResult;
-import reactor.core.publisher.Mono;
 
 class SubscriptionControllerTest {
 
-  @Mock
-  private NotificationSubscriptionService notificationSubscriptionService;
+  private static final String APPROVER_EMAIL = "admin@example.com";
+  private static final String TEST_EMAIL = "test@example.com";
+  private static final String TOPIC_ID = "animalTopicId";
 
   @Mock
-  private PendingSubscriptionService animalInfoPendingSubscriptionService;
-
-  @Mock
-  private UserProfileService userProfileService;
-
+  private SubscriptionFacade subscriptionFacade;
   @InjectMocks
   private SubscriptionController subscriptionController;
 
-  private SubscriptionRequest subscriptionRequest;
+  private SubscriptionRequest req;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    subscriptionRequest = new SubscriptionRequest();
-    subscriptionRequest.setApprover("testApprover");
-    subscriptionRequest.setEmail("test@example.com");
+    req = SubscriptionRequest.builder()
+        .approver(APPROVER_EMAIL)
+        .email(TEST_EMAIL)
+        .topic(TOPIC_ID)
+        .build();
   }
 
-  @Test
-  void shouldApproveSubscriber() throws UnauthorizedActionException {
-    doNothing().when(animalInfoPendingSubscriptionService)
-        .approveSubscriber(anyString(), anyString());
-
-    subscriptionController.approve(subscriptionRequest);
-
-    verify(animalInfoPendingSubscriptionService, times(1)).approveSubscriber(
-        subscriptionRequest.getEmail(), subscriptionRequest.getApprover());
-  }
-
-  @Test
-  void shouldRejectSubscriber() throws UnauthorizedActionException {
-    doNothing().when(animalInfoPendingSubscriptionService)
-        .rejectSubscriber(anyString(), anyString());
-
-    subscriptionController.reject(subscriptionRequest);
-
-    verify(animalInfoPendingSubscriptionService, times(1)).rejectSubscriber(
-        subscriptionRequest.getEmail(), subscriptionRequest.getApprover());
-  }
-
-  @Test
-  void shouldReturnPendingSubscribers() {
-    PendingSubscriber subscriber = new PendingSubscriber();
-    List<PendingSubscriber> subscribers = List.of(subscriber);
-    when(animalInfoPendingSubscriptionService.getSubscribersByApprover(anyString()))
-        .thenReturn(
-            subscribers);
-
-    List<PendingSubscriber> result = subscriptionController.getPendingSubscribers(
-        subscriptionRequest);
-
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    verify(animalInfoPendingSubscriptionService, times(1))
-        .getSubscribersByApprover(subscriptionRequest.getApprover());
-  }
-
-  @Test
-  void shouldReturnPendingNoApproverSubscribers() {
-    PendingSubscriber subscriber = new PendingSubscriber();
-    List<PendingSubscriber> subscribers = List.of(subscriber);
-    when(animalInfoPendingSubscriptionService.getPendingSubscribersWithoutApprover())
-        .thenReturn(subscribers);
-
-    List<PendingSubscriber> result = subscriptionController.getPendingNoApproverSubscribers();
-
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    verify(animalInfoPendingSubscriptionService, times(1))
-        .getPendingSubscribersWithoutApprover();
-  }
 
   @Test
   void shouldReturnSubscribers() throws InterruptedException {
-    Subscription subscription = new Subscription();
-    List<Subscription> subscriptions = List.of(subscription);
-    when(notificationSubscriptionService.getAllSubscriptionByApprover(anyString()))
-        .thenReturn(Mono.just(subscriptions));
+    List<Subscription> subscriptions = List.of(new Subscription());
+    DeferredResult<List<Subscription>> deferredResult = new DeferredResult<>();
+    deferredResult.setResult(subscriptions);
 
-    DeferredResult<List<Subscription>> deferredResult =
-        subscriptionController.getSubscribers(subscriptionRequest);
+    when(subscriptionFacade.getAllSubscribers(any())).thenReturn(deferredResult);
 
-    CountDownLatch latch = new CountDownLatch(1);
-    deferredResult.onCompletion(latch::countDown);
-    latch.await(1, TimeUnit.SECONDS);
-
-    assertNotNull(deferredResult.getResult());
-    assertEquals(subscriptions, deferredResult.getResult());
-
-    verify(notificationSubscriptionService, times(1)).getAllSubscriptionByApprover(
-        subscriptionRequest.getApprover());
-  }
-
-  @Test
-  void shouldReturnEmptyList_whenServiceFails() throws InterruptedException {
-    when(notificationSubscriptionService.getAllSubscriptionByApprover(anyString()))
-        .thenReturn(Mono.error(new RuntimeException("Service unavailable")));
-
-    DeferredResult<List<Subscription>> deferredResult =
-        subscriptionController.getSubscribers(subscriptionRequest);
+    DeferredResult<List<Subscription>> result = subscriptionController.getSubscribers(req);
 
     CountDownLatch latch = new CountDownLatch(1);
-    deferredResult.onCompletion(latch::countDown);
+    result.onCompletion(latch::countDown);
     latch.await(1, TimeUnit.SECONDS);
 
-    assertNotNull(deferredResult.getResult());
-    assertEquals(Collections.emptyList(), deferredResult.getResult());
-
-    verify(notificationSubscriptionService, times(1)).getAllSubscriptionByApprover(
-        subscriptionRequest.getApprover());
+    assertNotNull(result.getResult());
+    assertEquals(subscriptions, result.getResult());
   }
 
   @Test
   void shouldReturnApproverStatus() throws InterruptedException {
-    AnimalInfoNotifStatus status = AnimalInfoNotifStatus.ACTIVE;
-    when(notificationSubscriptionService.getAnimalInfoStatusByApprover(anyString())).thenReturn(
-        Mono.just(status));
-    doNothing().when(userProfileService).updateNotificationStatusOfAuthUser(status);
+    NotificationStatusDTO expectedStatus = new NotificationStatusDTO(
+        AnimalInfoNotifStatus.ACTIVE,
+        AnimalInfoNotifStatus.PENDING,
+        AnimalInfoNotifStatus.NONE
+    );
 
-    DeferredResult<AnimalInfoNotifStatus> deferredResult =
-        subscriptionController.getApproverStatus(subscriptionRequest);
+    DeferredResult<NotificationStatusDTO> deferredResult = new DeferredResult<>();
+    deferredResult.setResult(expectedStatus);
 
-    CountDownLatch latch = new CountDownLatch(1);
-    deferredResult.onCompletion(latch::countDown);
-    latch.await(1, TimeUnit.SECONDS);
+    when(subscriptionFacade.getNotificationStatusesByAccount(any())).thenReturn(deferredResult);
 
-    assertNotNull(deferredResult.getResult());
-    assertEquals(status, deferredResult.getResult());
-
-    verify(notificationSubscriptionService, times(1))
-        .getAnimalInfoStatusByApprover(subscriptionRequest.getApprover());
-    verify(userProfileService, times(1)).updateNotificationStatusOfAuthUser(status);
-  }
-
-  @Test
-  void shouldReturnUnknownStatus_whenServiceFails() throws InterruptedException {
-    when(notificationSubscriptionService.getAnimalInfoStatusByApprover(anyString()))
-        .thenReturn(Mono.error(new RuntimeException("Service unavailable")));
-
-    DeferredResult<AnimalInfoNotifStatus> deferredResult =
-        subscriptionController.getApproverStatus(subscriptionRequest);
+    DeferredResult<NotificationStatusDTO> result = subscriptionController.getStatuses(req);
 
     CountDownLatch latch = new CountDownLatch(1);
-    deferredResult.onCompletion(latch::countDown);
+    result.onCompletion(latch::countDown);
     latch.await(1, TimeUnit.SECONDS);
 
-    assertNotNull(deferredResult.getResult());
-    assertEquals(AnimalInfoNotifStatus.UNKNOWN, deferredResult.getResult());
-
-    verify(notificationSubscriptionService, times(1)).getAnimalInfoStatusByApprover(
-        subscriptionRequest.getApprover());
-  }
-
-  @Test
-  void shouldHandleEmptyApproverGracefully() throws InterruptedException {
-    subscriptionRequest.setApprover("");
-
-    DeferredResult<List<Subscription>> deferredResult =
-        subscriptionController.getSubscribers(subscriptionRequest);
-
-    CountDownLatch latch = new CountDownLatch(1);
-    deferredResult.onCompletion(latch::countDown);
-    latch.await(1, TimeUnit.SECONDS);
-
-    assertNotNull(deferredResult.getResult());
-    assertEquals(Collections.emptyList(), deferredResult.getResult());
+    assertNotNull(result.getResult());
+    assertEquals(expectedStatus, result.getResult());
   }
 }

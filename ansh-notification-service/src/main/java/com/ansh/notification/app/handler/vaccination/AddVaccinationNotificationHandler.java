@@ -1,6 +1,6 @@
 package com.ansh.notification.app.handler.vaccination;
 
-import com.ansh.event.AddVaccinationEvent;
+import com.ansh.event.vaccination.AddVaccinationEvent;
 import com.ansh.notification.NotificationMessages;
 import com.ansh.notification.app.handler.AbstractAnimalNotificationHandler;
 import org.springframework.stereotype.Component;

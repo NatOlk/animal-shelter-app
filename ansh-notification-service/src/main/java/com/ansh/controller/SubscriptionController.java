@@ -1,15 +1,11 @@
 package com.ansh.controller;
 
-import static java.lang.StringTemplate.STR;
-
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
+import com.ansh.dto.NotificationStatusDTO;
 import com.ansh.entity.subscription.Subscription;
-import com.ansh.service.AnimalTopicSubscriberRegistryService;
+import com.ansh.facade.SubscriptionFacade;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,40 +14,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubscriptionController {
 
   @Autowired
-  private AnimalTopicSubscriberRegistryService animalTopicSubscriberRegistryService;
+  private SubscriptionFacade subscriptionFacade;
 
-  @PostMapping("/external/animal-notify-subscribe")
-  public void subscribe(@RequestBody SubscriptionRequest request) {
-    String email = request.getEmail();
-    if (email == null || email.isEmpty()) return;
-    email = email.replace("\"", "");
-
-    String approver = request.getApprover();
-    if (approver == null) approver = "";
-    approver = approver.replace("\"", "");
-    animalTopicSubscriberRegistryService.registerSubscriber(email, approver);
+  @PostMapping("/internal/subscription/all")
+  public List<Subscription> allSubscriptionsByAccount(@RequestBody SubscriptionRequest request) {
+    return subscriptionFacade.getAllSubscriptionByAccount(request.getApprover());
   }
 
-  @GetMapping("/external/animal-notify-unsubscribe/{token}")
-  public String unsubscribe(@PathVariable String token) {
-    animalTopicSubscriberRegistryService.unregisterSubscriber(token);
-    return STR."Subscription is removed";
+  @PostMapping("/internal/subscription/statuses")
+  public NotificationStatusDTO getStatusesByAccount(@RequestBody SubscriptionRequest request) {
+    return subscriptionFacade.getSubscriptionStatuses(request.getApprover());
   }
 
-  @GetMapping("/external/animal-notify-subscribe-check/{token}")
-  public String checkSubscription(@PathVariable String token) {
-    boolean isAccepted = animalTopicSubscriberRegistryService.acceptSubscription(token);
-    return STR."Your subscription is \{isAccepted ? "accepted" : "not accepted"}";
+  @PostMapping("/internal/subscription/register")
+  public void registerEmployeeSubscription(@RequestBody SubscriptionRequest request) {
+    subscriptionFacade.registerSubscription(request);
   }
 
-  @PostMapping("/internal/animal-notify-all-approver-subscriptions")
-  public List<Subscription> allSubscriptionsByApprover(@RequestBody SubscriptionRequest request) {
-    return animalTopicSubscriberRegistryService.getAllSubscriptions(request.getApprover());
-  }
-
-  @PostMapping("/internal/animal-notify-approver-status")
-  public AnimalInfoNotifStatus getStatusByApprover(
-      @RequestBody SubscriptionRequest request) {
-    return animalTopicSubscriberRegistryService.getSubscriptionStatus(request.getApprover());
+  @PostMapping("/internal/subscription/unsubscribe")
+  public String unsubscribe(@RequestBody SubscriptionRequest request) {
+    subscriptionFacade.unsubscribe(request);
+    return "Subscription is removed";
   }
 }
