@@ -14,7 +14,7 @@ export default function SubscriptionRequestsChart() {
         const json = await fetchSubscriptionRequestByTopic()
         setData(json)
       } catch (error) {
-        console.error("Error fetching subscription request data:", error)
+        console.error("Error fetching subscription request data")
       }
     }
 

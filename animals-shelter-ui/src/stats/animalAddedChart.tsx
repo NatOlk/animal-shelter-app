@@ -19,7 +19,7 @@ export default function AnimalAddedChart() {
         }))
         setData(transformed)
       } catch (error) {
-        console.error("Error fetching animal added data:", error)
+        console.error("Error fetching animal added data")
       }
     }
 

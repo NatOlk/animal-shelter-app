@@ -48,7 +48,7 @@ const Subscription: React.FC = () => {
 
       await fetchStatuses();
     } catch (error) {
-      console.error("Failed to subscribe:", error);
+      console.error("Failed to subscribe");
     }
   };
 

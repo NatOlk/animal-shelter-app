@@ -2,6 +2,8 @@ package com.ansh.cache.impl;
 
 import com.ansh.entity.subscription.Subscription;
 import com.ansh.utils.IdentifierMasker;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +43,10 @@ class SubscriptionCache {
         var subs = redisTemplate.opsForSet().members(key);
         if (subs != null) {
           subs.stream()
-              .filter(sub -> token.equals(sub.getToken()))
+              .filter(sub -> MessageDigest.isEqual(
+                  token.getBytes(StandardCharsets.UTF_8),
+                  sub.getToken().getBytes(StandardCharsets.UTF_8))
+              )
               .findFirst()
               .ifPresent(sub -> {
                 redisTemplate.opsForSet().remove(key, sub);
