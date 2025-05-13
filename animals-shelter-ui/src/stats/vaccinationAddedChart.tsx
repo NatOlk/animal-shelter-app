@@ -18,7 +18,7 @@ export default function VaccinationAddedChart() {
         }))
         setData(transformed)
       } catch (error) {
-        console.error("Error fetching vaccination chart data:", error)
+        console.error("Error fetching vaccination chart data:")
       }
     }
 

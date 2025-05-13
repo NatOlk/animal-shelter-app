@@ -14,7 +14,7 @@ export default function SubscriptionDecisionsChart() {
         const json = await fetchSubscriptionDecisionByTopic()
         setData(json)
       } catch (error) {
-        console.error("Error fetching subscription decision data:", error)
+        console.error("Error fetching subscription decision data:")
       }
     }
 

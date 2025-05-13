@@ -16,7 +16,7 @@ export default function AnimalLifespanChart() {
         const json = await fetchAnimalLifespans()
         setData(json)
       } catch (error) {
-        console.error("Error fetching lifespan data", error)
+        console.error("Error fetching lifespan data")
       }
     }
 
