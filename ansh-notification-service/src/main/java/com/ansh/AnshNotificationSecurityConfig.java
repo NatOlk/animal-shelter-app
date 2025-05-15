@@ -24,6 +24,11 @@ public class AnshNotificationSecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/**").permitAll()
             .requestMatchers("/external/**").permitAll()
+            .requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-ui.html"
+            ).permitAll()
             .requestMatchers("/internal/**").authenticated()
         )
         .addFilterBefore(apiKeyAuthFilter, BasicAuthenticationFilter.class);

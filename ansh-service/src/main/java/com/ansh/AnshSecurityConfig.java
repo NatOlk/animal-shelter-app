@@ -38,6 +38,11 @@ public class AnshSecurityConfig {
             .requestMatchers("/public/auth/register").permitAll()
             .requestMatchers("/resources/**").permitAll()
             .requestMatchers("/uploads/**").permitAll()
+            .requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-ui.html"
+            ).permitAll()
             .requestMatchers("/graphql").authenticated()
             .requestMatchers("/**").authenticated()
         )

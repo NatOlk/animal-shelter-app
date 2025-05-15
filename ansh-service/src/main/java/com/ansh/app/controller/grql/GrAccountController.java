@@ -5,7 +5,6 @@ import com.ansh.entity.account.UserProfile;
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.GraphQlExceptionHandler;
@@ -21,13 +20,6 @@ public class GrAccountController {
 
   @Autowired
   private UserProfileService userProfileService;
-
-  //TODO: not needed ?
-  @QueryMapping
-  public UserProfile currentUserProfile() {
-    Optional<UserProfile> userProfileOtp = userProfileService.getAuthUser();
-    return userProfileOtp.orElse(null);
-  }
 
   @PreAuthorize("hasRole('ADMIN')")
   @MutationMapping
