@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;
 import com.ansh.event.AnimalShelterTopic;
@@ -64,7 +63,7 @@ class AnimalShelterNewsPendingSubscriptionServiceTest {
   }
 
   @Test
-  void shouldApproveSubscriber_whenExists() throws UnauthorizedActionException {
+  void shouldApproveSubscriber_whenExists() {
     when(pendingSubscriberRepository.findPendingByEmailAndTopic(SUBSCRIBER_EMAIL, ANIMAL_TOPIC))
         .thenReturn(Optional.of(pendingSubscriber));
 
@@ -81,7 +80,7 @@ class AnimalShelterNewsPendingSubscriptionServiceTest {
   }
 
   @Test
-  void shouldNotApproveSubscriber_whenNotFound() throws UnauthorizedActionException {
+  void shouldNotApproveSubscriber_whenNotFound() {
     when(pendingSubscriberRepository.findPendingByEmailAndTopic(SUBSCRIBER_EMAIL, ANIMAL_TOPIC))
         .thenReturn(Optional.empty());
 
@@ -95,7 +94,7 @@ class AnimalShelterNewsPendingSubscriptionServiceTest {
   }
 
   @Test
-  void shouldRejectSubscriber_whenExists() throws UnauthorizedActionException {
+  void shouldRejectSubscriber_whenExists() {
     when(pendingSubscriberRepository.findPendingByEmailAndTopic(SUBSCRIBER_EMAIL, ANIMAL_TOPIC))
         .thenReturn(Optional.of(pendingSubscriber));
 
@@ -111,7 +110,7 @@ class AnimalShelterNewsPendingSubscriptionServiceTest {
 
 
   @Test
-  void shouldNotRejectSubscriber_whenNotFound() throws UnauthorizedActionException {
+  void shouldNotRejectSubscriber_whenNotFound() {
     when(pendingSubscriberRepository.findPendingByEmailAndTopic(SUBSCRIBER_EMAIL, ANIMAL_TOPIC))
         .thenReturn(Optional.empty());
 

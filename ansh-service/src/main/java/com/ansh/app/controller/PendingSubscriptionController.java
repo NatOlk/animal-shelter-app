@@ -1,6 +1,5 @@
 package com.ansh.app.controller;
 
-import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.dto.SubscriptionRequest;
 import com.ansh.notification.strategy.PendingSubscriptionServiceStrategy;
 import com.ansh.repository.entity.PendingSubscriber;
@@ -31,7 +30,7 @@ public class PendingSubscriptionController {
       description = "Approve a pending subscription for a given email and topic. Requires ADMIN role.")
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/subscription/approve")
-  public void approve(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {
+  public void approve(@RequestBody SubscriptionRequest req) {
     if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(req.getEmail()) ||
         StringUtils.isEmpty(req.getTopic())) {
       return;
@@ -47,7 +46,7 @@ public class PendingSubscriptionController {
       description = "Reject a pending subscription for a given email and topic. Requires ADMIN role.")
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/subscription/reject")
-  public void reject(@RequestBody SubscriptionRequest req) throws UnauthorizedActionException {
+  public void reject(@RequestBody SubscriptionRequest req) {
     if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(req.getEmail()) ||
         StringUtils.isEmpty(req.getTopic())) {
       return;

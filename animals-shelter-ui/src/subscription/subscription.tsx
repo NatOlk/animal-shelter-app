@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../common/authContext';
-import { Button, Spacer, Tooltip } from "@nextui-org/react";
+import { Button, Spacer, Tooltip, Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { LuSmilePlus } from "react-icons/lu";
 import { HiOutlineUserRemove } from "react-icons/hi";
 import { topics, TopicKey } from '../common/types';
@@ -10,6 +10,8 @@ import TopicSubscriptionStatus from './topicSubscriptionStatus';
 const Subscription: React.FC = () => {
   const { user, isAdmin } = useAuth();
   const [statuses, setStatuses] = useState<Record<TopicKey, string>>({});
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorTopic, setErrorTopic] = useState<TopicKey | null>(null);
 
   const fetchStatuses = async () => {
     if (!user?.email) return;
@@ -32,12 +34,21 @@ const Subscription: React.FC = () => {
     fetchStatuses();
   }, [user]);
 
+  const showError = (msg: string, topic: TopicKey) => {
+    setErrorMessage(msg);
+    setErrorTopic(topic);
+  };
+
+  const clearError = () => {
+    setErrorMessage("");
+    setErrorTopic(null);
+  };
+
   const handleSubscribe = async (topicKey: TopicKey) => {
     if (!user?.email) return;
 
     try {
-
-      await apiFetch(`/api/subscription/register`, {
+      const result = await apiFetch(`/api/subscription/register`, {
         method: 'POST',
         body: {
           email: user.email,
@@ -46,28 +57,40 @@ const Subscription: React.FC = () => {
         },
       });
 
+      if (!result) {
+        showError("Failed to subscribe. Please try again.", topicKey);
+        return;
+      }
+
       await fetchStatuses();
-    } catch (error) {
-      console.error("Failed to subscribe");
+      clearError();
+    } catch {
+      showError("Failed to subscribe. Please try again.", topicKey);
     }
   };
 
-   const handleUnsubscribe = async (topic: string) => {
-      try {
-        await apiFetch(`/api/subscription/unsubscribe`, {
-          method: 'POST',
-          body: {
-            email: user.email,
-            topic: topic,
-            approver: user.email,
-          },
-        });
+  const handleUnsubscribe = async (topicKey: TopicKey) => {
+    try {
+      const result = await apiFetch(`/api/subscription/unsubscribe`, {
+        method: 'POST',
+        body: {
+          email: user?.email,
+          topic: topicKey,
+          approver: user?.email,
+        },
+      });
 
-        await fetchStatuses();
-      } catch (error) {
-        setError(error);
+      if (!result) {
+        showError("Failed to unsubscribe. Please try again.", topicKey);
+        return;
       }
-    };
+
+      await fetchStatuses();
+      clearError();
+    } catch {
+      showError("Failed to unsubscribe. Please try again.", topicKey);
+    }
+  };
 
   return (
     <div className="w-full max-w-xl">
@@ -88,6 +111,13 @@ const Subscription: React.FC = () => {
               <td className="py-3 px-4">{description}</td>
               <td className="py-3 px-4">
                 <TopicSubscriptionStatus status={statuses[key]} />
+                {errorTopic === key && errorMessage && (
+                  <Popover isOpen onOpenChange={clearError}>
+                    <PopoverContent>
+                      <p>{errorMessage}</p>
+                    </PopoverContent>
+                  </Popover>
+                )}
               </td>
               <td className="py-3 px-4 flex gap-2">
                 <Tooltip content="Subscribe" placement="bottom">

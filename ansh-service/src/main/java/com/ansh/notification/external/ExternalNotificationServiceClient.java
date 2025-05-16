@@ -50,7 +50,7 @@ public class ExternalNotificationServiceClient {
                 .flatMap(errorBody -> {
                   LOG.error("WebClient error: {} - {}", response.statusCode(), errorBody);
                   return Mono.error(new RuntimeException(
-                      "WebClient request failed with status: " + response.statusCode()));
+                      STR."WebClient request failed with status: \{response.statusCode()}"));
                 })
         )
         .bodyToMono(responseType);

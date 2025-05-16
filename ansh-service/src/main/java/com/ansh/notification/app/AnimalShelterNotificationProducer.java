@@ -16,6 +16,14 @@ public interface AnimalShelterNotificationProducer {
    */
   String getTopicId();
 
-  //TODO add specs
+  /**
+   * Sends a notification based on the provided {@link AnimalShelterEvent}.
+   * <p>
+   * Implementations should handle serialization, formatting, and dispatching of the event to
+   * subscribers (e.g., via email or other channels).
+   * </p>
+   *
+   * @param event the event containing animal shelter-related data to be used in the notification
+   */
   void sendNotification(AnimalShelterEvent event);
 }

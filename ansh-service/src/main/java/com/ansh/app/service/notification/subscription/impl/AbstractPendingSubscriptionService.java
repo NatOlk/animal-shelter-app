@@ -2,7 +2,6 @@ package com.ansh.app.service.notification.subscription.impl;
 
 import static com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus.PENDING;
 
-import com.ansh.app.service.exception.user.UnauthorizedActionException;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.notification.subscription.PendingSubscriptionDecisionProducer;
@@ -37,7 +36,7 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
 
   @Override
   @Transactional
-  public void approveSubscriber(String email, String approver) throws UnauthorizedActionException {
+  public void approveSubscriber(String email, String approver) {
     findPendingSubscriber(email)
         .ifPresent(subscriber -> {
           updatePendingSubscriberStatus(email, true);
@@ -50,7 +49,7 @@ public abstract class AbstractPendingSubscriptionService implements PendingSubsc
 
   @Override
   @Transactional
-  public void rejectSubscriber(String email, String approver) throws UnauthorizedActionException {
+  public void rejectSubscriber(String email, String approver) {
     findPendingSubscriber(email)
         .ifPresent(subscriber -> {
           updatePendingSubscriberStatus(email, false);

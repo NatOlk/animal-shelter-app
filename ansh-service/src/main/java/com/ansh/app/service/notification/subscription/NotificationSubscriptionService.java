@@ -41,6 +41,6 @@ public interface NotificationSubscriptionService {
    */
   Mono<NotificationStatusDTO> getStatusesByAccount(String email);
 
-  void registerSubscriber(String email, String approver, String topic);
-  void unsubscribe(String email, String approver, String topic);
+  Mono<Boolean> registerSubscriber(String email, String approver, String topic);
+  Mono<Boolean> unsubscribe(String email, String approver, String topic);
 }

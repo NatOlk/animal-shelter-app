@@ -64,26 +64,26 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
     });
   }
 
-  @Override
-  public void registerSubscriber(String email, String approver, String topic) {
-    externalNotificationServiceClient.post(
-        registerEndpoint,
-        Map.of(
-            "email", email,
-            "approver", approver,
-            "topic", topic
-        ),
-        new ParameterizedTypeReference<Subscription>() {
-        }
-    ).onErrorResume(error -> {
-      LOG.warn("[register subscriber] Error: {}", error.getMessage());
-      return Mono.empty();
-    }).subscribe();
+  public Mono<Boolean> registerSubscriber(String email, String approver, String topic) {
+    return externalNotificationServiceClient.post(
+            registerEndpoint,
+            Map.of(
+                "email", email,
+                "approver", approver,
+                "topic", topic
+            ),
+            new ParameterizedTypeReference<Subscription>() {
+            }
+        ).thenReturn(true)
+        .onErrorResume(error -> {
+          LOG.warn("[register subscriber] Error: {}", error.getMessage());
+          return Mono.just(false);
+        });
   }
 
   @Override
-  public void unsubscribe(String email, String approver, String topic) {
-    externalNotificationServiceClient.post(
+  public Mono<Boolean> unsubscribe(String email, String approver, String topic) {
+    return externalNotificationServiceClient.post(
         unsubscribeEndpoint,
         Map.of(
             "email", email,
@@ -92,10 +92,13 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
         ),
         new ParameterizedTypeReference<Subscription>() {
         }
-    ).onErrorResume(error -> {
-      LOG.warn("[unregister subscriber] Error: {}", error.getMessage());
-      return Mono.empty();
-    }).subscribe();
+    ).map(subscription -> {
+      LOG.debug("[unsubscribe] Unsubscribed: {}", email);
+      return true;
+    }).onErrorResume(error -> {
+      LOG.warn("[unsubscribe] Error: {}", error.getMessage());
+      return Mono.just(false);
+    });
   }
 
   protected void setAllEndpoint(String allEndpoint) {

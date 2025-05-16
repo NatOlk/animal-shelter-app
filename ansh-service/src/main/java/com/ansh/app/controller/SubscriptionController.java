@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api")
@@ -29,8 +30,8 @@ public class SubscriptionController {
       description = "Registers a user for a specific notification topic. Requires valid approver or token."
   )
   @PostMapping("/subscription/register")
-  public void registerSubscriber(@RequestBody SubscriptionRequest req) {
-    subscriptionFacade.registerSubscription(req);
+  public Mono<Boolean> registerSubscriber(@RequestBody SubscriptionRequest req) {
+    return subscriptionFacade.registerSubscription(req);
   }
 
   @Operation(
@@ -38,8 +39,8 @@ public class SubscriptionController {
       description = "Unsubscribes the user from a specific notification topic."
   )
   @PostMapping("/subscription/unsubscribe")
-  public void unsubscribe(@RequestBody SubscriptionRequest req) {
-    subscriptionFacade.unsubscribe(req);
+  public Mono<Boolean> unsubscribe(@RequestBody SubscriptionRequest req) {
+    return subscriptionFacade.unsubscribe(req);
   }
 
   @Operation(

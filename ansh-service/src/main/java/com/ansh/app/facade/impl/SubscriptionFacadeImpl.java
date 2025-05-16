@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.async.DeferredResult;
+import reactor.core.publisher.Mono;
 
 @Component
 public class SubscriptionFacadeImpl implements SubscriptionFacade {
@@ -92,19 +93,27 @@ public class SubscriptionFacadeImpl implements SubscriptionFacade {
   }
 
   @Override
-  public void registerSubscription(SubscriptionRequest req) {
+  public Mono<Boolean> registerSubscription(SubscriptionRequest req) {
     LOG.debug("Registering subscription: {}", req);
 
     if (StringUtils.isEmpty(req.getTopic()) || StringUtils.isEmpty(req.getEmail())) {
       LOG.warn("Subscription request missing required fields: {}", req);
-      return;
+      return Mono.just(false);
     }
-    notificationService.registerSubscriber(req.getEmail(), req.getApprover(), req.getTopic());
+
+    return notificationService.registerSubscriber(req.getEmail(), req.getApprover(),
+        req.getTopic());
   }
 
   @Override
-  public void unsubscribe(SubscriptionRequest req) {
+  public Mono<Boolean> unsubscribe(SubscriptionRequest req) {
     LOG.debug("Unregistering {} for topic: {}", req.getEmail(), req.getTopic());
-    notificationService.unsubscribe(req.getEmail(), req.getApprover(), req.getTopic());
+
+    if (StringUtils.isEmpty(req.getTopic()) || StringUtils.isEmpty(req.getEmail())) {
+      LOG.warn("Unsubscription request missing required fields: {}", req);
+      return Mono.just(false);
+    }
+
+    return notificationService.unsubscribe(req.getEmail(), req.getApprover(), req.getTopic());
   }
 }

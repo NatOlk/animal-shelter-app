@@ -1,6 +1,7 @@
 package com.ansh.notification.subscription;
 
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
+import com.ansh.exception.SendNotificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +38,11 @@ public class SubscriberNotificationEventProducer {
       event.setApprover(approver);
       event.setTopic(topic);
       String jsonMessage = objectMapper.writeValueAsString(event);
-
       kafkaTemplate.send(subscriptionTopicId, jsonMessage);
     } catch (Exception e) {
       LOG.error("Exception during sending message: {}", e.getMessage());
-    //  throw new RuntimeException();
+      throw new SendNotificationException(
+          STR."Can't send notification exception: \{e.getMessage()}");
     }
   }
 

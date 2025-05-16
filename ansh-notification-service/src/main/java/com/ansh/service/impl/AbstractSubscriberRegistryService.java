@@ -128,13 +128,13 @@ public abstract class AbstractSubscriberRegistryService implements SubscriberReg
   @Override
   @Transactional
   public void handleSubscriptionApproval(@NonNull String email, String approver, boolean reject) {
-    findSubscriptionByEmail(email).ifPresent(subscription -> {
+    findSubscriptionByEmail(email).ifPresentOrElse(subscription -> {
       if (reject) {
         removeSubscriptionFromCacheAndDb(subscription.getToken());
       } else {
         approveSubscription(subscription, approver);
       }
-    });
+    }, () -> LOG.warn("No subscription found for email: {}", email));
   }
 
   protected void approveSubscription(Subscription subscription, String approver) {
