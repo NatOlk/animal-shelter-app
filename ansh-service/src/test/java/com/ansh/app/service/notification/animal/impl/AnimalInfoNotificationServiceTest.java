@@ -7,10 +7,10 @@ import static org.mockito.Mockito.when;
 
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
-import com.ansh.event.animal.AddAnimalEvent;
-import com.ansh.event.vaccination.AddVaccinationEvent;
 import com.ansh.event.AnimalShelterTopic;
+import com.ansh.event.animal.AddAnimalEvent;
 import com.ansh.event.animal.RemoveAnimalEvent;
+import com.ansh.event.vaccination.AddVaccinationEvent;
 import com.ansh.event.vaccination.RemoveVaccinationEvent;
 import com.ansh.notification.app.animal.AnimalInfoNotificationProducer;
 import com.ansh.notification.app.vaccination.VaccinationInfoNotificationProducer;

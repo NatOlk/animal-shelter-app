@@ -1,5 +1,6 @@
 package com.ansh.notification.subscription;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
+import com.ansh.exception.SendNotificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +59,8 @@ class SubscriberNotificationEventProducerTest {
   }
 
   @Test
-  void testSendApproveRequest_whenSerializationFails_doesNotSendMessage() throws Exception {
+  void testSendApproveRequest_whenSerializationFails_throwsSendNotificationException()
+      throws Exception {
     // given
     SubscriptionDecisionEvent event = new SubscriptionDecisionEvent();
     event.setEmail(EMAIL);
@@ -66,10 +69,11 @@ class SubscriberNotificationEventProducerTest {
 
     when(objectMapper.writeValueAsString(event)).thenThrow(new RuntimeException("Test exception"));
 
-    // when
-    subscriberNotificationEventProducer.sendPendingApproveRequest(EMAIL, APPROVER, TOPIC);
+    // when + then
+    assertThrows(SendNotificationException.class, () ->
+        subscriberNotificationEventProducer.sendPendingApproveRequest(EMAIL, APPROVER, TOPIC)
+    );
 
-    // then
     verify(kafkaTemplate, never()).send(eq(SUBSCRIPTION_TOPIC), anyString());
   }
 }

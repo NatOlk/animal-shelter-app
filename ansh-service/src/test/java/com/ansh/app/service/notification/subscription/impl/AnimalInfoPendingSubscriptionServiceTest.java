@@ -140,7 +140,7 @@ class AnimalInfoPendingSubscriptionServiceTest {
   }
 
   @Test
-  void shouldNotSavePendingSubscriber_whenSibscriberExist() {
+  void shouldNotSavePendingSubscriber_whenSubscriberExist() {
 
     String email = SUBSCRIBER_EMAIL;
     String approver = APPROVER_EMAIL;
