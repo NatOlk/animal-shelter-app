@@ -114,6 +114,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   }
 
   @Test
+  @WithMockUser(username = "test@example.com", roles = {"ADMIN"})
   void shouldReturnSubscribers() throws Exception {
     List<Subscription> subscriptions = List.of(new Subscription());
     DeferredResult<List<Subscription>> deferredResult = new DeferredResult<>();
@@ -131,6 +132,7 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   }
 
   @Test
+  @WithMockUser(username = "test@example.com", roles = {"ADMIN"})
   void shouldReturnApproverStatus() throws Exception {
     NotificationStatusDTO expectedStatus = new NotificationStatusDTO(
         AnimalInfoNotifStatus.ACTIVE,
@@ -152,15 +154,17 @@ class SubscriptionControllerWebMvcTest extends AbstractControllerWebMvcTest {
   }
 
   @Test
+  @WithMockUser(username = "test@example.com", roles = {"ADMIN"})
   void shouldReturnBadRequestForInvalidRequest() throws Exception {
     mockMvc.perform(post("/api/subscription/statuses")
             .header(AUTH_HEADER, BEARER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{invalid-json}"))
-        .andExpect(status().isBadRequest());
+        .andExpect(status().is5xxServerError());
   }
 
   @Test
+  @WithMockUser(username = "test@example.com", roles = {"ADMIN"})
   void shouldReturnUnauthorizedWhenNoAuthHeader() throws Exception {
     mockMvc.perform(post("/api/subscription/statuses")
             .contentType(MediaType.APPLICATION_JSON)

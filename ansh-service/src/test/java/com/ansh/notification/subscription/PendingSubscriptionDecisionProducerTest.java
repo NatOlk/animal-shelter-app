@@ -1,5 +1,6 @@
 package com.ansh.notification.subscription;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
+import com.ansh.exception.SendNotificationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,14 @@ import org.springframework.kafka.core.KafkaTemplate;
 class PendingSubscriptionDecisionProducerTest {
 
   private static final String TEST_TOPIC = "testApproveTopic";
+  private static final String EMAIL = "user@example.com";
+  private static final String APPROVER = "approverUser";
+  private static final String TOPIC = "animal-topic";
+
+  private static final String APPROVE_JSON =
+      "{\"email\":\"user@example.com\",\"approver\":\"approverUser\",\"topic\":\"animal-topic\",\"reject\":false}";
+  private static final String REJECT_JSON =
+      "{\"email\":\"user@example.com\",\"approver\":\"approverUser\",\"topic\":\"animal-topic\",\"reject\":true}";
 
   @Mock
   private KafkaTemplate<String, String> kafkaTemplate;
@@ -39,61 +49,57 @@ class PendingSubscriptionDecisionProducerTest {
 
   @Test
   void testSendApprove() throws JsonProcessingException {
-    String email = "user@example.com";
-    String approver = "approverUser";
-    String topic = "animal-topic";
+    // given
     SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
-        .email(email)
-        .approver(approver)
-        .topic(topic)
+        .email(EMAIL)
+        .approver(APPROVER)
+        .topic(TOPIC)
         .reject(false)
         .build();
 
-    String jsonMessage = "{\"email\":\"user@example.com\",\"approver\":\"approverUser\",\"topic\":\"animal-topic\",\"reject\":false}";
-    when(objectMapper.writeValueAsString(event)).thenReturn(jsonMessage);
+    when(objectMapper.writeValueAsString(event)).thenReturn(APPROVE_JSON);
 
-    producer.sendApprove(email, approver, topic);
+    // when
+    producer.sendApprove(EMAIL, APPROVER, TOPIC);
 
+    // then
     verify(objectMapper, times(1)).writeValueAsString(event);
-    verify(kafkaTemplate, times(1)).send(TEST_TOPIC, jsonMessage);
+    verify(kafkaTemplate, times(1)).send(TEST_TOPIC, APPROVE_JSON);
   }
 
   @Test
   void testSendReject() throws JsonProcessingException {
-    String email = "user@example.com";
-    String approver = "approverUser";
-    String topic = "animal-topic";
+    // given
     SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
-        .email(email)
-        .approver(approver)
-        .topic(topic)
+        .email(EMAIL)
+        .approver(APPROVER)
+        .topic(TOPIC)
         .reject(true)
         .build();
 
-    String jsonMessage = "{\"email\":\"user@example.com\",\"approver\":\"approverUser\",\"topic\":\"animal-topic\",\"reject\":true}";
-    when(objectMapper.writeValueAsString(event)).thenReturn(jsonMessage);
+    when(objectMapper.writeValueAsString(event)).thenReturn(REJECT_JSON);
 
-    producer.sendReject(email, approver, topic);
+    // when
+    producer.sendReject(EMAIL, APPROVER, TOPIC);
 
+    // then
     verify(objectMapper, times(1)).writeValueAsString(event);
-    verify(kafkaTemplate, times(1)).send(TEST_TOPIC, jsonMessage);
+    verify(kafkaTemplate, times(1)).send(TEST_TOPIC, REJECT_JSON);
   }
 
   @Test
   void testSendEventWithException() throws JsonProcessingException {
-    String email = "user@example.com";
-    String approver = "approverUser";
-    String topic = "animal-topic";
+    // given
+    when(objectMapper.writeValueAsString(any(SubscriptionDecisionEvent.class)))
+        .thenThrow(new JsonProcessingException("Error serializing object") {});
 
-    when(objectMapper.writeValueAsString(
-        any(SubscriptionDecisionEvent.class))).thenThrow(
-        new JsonProcessingException("Error serializing object") {
-        });
+    // when
+    assertThrows(SendNotificationException.class, () ->
+        producer.sendApprove(EMAIL, APPROVER, TOPIC)
+    );
 
-    producer.sendApprove(email, approver, topic);
-
+    // then
     verify(kafkaTemplate, never()).send(anyString(), anyString());
-    verify(objectMapper, times(1)).writeValueAsString(
-        any(SubscriptionDecisionEvent.class));
+    verify(objectMapper, times(1)).writeValueAsString(any(SubscriptionDecisionEvent.class));
   }
 }
