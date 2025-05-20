@@ -3,15 +3,15 @@ import {
   BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from "recharts"
-import { fetchSubscriptionRequestByTopic, TopicRequestStats } from "./statisticsApi"
+import { fetchSubscriptionRequestByApprover, TopicRequestStats } from "./statisticsApi"
 
-export default function SubscriptionRequestsChart() {
+export default function SubscriptionRequestsByApproverChart() {
   const [data, setData] = useState<TopicRequestStats[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const json = await fetchSubscriptionRequestByTopic()
+        const json = await fetchSubscriptionRequestByApprover()
         setData(json)
       } catch (error) {
         console.error("Error fetching subscription request data")
@@ -23,11 +23,11 @@ export default function SubscriptionRequestsChart() {
 
   return (
     <div style={{ width: "100%", height: 400 }}>
-      <h2 className="text-xl font-semibold mb-2">Subscription Requests by Topic</h2>
+      <h2 className="text-xl font-semibold mb-2">Subscription Requests by Approver</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="topic" />
+          <XAxis dataKey="approver" />
           <YAxis />
           <Tooltip />
           <Legend />

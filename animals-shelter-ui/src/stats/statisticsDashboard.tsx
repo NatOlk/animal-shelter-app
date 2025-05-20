@@ -3,7 +3,8 @@ import AnimalAddedChart from "./animalAddedChart"
 import VaccinationAddedChart from "./vaccinationAddedChart"
 import AnimalLifespanChart from "./animalLifespanChart"
 import SubscriptionDecisionsChart from "./subscriptionDecisionsChart"
-import SubscriptionRequestsChart from "./subscriptionRequestsChart"
+import SubscriptionRequestsByTopicChart from "./subscriptionRequestsByTopicChart"
+import SubscriptionRequestsByTopicApprover from "./subscriptionRequestsByApproverChart"
 import { useEffect, useState } from "react"
 import { MdOutlinePets, MdOutlinePersonAdd } from "react-icons/md";
 import { BsPersonBoundingBox } from "react-icons/bs";
@@ -58,7 +59,9 @@ export default function StatisticsPage() {
           <Card>
             <CardBody>
               <Spacer y={5} />
-              <SubscriptionRequestsChart />
+              <SubscriptionRequestsByTopicChart />
+              <Spacer y={5} />
+              <SubscriptionRequestsByTopicApprover />
             </CardBody>
           </Card>
         </Tab>

@@ -51,3 +51,9 @@ export async function fetchSubscriptionRequestByTopic(): Promise<TopicRequestSta
   if (!response.ok) throw new Error("Failed to fetch subscription request by topic")
   return response.json()
 }
+
+export async function fetchSubscriptionRequestByApprover(): Promise<TopicRequestStats[]> {
+  const response = await fetch("/ansh/stats/stats/subscription/request/by-approver")
+  if (!response.ok) throw new Error("Failed to fetch subscription request by approver")
+  return response.json()
+}

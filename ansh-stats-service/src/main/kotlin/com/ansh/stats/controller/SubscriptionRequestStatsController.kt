@@ -31,4 +31,12 @@ class SubscriptionRequestStatsController(
         responses = [ApiResponse(responseCode = "200", description = "List of request stats per topic")]
     )
     fun getStatsByTopic(): List<TopicRequestStats> = service.getStatsByTopic()
+
+    @GetMapping("/subscription/request/by-approver")
+    @Operation(
+        summary = "Get subscription requests grouped by approver",
+        description = "Returns the number of subscription requests grouped by approver.",
+        responses = [ApiResponse(responseCode = "200", description = "List of request stats per approver")]
+    )
+    fun getStatsByApprover(): List<TopicRequestStats> = service.getStatsByApprover()
 }

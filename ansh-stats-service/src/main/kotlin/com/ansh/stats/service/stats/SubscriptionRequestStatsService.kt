@@ -24,7 +24,24 @@ class SubscriptionRequestStatsService(
                 val cnt = topicEvents.count().toLong()
                 TopicRequestStats(
                     topic = topic,
-                    count = cnt
+                    count = cnt,
+                    approver = ""
+                )
+            }
+    }
+
+    fun getStatsByApprover(): List<TopicRequestStats> {
+        val events: List<SubscriptionDecisionEventDocument> = repository
+            .findAllByActionType(SubscriptionActionType.REQUEST)
+
+        return events
+            .groupBy { it.payload.approver }
+            .map { (approver, topicEvents) ->
+                val cnt = topicEvents.count().toLong()
+                TopicRequestStats(
+                    topic = "",
+                    count = cnt,
+                    approver = approver
                 )
             }
     }

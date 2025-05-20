@@ -173,6 +173,7 @@ export type TopicDecisionStats = {
 }
 
 export type TopicRequestStats = {
-  topic: string
+  topic: string,
+  approver: string,
   count: number
 }
