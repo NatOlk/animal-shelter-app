@@ -1,7 +1,7 @@
 package com.ansh.app.controller;
 
+import com.ansh.app.facade.PendingSubscriptionFacade;
 import com.ansh.dto.SubscriptionRequest;
-import com.ansh.notification.strategy.PendingSubscriptionServiceStrategy;
 import com.ansh.repository.entity.PendingSubscriber;
 import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,67 +18,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/subscription/pending")
 @Tag(name = "Pending Subscription", description = "Endpoints for managing pending subscription requests")
 @SecurityRequirement(name = "bearerAuth")
 public class PendingSubscriptionController {
 
   @Autowired
-  private PendingSubscriptionServiceStrategy pendingSubscriptionServiceStrategy;
+  private PendingSubscriptionFacade pendingSubscriptionFacade;
 
   @Operation(summary = "Approve subscription request",
       description = "Approve a pending subscription for a given email and topic. Requires ADMIN role.")
   @PreAuthorize("hasRole('ADMIN')")
-  @PostMapping("/subscription/approve")
+  @PostMapping("/approve")
   public void approve(@RequestBody SubscriptionRequest req) {
     if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(req.getEmail()) ||
         StringUtils.isEmpty(req.getTopic())) {
       return;
     }
-    var service = pendingSubscriptionServiceStrategy.getServiceByTopic(req.getTopic())
-        .orElseThrow(() -> new IllegalArgumentException(
-            STR."No service found for topic: \{req.getTopic()}"));
-
-    service.approveSubscriber(req.getEmail(), req.getApprover());
+    pendingSubscriptionFacade.approveSubscriber(req.getTopic(), req.getEmail(), req.getApprover());
   }
 
   @Operation(summary = "Reject subscription request",
       description = "Reject a pending subscription for a given email and topic. Requires ADMIN role.")
   @PreAuthorize("hasRole('ADMIN')")
-  @PostMapping("/subscription/reject")
+  @PostMapping("/reject")
   public void reject(@RequestBody SubscriptionRequest req) {
     if (StringUtils.isEmpty(req.getApprover()) || StringUtils.isEmpty(req.getEmail()) ||
         StringUtils.isEmpty(req.getTopic())) {
       return;
     }
 
-    var service = pendingSubscriptionServiceStrategy.getServiceByTopic(req.getTopic())
-        .orElseThrow(() -> new IllegalArgumentException(
-            STR."No service found for topic: \{req.getTopic()}"));
-
-    service.rejectSubscriber(req.getEmail(), req.getApprover());
+    pendingSubscriptionFacade.rejectSubscriber(req.getTopic(), req.getEmail(), req.getApprover());
   }
 
   @Operation(summary = "Get pending subscribers for approver",
       description = "Returns a list of pending subscribers assigned to the provided approver. Requires ADMIN role.")
   @PreAuthorize("hasRole('ADMIN')")
-  @PostMapping("/subscription/pending-subscribers")
+  @PostMapping("/subscribers")
   public List<PendingSubscriber> getPendingSubscribers(@RequestBody SubscriptionRequest req) {
     if (StringUtils.isEmpty(req.getApprover())) {
       return Collections.emptyList();
     }
-    return pendingSubscriptionServiceStrategy.getAllServices().stream()
-        .flatMap(service -> service.getSubscribersByApprover(req.getApprover()).stream())
-        .toList();
+    return pendingSubscriptionFacade.getSubscribersByApprover(req.getApprover());
   }
 
   @Operation(summary = "Get pending subscribers without approver",
       description = "Returns a list of pending subscribers who don't have an approver assigned. Requires ADMIN role.")
   @PreAuthorize("hasRole('ADMIN')")
-  @GetMapping("/subscription/no-approver-subscribers")
+  @GetMapping("/no-approver-subscribers")
   public List<PendingSubscriber> getPendingNoApproverSubscribers() {
-    return pendingSubscriptionServiceStrategy.getAllServices().stream()
-        .flatMap(service -> service.getPendingSubscribersWithoutApprover().stream())
-        .toList();
+    return pendingSubscriptionFacade.getPendingSubscribersWithoutApprover();
   }
 }

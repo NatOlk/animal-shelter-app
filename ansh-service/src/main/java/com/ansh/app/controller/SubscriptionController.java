@@ -17,9 +17,9 @@ import org.springframework.web.context.request.async.DeferredResult;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/subscription")
 @Tag(name = "Subscriptions", description = "Endpoints for registering, unsubscribing and managing subscriptions")
-@SecurityRequirement(name = "bearerAuth") // требует авторизацию по JWT
+@SecurityRequirement(name = "bearerAuth")
 public class SubscriptionController {
 
   @Autowired
@@ -29,7 +29,7 @@ public class SubscriptionController {
       summary = "Register a new subscriber",
       description = "Registers a user for a specific notification topic. Requires valid approver or token."
   )
-  @PostMapping("/subscription/register")
+  @PostMapping("/register")
   public Mono<Boolean> registerSubscriber(@RequestBody SubscriptionRequest req) {
     return subscriptionFacade.registerSubscription(req);
   }
@@ -38,7 +38,7 @@ public class SubscriptionController {
       summary = "Unsubscribe user",
       description = "Unsubscribes the user from a specific notification topic."
   )
-  @PostMapping("/subscription/unsubscribe")
+  @PostMapping("/unsubscribe")
   public Mono<Boolean> unsubscribe(@RequestBody SubscriptionRequest req) {
     return subscriptionFacade.unsubscribe(req);
   }
@@ -47,7 +47,7 @@ public class SubscriptionController {
       summary = "Get all subscribers for an approver",
       description = "Returns a list of all current subscribers associated with the specified approver."
   )
-  @PostMapping("/subscription/all")
+  @PostMapping("/all")
   public DeferredResult<List<Subscription>> getSubscribers(@RequestBody SubscriptionRequest req) {
     return subscriptionFacade.getAllSubscribers(req.getApprover());
   }
@@ -56,7 +56,7 @@ public class SubscriptionController {
       summary = "Get notification subscription statuses",
       description = "Returns the current notification subscription status for each topic for the given account."
   )
-  @PostMapping("/subscription/statuses")
+  @PostMapping("/statuses")
   public DeferredResult<NotificationStatusDTO> getStatuses(@RequestBody SubscriptionRequest req) {
     return subscriptionFacade.getNotificationStatusesByAccount(req.getApprover());
   }

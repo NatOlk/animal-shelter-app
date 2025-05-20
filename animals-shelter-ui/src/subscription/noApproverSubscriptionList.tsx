@@ -20,7 +20,7 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
 
     const fetchSubscribers = async () => {
       try {
-        const unapprovedData = await apiFetch<Subscriber[]>(`/api/subscription/no-approver-subscribers`);
+        const unapprovedData = await apiFetch<Subscriber[]>(`/api/subscription/pending/no-approver-subscribers`);
         setUnapprovedSubscribers(unapprovedData);
       } catch (error) {
         setError(error as Error);
@@ -34,7 +34,7 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
 
   const handleApprove = async (subscriber: Subscriber) => {
     try {
-      await apiFetch('/api/subscription/approve', {
+      await apiFetch('/api/subscription/pending/approve', {
         method: 'POST',
         body: {
           email: subscriber.email,
@@ -51,13 +51,19 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
     }
   };
 
-  const handleReject = async (email: string) => {
+  const handleReject = async (subscriber: Subscriber) => {
     try {
-      await apiFetch('/api/subscription/reject', {
+      await apiFetch('/api/subscription/pending/reject', {
         method: 'POST',
-        body: { email },
+         body: {
+             email: subscriber.email,
+             approver: userProfile.email,
+             topic: subscriber.topic,
+            },
       });
-      setUnapprovedSubscribers((prev) => prev.filter((subscriber) => subscriber.email !== email));
+      setUnapprovedSubscribers((prev) =>
+       prev.filter((s) => !(s.email === subscriber.email && s.topic === subscriber.topic))
+      );
     } catch (error) {
       setError(error);
     }
@@ -111,7 +117,7 @@ const NoApproverSubscriptionList: React.FC<SubscriptionListProps> = ({ userProfi
                     <Button
                       color="default" variant="light"
                       className="p-2 min-w-2 h-auto"
-                      onPress={() => handleReject(subscriber.email)}>
+                      onPress={() => handleReject(subscriber)}>
                       <HiX />
                     </Button>
                   </Tooltip>
