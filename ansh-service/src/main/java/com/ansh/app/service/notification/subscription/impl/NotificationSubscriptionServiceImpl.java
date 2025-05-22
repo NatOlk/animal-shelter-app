@@ -90,7 +90,7 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
             "approver", approver,
             "topic", topic
         ),
-        new ParameterizedTypeReference<Subscription>() {
+        new ParameterizedTypeReference<String>() {
         }
     ).map(subscription -> {
       LOG.debug("[unsubscribe] Unsubscribed: {}", email);
