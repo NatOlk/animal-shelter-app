@@ -25,13 +25,17 @@ export default function SubscriptionRequestsByApproverChart() {
     <div style={{ width: "100%", height: 400 }}>
       <h2 className="text-xl font-semibold mb-2">Subscription Requests by Approver</h2>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
+        <BarChart data={data}
+          margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="approver" />
-          <YAxis />
+          <XAxis dataKey="approver" tickFormatter={(value: string) => value?.trim() ? value : "Anonymous"}/>
+          <YAxis domain={[0, 'dataMax + 2']} />
           <Tooltip />
           <Legend />
-          <Bar dataKey="count" fill="#8884d8" name="Requests" />
+          <Bar dataKey="count"
+            fill="#8884d8"
+            name="Requests"
+            barSize={30} />
         </BarChart>
       </ResponsiveContainer>
     </div>

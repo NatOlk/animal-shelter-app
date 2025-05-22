@@ -1,5 +1,6 @@
 import { Spacer, Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import AnimalAddedChart from "./animalAddedChart"
+import AnimalAddedLineChart from "./animalAddedLineChart"
 import VaccinationAddedChart from "./vaccinationAddedChart"
 import AnimalLifespanChart from "./animalLifespanChart"
 import SubscriptionDecisionsChart from "./subscriptionDecisionsChart"
@@ -45,6 +46,8 @@ export default function StatisticsPage() {
               <h2>Total Vaccinations: <strong>{vaccinationCount}</strong></h2>
               <Spacer y={5} />
               <AnimalAddedChart />
+              <Spacer y={5} />
+              <AnimalAddedLineChart />
               <Spacer y={5} />
               <VaccinationAddedChart />
               <Spacer y={5} />

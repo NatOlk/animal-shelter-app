@@ -42,34 +42,34 @@ export default function AnimalLifespanChart() {
           {showAll ? "Show Top 10" : "Show All"}
         </Button>
       </div>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={visibleData}
-          margin={{ top: 5, right: 20, left: 0, bottom: 50 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="name"
-            tickFormatter={(value, index) =>
-              `${value} (${visibleData[index]?.species})`
-            }
-            interval={0}
-            angle={-35}
-            textAnchor="end"
-            height={60}
-            tick={{ fontSize: 12 }}/>
-          <YAxis
-            label={{ value: "Days", angle: -90, position: "insideLeft" }}
-          />
-          <Tooltip formatter={tooltipFormatter} />
-          <Bar
-            dataKey={(animal: AnimalLifespan) =>
-              animal.daysInSystem
-            }
-            fill="#8884d8"
-            name="Lifespan (days)"
-          />
-        </BarChart>
-      </ResponsiveContainer>
+     <ResponsiveContainer width="100%" height="100%">
+       <BarChart
+         data={visibleData}
+         margin={{ top: 20, right: 20, left: 0, bottom: 50 }}>
+         <CartesianGrid strokeDasharray="3 3" />
+         <XAxis
+           dataKey="name"
+           tickFormatter={(value, index) =>
+             `${value} (${visibleData[index]?.species})`
+           }
+           interval={0}
+           angle={-35}
+           textAnchor="end"
+           height={60}
+           tick={{ fontSize: 12 }}/>
+         <YAxis
+           domain={[0, 'dataMax + 2']}
+           label={{ value: "Days", angle: -90, position: "insideLeft" }}/>
+         <Tooltip formatter={tooltipFormatter} />
+         <Bar
+           dataKey={(animal: AnimalLifespan) => animal.daysInSystem}
+           fill="#8884d8"
+           name="Lifespan (days)"
+           radius={[4, 4, 0, 0]}
+           isAnimationActive
+           barSize={30}/>
+       </BarChart>
+     </ResponsiveContainer>
     </div>
   )
 }
