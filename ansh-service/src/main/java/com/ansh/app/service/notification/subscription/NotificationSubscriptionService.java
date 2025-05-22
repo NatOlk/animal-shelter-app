@@ -41,6 +41,36 @@ public interface NotificationSubscriptionService {
    */
   Mono<NotificationStatusDTO> getStatusesByAccount(String email);
 
+  /**
+   * Registers a new subscription request.
+   * <p>
+   * This method attempts to register a user ({@code email}) for notifications
+   * under a specific {@code topic}, optionally approved by a designated {@code approver}.
+   * The {@code approver} may be {@code null} or empty if the topic does not require explicit approval.
+   * The operation is performed asynchronously and returns a boolean indicating success.
+   * </p>
+   *
+   * @param email    the email of the user requesting the subscription
+   * @param approver the account responsible for approving the subscription (optional)
+   * @param topic    the topic for which the user is subscribing
+   * @return a {@link Mono} emitting {@code true} if the subscription was successfully registered,
+   *         or {@code false} in case of error or rejection
+   */
   Mono<Boolean> registerSubscriber(String email, String approver, String topic);
+
+  /**
+   * Unsubscribes a user from a specific topic.
+   * <p>
+   * This method removes the subscription for the given {@code email}, {@code topic},
+   * and {@code approver}. The result is emitted asynchronously and indicates whether
+   * the operation succeeded.
+   * </p>
+   *
+   * @param email    the email of the user unsubscribing
+   * @param approver the account that approved the subscription
+   * @param topic    the topic from which the user wants to unsubscribe
+   * @return a {@link Mono} emitting {@code true} if the unsubscription was successful,
+   *         or {@code false} if an error occurred
+   */
   Mono<Boolean> unsubscribe(String email, String approver, String topic);
 }

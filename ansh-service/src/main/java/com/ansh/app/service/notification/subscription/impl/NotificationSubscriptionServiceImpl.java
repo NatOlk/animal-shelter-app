@@ -8,6 +8,7 @@ import com.ansh.notification.external.ExternalNotificationServiceClient;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,29 +20,40 @@ import reactor.core.publisher.Mono;
 @Service("notificationSubscriptionService")
 public class NotificationSubscriptionServiceImpl implements NotificationSubscriptionService {
 
+  private final static String APPROVER = "approver";
+  private final static String EMAIL = "email";
+  private final static String TOPIC = "topic";
+
   private static final Logger LOG = LoggerFactory.getLogger(
       NotificationSubscriptionServiceImpl.class);
 
   @Autowired
   private ExternalNotificationServiceClient externalNotificationServiceClient;
 
-  @Value("${notification.subscription.endpoint.register}")
-  private String registerEndpoint;
+  private final String registerEndpoint;
+  private final String unsubscribeEndpoint;
+  private final String allEndpoint;
+  private final String statusesEndpoint;
 
-  @Value("${notification.subscription.endpoint.unsubscribe}")
-  private String unsubscribeEndpoint;
-
-  @Value("${notification.subscription.endpoint.all}")
-  private String allEndpoint;
-
-  @Value("${notification.subscription.endpoint.statuses}")
-  private String statusesEndpoint;
+  public NotificationSubscriptionServiceImpl(
+      ExternalNotificationServiceClient externalNotificationServiceClient,
+      @Value("${notification.subscription.endpoint.register}") String registerEndpoint,
+      @Value("${notification.subscription.endpoint.unsubscribe}") String unsubscribeEndpoint,
+      @Value("${notification.subscription.endpoint.all}") String allEndpoint,
+      @Value("${notification.subscription.endpoint.statuses}") String statusesEndpoint
+  ) {
+    this.externalNotificationServiceClient = externalNotificationServiceClient;
+    this.registerEndpoint = registerEndpoint;
+    this.unsubscribeEndpoint = unsubscribeEndpoint;
+    this.allEndpoint = allEndpoint;
+    this.statusesEndpoint = statusesEndpoint;
+  }
 
   @Override
   public Mono<List<Subscription>> getAllSubscriptionByAccount(String approver) {
     return externalNotificationServiceClient.post(
         allEndpoint,
-        Map.of("approver", approver),
+        Map.of(APPROVER, approver),
         new ParameterizedTypeReference<List<Subscription>>() {
         }
     ).onErrorResume(error -> {
@@ -54,7 +66,7 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
   public Mono<NotificationStatusDTO> getStatusesByAccount(String email) {
     return externalNotificationServiceClient.post(
         statusesEndpoint,
-        Map.of("approver", email),
+        Map.of(APPROVER, email),
         new ParameterizedTypeReference<NotificationStatusDTO>() {
         }
     ).onErrorResume(error -> {
@@ -65,12 +77,14 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
   }
 
   public Mono<Boolean> registerSubscriber(String email, String approver, String topic) {
+    String resolvedApprover = Optional.ofNullable(approver).orElse("");
+
     return externalNotificationServiceClient.post(
             registerEndpoint,
             Map.of(
-                "email", email,
-                "approver", approver,
-                "topic", topic
+                EMAIL, email,
+                APPROVER, resolvedApprover,
+                TOPIC, topic
             ),
             new ParameterizedTypeReference<Subscription>() {
             }
@@ -86,9 +100,9 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
     return externalNotificationServiceClient.post(
         unsubscribeEndpoint,
         Map.of(
-            "email", email,
-            "approver", approver,
-            "topic", topic
+            EMAIL, email,
+            APPROVER, approver,
+            TOPIC, topic
         ),
         new ParameterizedTypeReference<String>() {
         }
@@ -99,13 +113,5 @@ public class NotificationSubscriptionServiceImpl implements NotificationSubscrip
       LOG.warn("[unsubscribe] Error: {}", error.getMessage());
       return Mono.just(false);
     });
-  }
-
-  protected void setAllEndpoint(String allEndpoint) {
-    this.allEndpoint = allEndpoint;
-  }
-
-  protected void setStatusesEndpoint(String statusesEndpoint) {
-    this.statusesEndpoint = statusesEndpoint;
   }
 }

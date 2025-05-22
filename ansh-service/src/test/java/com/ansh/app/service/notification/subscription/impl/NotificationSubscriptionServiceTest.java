@@ -23,9 +23,14 @@ import reactor.test.StepVerifier;
 
 class NotificationSubscriptionServiceTest {
 
+  private static final String EMAIL = "email@example.com";
   private static final String APPROVER = "approver@example.com";
-  private static final String ALL_BY_APPROVER_ENDPOINT = "/internal/animal-notify-all-approver-subscriptions";
-  private static final String STATUS_BY_APPROVER_ENDPOINT = "/internal/animal-notify-approver-status";
+  private static final String TOPIC = "topic";
+  private static final String ALL_BY_APPROVER_ENDPOINT = "all-approver-subscriptions";
+  private static final String STATUS_BY_APPROVER_ENDPOINT = "approver-status";
+  private static final String REGISTER_ENDPOINT = "register";
+
+  private static final String UNSIBSCRIBE_ENDPOINT = "unsubscribe";
 
   @InjectMocks
   private NotificationSubscriptionServiceImpl notificationSubscriptionService;
@@ -36,8 +41,10 @@ class NotificationSubscriptionServiceTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    notificationSubscriptionService.setAllEndpoint(ALL_BY_APPROVER_ENDPOINT);
-    notificationSubscriptionService.setStatusesEndpoint(STATUS_BY_APPROVER_ENDPOINT);
+    notificationSubscriptionService =
+        new NotificationSubscriptionServiceImpl(externalNotificationServiceClient,
+            REGISTER_ENDPOINT, UNSIBSCRIBE_ENDPOINT,
+            ALL_BY_APPROVER_ENDPOINT, STATUS_BY_APPROVER_ENDPOINT);
   }
 
   @Test
@@ -152,6 +159,116 @@ class NotificationSubscriptionServiceTest {
         .assertNext(result -> {
           assertNotNull(result);
           assertEquals(0, result.size());
+        })
+        .verifyComplete();
+  }
+
+  @Test
+  void shouldRegister() {
+    // given
+    Subscription s1 = new Subscription();
+    s1.setId(1L);
+    s1.setEmail(EMAIL);
+    s1.setApprover(APPROVER);
+    s1.setTopic("topic1");
+
+    when(externalNotificationServiceClient.post(
+        eq(REGISTER_ENDPOINT),
+        eq(Map.of("email", EMAIL, "approver", APPROVER, "topic", TOPIC)),
+        eq(new ParameterizedTypeReference<Subscription>() {
+        })
+    )).thenReturn(Mono.just(s1));
+
+    // when + then
+    StepVerifier.create(notificationSubscriptionService.registerSubscriber(EMAIL, APPROVER, TOPIC))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(true, result);
+        })
+        .verifyComplete();
+  }
+
+  @Test
+  void shouldRegisterWithEmptyApprover() {
+    // given
+    Subscription s1 = new Subscription();
+    s1.setId(1L);
+    s1.setEmail(EMAIL);
+    s1.setApprover(APPROVER);
+    s1.setTopic("topic1");
+
+    when(externalNotificationServiceClient.post(
+        eq(REGISTER_ENDPOINT),
+        eq(Map.of("email", EMAIL, "approver", "", "topic", TOPIC)),
+        eq(new ParameterizedTypeReference<Subscription>() {
+        })
+    )).thenReturn(Mono.just(s1));
+
+    // when + then
+    StepVerifier.create(notificationSubscriptionService.registerSubscriber(EMAIL, null, TOPIC))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(true, result);
+        })
+        .verifyComplete();
+  }
+
+  @Test
+  void shouldNotRegister_whenExceptionThrown() {
+    // given
+
+    when(externalNotificationServiceClient.post(
+        eq(REGISTER_ENDPOINT),
+        eq(Map.of("email", EMAIL, "approver", APPROVER, "topic", TOPIC)),
+        eq(new ParameterizedTypeReference<Subscription>() {
+        })
+    )).thenReturn(Mono.error(new RuntimeException("Service unavailable")));
+
+    // when + then
+    StepVerifier.create(notificationSubscriptionService.registerSubscriber(EMAIL, APPROVER, TOPIC))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(false, result);
+        })
+        .verifyComplete();
+  }
+
+  @Test
+  void shouldUnsubscribe() {
+    // given
+
+    when(externalNotificationServiceClient.post(
+        eq(UNSIBSCRIBE_ENDPOINT),
+        eq(Map.of("email", EMAIL, "approver", APPROVER, "topic", TOPIC)),
+        eq(new ParameterizedTypeReference<String>() {
+        })
+    )).thenReturn(Mono.just("Removed"));
+
+    // when + then
+    StepVerifier.create(notificationSubscriptionService.unsubscribe(EMAIL, APPROVER, TOPIC))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(true, result);
+        })
+        .verifyComplete();
+  }
+
+  @Test
+  void shouldNotUnsubscribe_whenExceptionThrown() {
+    // given
+
+    when(externalNotificationServiceClient.post(
+        eq(UNSIBSCRIBE_ENDPOINT),
+        eq(Map.of("email", EMAIL, "approver", APPROVER, "topic", TOPIC)),
+        eq(new ParameterizedTypeReference<String>() {
+        })
+    )).thenReturn(Mono.error(new RuntimeException("Service unavailable")));
+
+    // when + then
+    StepVerifier.create(notificationSubscriptionService.unsubscribe(EMAIL, APPROVER, TOPIC))
+        .assertNext(result -> {
+          assertNotNull(result);
+          assertEquals(false, result);
         })
         .verifyComplete();
   }
