@@ -36,7 +36,7 @@ class AnimalStatsService(
     }
 
     fun getAddedVaccinationsGroupedByDate(): Map<LocalDate, Long> {
-        val events = repository.findByEventType(EventTypes.ADD_ANIMAL)
+        val events = repository.findByEventType(EventTypes.ADD_VACCINATION)
         logger.debug("Found ${events.size} add vaccination events")
         val grouped = events.groupingBy { it.payload.created }.eachCount()
             .mapValues { it.value.toLong() }
