@@ -47,8 +47,8 @@ const UserProfile: React.FC = () => {
             roles: Array.from(keys),
           });
         }
-      }).catch((error) => {
-        console.error("Failed to update user roles:", error);
+      }).catch((error: any) => {
+        console.error(err.message || "Failed to update user roles:");
       });
     }
   };
