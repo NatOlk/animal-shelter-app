@@ -3,7 +3,6 @@ import AllApproverSubscriptionList from '../subscription/allApproverSubscription
 import PendingSubscriptionList from '../subscription/pendingSubscriptionList';
 import NoApproverSubscriptionList from '../subscription/noApproverSubscriptionList';
 import Subscription from '../subscription/subscription';
-import { apiFetch } from '../common/api';
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
 import { Tabs, Tab } from "@nextui-org/tabs";
@@ -19,7 +18,7 @@ import { useMutation } from "@apollo/client";
 const ALL_ROLES = ["USER", "EMPLOYEE", "VOLUNTEER", "DOCTOR", "ADMIN"];
 
 const UserProfile: React.FC = () => {
-  const { user, isAdmin} = useAuth();
+  const { user, isAdmin, setUser } = useAuth();
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set(user?.roles || []));
   const [updateUserRoles] = useMutation(UPDATE_USER_ROLES);
 
@@ -32,17 +31,25 @@ const UserProfile: React.FC = () => {
       alert("You cannot remove the ADMIN role from yourself.");
       return;
     }
+
     setSelectedRoles(keys);
+
     if (isAdmin && user?.name) {
-      try {
-        updateUserRoles({
-          variables: {
-            username: user.name,
+      updateUserRoles({
+        variables: {
+          username: user.name,
+          roles: Array.from(keys),
+        },
+      }).then((result) => {
+        if (result.data) {
+          setUser({
+            ...user,
             roles: Array.from(keys),
-          },
-        });
-      } catch (error) {
-      }
+          });
+        }
+      }).catch((error) => {
+        console.error("Failed to update user roles:", error);
+      });
     }
   };
 
@@ -65,7 +72,7 @@ const UserProfile: React.FC = () => {
               <Tabs aria-label="RolesSubscriptions" size="lg" variant="bordered">
                 <Tab key="roles" title={
                   <div className="flex items-center space-x-2">
-                    <RiAdminLine /><p>Roles</p>
+                    <RiAdminLine /><p>My Roles</p>
                   </div>}>
                   <div className="profileCardTabContent">
                     <Spacer y={5} />
@@ -87,7 +94,7 @@ const UserProfile: React.FC = () => {
                 </Tab>
                 <Tab key="subscriptions" title={
                   <div className="flex items-center space-x-2">
-                    <HiOutlineBellAlert /><p>Subscriptions</p>
+                    <HiOutlineBellAlert /><p>My Subscriptions</p>
                   </div>}>
                   <div className="profileCardTabContent">
                     <Spacer y={5} />
@@ -101,6 +108,7 @@ const UserProfile: React.FC = () => {
           <CardFooter />
         </Card>
       </div>
+
       {isAdmin && (
         <div className="subscriptionsTab">
           <div className="flex flex-col">
@@ -121,9 +129,9 @@ const UserProfile: React.FC = () => {
               </Tab>
             </Tabs>
           </div>
-        </div>
-      )};
+        </div>)}
     </div>
-)};
+  );
+};
 
 export default UserProfile;
