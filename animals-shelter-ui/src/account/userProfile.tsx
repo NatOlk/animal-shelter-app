@@ -57,9 +57,9 @@ const UserProfile: React.FC = () => {
     <div className="containerProfile">
       <div className="profileCard">
         <Card className="w-full">
-          <CardHeader className="flex gap-3">
+          <CardHeader className="flex gap-3 card-header-main">
             <div className="flex flex-col">
-              <h1>User</h1>
+              <h4 className="text-medium font-medium">User</h4>
             </div>
           </CardHeader>
           <Divider />

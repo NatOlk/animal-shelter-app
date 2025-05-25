@@ -52,8 +52,7 @@ const AnimalRow = ({ animal, config, onError }: AnimalRowProps) => (
             <div className="flex w-full flex-wrap flex-nowrap">
                 <Button
                     as={Link}
-                    to={`/vaccinations`}
-                    state={{ animalId: animal.id, name: animal.name, species: animal.species }}
+                    to={`/vaccinations/${animal.id}`}
                     color="default"
                     variant="light"
                     className="p-2 min-w-2 h-auto">

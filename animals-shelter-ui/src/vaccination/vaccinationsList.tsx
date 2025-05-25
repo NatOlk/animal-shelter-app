@@ -1,30 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from "@apollo/client";
 import { useAsyncList } from "@react-stately/data";
 import {
     Table, TableHeader, TableColumn, TableBody,
-    Pagination, Progress, Alert
+    Pagination, Progress, Alert, Spacer
 } from "@nextui-org/react";
-import { useLocation, Link } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { VACCINATIONS_QUERY } from '../common/graphqlQueries';
 import VaccinationRow from './vaccinationRow';
 import AddVaccination from './addVaccination';
 import { useConfig } from '../common/configContext';
 import { Vaccination, Config } from "../common/types";
 
-const VaccinationsList: React.FC = () => {
-
+const VaccinationsList: React.FC<{ animalId?: string }> = ({ animalId }) => {
     const perPage = 8;
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [globalError, setGlobalError] = useState<string>("");
-    const location = useLocation();
-    const animalIdRef = useRef<string | null>(location.state?.animalId || null);
+    const { animalId: animalIdParam } = useParams<{ animalId?: string }>();
+    const animalIdReq = animalId || animalIdParam;
 
     const config: Config | null = useConfig();
 
     const { loading, error, data } = useQuery<{ vaccinationByAnimalId: Vaccination[] }>(
         VACCINATIONS_QUERY, {
-        variables: { animalId: animalIdRef.current  },
+        variables: { animalId: animalIdReq },
         fetchPolicy: "network-only"
     }
     );
@@ -67,10 +66,9 @@ const VaccinationsList: React.FC = () => {
 
     if (config == null) return <p>Loading configs...</p>;
 
-    if (!animalIdRef.current) {
+    if (!animalIdReq) {
         return (
             <div>
-                <Link to="/">Back to Animals</Link>
                 <p>Error: No animalId provided!</p>
             </div>
         );
@@ -105,7 +103,7 @@ const VaccinationsList: React.FC = () => {
                         onClose={() => setGlobalError("")}
                         title={globalError} />
                 )}
-                 <Link to="/">Back to Animals</Link>
+                <Spacer y={5} />
                 <Table className="compact-table"
                     isLoading={list.isLoading}
                     sortDescriptor={list.sortDescriptor}
@@ -121,7 +119,7 @@ const VaccinationsList: React.FC = () => {
                     </TableHeader>
                     <TableBody>
                         {[
-                            AddVaccination({ config, animalId: animalIdRef.current, onError: handleError }),
+                            AddVaccination({ config, animalId: animalIdReq, onError: handleError }),
                             ...vaccinationsList.map((vaccination) => VaccinationRow({ vaccination, onError: handleError }))
                         ]}
                     </TableBody>

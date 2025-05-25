@@ -54,7 +54,7 @@ const AppContent: FC = () => {
                   <AnimalsList />
                 </ProtectedRoute>
               } />
-              <Route path="/vaccinations" element={
+              <Route path="/vaccinations/:animalId" element={
                 <ProtectedRoute>
                   <VaccinationsList />
                 </ProtectedRoute>

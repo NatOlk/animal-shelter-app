@@ -163,4 +163,14 @@
         white-space: nowrap;
         gap: 2px;
     }
+
+    .card-header-main {
+        background-color: #a5effd;
+        color: #1e3a8a;
+    }
+
+    .card-header-detail1 {
+      background-color: #d7f8fe;
+      color: #1e3a8a;
+    }
 }
