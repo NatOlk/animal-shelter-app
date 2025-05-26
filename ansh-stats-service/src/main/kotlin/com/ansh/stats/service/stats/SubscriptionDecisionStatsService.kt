@@ -2,9 +2,7 @@ package com.ansh.stats.service.stats
 
 import com.ansh.stats.dto.SubscriptionActionType
 import com.ansh.stats.dto.TopicDecisionStats
-import com.ansh.stats.entity.SubscriptionDecisionEventDocument
 import com.ansh.stats.repository.SubscriptionDecisionStatsRepository
-import com.ansh.stats.utils.groupAndMap
 import org.springframework.stereotype.Service
 
 @Service
@@ -14,23 +12,8 @@ class SubscriptionDecisionStatsService(
     fun getCount(): Long {
         return repository.countByActionType(SubscriptionActionType.DECISION);
     }
-    fun getStatsByTopic(): List<TopicDecisionStats> {
-        val events: List<SubscriptionDecisionEventDocument> = repository
-            .findAllByActionType(SubscriptionActionType.DECISION)
 
-        return groupAndMap(
-            items = events,
-            keySelector = { it.payload.topic },
-            valueMapper = { topic, topicEvents ->
-                val approved = topicEvents.count { !it.payload.isReject }.toLong()
-                val rejected = topicEvents.count { it.payload.isReject }.toLong()
-                TopicDecisionStats(
-                    topic = topic,
-                    approvedCount = approved,
-                    rejectedCount = rejected,
-                    count = approved + rejected
-                )
-            }
-        )
+    fun getStatsByTopic(): List<TopicDecisionStats> {
+        return repository.aggregateDecisionsByTopic(SubscriptionActionType.DECISION.name)
     }
 }

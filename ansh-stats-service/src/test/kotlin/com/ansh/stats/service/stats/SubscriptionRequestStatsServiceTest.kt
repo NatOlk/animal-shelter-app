@@ -1,34 +1,25 @@
 package com.ansh.stats.service.stats
 
-import com.ansh.event.subscription.SubscriptionDecisionEvent
 import com.ansh.stats.dto.SubscriptionActionType
 import com.ansh.stats.dto.TopicRequestStats
-import com.ansh.stats.entity.SubscriptionDecisionEventDocument
 import com.ansh.stats.repository.SubscriptionDecisionStatsRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.time.LocalDate
 
 class SubscriptionRequestStatsServiceTest {
 
     private val repository: SubscriptionDecisionStatsRepository = mock()
     private val service = SubscriptionRequestStatsService(repository)
 
-    private fun buildRequestEvent(topic: String): SubscriptionDecisionEventDocument {
-        val payload = SubscriptionDecisionEvent.builder()
-            .email("user@example.com")
-            .approver("admin@example.com")
-            .topic(topic)
-            .reject(false)
-            .created(LocalDate.now()).build()
-        return SubscriptionDecisionEventDocument(
-            payload = payload,
-            actionType = SubscriptionActionType.REQUEST
-        )
-    }
+    private fun buildStats(
+        topic: String,
+        approver: String,
+        count: Long
+    ): TopicRequestStats =
+        TopicRequestStats(topic = topic, approver = approver, count = count)
 
     @Test
     fun `getCount returns correct request count`() {
@@ -42,13 +33,13 @@ class SubscriptionRequestStatsServiceTest {
 
     @Test
     fun `getStatsByTopic returns grouped topic counts`() {
-        val events = listOf(
-            buildRequestEvent("animal-info"),
-            buildRequestEvent("animal-info"),
-            buildRequestEvent("vaccination-news")
+        val aggregationResult = listOf(
+            buildStats("animal-info", "", 2),
+            buildStats("vaccination-news", "", 1)
         )
 
-        whenever(repository.findAllByActionType(SubscriptionActionType.REQUEST)).thenReturn(events)
+        whenever(repository.aggregateRequestsByTopic(SubscriptionActionType.REQUEST.name))
+            .thenReturn(aggregationResult)
 
         val result: List<TopicRequestStats> = service.getStatsByTopic()
 
@@ -62,43 +53,23 @@ class SubscriptionRequestStatsServiceTest {
     }
 
     @Test
-    fun `getStatsByTopic should nor returns grouped topic counts if DECISION type`() {
-        val events = listOf(
-            buildRequestEvent("animal-info"),
-            buildRequestEvent("animal-info"),
-            buildRequestEvent("vaccination-news")
+    fun `getStatsByApprover returns grouped approver counts`() {
+        val aggregationResult = listOf(
+            buildStats("animal-topic", "doctor1@example.com", 3),
+            buildStats("animal-topic", "admin@example.com", 2)
         )
 
-        whenever(repository.findAllByActionType(SubscriptionActionType.DECISION)).thenReturn(events)
+        whenever(repository.aggregateRequestsByApprover(SubscriptionActionType.REQUEST.name))
+            .thenReturn(aggregationResult)
 
-        val result: List<TopicRequestStats> = service.getStatsByTopic()
+        val result: List<TopicRequestStats> = service.getStatsByApprover()
 
-        assertEquals(0, result.size)
-    }
+        assertEquals(2, result.size)
 
-    @Test
-    fun `getStatsByTopic should returns grouped topic counts only for REQUEST TYPE`() {
-        val events = listOf(
-            buildRequestEvent("animal-info"),
-            buildRequestEvent("animal-info")
-        )
+        val doctor = result.find { it.approver == "doctor1@example.com" }
+        val admin = result.find { it.approver == "admin@example.com" }
 
-        val events2 = listOf(
-            buildRequestEvent("vaccination-news")
-        )
-
-        whenever(repository.findAllByActionType(SubscriptionActionType.REQUEST)).thenReturn(events)
-
-        whenever(repository.findAllByActionType(SubscriptionActionType.DECISION)).thenReturn(events2)
-
-        val result: List<TopicRequestStats> = service.getStatsByTopic()
-
-        assertEquals(1, result.size)
-
-        val animalInfo = result.find { it.topic == "animal-info" }
-        val vaccinationNews = result.find { it.topic == "vaccination-news" }
-
-        assertEquals(2, animalInfo?.count)
-        assertEquals(null, vaccinationNews)
+        assertEquals(3, doctor?.count)
+        assertEquals(2, admin?.count)
     }
 }

@@ -2,6 +2,7 @@ package com.ansh.stats.notification
 
 import com.ansh.event.AnimalShelterEvent
 import com.ansh.stats.service.AnimalService
+import com.ansh.stats.utils.processAndLogKafkaMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
@@ -20,12 +21,16 @@ class AnimalStatsEventConsumer(
         groupId = "statsGroupId"
     )
     fun listen(message: ConsumerRecord<String, String>) {
-        try {
-            val event = objectMapper.readValue(message.value(), AnimalShelterEvent::class.java)
-            logger.info("[STATS] Received AnimalEvent: ${event.animal}")
-            animalService.saveEvent(event)
-        } catch (e: Exception) {
-            logger.error("Failed to process AnimalEvent from Kafka: ${message.value()}", e)
-        }
+        processAndLogKafkaMessage<AnimalShelterEvent>(
+            message = message,
+            objectMapper = objectMapper,
+            logBefore = { logger.debug("Parsed event: {}", it) },
+            logAfter = { logger.debug("Event successfully processed: {}", it) },
+            logError = { ex ->
+                logger.error(
+                    "Failed to process AnimalShelterEvent from Kafka: ${message.value()}", ex
+                )
+            },
+            onSuccess = { event -> animalService.saveEvent(event) })
     }
 }
