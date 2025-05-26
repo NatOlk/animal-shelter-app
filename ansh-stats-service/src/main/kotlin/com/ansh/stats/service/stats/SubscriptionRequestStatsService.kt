@@ -5,6 +5,7 @@ import com.ansh.stats.dto.TopicRequestStats
 import com.ansh.stats.entity.SubscriptionDecisionEventDocument
 import com.ansh.stats.repository.SubscriptionDecisionStatsRepository
 import org.springframework.stereotype.Service
+import com.ansh.stats.utils.groupAndMap
 
 @Service
 class SubscriptionRequestStatsService(
@@ -18,31 +19,25 @@ class SubscriptionRequestStatsService(
         val events: List<SubscriptionDecisionEventDocument> = repository
             .findAllByActionType(SubscriptionActionType.REQUEST)
 
-        return events
-            .groupBy { it.payload.topic }
-            .map { (topic, topicEvents) ->
-                val cnt = topicEvents.count().toLong()
-                TopicRequestStats(
-                    topic = topic,
-                    count = cnt,
-                    approver = ""
-                )
+        return groupAndMap(
+            items = events,
+            keySelector = { it.payload.topic },
+            valueMapper = { topic, topicEvents ->
+                TopicRequestStats(topic, approver = "", topicEvents.size.toLong())
             }
+        )
     }
 
     fun getStatsByApprover(): List<TopicRequestStats> {
         val events: List<SubscriptionDecisionEventDocument> = repository
             .findAllByActionType(SubscriptionActionType.REQUEST)
 
-        return events
-            .groupBy { it.payload.approver }
-            .map { (approver, topicEvents) ->
-                val cnt = topicEvents.count().toLong()
-                TopicRequestStats(
-                    topic = "",
-                    count = cnt,
-                    approver = approver
-                )
+        return groupAndMap(
+            items = events,
+            keySelector = { it.payload.approver },
+            valueMapper = { approver, topicEvents ->
+                TopicRequestStats(topic = "", approver, topicEvents.size.toLong())
             }
+        )
     }
 }
