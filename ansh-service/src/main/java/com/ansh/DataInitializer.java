@@ -6,8 +6,10 @@ import com.ansh.entity.animal.Vaccination;
 import com.ansh.repository.AnimalRepository;
 import com.ansh.repository.VaccinationRepository;
 import com.ansh.utils.IdentifierMasker;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,44 +42,71 @@ public class DataInitializer implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    ClassPathResource resource = new ClassPathResource("init.sql");
-    String sql = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
-
-    sql = sql.replace(":defaultEmail", defaultEmail);
-
-    jdbcTemplate.execute(sql);
-    LOG.debug("init default user SQL script executed with default email: {}", IdentifierMasker.maskEmail(defaultEmail));
-
-    ClassPathResource resourceAnimals = new ClassPathResource("init_animals.sql");
-    String sqlAnimals = StreamUtils.copyToString(resourceAnimals.getInputStream(), StandardCharsets.UTF_8);
-
-    sqlAnimals = sqlAnimals.replace(":defaultEmail", defaultEmail);
-
-    jdbcTemplate.execute(sqlAnimals);
-
-    LOG.debug("init animals SQL script executed with default email: {}", IdentifierMasker.maskEmail(defaultEmail));
-    f();
+    initAccountsIfEmpty();
+    initAnimalsIfEmpty();
   }
 
-  private void f() {
-    LOG.debug("Starting event sending...");
+  private void initAccountsIfEmpty() throws IOException {
+    Long accountCountRaw = jdbcTemplate.queryForObject(
+        "SELECT COUNT(*) FROM user_profiles", Long.class);
+
+    long accountCount = Optional.ofNullable(accountCountRaw).orElse(0L);
+    LOG.debug("UserProfile entries in DB: {}", accountCount);
+
+    if (accountCount > 0) {
+      LOG.debug("Skipping account initialization — user_profile already has data.");
+      return;
+    }
+
+    LOG.debug("No accounts found. Initializing default user...");
+    executeSqlScript("init.sql");
+  }
+
+  private void initAnimalsIfEmpty() throws IOException {
+    long animalCount = animalRepository.count();
+    LOG.debug("Animal entries in DB: {}", animalCount);
+
+    if (animalCount > 0) {
+      LOG.debug("Skipping animal initialization — animals already exist.");
+      return;
+    }
+
+    LOG.debug("No animals found. Initializing animals and vaccinations...");
+    executeSqlScript("init_animals.sql");
+
+    sendAnimalAndVaccinationEvents();
+  }
+
+  private void executeSqlScript(String resourcePath) throws IOException {
+    ClassPathResource resource = new ClassPathResource(resourcePath);
+    String sql = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+    sql = sql.replace(":defaultEmail", defaultEmail);
+    jdbcTemplate.execute(sql);
+    LOG.debug("Executed SQL script {} with default email {}", resourcePath, IdentifierMasker.maskEmail(defaultEmail));
+  }
+
+  private void sendAnimalAndVaccinationEvents() {
+    LOG.info("Sending notification events for initialized data...");
 
     List<Animal> animals = animalRepository.findAllWithVaccinations();
+    LOG.debug("Found {} animals", animals.size());
 
-    LOG.debug("Find {} animals...", animals.size());
     for (Animal animal : animals) {
       notificationService.sendAddAnimalMessage(animal);
-      LOG.debug("Send notification for {}", animal);
+      LOG.debug("Sent animal event: {}", animal);
     }
 
     List<Vaccination> vaccinations = vaccinationRepository.findAllWithAnimal();
-    LOG.debug("Find {} vaccinations...", vaccinations.size());
+    LOG.debug("Found {} vaccinations", vaccinations.size());
+
     for (Vaccination vaccination : vaccinations) {
       if (vaccination.getAnimal() != null) {
         vaccination.getAnimal().setVaccinations(null);
       }
       notificationService.sendAddVaccinationMessage(vaccination);
-      LOG.debug("Send notification for {}", vaccination);
+      LOG.debug("Sent vaccination event: {}", vaccination);
     }
+
+    LOG.debug("Event sending completed.");
   }
 }
