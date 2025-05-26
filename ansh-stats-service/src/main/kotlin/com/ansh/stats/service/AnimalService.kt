@@ -1,8 +1,8 @@
 package com.ansh.stats.service
 
 import com.ansh.event.AnimalShelterEvent
-import com.ansh.stats.entity.AnimalEventDocument
 import com.ansh.stats.repository.AnimalEventRepository
+import com.ansh.stats.utils.toDocument
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -13,12 +13,7 @@ class AnimalService(
     private val logger = LoggerFactory.getLogger(AnimalService::class.java)
 
     fun saveEvent(event: AnimalShelterEvent) {
-        event.animal.vaccinations?.forEach { it.animal = null }
-        val document = AnimalEventDocument(
-            eventType = event.javaClass.name,
-            animalId = event.animal.id,
-            payload = event
-        )
+        val document = event.toDocument()
         logger.debug("Saving animal event: {}", document)
         repository.save(document)
         logger.info("Animal event saved: type=${document.eventType}, animalId=${document.animalId}")
