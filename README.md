@@ -48,6 +48,35 @@ Project's Kanban board with actual tasks: https://github.com/users/NatOlk/projec
     - Processes messages from **Kafka**.
     - Sends emails to subscribers.
 
+### **4. Statistics Service (Kotlin + Spring Boot + MongoDB + Kafka)**
+
+- **Event Ingestion:**
+
+    Written in Kotlin using Spring Boot.
+
+    Listens to Kafka topics for animal and subscription events.
+
+    Converts raw messages into structured domain events and stores them in MongoDB.
+
+- **Statistical Aggregation:**
+
+    Uses MongoDB Aggregation Pipelines for efficient querying.
+
+    Calculates:
+
+     - Animals added per date
+
+     - Vaccinations added per date
+
+     - Subscription stats grouped by topic or approver
+
+     - Animal lifespan (days between add/remove events)
+
+- **REST API Endpoints:**
+
+    Exposes clean, typed JSON APIs for frontend data visualization.
+
+    Optimized for use with charts and dashboards.
 ---
 Here you can see a diagram showing the subscription approval and acceptance process.
 
