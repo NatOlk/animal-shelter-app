@@ -14,10 +14,6 @@ interface SubscriptionDecisionStatsRepository :
 
     fun countByActionType(actionType: SubscriptionActionType): Long
 
-    fun findAllByActionType(actionType: SubscriptionActionType): List<SubscriptionDecisionEventDocument>
-
-    fun findAllByActionTypeIn(actionTypes: List<SubscriptionActionType>): List<SubscriptionDecisionEventDocument>
-
     @Aggregation(
         pipeline = [
             "{ '\$match': { 'actionType': ?0 } }",
@@ -41,8 +37,8 @@ interface SubscriptionDecisionStatsRepository :
             "{ '\$match': { 'actionType': ?0 } }",
             "{ '\$group': { " +
                     "'_id': '\$payload.topic', " +
-                    "'approvedCount': { '\$sum': { '\$cond': [ { '\$eq': [ '\$payload.isReject', false ] }, 1, 0 ] } }, " +
-                    "'rejectedCount': { '\$sum': { '\$cond': [ { '\$eq': [ '\$payload.isReject', true ] }, 1, 0 ] } }, " +
+                    "'approvedCount': { '\$sum': { '\$cond': [ { '\$eq': [ '\$payload.reject', false ] }, 1, 0 ] } }, " +
+                    "'rejectedCount': { '\$sum': { '\$cond': [ { '\$eq': [ '\$payload.reject', true ] }, 1, 0 ] } }, " +
                     "'count': { '\$sum': 1 } " +
                     "} }",
             "{ '\$project': { 'topic': '\$_id', 'approvedCount': 1, 'rejectedCount': 1, 'count': 1, '_id': 0 } }"

@@ -21,12 +21,8 @@ class AnimalStatsService(
     }
 
     fun getAddedAnimalsGroupedByDate(): Map<LocalDate, Long> {
-        val events = repository.findByEventType(EventTypes.ADD_ANIMAL)
-        logger.debug("Found ${events.size} add animal events")
-        val grouped = events.groupingBy { it.payload.created }.eachCount()
-            .mapValues { it.value.toLong() }
-        logger.debug("Grouped add animal events by date: {}", grouped)
-        return grouped
+        return repository.aggregateEventCountByDate(EventTypes.ADD_ANIMAL)
+            .associate { it.date to it.count }
     }
 
     fun getVaccinationCount(): Long {
@@ -36,49 +32,11 @@ class AnimalStatsService(
     }
 
     fun getAddedVaccinationsGroupedByDate(): Map<LocalDate, Long> {
-        val events = repository.findByEventType(EventTypes.ADD_VACCINATION)
-        logger.debug("Found ${events.size} add vaccination events")
-        val grouped = events.groupingBy { it.payload.created }.eachCount()
-            .mapValues { it.value.toLong() }
-        logger.debug("Grouped vaccination events by date: {}", grouped)
-        return grouped
+        return repository.aggregateEventCountByDate(EventTypes.ADD_VACCINATION)
+            .associate { it.date to it.count }
     }
 
     fun getAnimalLifespans(): List<AnimalLifespanStats> {
-        val allEvents = repository.findByEventTypeIn(
-            listOf(
-                EventTypes.ADD_ANIMAL,
-                EventTypes.REMOVE_ANIMAL
-            )
-        )
-        logger.debug("Found ${allEvents.size} total add/remove animal events")
-
-        return allEvents
-            .groupBy { it.animalId }
-            .mapNotNull { (animalId, events) ->
-                val addEvent =
-                    events.find { it.eventType == EventTypes.ADD_ANIMAL }
-                val removeEvent =
-                    events.find { it.eventType == EventTypes.REMOVE_ANIMAL }
-
-                if (addEvent != null && removeEvent != null) {
-
-                    val days = ChronoUnit.DAYS.between(
-                        addEvent.payload.created,
-                        removeEvent.payload.created
-                    )
-
-                    val animal = addEvent.payload.animal
-                    AnimalLifespanStats(
-                        id = animal.id,
-                        name = animal.name,
-                        species = animal.species,
-                        daysInSystem = days
-                    )
-                } else {
-                    logger.warn("Missing add or remove event for animalId=$animalId")
-                    null
-                }
-            }
+        return repository.aggregateAnimalLifespans()
     }
 }
