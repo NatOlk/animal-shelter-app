@@ -145,7 +145,7 @@ services:
       - "5703:5703"
     environment:
       - HZ_CLUSTERNAME=ansh-cluster
-      - HZ_NETWORK_PUBLICADDRESS=localhost:5701
+      - HZ_NETWORK_PUBLICADDRESS=ansh-hazelcast:5701
       - HZ_CONFIG=/opt/hazelcast/config/hazelcast.yaml
     volumes:
       - hazelcast-config:/opt/hazelcast/config
@@ -161,9 +161,9 @@ services:
       - "8080:8080"
     environment:
       - HZ_CLUSTERNAME=ansh-cluster
-      - HZ_NETWORK_PUBLICADDRESS=localhost:5701
+      - HZ_NETWORK_PUBLICADDRESS=ansh-hazelcast:5701
       - HZ_NETWORK_JOIN_TCPIP_ENABLED=true
-      - HZ_NETWORK_JOIN_TCPIP_MEMBERS=localhost:5701
+      - HZ_NETWORK_JOIN_TCPIP_MEMBERS=ansh-hazelcast:5701
       - HZ_NETWORK_JOIN_MULTICAST_ENABLED=false
       - MC_DEFAULT_CLUSTER_MEMBERS=ansh-hazelcast:5701
       - MC_DEFAULT_CLUSTER_NAME=ansh-cluster

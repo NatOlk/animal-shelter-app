@@ -58,8 +58,15 @@ public class VaccinationServiceImpl implements VaccinationService {
   }
 
   @Override
-  @CachePut(value = "vaccination", key = "#result.id")
-  @CacheEvict(value = "vaccinations", key = "'allVaccinations'")
+  @Caching(
+      put = {
+          @CachePut(value = "vaccination", key = "#result.id")
+      },
+      evict = {
+          @CacheEvict(value = "vaccinations", key = "'allVaccinations'"),
+          @CacheEvict(value = "vaccinations", key = "'animal-' + #result.animal.id")
+      }
+  )
   public Vaccination addVaccination(@NonNull VaccinationInput vaccination) {
 
     Animal animal = animalRepository.findById(vaccination.getAnimalId()).orElse(null);
