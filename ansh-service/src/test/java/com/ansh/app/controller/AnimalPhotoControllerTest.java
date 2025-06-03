@@ -1,20 +1,12 @@
 package com.ansh.app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.app.service.animal.AnimalService;
-import com.ansh.app.service.animal.FileStorageService;
-import java.util.Optional;
+import com.ansh.app.facade.AnimalFacade;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -28,10 +20,7 @@ class AnimalPhotoControllerTest {
   private AnimalPhotoController controller;
 
   @Mock
-  private AnimalService animalService;
-
-  @Mock
-  private FileStorageService fileStorageService;
+  private AnimalFacade animalFacade;
 
   @Mock
   private MultipartFile file;
@@ -43,54 +32,29 @@ class AnimalPhotoControllerTest {
 
   @Test
   void testUploadPhoto_Success() {
-    String expectedPhotoUrl = "/uploads/1_Dog_Labrador_Black_2022-01-01_1.jpg";
+    Long animalId = 1L;
+    String expectedPhotoUrl = "https://shelter.example.com/uploads/animal.jpg";
 
-    when(file.isEmpty()).thenReturn(false);
-    when(fileStorageService.storeFile(1L, file, "Dog", "Labrador", "Black", "2022-01-01"))
-        .thenReturn(Optional.of(expectedPhotoUrl));
+    when(animalFacade.updateAnimalPhoto(animalId, file)).thenReturn(expectedPhotoUrl);
 
-    ResponseEntity<String> response = controller.uploadPhoto(
-        1L, file, "Dog", "Labrador", "Black", "2022-01-01"
-    );
-
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals(expectedPhotoUrl, response.getBody());
-
-    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-    verify(animalService).updatePhotoUrl(eq(1L), captor.capture());
-    assertEquals(expectedPhotoUrl, captor.getValue());
-  }
-
-  @Test
-  void testUploadPhoto_whenStorageFails() {
-    when(file.isEmpty()).thenReturn(false);
-    when(fileStorageService.storeFile(1L, file, "Dog", "Labrador", "Black", "2022-01-01"))
-        .thenReturn(Optional.empty());
-
-    ResponseEntity<String> response = controller.uploadPhoto(
-        1L, file, "Dog", "Labrador", "Black", "2022-01-01"
-    );
-
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    assertEquals("Failed to upload photo", response.getBody());
-
-    verify(animalService, never()).updatePhotoUrl(anyLong(), anyString());
-  }
-
-  @Test
-  void testUploadPhoto_whenComplexNames() {
-    String expectedPhotoUrl = "/uploads/1_Dog_123_Labrador_22_Black_2022-01-01_1.jpg";
-
-    when(file.isEmpty()).thenReturn(false);
-    when(fileStorageService.storeFile(1L, file, "Dog 123", "Labrador 22", "Black", "2022-01-01"))
-        .thenReturn(Optional.of(expectedPhotoUrl));
-
-    ResponseEntity<String> response = controller.uploadPhoto(
-        1L, file, "Dog 123", "Labrador 22", "Black", "2022-01-01"
-    );
+    ResponseEntity<String> response = controller.uploadPhoto(animalId, file);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(expectedPhotoUrl, response.getBody());
+    verify(animalFacade).updateAnimalPhoto(animalId, file);
+  }
+
+  @Test
+  void testUploadPhoto_WithDifferentAnimalId() {
+    Long animalId = 42L;
+    String expectedUrl = "https://shelter.example.com/uploads/photo42.jpg";
+
+    when(animalFacade.updateAnimalPhoto(animalId, file)).thenReturn(expectedUrl);
+
+    ResponseEntity<String> response = controller.uploadPhoto(animalId, file);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(expectedUrl, response.getBody());
+    verify(animalFacade).updateAnimalPhoto(animalId, file);
   }
 }

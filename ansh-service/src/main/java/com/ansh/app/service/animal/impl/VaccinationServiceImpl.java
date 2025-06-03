@@ -13,6 +13,9 @@ import com.ansh.repository.AnimalRepository;
 import com.ansh.repository.VaccinationRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,29 +115,27 @@ public class VaccinationServiceImpl implements VaccinationService {
             STR."Vaccination not found \{vaccination.getId()}"));
 
     try {
-      if (vaccination.getVaccine() != null) {
-        entity.setVaccine(vaccination.getVaccine());
-      }
-      if (vaccination.getBatch() != null) {
-        entity.setBatch(vaccination.getBatch());
+      boolean isUpdated = Stream.of(
+          updateIfChanged(vaccination.getVaccine(), entity.getVaccine(), entity::setVaccine),
+          updateIfChanged(vaccination.getBatch(), entity.getBatch(), entity::setBatch),
+          updateIfChanged(vaccination.getVaccinationTime(), entity.getVaccinationTime(),
+              entity::setVaccinationTime),
+          updateIfChanged(vaccination.getComments(), entity.getComments(), entity::setComments),
+          updateIfChanged(vaccination.getEmail(), entity.getEmail(), entity::setEmail)
+      ).reduce(false, Boolean::logicalOr);
+
+      if (isUpdated) {
+        vaccinationRepository.save(entity);
+        LOG.debug("[vaccination] updated: {}", vaccination);
+      } else {
+        LOG.debug("[vaccination] no changes detected for: {}", vaccination.getId());
       }
 
-      if (vaccination.getVaccinationTime() != null) {
-        entity.setVaccinationTime(vaccination.getVaccinationTime());
-      }
-      if (vaccination.getComments() != null) {
-        entity.setComments(vaccination.getComments());
-      }
-      if (vaccination.getEmail() != null) {
-        entity.setEmail(vaccination.getEmail());
-      }
-      vaccinationRepository.save(entity);
-      LOG.debug("[vaccination] updated : {}", vaccination);
     } catch (ObjectOptimisticLockingFailureException oe) {
       throw new VaccinationUpdateException(
           "Update conflict! Another user modified this vaccination.");
     } catch (Exception e) {
-      throw new VaccinationUpdateException(STR."Could not update animal:\{e.getMessage()}");
+      throw new VaccinationUpdateException(STR."Could not update vaccination: \{e.getMessage()}");
     }
 
     return entity;
@@ -155,5 +156,13 @@ public class VaccinationServiceImpl implements VaccinationService {
     LOG.debug("[vaccination] removed : {}", vaccination);
     animalInfoNotificationService.sendRemoveVaccinationMessage(vaccination);
     return vaccination;
+  }
+
+  private <T> boolean updateIfChanged(T newValue, T oldValue, Consumer<T> setter) {
+    if (newValue != null && !Objects.equals(newValue, oldValue)) {
+      setter.accept(newValue);
+      return true;
+    }
+    return false;
   }
 }

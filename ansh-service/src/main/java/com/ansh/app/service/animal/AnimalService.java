@@ -21,6 +21,11 @@ public interface AnimalService {
    */
   List<Animal> getAllAnimals();
 
+  /**
+   * Retrieve animal by required id
+   * @param id Animal's id
+   * @return Found animal, otherwise AnimalNotFoundException is thrown
+   */
 
   Animal findById(Long id);
 

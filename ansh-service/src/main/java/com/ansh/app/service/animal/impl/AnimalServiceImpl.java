@@ -12,6 +12,9 @@ import com.ansh.repository.AnimalRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,38 +91,35 @@ public class AnimalServiceImpl implements AnimalService {
   @Transactional
   @CachePut(value = "animal", key = "#animal.id")
   @CacheEvict(value = "animals", allEntries = true)
-  public Animal updateAnimal(@NonNull UpdateAnimalInput animal) {
-    Animal entity = animalRepository.findById(animal.getId())
-        .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{animal.getId()}"));
+  public Animal updateAnimal(@NonNull UpdateAnimalInput input) {
+    Animal entity = animalRepository.findById(input.getId())
+        .orElseThrow(() -> new AnimalNotFoundException(STR."Animal not found \{input.getId()}"));
 
     try {
-      if (animal.getGender() != null && !animal.getGender().isEmpty()) {
-        entity.setGender(animal.getGender().charAt(0));
+      boolean isUpdated = Stream.of(
+          updateIfChanged(input.getGender().charAt(0), entity.getGender(), entity::setGender),
+          updateIfChanged(input.getBirthDate(), entity.getBirthDate(), entity::setBirthDate),
+          updateIfChanged(input.getPattern(), entity.getPattern(), entity::setPattern),
+          updateIfChanged(input.getPrimaryColor(), entity.getPrimaryColor(),
+              entity::setPrimaryColor),
+          updateIfChanged(input.getBreed(), entity.getBreed(), entity::setBreed),
+          updateIfChanged(input.getPhotoImgPath(), entity.getPhotoImgPath(),
+              entity::setPhotoImgPath)
+      ).reduce(false, Boolean::logicalOr);
+
+      if (isUpdated) {
+        LOG.debug("[animal] updated: {}", input);
+        animalRepository.save(entity);
+      } else {
+        LOG.debug("[animal] no changes detected for: {}", input.getId());
       }
-      if (animal.getBirthDate() != null) {
-        entity.setBirthDate(animal.getBirthDate());
-      }
-      if (animal.getPattern() != null) {
-        entity.setPattern(animal.getPattern());
-      }
-      if (animal.getPrimaryColor() != null) {
-        entity.setPrimaryColor(animal.getPrimaryColor());
-      }
-      if (animal.getBreed() != null) {
-        entity.setBreed(animal.getBreed());
-      }
-      if (animal.getPhotoImgPath() != null) {
-        entity.setPhotoImgPath(animal.getPhotoImgPath());
-      }
-      LOG.debug("[animal] updated : {}", animal);
-      animalRepository.save(entity);
+
+      return entity;
     } catch (ObjectOptimisticLockingFailureException oe) {
       throw new AnimalUpdateException("Update conflict! Another user modified this animal.");
     } catch (Exception e) {
-      throw new AnimalUpdateException(STR."Could not update animal:\{e.getMessage()}");
+      throw new AnimalUpdateException(STR."Could not update animal: \{e.getMessage()}");
     }
-
-    return entity;
   }
 
   @Override
@@ -147,5 +147,13 @@ public class AnimalServiceImpl implements AnimalService {
   @CacheEvict(value = "animal", key = "#id")
   public void updatePhotoUrl(Long id, String path) {
     animalRepository.updatePhotoPathById(id, path);
+  }
+
+  private <T> boolean updateIfChanged(T newValue, T oldValue, Consumer<T> setter) {
+    if (newValue != null && !Objects.equals(newValue, oldValue)) {
+      setter.accept(newValue);
+      return true;
+    }
+    return false;
   }
 }

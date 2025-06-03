@@ -43,9 +43,7 @@ public class AnimalShelterEvent {
     params.put("animalImplantChip", animal.getImplantChipId());
     params.put("animalGender", animal.getGender());
     params.put("dateAdded", animal.getAdmissionDate());
-    //TODO fix details path
-    params.put("animalDetailsLink", "/details/" + animal.getId());
-
+    params.put("animalDetailsLink", "/public/animals/" + animal.getId());
     return params;
   }
 }

@@ -77,10 +77,6 @@ const AnimalDetails: React.FC = () => {
 
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("species", animal.species);
-        formData.append("name", animal.name);
-        formData.append("breed", animal.breed);
-        formData.append("birthDate", animal.birthDate);
 
         try {
             const response = await apiFetch(`/api/${id}/upload-photo`, {
@@ -190,7 +186,7 @@ const AnimalDetails: React.FC = () => {
                                                 <Image
                                                     isZoomed
                                                     alt="Animal Image"
-                                                    src={`${config.animalShelterApp}/${photoImgPath}?timestamp=${forceUpdate}`}
+                                                    src={`${photoImgPath}?timestamp=${forceUpdate}`}
                                                     width={350}
                                                     height={350}
                                                     radius="md" />

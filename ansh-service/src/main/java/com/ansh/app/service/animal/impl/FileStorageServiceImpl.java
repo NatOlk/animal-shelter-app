@@ -3,6 +3,7 @@ package com.ansh.app.service.animal.impl;
 import com.ansh.app.service.animal.FileStorageService;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,19 +20,23 @@ public class FileStorageServiceImpl implements FileStorageService {
   private String uploadDir;
 
   @Override
-  public Optional<String> storeFile(Long id, MultipartFile file, String name, String species, String breed, String birthDate) {
+  public Optional<String> storeFile(String fileName, MultipartFile file) throws IOException {
     if (file == null || file.isEmpty()) {
       LOG.warn("Attempted to upload an empty file.");
       return Optional.empty();
     }
 
-    String extension = getFileExtension(file.getOriginalFilename());
+    if (fileName.contains(" ")) {
+      throw new IllegalArgumentException("File name must not contain spaces");
+    }
+
+    String extension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
     if (extension.isEmpty()) {
       LOG.warn("Invalid file: missing extension");
       return Optional.empty();
     }
 
-    String fileName = formatFileName(id, name, species, breed, birthDate, extension);
+    String fileNameExt = concatFileNameAndExtension(fileName, extension);
 
     File uploadPath = new File(uploadDir);
     if (!uploadPath.exists() && !uploadPath.mkdirs()) {
@@ -39,15 +44,10 @@ public class FileStorageServiceImpl implements FileStorageService {
       return Optional.empty();
     }
 
-    File destination = new File(uploadPath, fileName);
+    File destination = new File(uploadPath, fileNameExt);
 
-    try {
-      file.transferTo(destination);
-      return Optional.of(uploadDir + "/" + fileName);
-    } catch (IOException e) {
-      LOG.error("Error saving file: {}", e.getMessage());
-      return Optional.empty();
-    }
+    file.transferTo(destination);
+    return Optional.of(STR."\{uploadDir}/\{fileNameExt}");
   }
 
   private String getFileExtension(String fileName) {
@@ -55,15 +55,11 @@ public class FileStorageServiceImpl implements FileStorageService {
     return (lastIndex == -1) ? "" : fileName.substring(lastIndex + 1);
   }
 
-  private String formatFileName(Long id, String name, String species, String breed, String birthDate, String extension) {
-    return STR."\{id}_\{safeName(name)}_\{safeName(species)}_\{safeName(breed)}_\{birthDate}_1.\{extension}";
-  }
-
-  private String safeName(String name) {
-    return name.replaceAll("[^a-zA-Z0-9]", "_");
+  private String concatFileNameAndExtension(String fileName, String extension) {
+    return STR."\{fileName}.\{extension}";
   }
 
   protected void setUploadDir(String uploadDir) {
-     this.uploadDir = uploadDir;
+    this.uploadDir = uploadDir;
   }
 }

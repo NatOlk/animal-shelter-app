@@ -33,9 +33,7 @@ public class AnshSecurityConfig {
             "/api/**", "/public/**", "/graphql"
         ))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/public/auth/login").permitAll()
-            .requestMatchers("/public/auth/logout").permitAll()
-            .requestMatchers("/public/auth/register").permitAll()
+            .requestMatchers("/public/**").permitAll()
             .requestMatchers("/resources/**").permitAll()
             .requestMatchers("/uploads/**").permitAll()
             .requestMatchers(
@@ -44,6 +42,7 @@ public class AnshSecurityConfig {
                 "/swagger-ui.html"
             ).permitAll()
             .requestMatchers("/graphql").authenticated()
+            .requestMatchers("/api/").authenticated()
             .requestMatchers("/**").authenticated()
         )
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
