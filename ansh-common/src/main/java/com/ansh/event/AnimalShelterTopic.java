@@ -1,5 +1,8 @@
 package com.ansh.event;
 
+import lombok.Getter;
+
+@Getter
 public enum AnimalShelterTopic {
   ANIMAL_INFO("animalTopicId"),
   VACCINATION_INFO("vaccinationTopicId"),
@@ -9,9 +12,5 @@ public enum AnimalShelterTopic {
 
   AnimalShelterTopic(String topicName) {
     this.topicName = topicName;
-  }
-
-  public String getTopicName() {
-    return topicName;
   }
 }

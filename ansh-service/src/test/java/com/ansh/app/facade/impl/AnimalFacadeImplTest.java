@@ -2,22 +2,31 @@ package com.ansh.app.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.ansh.app.service.animal.AnimalService;
 import com.ansh.app.service.animal.FileStorageService;
 import com.ansh.entity.animal.Animal;
+import com.ansh.utils.BaseUrlProvider;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.multipart.MultipartFile;
 
 class AnimalFacadeImplTest {
 
+  @InjectMocks
   private AnimalFacadeImpl animalFacade;
 
   @Mock
@@ -28,12 +37,14 @@ class AnimalFacadeImplTest {
 
   @Mock
   private MultipartFile file;
+  @Mock
+  private BaseUrlProvider baseUrlProvider;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
     String animalShelterApp = "https://shelter.example.com";
-    animalFacade = new AnimalFacadeImpl(fileStorageService, animalService, animalShelterApp);
+    when(baseUrlProvider.getBaseUrl()).thenReturn(animalShelterApp);
   }
 
   @Test

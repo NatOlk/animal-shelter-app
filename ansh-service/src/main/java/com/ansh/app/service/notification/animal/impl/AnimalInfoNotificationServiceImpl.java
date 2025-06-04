@@ -1,16 +1,19 @@
 package com.ansh.app.service.notification.animal.impl;
 
+import static com.ansh.event.AnimalEventKeys.BASE_URL_METADATA;
+
 import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;
-import com.ansh.event.animal.AddAnimalEvent;
-import com.ansh.event.news.AnimalShelterNewsEvent;
-import com.ansh.event.vaccination.AddVaccinationEvent;
 import com.ansh.event.AnimalShelterEvent;
 import com.ansh.event.AnimalShelterTopic;
+import com.ansh.event.animal.AddAnimalEvent;
 import com.ansh.event.animal.RemoveAnimalEvent;
+import com.ansh.event.news.AnimalShelterNewsEvent;
+import com.ansh.event.vaccination.AddVaccinationEvent;
 import com.ansh.event.vaccination.RemoveVaccinationEvent;
 import com.ansh.notification.strategy.NotificationProducerStrategy;
+import com.ansh.utils.BaseUrlProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,10 @@ public class AnimalInfoNotificationServiceImpl implements AnimalInfoNotification
 
   private static final Logger LOG = LoggerFactory.getLogger(
       AnimalInfoNotificationServiceImpl.class);
+
+  @Autowired
+  private BaseUrlProvider baseUrlProvider;
+
   @Autowired
   private NotificationProducerStrategy notificationProducerStrategy;
 
@@ -53,7 +60,7 @@ public class AnimalInfoNotificationServiceImpl implements AnimalInfoNotification
   }
 
   private void sendNotification(AnimalShelterEvent event, String topicId) {
-
+    event.addMetadata(BASE_URL_METADATA.getKey(), baseUrlProvider.getBaseUrl());
     notificationProducerStrategy.getServiceByTopic(topicId)
         .ifPresentOrElse(
             producer -> producer.sendNotification(event),

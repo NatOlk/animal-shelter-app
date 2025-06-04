@@ -1,6 +1,8 @@
 package com.ansh.app.service.notification.animal.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,10 +17,12 @@ import com.ansh.event.vaccination.RemoveVaccinationEvent;
 import com.ansh.notification.app.animal.AnimalInfoNotificationProducer;
 import com.ansh.notification.app.vaccination.VaccinationInfoNotificationProducer;
 import com.ansh.notification.strategy.NotificationProducerStrategy;
+import com.ansh.utils.BaseUrlProvider;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,6 +38,9 @@ class AnimalInfoNotificationServiceTest {
   @Mock
   private NotificationProducerStrategy notificationProducerStrategy;
 
+  @Mock
+  private BaseUrlProvider baseUrlProvider;
+
   @InjectMocks
   private AnimalInfoNotificationServiceImpl animalInfoNotificationService;
 
@@ -46,6 +53,7 @@ class AnimalInfoNotificationServiceTest {
     when(notificationProducerStrategy.getServiceByTopic(
         AnimalShelterTopic.VACCINATION_INFO.getTopicName()))
         .thenReturn(Optional.of(vaccinationInfoNotificationProducer));
+    when(baseUrlProvider.getBaseUrl()).thenReturn("https://localhost");
   }
 
   @Test
@@ -57,6 +65,26 @@ class AnimalInfoNotificationServiceTest {
     animalInfoNotificationService.sendAddAnimalMessage(animal);
 
     verify(animalInfoProducer, times(1)).sendNotification(any(AddAnimalEvent.class));
+  }
+
+  @Test
+  void testSendAddAnimalMessage_sendsCorrectLink() {
+    Animal animal = new Animal();
+    animal.setId(42L);
+    animal.setName("Buddy");
+    animal.setSpecies("Dog");
+    animal.setGender('M');
+    animal.setAdmissionDate(LocalDate.of(2024, 1, 1));
+
+    ArgumentCaptor<AddAnimalEvent> captor = ArgumentCaptor.forClass(AddAnimalEvent.class);
+
+    animalInfoNotificationService.sendAddAnimalMessage(animal);
+
+    verify(animalInfoProducer, atLeastOnce()).sendNotification(captor.capture());
+
+    AddAnimalEvent capturedEvent = captor.getValue();
+    String actualLink = (String) capturedEvent.getParams().get("animalDetailsLink");
+    assertEquals("https://localhost/public/animals/42", actualLink);
   }
 
   @Test
