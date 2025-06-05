@@ -2,13 +2,14 @@ package com.ansh.app.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.app.controller.PendingSubscriptionController;
 import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
-import com.ansh.dto.SubscriptionRequest;
 import com.ansh.notification.strategy.PendingSubscriptionServiceStrategy;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.Collections;
@@ -25,6 +26,7 @@ class PendingSubscriptionFacadeImplTest {
   private static final String APPROVER_EMAIL = "admin@example.com";
   private static final String TEST_EMAIL = "test@example.com";
   private static final String TOPIC_ID = "animalTopicId";
+  private static final String NOT_SUPPORTED_TOPIC_ID = "noTopic";
 
   @Mock
   private PendingSubscriptionServiceStrategy pendingSubscriptionServiceStrategy;
@@ -34,7 +36,6 @@ class PendingSubscriptionFacadeImplTest {
 
   @InjectMocks
   private PendingSubscriptionFacadeImpl pendingSubscriptionFacade;
-
 
   @BeforeEach
   void setUp() {
@@ -57,7 +58,8 @@ class PendingSubscriptionFacadeImplTest {
     when(animalInfoPendingSubscriptionService.getSubscribersByApprover(APPROVER_EMAIL))
         .thenReturn(List.of(subscriber));
 
-    List<PendingSubscriber> result = pendingSubscriptionFacade.getSubscribersByApprover(APPROVER_EMAIL);
+    List<PendingSubscriber> result = pendingSubscriptionFacade.getSubscribersByApprover(
+        APPROVER_EMAIL);
 
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -75,5 +77,35 @@ class PendingSubscriptionFacadeImplTest {
 
     assertNotNull(result);
     assertEquals(0, result.size());
+  }
+
+  @Test
+  void shouldSaveSubscriber() {
+    // when
+    pendingSubscriptionFacade.saveSubscriber(TOPIC_ID, TEST_EMAIL, APPROVER_EMAIL);
+
+    // then
+    verify(pendingSubscriptionServiceStrategy, times(1))
+        .getServiceByTopic(TOPIC_ID);
+    verify(animalInfoPendingSubscriptionService, times(1))
+        .saveSubscriber(TEST_EMAIL, APPROVER_EMAIL);
+  }
+
+  @Test
+  void shouldThrowException_whenNoServiceFound() {
+    // given
+    String unsupportedTopic = "notSupportedTopic";
+    when(pendingSubscriptionServiceStrategy.getServiceByTopic(unsupportedTopic))
+        .thenReturn(Optional.empty());
+
+    // when + then
+    assertThrows(IllegalArgumentException.class, () ->
+        pendingSubscriptionFacade.saveSubscriber(unsupportedTopic, TEST_EMAIL, APPROVER_EMAIL)
+    );
+
+    verify(pendingSubscriptionServiceStrategy, times(1))
+        .getServiceByTopic(unsupportedTopic);
+    verify(animalInfoPendingSubscriptionService, never())
+        .saveSubscriber(anyString(), anyString());
   }
 }

@@ -30,8 +30,8 @@ public class SubscriptionFacadeImpl implements SubscriptionFacade {
 
   @Override
   public void registerSubscription(SubscriptionRequest req) {
-    subscriberRegistryServiceStrategy.getServiceByTopic(req.getTopic())
-        .ifPresent(service -> service.registerSubscriber(req.getEmail(), req.getApprover()));
+    getServiceByTopicOrThrow(req.getTopic())
+        .registerSubscriber(req.getEmail(), req.getApprover());
   }
 
   @Override
@@ -42,28 +42,39 @@ public class SubscriptionFacadeImpl implements SubscriptionFacade {
 
   @Override
   public void unsubscribe(SubscriptionRequest req) {
-    subscriberRegistryServiceStrategy.getServiceByTopic(req.getTopic())
-        .ifPresent(service -> service.unsubscribe(req.getEmail(), req.getApprover()));
+    getServiceByTopicOrThrow(req.getTopic())
+        .unsubscribe(req.getEmail(), req.getApprover());
   }
 
   @Override
   public NotificationStatusDTO getSubscriptionStatuses(String account) {
-
-    var animalNewsStatus = subscriberRegistryServiceStrategy
-        .getServiceByTopic(AnimalShelterTopic.ANIMAL_SHELTER_NEWS.getTopicName())
-        .map(service -> service.getSubscriptionStatus(account))
-        .orElse(AnimalInfoNotifStatus.NONE);
-
-    var animalInfoStatus = subscriberRegistryServiceStrategy
-        .getServiceByTopic(AnimalShelterTopic.ANIMAL_INFO.getTopicName())
-        .map(service -> service.getSubscriptionStatus(account))
-        .orElse(AnimalInfoNotifStatus.NONE);
-
-    var vaccinationStatus = subscriberRegistryServiceStrategy
-        .getServiceByTopic(AnimalShelterTopic.VACCINATION_INFO.getTopicName())
-        .map(service -> service.getSubscriptionStatus(account))
-        .orElse(AnimalInfoNotifStatus.NONE);
+    var animalNewsStatus = getStatusByTopic(account,
+        AnimalShelterTopic.ANIMAL_SHELTER_NEWS.getTopicName());
+    var animalInfoStatus = getStatusByTopic(account,
+        AnimalShelterTopic.ANIMAL_INFO.getTopicName());
+    var vaccinationStatus = getStatusByTopic(account,
+        AnimalShelterTopic.VACCINATION_INFO.getTopicName());
 
     return new NotificationStatusDTO(animalNewsStatus, animalInfoStatus, vaccinationStatus);
+  }
+
+  @Override
+  public void handleSubscriptionApproval(String email, String approver, String topic,
+      boolean reject) {
+    getServiceByTopicOrThrow(topic)
+        .handleSubscriptionApproval(email, approver, reject);
+  }
+
+  private SubscriberRegistryService getServiceByTopicOrThrow(String topic) {
+    return subscriberRegistryServiceStrategy.getServiceByTopic(topic)
+        .orElseThrow(
+            () -> new IllegalArgumentException(STR."No service found for topic: \{topic}"));
+  }
+
+  private AnimalInfoNotifStatus getStatusByTopic(String account, String topic) {
+    return subscriberRegistryServiceStrategy
+        .getServiceByTopic(topic)
+        .map(service -> service.getSubscriptionStatus(account))
+        .orElse(AnimalInfoNotifStatus.NONE);
   }
 }

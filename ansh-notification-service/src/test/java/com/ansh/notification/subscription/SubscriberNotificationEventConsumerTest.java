@@ -1,20 +1,19 @@
 package com.ansh.notification.subscription;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.ansh.event.AnimalShelterTopic;
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
-import com.ansh.service.SubscriberRegistryService;
-import com.ansh.strategy.SubscriberRegistryServiceStrategy;
+import com.ansh.facade.SubscriptionFacade;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.Optional;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.kafka.support.Acknowledgment;
 
 class SubscriberNotificationEventConsumerTest {
 
@@ -22,23 +21,25 @@ class SubscriberNotificationEventConsumerTest {
   private static final String TEST_EMAIL = "test@test.com";
   private static final String APPROVER_EMAIL = "approver@test.com";
 
+  @Mock
   private ObjectMapper objectMapper;
-  private SubscriberRegistryServiceStrategy serviceStrategy;
-  private SubscriberRegistryService mockService;
+
+  @Mock
+  private SubscriptionFacade subscriptionFacade;
+
+  @Mock
+  private Acknowledgment ack;
+
+  @InjectMocks
   private SubscriberNotificationEventConsumer consumer;
 
   @BeforeEach
   void setUp() {
-    objectMapper = new ObjectMapper();
-    serviceStrategy = mock(SubscriberRegistryServiceStrategy.class);
-    mockService = mock(SubscriberRegistryService.class);
-
-    consumer = new SubscriberNotificationEventConsumer();
-    consumer.setSubscriberRegistryServiceStrategy(serviceStrategy);
+    MockitoAnnotations.openMocks(this);
   }
 
   @Test
-  void shouldHandleSubscriptionWhenServiceExists() throws Exception {
+  void shouldHandleSubscriptionApprovalViaFacade() throws Exception {
     // given
     SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
         .topic(ANIMAL_TOPIC)
@@ -47,54 +48,66 @@ class SubscriberNotificationEventConsumerTest {
         .reject(false)
         .build();
 
-    String json = objectMapper.writeValueAsString(event);
-    ConsumerRecord<String, String> record = new ConsumerRecord<>(ANIMAL_TOPIC, 0, 0L, "key", json);
+    String json = "{\"topic\":\"%s\",\"email\":\"%s\",\"approver\":\"%s\",\"reject\":false}"
+        .formatted(ANIMAL_TOPIC, TEST_EMAIL, APPROVER_EMAIL);
+    ConsumerRecord<String, String> record = new ConsumerRecord<>(ANIMAL_TOPIC, 0, 0L,
+        "key", json);
 
-    when(serviceStrategy.getServiceByTopic(ANIMAL_TOPIC)).thenReturn(Optional.of(mockService));
+    when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
 
     // when
-    consumer.listen(record);
+    consumer.listen(record, ack);
 
     // then
-    verify(mockService).handleSubscriptionApproval(TEST_EMAIL, APPROVER_EMAIL, false);
+    verify(subscriptionFacade, times(1))
+        .handleSubscriptionApproval(TEST_EMAIL, APPROVER_EMAIL, ANIMAL_TOPIC, false);
+    verify(ack).acknowledge();
   }
 
   @Test
-  void shouldLogWarningWhenNoServiceFound() throws Exception {
+  void shouldLogWarningAndAcknowledgeIfIllegalArgument() throws Exception {
     // given
     SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
-        .topic("unknown-topic")
+        .topic("unsupported-topic")
         .email(TEST_EMAIL)
         .approver(APPROVER_EMAIL)
         .reject(true)
         .build();
 
-    String json = objectMapper.writeValueAsString(event);
-    ConsumerRecord<String, String> record = new ConsumerRecord<>("unknown-topic", 0, 0L, "key",
-        json);
+    String json = "{\"topic\":\"unsupported-topic\",\"email\":\"%s\",\"approver\":\"%s\",\"reject\":true}"
+        .formatted(TEST_EMAIL, APPROVER_EMAIL);
+    ConsumerRecord<String, String> record = new ConsumerRecord<>("unsupported-topic", 0,
+        0L, "key", json);
 
-    when(serviceStrategy.getServiceByTopic("unknown-topic")).thenReturn(Optional.empty());
+    when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
+    doThrow(new IllegalArgumentException("No service found for topic"))
+        .when(subscriptionFacade)
+        .handleSubscriptionApproval(TEST_EMAIL, APPROVER_EMAIL, "unsupported-topic", true);
 
     // when
-    consumer.listen(record);
+    consumer.listen(record, ack);
 
-    // then — no call
-    verifyNoInteractions(mockService);
+    // then
+    verify(subscriptionFacade).handleSubscriptionApproval(TEST_EMAIL, APPROVER_EMAIL,
+        "unsupported-topic", true);
+    verify(ack).acknowledge();
   }
 
   @Test
-  void shouldThrowExceptionOnInvalidJson() {
+  void shouldNotAcknowledgeOnInvalidJson() throws Exception {
     // given
-    String invalidJson = "invalid json";
-    ConsumerRecord<String, String> record = new ConsumerRecord<>(ANIMAL_TOPIC, 0, 0L, "key",
-        invalidJson);
+    String invalidJson = "not a valid json";
+    ConsumerRecord<String, String> record = new ConsumerRecord<>(ANIMAL_TOPIC, 0, 0L,
+        "key", invalidJson);
 
-    // when / then
-    try {
-      consumer.listen(record);
-      assert false : "Expected IOException to be thrown";
-    } catch (IOException e) {
-      // success
-    }
+    when(objectMapper.readValue(invalidJson, SubscriptionDecisionEvent.class))
+        .thenThrow(new JsonProcessingException("Invalid JSON") {});
+
+    // when
+    consumer.listen(record, ack);
+
+    // then
+    verifyNoInteractions(subscriptionFacade);
+    verify(ack, never()).acknowledge();
   }
 }

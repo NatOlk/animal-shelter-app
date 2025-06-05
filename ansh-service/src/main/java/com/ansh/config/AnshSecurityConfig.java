@@ -1,4 +1,4 @@
-package com.ansh;
+package com.ansh.config;
 
 import com.ansh.auth.service.impl.CustomUserDetailsService;
 import com.ansh.auth.service.JwtAuthenticationFilter;

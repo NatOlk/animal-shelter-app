@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ansh.AnshSecurityConfig;
+import com.ansh.config.AnshSecurityConfig;
 import com.ansh.app.facade.PendingSubscriptionFacade;
 import com.ansh.repository.entity.PendingSubscriber;
 import java.util.List;

@@ -42,6 +42,18 @@ public interface SubscriptionFacade {
   void unsubscribe(SubscriptionRequest req);
 
   /**
+   * Handles the approval or rejection of a subscription request.
+   *
+   * @param email the email address of the user who requested the subscription
+   * @param approver the email address of the approver (e.g. an admin or moderator)
+   * @param topic the topic to which the subscription applies
+   * @param reject if {@code true}, the subscription is rejected; if {@code false}, it is approved
+   *
+   * @throws IllegalArgumentException if the topic is not supported or required information is missing
+   */
+  void handleSubscriptionApproval(String email, String approver, String topic, boolean reject);
+
+  /**
    * Retrieves the current subscription statuses for a given account (email).
    * Returns statuses for each supported topic.
    *

@@ -1,6 +1,6 @@
 package com.ansh.app.controller;
 
-import com.ansh.AnshSecurityConfig;
+import com.ansh.config.AnshSecurityConfig;
 import com.ansh.app.service.user.UserProfileService;
 import com.ansh.auth.service.JwtService;
 import com.ansh.auth.service.impl.CustomUserDetailsService;

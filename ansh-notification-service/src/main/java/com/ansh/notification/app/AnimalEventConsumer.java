@@ -16,7 +16,9 @@ public class AnimalEventConsumer {
   @Autowired
   private AnimalNotificationHandlerRegistry handlerRegistry;
 
-  @KafkaListener(topics = {"${animalTopicId}"}, groupId = "notificationGroupId")
+  @KafkaListener(topics = {"${animalTopicId}"},
+      groupId = "notificationGroupId",
+      containerFactory = "autoAckFactory")
   public void listenAnimalTopic(ConsumerRecord<String, String> message) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.findAndRegisterModules();
@@ -25,7 +27,9 @@ public class AnimalEventConsumer {
     handlerRegistry.handleEvent(AnimalShelterTopic.ANIMAL_INFO.getTopicName(), animalShelterEvent);
   }
 
-  @KafkaListener(topics = {"${vaccinationTopicId}"}, groupId = "notificationGroupId")
+  @KafkaListener(topics = {"${vaccinationTopicId}"},
+      groupId = "notificationGroupId",
+      containerFactory = "autoAckFactory")
   public void listenVaccinationTopic(ConsumerRecord<String, String> message) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.findAndRegisterModules();
@@ -35,7 +39,9 @@ public class AnimalEventConsumer {
         animalShelterEvent);
   }
 
-  @KafkaListener(topics = {"${animalShelterNewsTopicId}"}, groupId = "notificationGroupId")
+  @KafkaListener(topics = {"${animalShelterNewsTopicId}"},
+      groupId = "notificationGroupId",
+      containerFactory = "autoAckFactory")
   public void listenAnimalNewsTopic(ConsumerRecord<String, String> message) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.findAndRegisterModules();

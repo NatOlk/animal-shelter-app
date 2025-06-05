@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ansh.AnshSecurityConfig;
+import com.ansh.config.AnshSecurityConfig;
 import com.ansh.app.facade.SubscriptionFacade;
 import com.ansh.dto.NotificationStatusDTO;
 import com.ansh.entity.account.UserProfile.AnimalInfoNotifStatus;

@@ -1,4 +1,4 @@
-package com.ansh;
+package com.ansh.config;
 
 import graphql.scalars.ExtendedScalars;
 import org.springframework.context.annotation.Bean;

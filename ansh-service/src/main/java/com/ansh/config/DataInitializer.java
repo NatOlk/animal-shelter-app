@@ -1,4 +1,4 @@
-package com.ansh;
+package com.ansh.config;
 
 import com.ansh.app.service.notification.animal.AnimalInfoNotificationService;
 import com.ansh.entity.animal.Animal;

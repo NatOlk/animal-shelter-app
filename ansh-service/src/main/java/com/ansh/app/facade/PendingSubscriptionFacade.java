@@ -11,6 +11,15 @@ import java.util.List;
 public interface PendingSubscriptionFacade {
 
   /**
+   * Save pending subscription into db.
+   *
+   * @param topic    the topic the user is trying to subscribe to
+   * @param email    the email of the subscriber
+   * @param approver the email or ID of the user who send pending subscription request
+   */
+  void saveSubscriber(String topic, String email, String approver);
+
+  /**
    * Approves a pending subscription request.
    *
    * @param topic    the topic the user is trying to subscribe to

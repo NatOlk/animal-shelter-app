@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,9 +19,10 @@ class AnimalStatsEventConsumer(
 
     @KafkaListener(
         topics = ["\${animalTopicId}", "\${vaccinationTopicId}"],
-        groupId = "statsGroupId"
+        groupId = "statsGroupId",
+        containerFactory = "manualAckFactory"
     )
-    fun listen(message: ConsumerRecord<String, String>) {
+    fun listen(message: ConsumerRecord<String, String>, ack: Acknowledgment) {
         processAndLogKafkaMessage<AnimalShelterEvent>(
             message = message,
             objectMapper = objectMapper,
@@ -31,6 +33,10 @@ class AnimalStatsEventConsumer(
                     "Failed to process AnimalShelterEvent from Kafka: ${message.value()}", ex
                 )
             },
-            onSuccess = { event -> animalService.saveEvent(event) })
+            onSuccess = { event ->
+                animalService.saveEvent(event)
+                ack.acknowledge()
+            }
+        )
     }
 }

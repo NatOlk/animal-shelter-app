@@ -1,6 +1,6 @@
 package com.ansh.app.controller.grql;
 
-import com.ansh.DateScalarConfiguration;
+import com.ansh.config.DateScalarConfiguration;
 import com.ansh.app.service.animal.AnimalService;
 import com.ansh.dto.AnimalDTO;
 import com.ansh.dto.AnimalInput;

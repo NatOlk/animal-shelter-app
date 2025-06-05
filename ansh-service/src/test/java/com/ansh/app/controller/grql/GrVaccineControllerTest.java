@@ -3,7 +3,7 @@ package com.ansh.app.controller.grql;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-import com.ansh.DateScalarConfiguration;
+import com.ansh.config.DateScalarConfiguration;
 import com.ansh.app.service.animal.VaccinationService;
 import com.ansh.app.service.exception.animal.VaccinationCreationException;
 import com.ansh.app.service.exception.animal.VaccinationNotFoundException;

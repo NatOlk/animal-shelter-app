@@ -1,25 +1,24 @@
 package com.ansh.notification.subscription;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
+import com.ansh.app.facade.PendingSubscriptionFacade;
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
-import com.ansh.notification.strategy.PendingSubscriptionServiceStrategy;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.Optional;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.kafka.support.Acknowledgment;
 
 class PendingSubscriptionConsumerTest {
 
@@ -28,13 +27,13 @@ class PendingSubscriptionConsumerTest {
   private static final String UNKNOWN_TOPIC = "unknownTopic";
 
   @Mock
-  private PendingSubscriptionServiceStrategy serviceStrategy;
-
-  @Mock
-  private PendingSubscriptionService animalSubscriptionService;
+  private PendingSubscriptionFacade pendingSubscriptionFacade;
 
   @Mock
   private ObjectMapper objectMapper;
+
+  @Mock
+  private Acknowledgment ack;
 
   @InjectMocks
   private PendingSubscriptionConsumer consumer;
@@ -46,8 +45,57 @@ class PendingSubscriptionConsumerTest {
   }
 
   @Test
-  void listen_validMessage_shouldCallSaveSubscriber() throws Exception {
-    String json = "{\"email\":\"test@example.com\", \"approver\":\"admin\", \"topic\":\"animalTopic\"}";
+  void listen_validMessage_shouldCallFacadeSaveSubscriber() throws Exception {
+    // given
+    String json = "{\"email\":\"test@example.com\", \"approver\":\"admin@example.com\","
+        + " \"topic\":\"animalTopic\"}";
+    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC,
+        0, 0L, "key", json);
+
+    SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
+        .email("test@example.com")
+        .approver("admin@example.com")
+        .topic(ANIMAL_TOPIC)
+        .build();
+
+    when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
+
+    // when
+    consumer.listen(message, ack);
+
+    // then
+    verify(objectMapper).readValue(json, SubscriptionDecisionEvent.class);
+    verify(pendingSubscriptionFacade).saveSubscriber(ANIMAL_TOPIC, "test@example.com",
+        "admin@example.com");
+    verify(ack).acknowledge();
+  }
+
+  @Test
+  void listen_invalidJson_shouldNotCallFacadeAndNotAcknowledge() throws Exception {
+    // given
+    String invalidJson = "{\"bad\":\"data\"}";
+    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
+        invalidJson);
+
+    doThrow(new JsonProcessingException("Invalid JSON") {
+    })
+        .when(objectMapper)
+        .readValue(anyString(), eq(SubscriptionDecisionEvent.class));
+
+    // when
+    consumer.listen(message, ack);
+
+    // then
+    verify(objectMapper).readValue(anyString(), eq(SubscriptionDecisionEvent.class));
+    verify(pendingSubscriptionFacade, never()).saveSubscriber(anyString(), anyString(),
+        anyString());
+    verify(ack, never()).acknowledge();
+  }
+
+  @Test
+  void listen_unexpectedException_shouldNotAcknowledge() throws Exception {
+    // given
+    String json = "{\"email\":\"test@example.com\", \"approver\":\"admin@example.com\", \"topic\":\"animalTopic\"}";
     ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
         json);
 
@@ -58,54 +106,41 @@ class PendingSubscriptionConsumerTest {
         .build();
 
     when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
-    when(serviceStrategy.getServiceByTopic(ANIMAL_TOPIC)).thenReturn(
-        Optional.of(animalSubscriptionService));
+    doThrow(new RuntimeException("Unexpected")).when(pendingSubscriptionFacade)
+        .saveSubscriber(anyString(), anyString(), anyString());
 
-    consumer.listen(message);
+    // when
+    consumer.listen(message, ack);
 
-    verify(objectMapper, times(1)).readValue(json, SubscriptionDecisionEvent.class);
-    verify(serviceStrategy, times(1)).getServiceByTopic(ANIMAL_TOPIC);
-    verify(animalSubscriptionService, times(1)).saveSubscriber(event.getEmail(),
-        event.getApprover());
+    // then
+    verify(pendingSubscriptionFacade).saveSubscriber(ANIMAL_TOPIC, "test@example.com",
+        "admin@example.com");
+    verify(ack, never()).acknowledge();
   }
 
   @Test
-  void listen_invalidMessage_shouldNotCallSaveSubscriber() throws Exception {
-    String invalidJson = "{\"invalidField\":\"value\"}";
-    ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
-        invalidJson);
-
-    doAnswer(invocation -> {
-      throw new IOException("Invalid JSON");
-    }).when(objectMapper).readValue(anyString(), eq(SubscriptionDecisionEvent.class));
-
-    consumer.listen(message);
-
-    verify(objectMapper, times(1)).readValue(anyString(), eq(SubscriptionDecisionEvent.class));
-    verify(serviceStrategy, never()).getServiceByTopic(anyString());
-    verify(animalSubscriptionService, never()).saveSubscriber(anyString(), anyString());
-  }
-
-
-  @Test
-  void listen_unknownTopic_shouldNotCallSaveSubscriber() throws Exception {
+  void listen_shouldNotAckIfFacadeThrowsIllegalArgumentException() throws Exception {
+    // given
     String json = "{\"email\":\"test@example.com\", \"approver\":\"admin\", \"topic\":\"unknownTopic\"}";
     ConsumerRecord<String, String> message = new ConsumerRecord<>(SUBSCRIPTION_TOPIC, 0, 0L, "key",
         json);
 
     SubscriptionDecisionEvent event = SubscriptionDecisionEvent.builder()
         .email("test@example.com")
-        .approver("admin@example.com")
+        .approver("admin")
         .topic(UNKNOWN_TOPIC)
         .build();
 
     when(objectMapper.readValue(json, SubscriptionDecisionEvent.class)).thenReturn(event);
-    when(serviceStrategy.getServiceByTopic(UNKNOWN_TOPIC)).thenReturn(Optional.empty());
+    doThrow(new IllegalArgumentException("No service found")).when(pendingSubscriptionFacade)
+        .saveSubscriber(UNKNOWN_TOPIC, "test@example.com", "admin");
 
-    consumer.listen(message);
+    // when
+    consumer.listen(message, ack);
 
-    verify(objectMapper, times(1)).readValue(json, SubscriptionDecisionEvent.class);
-    verify(serviceStrategy, times(1)).getServiceByTopic(UNKNOWN_TOPIC);
-    verify(animalSubscriptionService, never()).saveSubscriber(anyString(), anyString());
+    // then
+    verify(objectMapper).readValue(json, SubscriptionDecisionEvent.class);
+    verify(pendingSubscriptionFacade).saveSubscriber(UNKNOWN_TOPIC, "test@example.com", "admin");
+    verify(ack, times(1)).acknowledge();
   }
 }

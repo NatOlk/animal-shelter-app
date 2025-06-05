@@ -1,4 +1,4 @@
-package com.ansh;
+package com.ansh.config;
 
 import com.ansh.entity.subscription.Subscription;
 import org.springframework.cache.annotation.EnableCaching;

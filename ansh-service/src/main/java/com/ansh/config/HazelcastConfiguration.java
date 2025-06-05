@@ -1,4 +1,4 @@
-package com.ansh;
+package com.ansh.config;
 
 import com.ansh.entity.animal.Animal;
 import com.ansh.entity.animal.Vaccination;

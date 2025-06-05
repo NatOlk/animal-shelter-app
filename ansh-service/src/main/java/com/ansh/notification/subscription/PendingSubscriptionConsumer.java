@@ -1,18 +1,16 @@
 package com.ansh.notification.subscription;
 
-import com.ansh.app.service.notification.subscription.PendingSubscriptionService;
+import com.ansh.app.facade.PendingSubscriptionFacade;
 import com.ansh.event.subscription.SubscriptionDecisionEvent;
-import com.ansh.notification.strategy.PendingSubscriptionServiceStrategy;
-import com.ansh.utils.IdentifierMasker;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Optional;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,40 +22,34 @@ public class PendingSubscriptionConsumer {
   private String subscriptionTopicId;
 
   @Autowired
-  private PendingSubscriptionServiceStrategy serviceStrategy;
+  private PendingSubscriptionFacade pendingSubscriptionFacade;
+
   @Autowired
   private ObjectMapper objectMapper;
 
-  @KafkaListener(topics = "${subscriptionTopicId}", groupId = "animalGroupId")
-  public void listen(ConsumerRecord<String, String> message) {
+  @KafkaListener(
+      topics = "${subscriptionTopicId}",
+      groupId = "animalGroupId",
+      containerFactory = "manualAckFactory"
+  )
+  public void listen(ConsumerRecord<String, String> message, Acknowledgment ack) {
     try {
       SubscriptionDecisionEvent event = deserializeMessage(message.value());
-      processEvent(event);
+      pendingSubscriptionFacade.saveSubscriber(event.getTopic(), event.getEmail(),
+          event.getApprover());
+      ack.acknowledge();
+    } catch (IllegalArgumentException e) {
+      LOG.error("Invalid topic in message: {}, skipping", message.value(), e);
+      ack.acknowledge();
     } catch (IOException e) {
       LOG.error("Error of message deserialization: {}", message.value(), e);
+    } catch (Exception e) {
+      LOG.error("Unexpected error processing message: {}", message.value(), e);
     }
   }
 
   private SubscriptionDecisionEvent deserializeMessage(String message) throws IOException {
     return objectMapper.readValue(message, SubscriptionDecisionEvent.class);
-  }
-
-  private void processEvent(SubscriptionDecisionEvent event) {
-    Optional<PendingSubscriptionService> service = serviceStrategy.getServiceByTopic(
-        event.getTopic());
-
-    service.ifPresentOrElse(
-        s -> {
-          s.saveSubscriber(event.getEmail(), event.getApprover());
-          if (LOG.isDebugEnabled()) {
-            LOG.debug("[{} subscription] Successfully processed subscription for {} by {}",
-                event.getTopic(), IdentifierMasker.maskEmail(event.getEmail()),
-                IdentifierMasker.maskEmail(event.getApprover()));
-          }
-        },
-        () -> LOG.warn("[subscription consumer] No registered service for topic: {}",
-            event.getTopic())
-    );
   }
 
   protected void setSubscriptionTopicId(String subscriptionTopicId) {
