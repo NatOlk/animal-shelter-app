@@ -145,13 +145,12 @@ public class VaccinationServiceImpl implements VaccinationService {
   @Caching(evict = {
       @CacheEvict(value = "vaccination", key = "#id"),
       @CacheEvict(value = "vaccinations", key = "'allVaccinations'"),
-      @CacheEvict(value = "vaccinations", key = "'animal-' + #animalId")
+      @CacheEvict(value = "vaccinations", key = "'animal-' + #result.animal.id")
   })
   public Vaccination deleteVaccination(@NonNull Long id) {
     Vaccination vaccination = vaccinationRepository.findById(id)
-        .orElseThrow(
-            () -> new VaccinationNotFoundException(STR."Vaccination not found for: \{id}"));
-    Long animalId = vaccination.getAnimal().getId();
+        .orElseThrow(() -> new VaccinationNotFoundException(STR."Vaccination not found for: \{id}"));
+
     vaccinationRepository.delete(vaccination);
     LOG.debug("[vaccination] removed : {}", vaccination);
     animalInfoNotificationService.sendRemoveVaccinationMessage(vaccination);
