@@ -1,6 +1,7 @@
 # **Animal Shelter Management System**
 
 ## **About the Project**
+**_The project is currently on hold for approximately 3–4 months due to the development of a private Android application. I will still be committing occasionally during this period._**
 
 This project is part of my continuous learning and professional growth as a software developer. While I have solid experience in software development, I always strive to explore new technologies and refine my expertise. Working on this application allows me to stay up to date with modern development approaches, including Spring Boot, React, Docker, GraphQL, and PostgreSQL.
 
