@@ -11,6 +11,7 @@ fun AnimalShelterEvent.toDocument(): AnimalEventDocument {
     return AnimalEventDocument(
         eventType = this.javaClass.name,
         animalId = this.animal.id,
+        eventId = this.eventId,
         payload = this
     )
 }
@@ -18,6 +19,7 @@ fun AnimalShelterEvent.toDocument(): AnimalEventDocument {
 fun SubscriptionDecisionEvent.toDocument(type: SubscriptionActionType): SubscriptionDecisionEventDocument {
     return SubscriptionDecisionEventDocument(
         payload = this,
+        eventId = this.eventId,
         actionType = type
     )
 }

@@ -15,6 +15,7 @@ class SubscriptionDecisionServiceTest {
 
     private val testEvent = SubscriptionDecisionEvent.builder()
         .email("test@example.com")
+        .eventId("1-1-1")
         .approver("admin@example.com")
         .topic("animal-news")
         .reject(false)

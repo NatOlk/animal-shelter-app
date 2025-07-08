@@ -27,6 +27,10 @@ class SubscriptionDecisionService(
         type: SubscriptionActionType
     ) {
         val document = event.toDocument(type)
+        if (repository.existsByEventId(document.eventId)) {
+            logger.info("Event with ID ${document.eventId} already processed. Skipping.")
+            return
+        }
         saveAndLog(
             item = document,
             save = repository::save,

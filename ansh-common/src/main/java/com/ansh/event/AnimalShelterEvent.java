@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,7 +36,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AnimalShelterEvent {
+public abstract class AnimalShelterEvent {
+
+  private String eventId = UUID.randomUUID().toString();
 
   private Animal animal;
 
@@ -43,7 +46,7 @@ public class AnimalShelterEvent {
 
   private LocalDate created = LocalDate.now();
 
-  public AnimalShelterEvent(Animal animal) {
+  protected AnimalShelterEvent(Animal animal) {
     this.animal = animal;
   }
 

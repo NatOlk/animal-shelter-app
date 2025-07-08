@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 @Document(collection = "animal_events")
 data class AnimalEventDocument(
     @Id val id: String? = null,
+    val eventId: String,
     val animalId: Long,
     val eventType: String,
     val payload: AnimalShelterEvent,

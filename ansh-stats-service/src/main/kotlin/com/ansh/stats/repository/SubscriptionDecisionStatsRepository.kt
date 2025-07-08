@@ -13,7 +13,7 @@ interface SubscriptionDecisionStatsRepository :
     MongoRepository<SubscriptionDecisionEventDocument, String> {
 
     fun countByActionType(actionType: SubscriptionActionType): Long
-
+    fun existsByEventId(eventId: String): Boolean
     @Aggregation(
         pipeline = [
             "{ '\$match': { 'actionType': ?0 } }",

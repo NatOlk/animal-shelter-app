@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface AnimalEventRepository : MongoRepository<AnimalEventDocument, String> {
     fun countByEventType(eventType: String): Long
-
+    fun existsByEventId(eventId: String): Boolean
     @Aggregation(
         pipeline = [
             "{ '\$match': { 'eventType': { '\$in': [ " +

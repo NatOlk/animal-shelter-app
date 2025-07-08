@@ -15,6 +15,11 @@ class AnimalService(
 
     fun saveEvent(event: AnimalShelterEvent) {
         val document = event.toDocument()
+
+        if (repository.existsByEventId(document.eventId)) {
+            logger.info("Event with ID ${document.eventId} already processed. Skipping.")
+            return
+        }
         saveAndLog(
             item = document,
             save = repository::save,

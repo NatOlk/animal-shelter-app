@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 @Document(collection = "subscription_decision_events")
 data class SubscriptionDecisionEventDocument(
     @Id val id: String? = null,
+    val eventId: String,
     val payload: SubscriptionDecisionEvent,
     val actionType: SubscriptionActionType,
     val receivedAt: LocalDateTime = LocalDateTime.now()

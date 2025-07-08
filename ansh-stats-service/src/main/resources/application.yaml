@@ -6,6 +6,13 @@ vaccinationTopicId: vaccinationTopicId
 approveTopicId: approveTopicId
 subscriptionTopicId: subscriptionTopicId
 
+logging:
+  level:
+    root: INFO
+    com.ansh.stats.notification: DEBUG
+    com.ansh.stats.service: DEBUG
+    org.springframework.kafka.listener: DEBUG
+
 spring:
   application:
     name: ansh-stats-service
