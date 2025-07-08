@@ -1,6 +1,7 @@
 package com.ansh.notification.subscription;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -49,7 +50,8 @@ class SubscriberNotificationEventProducerTest {
     event.setTopic(TOPIC);
 
     String jsonMessage = "{\"email\":\"test@example.com\", \"approver\":\"admin\", \"topic\":\"animal_notifications\"}";
-    when(objectMapper.writeValueAsString(event)).thenReturn(jsonMessage);
+    when(objectMapper.writeValueAsString(any(SubscriptionDecisionEvent.class)))
+        .thenReturn(jsonMessage);
 
     // when
     subscriberNotificationEventProducer.sendPendingApproveRequest(EMAIL, APPROVER, TOPIC);
@@ -67,7 +69,8 @@ class SubscriberNotificationEventProducerTest {
     event.setApprover(APPROVER);
     event.setTopic(TOPIC);
 
-    when(objectMapper.writeValueAsString(event)).thenThrow(new RuntimeException("Test exception"));
+    when(objectMapper.writeValueAsString(any(SubscriptionDecisionEvent.class)))
+        .thenThrow(new RuntimeException("Test exception"));
 
     // when + then
     assertThrows(SendNotificationException.class, () ->
