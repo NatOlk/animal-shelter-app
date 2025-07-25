@@ -14,7 +14,7 @@ COPY ./ansh-stats-service/. .
 
 COPY --from=common-build /root/.m2 /root/.m2
 
-RUN gradle build
+RUN gradle build -x integrationTest
 
 FROM eclipse-temurin:21-jdk
 

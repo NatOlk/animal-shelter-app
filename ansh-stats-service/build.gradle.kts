@@ -55,3 +55,22 @@ tasks.test {
 kotlin {
     jvmToolchain(21)
 }
+
+val integrationTestSourceSet = sourceSets.create("integrationTest") {
+    kotlin.srcDir("src/test/kotlin/integration")
+    resources.srcDir("src/test/kotlin/integration")
+    compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+    runtimeClasspath += output + compileClasspath
+}
+
+configurations["integrationTestImplementation"].extendsFrom(configurations["testImplementation"])
+configurations["integrationTestRuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
+
+tasks.register<Test>("integrationTest") {
+    description = "Runs integration tests."
+    group = "verification"
+    testClassesDirs = integrationTestSourceSet.output.classesDirs
+    classpath = integrationTestSourceSet.runtimeClasspath
+    shouldRunAfter(tasks.test)
+    useJUnitPlatform()
+}
